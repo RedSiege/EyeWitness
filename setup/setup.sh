@@ -1,4 +1,8 @@
 #!/bin/bash
 
-apt-get install python-pip
-pip install Ghost.py
+wget http://www.christophertruncer.com/InstallMe/ghost.zip
+
+unzip ghost.zip
+
+python setup.py install
+
