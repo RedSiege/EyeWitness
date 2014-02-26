@@ -169,7 +169,7 @@ def logistics(url_file):
 def titleScreen():
     os.system('clear')
     print "###########################################################################"
-    print "#                             EyeWitness v1.0                                 #"
+    print "#                             EyeWitness v1.0                             #"
     print "###########################################################################\n"
 
 def defaultCreds(page_content):
