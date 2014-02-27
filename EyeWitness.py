@@ -214,8 +214,8 @@ def webHeader():
     web_index_head += "<center>Report Generated on " + report_date + " at " + report_time
     web_index_head += "<br><table border=\"1\">\n"
     web_index_head += "<tr>\n"
-    web_index_head += "<th>Web Screenshot</th>\n"
     web_index_head += "<th>Web Request Info</th>\n"
+    web_index_head += "<th>Web Screenshot</th>\n"
     web_index_head += "</tr>\n"
     return web_index_head
 
