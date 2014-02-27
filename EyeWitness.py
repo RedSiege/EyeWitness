@@ -15,6 +15,7 @@ import time
 import sys
 import xml.etree.ElementTree as XMLParser
 import urllib2
+import cgi
 import re
 import logging
 import subprocess
@@ -229,6 +230,10 @@ def fileNames(url_given):
     src_name = pic_name + ".txt"
     pic_name = pic_name + ".png"
     return url_given, src_name, pic_name
+
+def htmlEncode(dangerous_data):
+    encoded = cgi.escape(dangerous_data, quote=True)
+    return encoded
     
 if __name__ == "__main__":
 
@@ -302,7 +307,7 @@ if __name__ == "__main__":
 
             try:
                 for key, value in page.headers.items():
-                    web_index += "\n<br><b> " + key.replace("u\'", "") + ":</b> " + value
+                    web_index += "\n<br><b> " + htmlEncode(key.replace("u\'", "")) + ":</b> " + htmlEncode(value)
 
             except AttributeError:
                 web_index += "\n<br><br>Potential blank page or SSL issue with <a href=\"" + url + "\" target=\"_blank\">" + url + "</a>."
