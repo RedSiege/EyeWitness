@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """
  This script's inspiration was Tim Tomes's web screenshotting script PeepingTom
