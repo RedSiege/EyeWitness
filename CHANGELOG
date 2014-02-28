@@ -1,3 +1,7 @@
+[2.28.2014]
+    Modified..: Removed unnecessary packages from Debian support.
+    Added.....: Setup support for CentOS 6.5+.
+
 [2.27.2014]
     Modified..: Created a more robust setup script.
     Modified..: Cleaned up setup script support for Kali.

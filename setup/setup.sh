@@ -3,6 +3,7 @@
 # Global Variables
 userid=`id -u`
 osinfo=`cat /etc/issue|cut -d" " -f1|head -n1`
+eplpkg='http://linux.mirrors.es.net/fedora-epel/6/i386/epel-release-6-8.noarch.rpm'
 
 # Clear Terminal (For Prettyness)
 clear
@@ -32,10 +33,28 @@ case ${osinfo} in
     pip install Ghost.py python_qt_binding
     echo
   ;;
-  # Debian Dependency Installation
+  # Debian 7+ Dependency Installation
   Debian)
     echo '[*] Installing Debian Dependencies'
-    apt-get install unzip cmake qt4-qmake python python-qt4 python-pip
+    apt-get install cmake qt4-qmake python python-qt4 python-pip
+    echo
+    echo '[*] Installing Python Modules'
+    pip install Ghost.py python_qt_binding
+    echo
+  ;;
+  # CentOS 6.5+ Dependency Installation
+  CentOS)
+    echo '[Warning]: EyeWitness on CentOS Requires EPEL Repository!'
+    read -p '[?] Install and Enable EPEL Repository? (y/n): ' epel
+    if [ "${epel}" == 'y' ]; then
+      rpm -ivh ${eplpkg}
+    else
+      echo '[!] User Aborted EyeWitness Installation.'
+      exit 1
+    fi
+    echo '[*] Installing CentOS Dependencies'
+    yum install cmake python python-pip PyQt4 PyQt4-webkit \
+                python-argparse
     echo
     echo '[*] Installing Python Modules'
     pip install Ghost.py python_qt_binding
