@@ -332,6 +332,12 @@ if __name__ == "__main__":
 
     if single_url is not "None":
 
+        # If URL doesn't start with http:// or https://, assume it is http:// and add it to URL
+        if single_url.startswith('http://') or single_url.startswith('https://'):
+            pass
+        else:
+            single_url = "http://" + single_url
+
         # Used for monitoring for blank pages or SSL errors
         content_blank = 0
 
@@ -376,7 +382,7 @@ if __name__ == "__main__":
         except screener.TimeoutError:
             print "[*] Hit timeout limit when connecting to: " + single_url
             web_index += "<tr>\n"
-            web_index += "<td>" + single_url + "</td>\n"
+            web_index += "<td><a href=\"" + single_url + "\" target=\"_blank\">" + url + "</a></td>\n"
             web_index += "<td>Hit timeout limit while attempting screenshot</td>\n"
             web_index += "</tr>\n"
 
@@ -406,6 +412,13 @@ if __name__ == "__main__":
 
         # Loop through all URLs and create a screenshot
         for url in url_list:
+
+            # Check for http or https protocol, if not present, assume http
+            url = url.strip()
+            if url.startswith('http://') or url.startswith('https://'):
+                pass
+            else:
+                url = "http://" + url
 
             # Used for monitoring for blank pages or SSL errors
             content_blank = 0
@@ -442,7 +455,7 @@ if __name__ == "__main__":
             except screener.TimeoutError:
                 print "[*] Hit timeout limit when connecting to: " + url
                 web_index += "<tr>\n"
-                web_index += "<td>" + url + "</td>\n"
+                web_index += "<td><a href=\"" + url + "\" target=\"_blank\">" + url + "</a></td>\n"
                 web_index += "<td>Hit timeout limit while attempting screenshot</td>\n"
                 web_index += "</tr>\n"
 

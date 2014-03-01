@@ -8,8 +8,11 @@ Inspiration came from Tim Tomes's PeepingTom Script.  I just wanted to change so
 EyeWitness is designed to run on Kali Linux.  It will auto detect the file you give it with the -f flag as either being a text file with URLs on each new line, nmap xml output, or nessus xml output.  The -t (timeout) flag is completely optional, and lets you provice the max time to wait when trying to render and screenshot a web page.  The --open flag, which is optional, will open the URL in a new tab within iceweasel.
 
 Supported Linux Distros:
+
 Kali Linux
+
 Debian 7+ (at least stable, looking into testing) (Thanks to @themightyshiv)
+
 CentOS 6.5+ (Thanks to @themightyshiv)
 
 
