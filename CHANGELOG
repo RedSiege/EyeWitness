@@ -1,3 +1,9 @@
+[3.1.2014]
+    Modified..: Did a major cleanup of code structure.  Largely needed to not have duplicate code all over EyeWitness when implementing usage of scanning a single URL via a command line argument.
+    Added.....: --single for use to scan a single URL - thanks to Robin Wood (@digininja) for requesting this, it should have been added in the first place
+    Added.....: Aliased -h, -?, --h, -help, and --help to all produce the help menu if passed in as a parameter.  Thanks to Robin Wood (@digininja) for the suggestion.
+    Modified..: Stopped stripping "http://", "https://", and "www" from URLs.  Only stripping "//", ":", and "/" now.  This is due to a logic flaw identified by Robin Wood (@digininja) that would cause images to be overwritten based off the URLs provided.
+
 [2.28.2014]
     Modified..: Removed unnecessary packages from Debian support.
     Added.....: Setup support for CentOS 6.5+.
