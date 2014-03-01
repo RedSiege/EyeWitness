@@ -50,8 +50,6 @@ def cliParser():
         except ValueError:
             args.t = 7
 
-
-
     # Return the file name which contains the URLs
     return args.f, args.t, args.open, args.single
 
