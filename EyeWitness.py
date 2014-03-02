@@ -294,7 +294,7 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
 
     try:
         for key, value in web_page.headers.items():
-            web_table_index += "\n<br><b> " + htmlEncode(key.replace("u\'", "")) + ":</b> " + htmlEncode(value)
+            web_table_index += "\n<br><b> " + htmlEncode(key.decode('utf-8')) + ":</b> " + htmlEncode(value)
 
     except AttributeError:
         web_table_index += "\n<br><br>Potential blank page or SSL issue with <a href=\"" + website_url + "\" target=\"_blank\">" + website_url + "</a>."

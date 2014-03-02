@@ -1,3 +1,6 @@
+[3.2.2014]
+    Modified..: Server header responses are now properly decoded from unicode rather than just stripping the u' from the string.  Thanks to Ian Gallagher for pointing this out - Github Issue #3
+
 [3.1.2014]
     Modified..: Did a major cleanup of code structure.  Largely needed to not have duplicate code all over EyeWitness when implementing usage of scanning a single URL via a command line argument.
     Added.....: --single for use to scan a single URL - thanks to Robin Wood (@digininja) for requesting this, it should have been added in the first place - Github Issue #7
