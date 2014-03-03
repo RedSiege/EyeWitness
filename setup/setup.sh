@@ -26,6 +26,8 @@ fi
 case ${osinfo} in
   # Kali Dependency Installation
   Kali)
+    echo '[*] Installing Kali Dependencies'
+    apt-get install python-qt4 python-pip
     echo '[*] Cloning and installing Ghost'
     git clone https://github.com/jeanphix/Ghost.py.git
     cd Ghost.py
