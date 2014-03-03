@@ -290,7 +290,7 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
     web_table_index += "<a href=\"" + website_url + "\" target=\"_blank\">" + website_url + "</a><br>"
 
     if possible_creds is not None:
-        web_table_index += "<br><b>Default credentials:</b> " + possible_creds + "<br>"
+        web_table_index += "<br><b>Default credentials:</b> " + htmlEncode(possible_creds) + "<br>"
 
     try:
         for key, value in web_page.headers.items():
