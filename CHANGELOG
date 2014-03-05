@@ -1,3 +1,6 @@
+[3.5.2014]
+    Modified..: Setup script updated to add xvfb package so EyeWitness can run in a headless install.
+
 [3.2.2014]
     Modified..: Server header responses are now properly decoded from unicode rather than just stripping the u' from the string.  Thanks to Ian Gallagher for pointing this out - Github Issue #3
     Modified..: Updated setup script to use a specific known working commit of Ghost, to prevent any potential future breaks in functionality.

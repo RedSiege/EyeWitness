@@ -27,7 +27,7 @@ case ${osinfo} in
   # Kali Dependency Installation
   Kali)
     echo '[*] Installing Kali Dependencies'
-    apt-get install python-qt4 python-pip
+    apt-get install python-qt4 python-pip xvfb
     echo '[*] Cloning and installing Ghost'
     git clone https://github.com/jeanphix/Ghost.py.git
     cd Ghost.py
@@ -39,7 +39,7 @@ case ${osinfo} in
   # Debian 7+ Dependency Installation
   Debian)
     echo '[*] Installing Debian Dependencies'
-    apt-get install cmake qt4-qmake python python-qt4 python-pip
+    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
@@ -55,7 +55,7 @@ case ${osinfo} in
   # Ubuntu (tested in 13.10) Dependency Installation
   Ubuntu)
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install cmake qt4-qmake python python-qt4 python-pip
+    apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
@@ -80,7 +80,7 @@ case ${osinfo} in
     fi
     echo '[*] Installing CentOS Dependencies'
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse
+                python-argparse xvfb
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
