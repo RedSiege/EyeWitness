@@ -54,7 +54,7 @@ case ${osinfo} in
   ;;
   # Ubuntu (tested in 13.10) Dependency Installation
   Ubuntu)
-    echo '[*] Installing Debian Dependencies'
+    echo '[*] Installing Ubuntu Dependencies'
     apt-get install cmake qt4-qmake python python-qt4 python-pip
     echo
     echo '[*] Installing Python Modules'
