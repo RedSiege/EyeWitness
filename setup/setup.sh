@@ -52,6 +52,22 @@ case ${osinfo} in
     cd ..
     rm -rf Ghost.py
   ;;
+  # Ubuntu (tested in 13.10) Dependency Installation
+  Ubuntu)
+    echo '[*] Installing Ubuntu Dependencies'
+    apt-get install cmake qt4-qmake python python-qt4 python-pip
+    echo
+    echo '[*] Installing Python Modules'
+    pip install python_qt_binding
+    echo
+    echo '[*] Cloning and installing Ghost'
+    git clone https://github.com/jeanphix/Ghost.py.git
+    cd Ghost.py
+    git checkout 98025abe846c49682953c20ca2e3c0df6362f595
+    python setup.py install
+    cd ..
+    rm -rf Ghost.py
+  ;;
   # CentOS 6.5+ Dependency Installation
   CentOS)
     echo '[Warning]: EyeWitness on CentOS Requires EPEL Repository!'
