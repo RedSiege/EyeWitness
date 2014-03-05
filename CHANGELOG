@@ -1,5 +1,5 @@
 [3.5.2014]
-    Modified..: Setup script updated to add xvfb package so EyeWitness can run in a headless install.
+    Modified..: Setup script updated to add xvfb package so EyeWitness can run in a headless install. Thanks to baptistedonaux for letting me know and @themightyshiv for testing it out. Github Issue #13
 
 [3.2.2014]
     Modified..: Server header responses are now properly decoded from unicode rather than just stripping the u' from the string.  Thanks to Ian Gallagher for pointing this out - Github Issue #3
