@@ -258,11 +258,11 @@ def ghostCapture(web_timeout, screen_url, rep_fold, screen_name):
     ghost.capture_to(rep_fold + "/screens/" + screen_name)
     return ghost_page, ghost_extra_resources
 
-def backupRequest(page_code, source_code_name, content_value):
+def backupRequest(page_code, outgoing_url, source_code_name, content_value):
     try:
         if page_code.content == "None":
             try:
-                response = urllib2.urlopen(url)
+                response = urllib2.urlopen(outgoing_url)
                 page_code.content = response.read()
                 response.close()
             except urllib2.HTTPError:
@@ -361,7 +361,7 @@ if __name__ == "__main__":
             page, extra_resources = ghostCapture(timeout_wait, single_url, report_folder, picture_name)
 
             try:
-                backupRequest(page, source_name, content_blank)
+                backupRequest(page, single_url, source_name, content_blank)
                 default_creds = defaultCreds(page.content)
             except AttributeError:
                 print "[*] ERROR: Web page possibly blank or SSL error!"
@@ -434,7 +434,7 @@ if __name__ == "__main__":
 
                 # If EyeWitness receives a no-cache, it can't get the page source, therefore lets
                 # make a backup request get the source
-                content_blank, default_creds = backupRequest(page, source_name, content_blank)
+                content_blank, default_creds = backupRequest(page, url, source_name, content_blank)
 
                 web_index, content_blank = tableMaker(web_index, url, default_creds, page, content_blank)
 
