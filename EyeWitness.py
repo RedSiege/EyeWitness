@@ -114,10 +114,11 @@ def logistics(url_file):
                         if ports.find('state').get('state') == 'open':
                             port = ports.attrib.get('portid')
                             try:
-                                service = ports.find('service').get('name')
-                                if int(port) in http_ports or 'http' in service.lower():
+                                service = ports.find('service').get('name').lower()
+                                tunnel = ports.find('service').get('tunnel').lower()
+                                if int(port) in http_ports or 'http' in service:
                                     protocol = 'http'
-                                    if int(port) in https_ports or 'https' in service.lower():
+                                    if int(port) in https_ports or 'https' in service or ('http' in service and 'ssl' in tunnel):
                                         protocol = 'https'
                                     urlBuild = '%s://%s:%s' % (protocol,target,port)
                                     if urlBuild not in urls:
