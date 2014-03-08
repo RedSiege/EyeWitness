@@ -325,9 +325,6 @@ if __name__ == "__main__":
     # Print the title header
     titleScreen()
 
-    # Counter for number of requests made
-    request_counter = 0
-
     # Parse command line options and return the filename containing URLS and how long to wait for each website
     url_filename, timeout_wait, open_urls, single_url = cliParser()
 
@@ -413,11 +410,6 @@ if __name__ == "__main__":
 
         # Loop through all URLs and create a screenshot
         for url in url_list:
-
-            request_counter = request_counter + 1
-            if request_counter == 100:
-                time.sleep(5)
-                request_counter = 0
 
             # Check for http or https protocol, if not present, assume http
             url = url.strip()
