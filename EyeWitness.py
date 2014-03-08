@@ -77,9 +77,8 @@ def folderOut():
     css_page += "max-height: 550px;\n"
     css_page += "}"
 
-    css_file = open(output_folder_name + "/style.css", 'w')
-    css_file.write(css_page)
-    css_file.close()
+    with open(output_folder_name + "/style.css", 'w') as css_file:
+        css_file.write(css_page)
 
     return output_folder_name, current_date, current_time
 
@@ -169,9 +168,9 @@ def logistics(url_file):
 
         try:
             # Open the URL file and read all URLs, and reading again to catch total number of websites
-            f = open(url_file, 'r')
-            all_urls = f.readlines()
-            f.close()
+            with open(url_file, 'r') as f:
+                all_urls = f.readlines()
+
             for line in all_urls:
                 urls.append(line)
                 num_urls = num_urls + 1
@@ -190,9 +189,8 @@ def titleScreen():
 
 def defaultCreds(page_content):
     # Read in the file containing the web "signatures"
-    sig_file = open('signatures.txt', 'r')
-    signatures = sig_file.readlines()
-    sig_file.close()
+    with open('signatures.txt', 'r') as sig_file:
+        signatures = sig_file.readlines()
 
     # Loop through and see if there are any matches from the source code EyeWitness obtained
     for sig in signatures:
@@ -269,9 +267,9 @@ def backupRequest(page_code, outgoing_url, source_code_name, content_value):
             except urllib2.HTTPError:
                 page_code.content = "Sorry, but couldn't get source code for potentially a couple reasons.  If it was Basic Auth, a 50X, or a 40X error, EyeWitness won't return source code.  Couldn't get source from " + url + "."
         # check if page is blank
-        source = open(report_folder + "/source/" + source_code_name, 'w')
-        source.write(page_code.content)
-        source.close()
+        with open(report_folder + "/source/" + source_code_name, 'w') as source:
+            source.write(page_code.content)
+
         default_creds = defaultCreds(page.content)
     except AttributeError:
         print "[*] ERROR: Web page possibly blank or SSL error!"
@@ -318,15 +316,18 @@ def singleReportPage(report_source):
     report_source += "</table>\n"
     report_source += "</body>\n"
     report_source += "</html>"
-    fo = open(report_folder + "/report.html", 'w')
-    fo.write(report_source)
-    fo.close()
+    with open(report_folder + "/report.html", 'w') as fo:
+        fo.write(report_source)
     return
     
 if __name__ == "__main__":
 
     # Print the title header
     titleScreen()
+
+    # Counter for number of requests made
+    request_counter = 0
+    counterz = 1
 
     # Parse command line options and return the filename containing URLS and how long to wait for each website
     url_filename, timeout_wait, open_urls, single_url = cliParser()
@@ -414,6 +415,14 @@ if __name__ == "__main__":
         # Loop through all URLs and create a screenshot
         for url in url_list:
 
+            print counterz
+            counterz = counterz + 1
+
+            request_counter = request_counter + 1
+            if request_counter == 100:
+                time.sleep(5)
+                request_counter = 0
+
             # Check for http or https protocol, if not present, assume http
             url = url.strip()
             if url.startswith('http://') or url.startswith('https://'):
@@ -474,9 +483,9 @@ if __name__ == "__main__":
                 if page_counter == 1:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
-                    fo = open(report_folder + "/report.html", 'w')
-                    fo.write(web_index)
-                    fo.close()
+                    with open(report_folder + "/report.html", 'w') as f1:
+                        f1.write(web_index)
+
                     # Revert URL counter back to 0, increment the page count to 1
                     # Clear web_index of all values by giving web_index the "header"
                     # of the new html page
@@ -486,9 +495,9 @@ if __name__ == "__main__":
                 else:
                     # Write out to the next page
                     web_index += "</table>\n"
-                    page_out = open(report_folder + "/report_page" + str(page_counter) + ".html", 'w')
-                    page_out.write(web_index)
-                    page_out.close()
+                    with open(report_folder + "/report_page" + str(page_counter) + ".html", 'w') as page_out:
+                        page_out.write(web_index)
+
                     # Reset the URL counter
                     url_counter = 0
                     page_counter = page_counter + 1
@@ -499,9 +508,8 @@ if __name__ == "__main__":
         else:
             # Write out our extra page
             web_index += "</table>\n"
-            page_out = open(report_folder + "/report_page" + str(page_counter) + ".html", 'w')
-            page_out.write(web_index)
-            page_out.close()
+            with open(report_folder + "/report_page" + str(page_counter) + ".html", 'w') as page_out:
+                page_out.write(web_index)
 
             # Create the link structure at the bottom
             link_text = "\n<br>Links: <a href=\"report.html\">Page 1</a> "
@@ -511,14 +519,12 @@ if __name__ == "__main__":
             link_text += "</html>"
         
             # Write out link structure to bottom of report
-            report_append = open(report_folder + "/report.html", 'a')
-            report_append.write(link_text)
-            report_append.close()
+            with open(report_folder + "/report.html", 'a') as report_append:
+                report_append.write(link_text)
 
             # Write out link structure to bottom of extra pages
             for page_footer in range(2,page_counter+1):
-                page_append = open(report_folder + "/report_page" + str(page_footer) + ".html", 'a')
-                page_append.write(link_text)
-                page_append.close()
+                with open(report_folder + "/report_page" + str(page_footer) + ".html", 'a') as page_append:
+                    page_append.write(link_text)
 
     print "\n[*] Done! Check out the report in the " + report_folder + " folder!"

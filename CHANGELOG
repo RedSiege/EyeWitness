@@ -1,5 +1,6 @@
 [3.7.2014]
     Modified..: Fixed backupRequest function to receive the correct variable
+    Modified..: Files being opened are now done properly
 
 [3.5.2014]
     Modified..: Setup script updated to add xvfb package so EyeWitness can run in a headless install. Thanks to baptistedonaux for letting me know and @themightyshiv for testing it out. Github Issue #13
