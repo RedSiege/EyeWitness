@@ -327,7 +327,6 @@ if __name__ == "__main__":
 
     # Counter for number of requests made
     request_counter = 0
-    counterz = 1
 
     # Parse command line options and return the filename containing URLS and how long to wait for each website
     url_filename, timeout_wait, open_urls, single_url = cliParser()
@@ -414,9 +413,6 @@ if __name__ == "__main__":
 
         # Loop through all URLs and create a screenshot
         for url in url_list:
-
-            print counterz
-            counterz = counterz + 1
 
             request_counter = request_counter + 1
             if request_counter == 100:
