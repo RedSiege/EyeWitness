@@ -247,12 +247,9 @@ def htmlEncode(dangerous_data):
     encoded = cgi.escape(dangerous_data, quote=True)
     return encoded
 
-def ghostCapture(web_timeout, screen_url, rep_fold, screen_name):
+def ghostCapture(screen_url, rep_fold, screen_name):
     # Try to get our screenshot and source code of the page
     # Write both out to disk if possible (if we can get one, we can get the other)
-    ghost = screener.Ghost(wait_timeout=int(web_timeout), ignore_ssl_errors=True)
-    logger = logging.getLogger('ghost')
-    logger.disabled = True
     ghost_page, ghost_extra_resources = ghost.open(screen_url, auth=('none', 'none'))
     ghost.capture_to(rep_fold + "/screens/" + screen_name)
     return ghost_page, ghost_extra_resources
@@ -356,7 +353,10 @@ if __name__ == "__main__":
 
         try:
             # Ghost capture of URL
-            page, extra_resources = ghostCapture(timeout_wait, single_url, report_folder, picture_name)
+            ghost = screener.Ghost(wait_timeout=int(timeout_wait), ignore_ssl_errors=True)
+            logger = logging.getLogger('ghost')
+            logger.disabled = True
+            page, extra_resources = ghostCapture(single_url, report_folder, picture_name)
 
             try:
                 backupRequest(page, single_url, source_name, content_blank)
@@ -408,6 +408,12 @@ if __name__ == "__main__":
         url_counter = 0
         page_counter = 1
 
+        # Instantiate Ghost object and disable ghost logging - instantiating outside of for loop
+        # prevents exceeding the file descriptor limit when provided tons of urls
+        ghost = screener.Ghost(wait_timeout=int(timeout_wait), ignore_ssl_errors=True)
+        logger = logging.getLogger('ghost')
+        logger.disabled = True
+
         # Loop through all URLs and create a screenshot
         for url in url_list:
 
@@ -428,7 +434,7 @@ if __name__ == "__main__":
             print "Attempting to capture: " + url
             try:
                 # Ghost capturing web page
-                page, extra_resources = ghostCapture(timeout_wait, url, report_folder, picture_name)
+                page, extra_resources = ghostCapture(url, report_folder, picture_name)
 
                 # If EyeWitness receives a no-cache, it can't get the page source, therefore lets
                 # make a backup request get the source
