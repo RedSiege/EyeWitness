@@ -18,7 +18,6 @@ import urllib2
 import cgi
 import re
 import logging
-import subprocess
 
 def cliParser():
 
@@ -67,15 +66,16 @@ def folderOut():
     os.system("mkdir " + output_folder_name + "/source")
 
     # Write out the CSS stylesheet
-    css_page =  "img {\n"
-    css_page += "max-width: 100%;\n"
-    css_page += "height: auto;\n"
-    css_page += "}\n\n"
-    css_page += "#screenshot{\n"
-    css_page += "overflow: auto;\n"
-    css_page += "max-width: 850px;\n"
-    css_page += "max-height: 550px;\n"
-    css_page += "}"
+    css_page =  """img {
+    max-width: 100%;
+    height: auto;
+    }
+    #screenshot{
+    overflow: auto;
+    max-width: 850px;
+    max-height: 550px;
+    }"
+    """.replace('    ', '')
 
     with open(output_folder_name + "/style.css", 'w') as css_file:
         css_file.write(css_page)
@@ -221,16 +221,18 @@ def defaultCreds(page_content):
 
 def webHeader():
     # Start our web page report
-    web_index_head =  "<html>\n<head>\n"
-    web_index_head += "<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>"
-    web_index_head += "<title>EyeWitness Report</title>\n</head>\n"
-    web_index_head += "<body>\n"
-    web_index_head += "<center>Report Generated on " + report_date + " at " + report_time
-    web_index_head += "<br><table border=\"1\">\n"
-    web_index_head += "<tr>\n"
-    web_index_head += "<th>Web Request Info</th>\n"
-    web_index_head += "<th>Web Screenshot</th>\n"
-    web_index_head += "</tr>\n"
+    web_index_head = """<html>
+    <head>
+    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+    <title>EyeWitness Report</title>
+    </head>
+    <body>
+    <center>Report Generated on {report_day} at {reporthtml_time}</center>
+    <br><table border=\"1\">
+    <tr>
+    <th>Web Request Info</th>
+    <th>Web Screenshot</th>
+    </tr>""".format(report_day=report_date, reporthtml_time=report_time).replace('    ', '')
     return web_index_head
 
 def fileNames(url_given):
@@ -279,40 +281,43 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
 
     # Continue adding to the table assuming that we were able to capture the screenshot
     # Only add elements if they exist
-    web_table_index += "<tr>\n"           
-    web_table_index += "<td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">"
-
     # Add URL to table data at the top
-    web_table_index += "<a href=\"" + website_url + "\" target=\"_blank\">" + website_url + "</a><br>"
+    web_table_index += """<tr>
+    <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
+    <a href=\"{web_url_addy}\" target=\"_blank\">{web_url_addy}</a><br>
+    """.format(web_url_addy=website_url).replace('    ', '')
 
     if possible_creds is not None:
         web_table_index += "<br><b>Default credentials:</b> " + htmlEncode(possible_creds) + "<br>"
 
     try:
         for key, value in web_page.headers.items():
-            web_table_index += "\n<br><b> " + htmlEncode(key.decode('utf-8')) + ":</b> " + htmlEncode(value)
+            web_table_index += "<br><b> " + htmlEncode(key.decode('utf-8')) + ":</b> " + htmlEncode(value) + "\n"
 
     except AttributeError:
         web_table_index += "\n<br><br>Potential blank page or SSL issue with <a href=\"" + website_url + "\" target=\"_blank\">" + website_url + "</a>."
 
     if content_empty == 1:
-        web_table_index += "\n<br></td>"
-        web_table_index += "\n<td><div style=\"display: inline-block; width: 850px;\">Page Blank or SSL Issues</div></td>\n"
-        web_table_index += "</tr>\n"
+        web_table_index += """<br></td>
+        <td><div style=\"display: inline-block; width: 850px;\">Page Blank or SSL Issues</div></td>
+        </tr>
+        """.replace('    ', '')
         content_empty = 0
 
     else:
-        web_table_index += "\n<br><a href=\"source/" + source_name + "\" target=\"_blank\">Source Code</a></div></td>"
-        web_table_index += "\n<td><div id=\"screenshot\" style=\"display: inline-block; width: 850px; height 400px; overflow: scroll;\"><a href=\"screens/" + picture_name + "\" target=\"_blank\"><img src=\"screens/" + picture_name + "\" height=\"400\"></a></div></td>\n"
-        web_table_index += "</tr>\n"
+        web_table_index += """<br><br><a href=\"source/{page_source_name}\" target=\"_blank\">Source Code</a></div></td>
+        <td><div id=\"screenshot\" style=\"display: inline-block; width: 850px; height 400px; overflow: scroll;\"><a href=\"screens/{screen_picture_name}\" target=\"_blank\"><img src=\"screens/{screen_picture_name}\" height=\"400\"></a></div></td>
+        </tr>
+        """.format(page_source_name=source_name, screen_picture_name=picture_name).replace('    ', '')
 
     return web_table_index, content_empty
 
 def singleReportPage(report_source):
     # Close out the html and write it to disk
-    report_source += "</table>\n"
-    report_source += "</body>\n"
-    report_source += "</html>"
+    report_source += """</table>
+    </body>
+    </html>
+    """.replace('    ', '')
     with open(report_folder + "/report.html", 'w') as fo:
         fo.write(report_source)
     return
@@ -372,17 +377,19 @@ if __name__ == "__main__":
         # Skip a url if Ctrl-C is hit
         except KeyboardInterrupt:
             print "[*] Skipping: " + single_url
-            web_index += "<tr>\n"
-            web_index += "<td>" + single_url + "</td>\n"
-            web_index += "<td>User Skipped this URL</td>\n"
-            web_index += "</tr>\n"
+            web_index += """<tr>
+            <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+            <td>User Skipped this URL</td>
+            </tr>
+            """.format(single_given_url=single_url).replace('    ', '')
         # Catch timeout warning
         except screener.TimeoutError:
             print "[*] Hit timeout limit when connecting to: " + single_url
-            web_index += "<tr>\n"
-            web_index += "<td><a href=\"" + single_url + "\" target=\"_blank\">" + url + "</a></td>\n"
-            web_index += "<td>Hit timeout limit while attempting screenshot</td>\n"
-            web_index += "</tr>\n"
+            web_index += """<tr>
+            <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
+            <td>Hit timeout limit while attempting screenshot</td>
+            </tr>
+            """.format(single_timeout_url=single_url)
 
         if open_urls:
             iceweasel_command = "iceweasel -new-tab " + single_url
@@ -451,17 +458,19 @@ if __name__ == "__main__":
             # Skip a url if Ctrl-C is hit
             except KeyboardInterrupt:
                 print "[*] Skipping: " + url
-                web_index += "<tr>\n"
-                web_index += "<td>" + url + "</td>\n"
-                web_index += "<td>User Skipped this URL</td>\n"
-                web_index += "</tr>\n"
+                web_index += """<tr>
+                <td><a href=\"{multi_url}\">{multi_url}</a></td>
+                <td>User Skipped this URL</td>
+                </tr>
+                """.format(multi_url=url).replace('    ', '')
             # Catch timeout warning
             except screener.TimeoutError:
                 print "[*] Hit timeout limit when connecting to: " + url
-                web_index += "<tr>\n"
-                web_index += "<td><a href=\"" + url + "\" target=\"_blank\">" + url + "</a></td>\n"
-                web_index += "<td>Hit timeout limit while attempting screenshot</td>\n"
-                web_index += "</tr>\n"
+                web_index += """<tr>
+                <td><a href=\"{timeout_url}\" target=\"_blank\">{timeout_url}</a></td>
+                <td>Hit timeout limit while attempting screenshot</td>
+                </tr>
+                """.format(timeout_url=url).replace('    ', '')
 
                 # If user wants URL opened in a browser as it runs, do it
                 if open_urls:
