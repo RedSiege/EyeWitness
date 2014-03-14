@@ -18,6 +18,7 @@ import urllib2
 import cgi
 import re
 import logging
+import re
 
 def cliParser():
 
@@ -25,6 +26,7 @@ def cliParser():
     parser = argparse.ArgumentParser(add_help=False, description="EyeWitness is a tool used to capture screenshots from a list of URLs.")
     parser.add_argument("-f", metavar="Filename", help="File containing URLs to screenshot, each on a new line, NMap XML output, or a .nessus file.")
     parser.add_argument("-t", metavar="Timeout", default="7", help="[Optional] Maximum number of seconds to wait while requesting a web page (Default: 7).")
+    parser.add_argument("-d", metavar="Directory Name", help="[Optional] Directory name for report output")
     parser.add_argument('-h', '-?', '--h', '-help', '--help', action="store_true", help=argparse.SUPPRESS)
     parser.add_argument('--single', metavar="Single URL", help="Single URL to screenshot.")
     parser.add_argument("--open", action='store_true', help="[Optional] Open all URLs in a browser")
@@ -39,8 +41,19 @@ def cliParser():
     else:
         args.single = "None"
 
+    if args.d:
+        if re.match("^[A-Za-z0-9_-]*$", args.d):
+            pass
+        else:
+            print "[*] Error: Please provide a valid folder name. [A-Za-z0-9_] are valid character sets!\n"
+            parser.print_help()
+            sys.exit()
+    else:
+        args.d = "None"
+
     if args.f is None and args.single == "None":
-        print "Error: You didn't specify a file! I need a file containing URLs!"
+        print "[*]Error: You didn't specify a file! I need a file containing URLs!\n"
+        parser.print_help()
         sys.exit()
 
     if args.t:
@@ -50,14 +63,17 @@ def cliParser():
             args.t = 7
 
     # Return the file name which contains the URLs
-    return args.f, args.t, args.open, args.single
+    return args.f, args.t, args.open, args.single, args.d
 
-def folderOut():
+def folderOut(dir_name):
 
     # Get the date and time, and create output name
     current_date = time.strftime("%m/%d/%Y")
     current_time = time.strftime("%H:%M:%S")
-    output_folder_name = current_date.replace("/", "") + "_" + current_time.replace(":", "")
+    if dir_name is not "None":
+        output_folder_name = dir_name
+    else:
+        output_folder_name = current_date.replace("/", "") + "_" + current_time.replace(":", "")
 
     # Create a folder which stores all snapshots
     # note- os.makedirs
@@ -328,7 +344,7 @@ if __name__ == "__main__":
     titleScreen()
 
     # Parse command line options and return the filename containing URLS and how long to wait for each website
-    url_filename, timeout_wait, open_urls, single_url = cliParser()
+    url_filename, timeout_wait, open_urls, single_url, directory_name = cliParser()
 
     if single_url is not "None":
 
@@ -345,7 +361,7 @@ if __name__ == "__main__":
         url, source_name, picture_name = fileNames(single_url)
 
         # Create the directory needed and support files
-        report_folder, report_date, report_time = folderOut()
+        report_folder, report_date, report_time = folderOut(directory_name)
 
         web_index = webHeader()
         print "Trying to screenshot " + single_url
@@ -401,7 +417,7 @@ if __name__ == "__main__":
 
     else:
         # Create the directory needed and support files
-        report_folder, report_date, report_time = folderOut()
+        report_folder, report_date, report_time = folderOut(directory_name)
 
         # Create the output directories, open the urlfile, and return all URLs
         url_list, number_urls = logistics(url_filename) 

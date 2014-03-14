@@ -1,5 +1,7 @@
 [3.14.2014]
     Modified..: Changed variables to be multi-line strings (where applicable) - Github Issue #17
+    Modified..: Slightly changed help menu, if no file provided, EyeWitness help screen is shown
+    Modified..: Added ability to name output directory with -d switch - Github Issue #19
 
 [3.8.2014]
     Modified..: Fixed issue where providing EyeWitness with 1025+ URLs would cause the process to hit its file descriptor limit.  Issue has been fixed. - Github Issue # 15
