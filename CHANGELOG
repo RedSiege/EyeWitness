@@ -1,4 +1,5 @@
 [3.14.2014]
+    Added.....: Jitter functionality added in. If using -jitter <# of seconds>, it will randomize the URL list, and sleep between requests for a value of <# of seconds> - 30% of Num seconds provided
     Modified..: Changed variables to be multi-line strings (where applicable) - Github Issue #17
     Modified..: Slightly changed help menu, if no file provided, EyeWitness help screen is shown
     Modified..: Added ability to name output directory with -d switch - Github Issue #19
