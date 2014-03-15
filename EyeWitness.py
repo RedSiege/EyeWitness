@@ -18,7 +18,7 @@ import urllib2
 import cgi
 import re
 import logging
-import re
+import random
 
 def cliParser():
 
@@ -28,7 +28,8 @@ def cliParser():
     parser.add_argument("-t", metavar="Timeout", default="7", help="[Optional] Maximum number of seconds to wait while requesting a web page (Default: 7).")
     parser.add_argument("-d", metavar="Directory Name", help="[Optional] Directory name for report output")
     parser.add_argument('-h', '-?', '--h', '-help', '--help', action="store_true", help=argparse.SUPPRESS)
-    parser.add_argument('--single', metavar="Single URL", help="Single URL to screenshot.")
+    parser.add_argument('--single', metavar="Single URL", help="Single URL to screenshot")
+    parser.add_argument('--jitter', metavar="# of Seconds", help="Randomize URLs and add a random delay between requests")
     parser.add_argument("--open", action='store_true', help="[Optional] Open all URLs in a browser")
     args = parser.parse_args()
 
@@ -41,6 +42,11 @@ def cliParser():
     else:
         args.single = "None"
 
+    if args.jitter:
+        pass
+    else:
+        args.jitter = "None"
+
     if args.d:
         if re.match("^[A-Za-z0-9_-]*$", args.d):
             pass
@@ -52,7 +58,7 @@ def cliParser():
         args.d = "None"
 
     if args.f is None and args.single == "None":
-        print "[*]Error: You didn't specify a file! I need a file containing URLs!\n"
+        print "[*] Error: You didn't specify a file! I need a file containing URLs!\n"
         parser.print_help()
         sys.exit()
 
@@ -63,7 +69,7 @@ def cliParser():
             args.t = 7
 
     # Return the file name which contains the URLs
-    return args.f, args.t, args.open, args.single, args.d
+    return args.f, args.t, args.open, args.single, args.d, args.jitter
 
 def folderOut(dir_name):
 
@@ -130,20 +136,26 @@ def logistics(url_file):
                             port = ports.attrib.get('portid')
                             try:
                                 service = ports.find('service').get('name').lower()
-                                tunnel = ports.find('service').get('tunnel').lower()
-                                if int(port) in http_ports or 'http' in service:
-                                    protocol = 'http'
-                                    if int(port) in https_ports or 'https' in service or ('http' in service and 'ssl' in tunnel):
-                                        protocol = 'https'
-                                    urlBuild = '%s://%s:%s' % (protocol,target,port)
-                                    if urlBuild not in urls:
-                                        urls.append(urlBuild)
-                                        num_urls = num_urls + 1
                             except AttributeError:
                                 # This hits when it finds an open port, but isn't able to
                                 # Determine the name of the service running on it, so we'll
                                 # just pass in this instance
                                 pass
+                            try:
+                                tunnel = ports.find('service').get('tunnel').lower()
+                            except AttributeError:
+                                # This hits when it finds an open port, but isn't able to
+                                # Determine the name of the service running on it, so we'll
+                                # just pass in this instance
+                                tunnel = "fakeportservicedoesntexist"
+                            if int(port) in http_ports or 'http' in service:
+                                protocol = 'http'
+                                if int(port) in https_ports or 'https' in service or ('http' in service and 'ssl' in tunnel):
+                                    protocol = 'https'
+                                urlBuild = '%s://%s:%s' % (protocol,target,port)
+                                if urlBuild not in urls:
+                                    urls.append(urlBuild)
+                                    num_urls = num_urls + 1
             return urls, num_urls
 
         # Find root level if it is nessus output
@@ -344,7 +356,7 @@ if __name__ == "__main__":
     titleScreen()
 
     # Parse command line options and return the filename containing URLS and how long to wait for each website
-    url_filename, timeout_wait, open_urls, single_url, directory_name = cliParser()
+    url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter = cliParser()
 
     if single_url is not "None":
 
@@ -420,8 +432,12 @@ if __name__ == "__main__":
         report_folder, report_date, report_time = folderOut(directory_name)
 
         # Create the output directories, open the urlfile, and return all URLs
-        url_list, number_urls = logistics(url_filename) 
-    
+        url_list, number_urls = logistics(url_filename)
+
+        # Check if user wants random URLs, if so, randomize URLs here
+        if request_jitter is not "None":
+            random.shuffle(url_list)
+
         # Add the web "header" to our web page
         web_index = webHeader()
         print "Trying to screenshot " + str(number_urls) + " websites...\n"
@@ -488,11 +504,20 @@ if __name__ == "__main__":
                 </tr>
                 """.format(timeout_url=url).replace('    ', '')
 
-                # If user wants URL opened in a browser as it runs, do it
-                if open_urls:
-                    iceweasel_command = "iceweasel -new-tab " + url
-                    iceweasel_command = iceweasel_command.split()
-                    p = subprocess.Popen(iceweasel_command)
+            # If user wants URL opened in a browser as it runs, do it
+            if open_urls:
+                iceweasel_command = "iceweasel -new-tab " + url
+                iceweasel_command = iceweasel_command.split()
+                p = subprocess.Popen(iceweasel_command)
+
+            # Add Random sleep based off of user provided jitter value if requested
+            if request_jitter is not "None":
+                sleep_value = random.randint(0,30)
+                sleep_value = sleep_value * .01
+                sleep_value = 1 - sleep_value
+                sleep_value = sleep_value * int(request_jitter)
+                print "[*] Sleeping for " + str(sleep_value) + " seconds..."
+                time.sleep(sleep_value)
 
             # Track the number of URLs
             url_counter = url_counter + 1
