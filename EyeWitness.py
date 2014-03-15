@@ -72,7 +72,7 @@ def cliParser():
     # Return the file name which contains the URLs
     return args.f, args.t, args.open, args.single, args.d, args.jitter
 
-def folderOut(dir_name):
+def folderOut(dir_name, full_path):
 
     # Get the date and time, and create output name
     current_date = time.strftime("%m/%d/%Y")
@@ -84,9 +84,9 @@ def folderOut(dir_name):
 
     # Create a folder which stores all snapshots
     # note- os.makedirs
-    os.system("mkdir " + output_folder_name)
-    os.system("mkdir " + output_folder_name + "/screens")
-    os.system("mkdir " + output_folder_name + "/source")
+    os.system("mkdir " + full_path + "/" + output_folder_name)
+    os.system("mkdir " + full_path + "/" + output_folder_name + "/screens")
+    os.system("mkdir " + full_path + "/" + output_folder_name + "/source")
 
     # Write out the CSS stylesheet
     css_page =  """img {
@@ -100,7 +100,7 @@ def folderOut(dir_name):
     }"
     """.replace('    ', '')
 
-    with open(output_folder_name + "/style.css", 'w') as css_file:
+    with open(full_path + "/" + output_folder_name + "/style.css", 'w') as css_file:
         css_file.write(css_page)
 
     return output_folder_name, current_date, current_time
@@ -216,9 +216,9 @@ def titleScreen():
     print "#                               EyeWitness                                  #"
     print "#############################################################################\n"
 
-def defaultCreds(page_content):
+def defaultCreds(page_content, full_file_path):
     # Read in the file containing the web "signatures"
-    with open('signatures.txt', 'r') as sig_file:
+    with open(full_file_path + '/signatures.txt', 'r') as sig_file:
         signatures = sig_file.readlines()
 
     # Loop through and see if there are any matches from the source code EyeWitness obtained
@@ -278,14 +278,14 @@ def htmlEncode(dangerous_data):
     encoded = cgi.escape(dangerous_data, quote=True)
     return encoded
 
-def ghostCapture(screen_url, rep_fold, screen_name):
+def ghostCapture(screen_url, rep_fold, screen_name, ewitness_dir_path):
     # Try to get our screenshot and source code of the page
     # Write both out to disk if possible (if we can get one, we can get the other)
     ghost_page, ghost_extra_resources = ghost.open(screen_url, auth=('none', 'none'))
-    ghost.capture_to(rep_fold + "/screens/" + screen_name)
+    ghost.capture_to(ewitness_dir_path + "/" + rep_fold + "/screens/" + screen_name)
     return ghost_page, ghost_extra_resources
 
-def backupRequest(page_code, outgoing_url, source_code_name, content_value):
+def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwitness_path):
     try:
         if page_code.content == "None":
             try:
@@ -295,10 +295,10 @@ def backupRequest(page_code, outgoing_url, source_code_name, content_value):
             except urllib2.HTTPError:
                 page_code.content = "Sorry, but couldn't get source code for potentially a couple reasons.  If it was Basic Auth, a 50X, or a 40X error, EyeWitness won't return source code.  Couldn't get source from " + url + "."
         # check if page is blank
-        with open(report_folder + "/source/" + source_code_name, 'w') as source:
+        with open(iwitness_path + "/" + report_folder + "/source/" + source_code_name, 'w') as source:
             source.write(page_code.content)
 
-        default_creds = defaultCreds(page.content)
+        default_creds = defaultCreds(page_code.content, iwitness_path)
     except AttributeError:
         print "[*] ERROR: Web page possibly blank or SSL error!"
         content_value = 1
@@ -331,7 +331,6 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
         <td><div style=\"display: inline-block; width: 850px;\">Page Blank or SSL Issues</div></td>
         </tr>
         """.replace('    ', '')
-        content_empty = 0
 
     else:
         web_table_index += """<br><br><a href=\"source/{page_source_name}\" target=\"_blank\">Source Code</a></div></td>
@@ -339,15 +338,15 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
         </tr>
         """.format(page_source_name=source_name, screen_picture_name=picture_name).replace('    ', '')
 
-    return web_table_index, content_empty
+    return web_table_index
 
-def singleReportPage(report_source):
+def singleReportPage(report_source, report_path):
     # Close out the html and write it to disk
     report_source += """</table>
     </body>
     </html>
     """.replace('    ', '')
-    with open(report_folder + "/report.html", 'w') as fo:
+    with open(report_path + "/" + report_folder + "/report.html", 'w') as fo:
         fo.write(report_source)
     return
     
@@ -358,6 +357,14 @@ if __name__ == "__main__":
 
     # Parse command line options and return the filename containing URLS and how long to wait for each website
     url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter = cliParser()
+
+    # Get the exact location where the EyeWitness script is located
+    script_path = os.path.dirname(os.path.realpath(__file__))
+
+    # Ghost capture of URL
+    ghost = screener.Ghost(wait_timeout=int(timeout_wait), ignore_ssl_errors=True)
+    logger = logging.getLogger('ghost')
+    logger.disabled = True
 
     if single_url is not "None":
 
@@ -374,34 +381,21 @@ if __name__ == "__main__":
         url, source_name, picture_name = fileNames(single_url)
 
         # Create the directory needed and support files
-        report_folder, report_date, report_time = folderOut(directory_name)
+        report_folder, report_date, report_time = folderOut(directory_name, script_path)
 
         web_index = webHeader()
         print "Trying to screenshot " + single_url
-
-        # Used for monitoring for blank pages or SSL errors
-        content_blank = 0
 
         # Create the filename to store each website's picture
         single_url, source_name, picture_name = fileNames(single_url)
 
         try:
-            # Ghost capture of URL
-            ghost = screener.Ghost(wait_timeout=int(timeout_wait), ignore_ssl_errors=True)
-            logger = logging.getLogger('ghost')
-            logger.disabled = True
-            page, extra_resources = ghostCapture(single_url, report_folder, picture_name)
+            page, extra_resources = ghostCapture(single_url, report_folder, picture_name, script_path)
 
-            try:
-                backupRequest(page, single_url, source_name, content_blank)
-                default_creds = defaultCreds(page.content)
-            except AttributeError:
-                print "[*] ERROR: Web page possibly blank or SSL error!"
-                content_blank = 1
-                default_creds = None
+            content_blank, default_creds = backupRequest(page, single_url, source_name, content_blank, script_path)
 
             # Create the table info for the single URL (screenshot, server headers, etc.)
-            web_index, content_blank = tableMaker(web_index, single_url, default_creds, page, content_blank)
+            web_index= tableMaker(web_index, single_url, default_creds, page, content_blank)
     
         # Skip a url if Ctrl-C is hit
         except KeyboardInterrupt:
@@ -426,11 +420,11 @@ if __name__ == "__main__":
             p = subprocess.Popen(iceweasel_command)
 
         # Write out the report for the single URL
-        singleReportPage(web_index)
+        singleReportPage(web_index, script_path)
 
     else:
         # Create the directory needed and support files
-        report_folder, report_date, report_time = folderOut(directory_name)
+        report_folder, report_date, report_time = folderOut(directory_name, script_path)
 
         # Create the output directories, open the urlfile, and return all URLs
         url_list, number_urls = logistics(url_filename)
@@ -447,12 +441,6 @@ if __name__ == "__main__":
         # Create a page counter to track pages
         url_counter = 0
         page_counter = 1
-
-        # Instantiate Ghost object and disable ghost logging - instantiating outside of for loop
-        # prevents exceeding the file descriptor limit when provided tons of urls
-        ghost = screener.Ghost(wait_timeout=int(timeout_wait), ignore_ssl_errors=True)
-        logger = logging.getLogger('ghost')
-        logger.disabled = True
 
         # Loop through all URLs and create a screenshot
         for url in url_list:
@@ -474,13 +462,13 @@ if __name__ == "__main__":
             print "Attempting to capture: " + url
             try:
                 # Ghost capturing web page
-                page, extra_resources = ghostCapture(url, report_folder, picture_name)
+                page, extra_resources = ghostCapture(url, report_folder, picture_name, script_path)
 
                 # If EyeWitness receives a no-cache, it can't get the page source, therefore lets
                 # make a backup request get the source
-                content_blank, default_creds = backupRequest(page, url, source_name, content_blank)
+                content_blank, default_creds = backupRequest(page, url, source_name, content_blank, script_path)
 
-                web_index, content_blank = tableMaker(web_index, url, default_creds, page, content_blank)
+                web_index = tableMaker(web_index, url, default_creds, page, content_blank)
 
                 # If user wants URL opened in a browser as it runs, do it
                 if open_urls:
@@ -528,7 +516,7 @@ if __name__ == "__main__":
                 if page_counter == 1:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
-                    with open(report_folder + "/report.html", 'w') as f1:
+                    with open(script_path + "/" + report_folder + "/report.html", 'w') as f1:
                         f1.write(web_index)
 
                     # Revert URL counter back to 0, increment the page count to 1
@@ -540,7 +528,7 @@ if __name__ == "__main__":
                 else:
                     # Write out to the next page
                     web_index += "</table>\n"
-                    with open(report_folder + "/report_page" + str(page_counter) + ".html", 'w') as page_out:
+                    with open(script_path + "/" + report_folder + "/report_page" + str(page_counter) + ".html", 'w') as page_out:
                         page_out.write(web_index)
 
                     # Reset the URL counter
@@ -549,11 +537,11 @@ if __name__ == "__main__":
                     web_index = webHeader()
 
         if page_counter == 1:
-            singleReportPage(web_index)
+            singleReportPage(web_index, script_path)
         else:
             # Write out our extra page
             web_index += "</table>\n"
-            with open(report_folder + "/report_page" + str(page_counter) + ".html", 'w') as page_out:
+            with open(script_path + "/" + report_folder + "/report_page" + str(page_counter) + ".html", 'w') as page_out:
                 page_out.write(web_index)
 
             # Create the link structure at the bottom
@@ -564,12 +552,12 @@ if __name__ == "__main__":
             link_text += "</html>"
         
             # Write out link structure to bottom of report
-            with open(report_folder + "/report.html", 'a') as report_append:
+            with open(script_path + "/" + report_folder + "/report.html", 'a') as report_append:
                 report_append.write(link_text)
 
             # Write out link structure to bottom of extra pages
             for page_footer in range(2,page_counter+1):
-                with open(report_folder + "/report_page" + str(page_footer) + ".html", 'a') as page_append:
+                with open(script_path + "/" + report_folder + "/report_page" + str(page_footer) + ".html", 'a') as page_append:
                     page_append.write(link_text)
 
     print "\n[*] Done! Check out the report in the " + report_folder + " folder!"
