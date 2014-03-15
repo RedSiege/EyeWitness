@@ -19,13 +19,14 @@ import cgi
 import re
 import logging
 import random
+import subprocess
 
 def cliParser():
 
     # Command line argument parser
-    parser = argparse.ArgumentParser(add_help=False, description="EyeWitness is a tool used to capture screenshots from a list of URLs.")
-    parser.add_argument("-f", metavar="Filename", help="File containing URLs to screenshot, each on a new line, NMap XML output, or a .nessus file.")
-    parser.add_argument("-t", metavar="Timeout", default="7", help="[Optional] Maximum number of seconds to wait while requesting a web page (Default: 7).")
+    parser = argparse.ArgumentParser(add_help=False, description="EyeWitness is a tool used to capture screenshots from a list of URLs")
+    parser.add_argument("-f", metavar="Filename", help="File containing URLs to screenshot, each on a new line, NMap XML output, or a .nessus file")
+    parser.add_argument("-t", metavar="Timeout", default="7", help="[Optional] Maximum number of seconds to wait while requesting a web page (Default: 7)")
     parser.add_argument("-d", metavar="Directory Name", help="[Optional] Directory name for report output")
     parser.add_argument('-h', '-?', '--h', '-help', '--help', action="store_true", help=argparse.SUPPRESS)
     parser.add_argument('--single', metavar="Single URL", help="Single URL to screenshot")
