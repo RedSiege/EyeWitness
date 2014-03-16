@@ -29,9 +29,8 @@ case ${osinfo} in
     echo '[*] Installing Kali Dependencies'
     apt-get install python-qt4 python-pip xvfb
     echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/jeanphix/Ghost.py.git
+    git clone https://github.com/ChrisTruncer/Ghost.py.git
     cd Ghost.py
-    git checkout 98025abe846c49682953c20ca2e3c0df6362f595
     python setup.py install
     cd ..
     rm -rf Ghost.py
@@ -45,9 +44,8 @@ case ${osinfo} in
     pip install python_qt_binding
     echo
     echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/jeanphix/Ghost.py.git
+    git clone https://github.com/ChrisTruncer/Ghost.py.git
     cd Ghost.py
-    git checkout 98025abe846c49682953c20ca2e3c0df6362f595
     python setup.py install
     cd ..
     rm -rf Ghost.py
@@ -61,9 +59,8 @@ case ${osinfo} in
     pip install python_qt_binding
     echo
     echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/jeanphix/Ghost.py.git
+    git clone https://github.com/ChrisTruncer/Ghost.py.git
     cd Ghost.py
-    git checkout 98025abe846c49682953c20ca2e3c0df6362f595
     python setup.py install
     cd ..
     rm -rf Ghost.py
@@ -86,9 +83,8 @@ case ${osinfo} in
     pip install python_qt_binding
     echo
     echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/jeanphix/Ghost.py.git
+    git clone https://github.com/ChrisTruncer/Ghost.py.git
     cd Ghost.py
-    git checkout 98025abe846c49682953c20ca2e3c0df6362f595
     python setup.py install
     cd ..
     rm -rf Ghost.py
@@ -96,7 +92,8 @@ case ${osinfo} in
   # Notify Manual Installation Requirement And Exit
   *)
     echo "[Error]: ${OS} is not supported by this setup script."
-    echo '[Error]: To use EyeWitness, manually install python, PyQt4, and Ghost.py.'
+    echo '[Error]: To use EyeWitness, manually install python, PyQt4.'
+    echo '[Error]: Install ghost.py from https://github.com/ChrisTruncer/Ghost.py.git'
     echo
     exit 1
 esac

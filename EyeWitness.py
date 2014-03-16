@@ -306,7 +306,7 @@ def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwit
 
     return content_value, default_creds
 
-def tableMaker(web_table_index, website_url, possible_creds, web_page, content_empty):
+def tableMaker(web_table_index, website_url, possible_creds, web_page, content_empty, log_path):
 
     # Continue adding to the table assuming that we were able to capture the screenshot
     # Only add elements if they exist
@@ -315,6 +315,19 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
     <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
     <a href=\"{web_url_addy}\" target=\"_blank\">{web_url_addy}</a><br>
     """.format(web_url_addy=website_url).replace('    ', '')
+
+    # Check if log file is empty, if so, good, otherwise, Check for SSL errors
+    if os.stat(log_path)[6]==0:
+        pass
+    else:
+        with open(log_path, 'r') as log_file:
+            log_contents = log_file.readlines()
+        for line in log_contents:
+            if "SSL certificate error" in line:
+                web_table_index += "<br><b>SSL Certificate error present on <a href=\"" + website_url + "\" target=\"_blank\">" + website_url + "</a></b><br>"
+            break
+        clear_logs = open(log_path, 'w')
+        clear_logs.close()
 
     if possible_creds is not None:
         web_table_index += "<br><b>Default credentials:</b> " + htmlEncode(possible_creds) + "<br>"
@@ -361,10 +374,15 @@ if __name__ == "__main__":
     # Get the exact location where the EyeWitness script is located
     script_path = os.path.dirname(os.path.realpath(__file__))
 
-    # Ghost capture of URL
+    # Location of the log file Ghost logs to (to catch SSL errors)
+    log_file_path = script_path + "/logfile.log"
+
+    # Instantiate Ghost Object
     ghost = screener.Ghost(wait_timeout=int(timeout_wait), ignore_ssl_errors=True)
+
+    # Logging setup
+    logging.basicConfig(filename=log_file_path, level=logging.WARNING)
     logger = logging.getLogger('ghost')
-    logger.disabled = True
 
     if single_url is not "None":
 
@@ -395,7 +413,7 @@ if __name__ == "__main__":
             content_blank, default_creds = backupRequest(page, single_url, source_name, content_blank, script_path)
 
             # Create the table info for the single URL (screenshot, server headers, etc.)
-            web_index= tableMaker(web_index, single_url, default_creds, page, content_blank)
+            web_index= tableMaker(web_index, single_url, default_creds, page, content_blank, log_file_path)
     
         # Skip a url if Ctrl-C is hit
         except KeyboardInterrupt:
@@ -468,7 +486,7 @@ if __name__ == "__main__":
                 # make a backup request get the source
                 content_blank, default_creds = backupRequest(page, url, source_name, content_blank, script_path)
 
-                web_index = tableMaker(web_index, url, default_creds, page, content_blank)
+                web_index = tableMaker(web_index, url, default_creds, page, content_blank, log_file_path)
 
                 # If user wants URL opened in a browser as it runs, do it
                 if open_urls:
@@ -560,4 +578,5 @@ if __name__ == "__main__":
                 with open(script_path + "/" + report_folder + "/report_page" + str(page_footer) + ".html", 'a') as page_append:
                     page_append.write(link_text)
 
+    os.system('rm ' + log_file_path)
     print "\n[*] Done! Check out the report in the " + report_folder + " folder!"
