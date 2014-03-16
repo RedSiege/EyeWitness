@@ -325,7 +325,7 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
         for line in log_contents:
             if "SSL certificate error" in line:
                 web_table_index += "<br><b>SSL Certificate error present on <a href=\"" + website_url + "\" target=\"_blank\">" + website_url + "</a></b><br>"
-            break
+                break
         clear_logs = open(log_path, 'w')
         clear_logs.close()
 
