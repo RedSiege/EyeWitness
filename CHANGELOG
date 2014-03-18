@@ -1,3 +1,8 @@
+[3.18.2014]
+    Modified..: Location of folder creating function moved outside of if statements.
+    Modified..: User now able to skip sleep by Ctrl+C during sleep of --jitter
+    Modified..: Location of log file (which is used to detect SSL certificate errors) was moved into folder of the running EyeWitness report, to ensure more than one instance of EyeWitness can be running simultaneously.
+
 [3.15.2014]
     Added.....: Detection of websites using invalid SSL certificates
     Modified..: Setup script to use my modified Ghost library which allows the user to navigate to sites with invalid SSL certs (but also logs a warning).

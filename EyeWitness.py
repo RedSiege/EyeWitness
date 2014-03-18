@@ -374,8 +374,11 @@ if __name__ == "__main__":
     # Get the exact location where the EyeWitness script is located
     script_path = os.path.dirname(os.path.realpath(__file__))
 
+    # Create the directory needed and support files
+    report_folder, report_date, report_time = folderOut(directory_name, script_path)
+
     # Location of the log file Ghost logs to (to catch SSL errors)
-    log_file_path = script_path + "/logfile.log"
+    log_file_path = script_path + "/" + report_folder + "/logfile.log"
 
     # Instantiate Ghost Object
     ghost = screener.Ghost(wait_timeout=int(timeout_wait), ignore_ssl_errors=True)
@@ -397,9 +400,6 @@ if __name__ == "__main__":
 
         # Create the filename to store each website's picture
         url, source_name, picture_name = fileNames(single_url)
-
-        # Create the directory needed and support files
-        report_folder, report_date, report_time = folderOut(directory_name, script_path)
 
         web_index = webHeader()
         print "Trying to screenshot " + single_url
@@ -441,8 +441,6 @@ if __name__ == "__main__":
         singleReportPage(web_index, script_path)
 
     else:
-        # Create the directory needed and support files
-        report_folder, report_date, report_time = folderOut(directory_name, script_path)
 
         # Create the output directories, open the urlfile, and return all URLs
         url_list, number_urls = logistics(url_filename)
@@ -524,7 +522,10 @@ if __name__ == "__main__":
                 sleep_value = 1 - sleep_value
                 sleep_value = sleep_value * int(request_jitter)
                 print "[*] Sleeping for " + str(sleep_value) + " seconds..."
-                time.sleep(sleep_value)
+                try:
+                    time.sleep(sleep_value)
+                except KeyboardInterrupt:
+                    print "[*] User cancelled sleep for this URL!"
 
             # Track the number of URLs
             url_counter = url_counter + 1
