@@ -1,4 +1,5 @@
 [3.18.2014]
+    Added.....: The user can now use the --useragent flag and provide a useragent to be used for all requests.
     Modified..: Location of folder creating function moved outside of if statements.
     Modified..: User now able to skip sleep by Ctrl+C during sleep of --jitter
     Modified..: Location of log file (which is used to detect SSL certificate errors) was moved into folder of the running EyeWitness report, to ensure more than one instance of EyeWitness can be running simultaneously.

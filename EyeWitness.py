@@ -30,6 +30,7 @@ def cliParser():
     parser.add_argument("-d", metavar="Directory Name", help="[Optional] Directory name for report output")
     parser.add_argument('-h', '-?', '--h', '-help', '--help', action="store_true", help=argparse.SUPPRESS)
     parser.add_argument('--single', metavar="Single URL", help="Single URL to screenshot")
+    parser.add_argument('--useragent', metavar="User Agent", help="User Agent to use for all requests")
     parser.add_argument('--jitter', metavar="# of Seconds", help="Randomize URLs and add a random delay between requests")
     parser.add_argument("--open", action='store_true', help="[Optional] Open all URLs in a browser")
     args = parser.parse_args()
@@ -42,6 +43,11 @@ def cliParser():
         pass
     else:
         args.single = "None"
+
+    if args.useragent:
+        pass
+    else:
+        args.useragent = "None"
 
     if args.jitter:
         pass
@@ -70,7 +76,7 @@ def cliParser():
             args.t = 7
 
     # Return the file name which contains the URLs
-    return args.f, args.t, args.open, args.single, args.d, args.jitter
+    return args.f, args.t, args.open, args.single, args.d, args.jitter, args.useragent
 
 def folderOut(dir_name, full_path):
 
@@ -369,7 +375,7 @@ if __name__ == "__main__":
     titleScreen()
 
     # Parse command line options and return the filename containing URLS and how long to wait for each website
-    url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter = cliParser()
+    url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter, browser_user_agent = cliParser()
 
     # Get the exact location where the EyeWitness script is located
     script_path = os.path.dirname(os.path.realpath(__file__))
@@ -381,7 +387,10 @@ if __name__ == "__main__":
     log_file_path = script_path + "/" + report_folder + "/logfile.log"
 
     # Instantiate Ghost Object
-    ghost = screener.Ghost(wait_timeout=int(timeout_wait), ignore_ssl_errors=True)
+    if browser_user_agent == "None":
+        ghost = screener.Ghost(wait_timeout=int(timeout_wait), ignore_ssl_errors=True)
+    else:
+        ghost = screener.Ghost(wait_timeout=int(timeout_wait), user_agent=browser_user_agent, ignore_ssl_errors=True)
 
     # Logging setup
     logging.basicConfig(filename=log_file_path, level=logging.WARNING)
