@@ -405,45 +405,45 @@ def userAgentDefinition(cycle_value):
 
     # "Normal" desktop user agents
     desktop_uagents = {
-    "MSIE 9.0" : "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)",
-    "MSIE 8.0" : "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0)",
-    "MSIE 7.0" : "Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)",
-    "MSIE 6.0" : "Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)",
-    "Chrome 32.0.1667.0" : "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36",
-    "Chrome 31.0.1650.16" : "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36",
-    "Firefox 25" : "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0",
-    "Firefox 24" : "Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0,",
-    "Opera 12.14" : "Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14",
-    "Opera 12" : "Opera/12.0(Windows NT 5.1;U;en)Presto/22.9.168 Version/12.00",
-    "Safari 5.1.7" : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2",
-    "Safari 5.0" : "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0 Safari/533.16"
+    "MSIE9.0" : "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)",
+    "MSIE8.0" : "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0)",
+    "MSIE7.0" : "Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)",
+    "MSIE6.0" : "Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)",
+    "Chrome32.0.1667.0" : "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36",
+    "Chrome31.0.1650.16" : "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36",
+    "Firefox25" : "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0",
+    "Firefox24" : "Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0,",
+    "Opera12.14" : "Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14",
+    "Opera12" : "Opera/12.0(Windows NT 5.1;U;en)Presto/22.9.168 Version/12.00",
+    "Safari5.1.7" : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2",
+    "Safari5.0" : "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0 Safari/533.16"
     }
 
     # Miscellaneous user agents
     misc_uagents = {
-    "wget 1.9.1" : "Wget/1.9.1",
-    "curl 7.9.8" : "curl/7.9.8 (i686-pc-linux-gnu) libcurl 7.9.8 (OpenSSL 0.9.6b) (ipv6 enabled)",
-    "PyCurl 7.23.1" : "PycURL/7.23.1",
-    "Python urllib 3.1" : "Python-urllib/3.1"
+    "wget1.9.1" : "Wget/1.9.1",
+    "curl7.9.8" : "curl/7.9.8 (i686-pc-linux-gnu) libcurl 7.9.8 (OpenSSL 0.9.6b) (ipv6 enabled)",
+    "PyCurl7.23.1" : "PycURL/7.23.1",
+    "Pythonurllib3.1" : "Python-urllib/3.1"
     }
 
     # Bot crawler user agents
     crawler_uagents = {
     "Baiduspider" : "Baiduspider+(+http://www.baidu.com/search/spider.htm)",
     "Bingbot" : "Mozilla/5.0 (compatible; bingbot/2.0 +http://www.bing.com/bingbot.htm)",
-    "Googlebot 2.1" : "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-    "MSNBot 2.1" : "msnbot/2.1",
-    "Yahoo Slurp!" : "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)"
+    "Googlebot2.1" : "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
+    "MSNBot2.1" : "msnbot/2.1",
+    "YahooSlurp!" : "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)"
     }
 
     # Random mobile User agents
     mobile_uagents = {
     "BlackBerry" : "Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.1.0.346 Mobile Safari/534.11+",
     "Android" : "Mozilla/5.0 (Linux; U; Android 2.3.5; en-us; HTC Vision Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1",
-    "IE Mobile 9.0" : "Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0)",
-    "Opera Mobile 12.02" : "Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02",
-    "iPad Safari 6.0" : "Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25",
-    "iPhone Safari 5.2" : "Mozilla/5.0 (iPod; U; CPU iPhone OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5"
+    "IEMobile9.0" : "Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0)",
+    "OperaMobile12.02" : "Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02",
+    "iPadSafari6.0" : "Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25",
+    "iPhoneSafari5.2" : "Mozilla/5.0 (iPod; U; CPU iPhone OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5"
     }
 
     # Web App Vuln Scanning user agents (give me more if you have any)
@@ -567,8 +567,8 @@ if __name__ == "__main__":
             # Then use comparison function.  If UA request content matches baseline content, do nothing.
             # If UA request content is different from baseline, add to report
             else:
-                baseline_page, baseline_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
-                baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, single_url, source_name, content_blank, script_path)
+                baseline_page, baseline_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name + "_baseline", script_path)
+                baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, single_url, source_name + "_baseline", content_blank, script_path)
                 extra_info = "This is the baseline request"
 
                 # Create the table info for the single URL (screenshot, server headers, etc.)
@@ -582,8 +582,8 @@ if __name__ == "__main__":
 
                     # Making the request with the new user agent
                     print "[*] Now making web request with: " + browser_key
-                    new_ua_page, new_ua_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
-                    new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, single_url, source_name, content_blank, script_path)
+                    new_ua_page, new_ua_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name + "_" + browser_key, script_path)
+                    new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, single_url, source_name + "_" + browser_key, content_blank, script_path)
 
                     # Function which hashes the original request with the new request and checks to see if they are identical
                     same_or_different = requestComparison(baseline_page.content, new_ua_page.content)
