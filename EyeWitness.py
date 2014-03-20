@@ -395,7 +395,7 @@ if __name__ == "__main__":
     log_file_path = script_path + "/" + report_folder + "/logfile.log"
 
     # Create the dicts which hold different user agents.
-    # Thanks to Chris John Riles for having an awesome tool which I could get this info from
+    # Thanks to Chris John Riley for having an awesome tool which I could get this info from
     # His tool - UAtester.py - http://blog.c22.cc/toolsscripts/ua-tester/
     # Additional user agent strings came from - http://www.useragentstring.com/pages/useragentstring.php
     desktop_uagents = {
