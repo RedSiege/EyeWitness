@@ -1,3 +1,6 @@
+[3.20.2014]
+    Added.....: Began working on adding user agent switching capabilities
+
 [3.18.2014]
     Added.....: The user can now use the --useragent flag and provide a useragent to be used for all requests.
     Modified..: Location of folder creating function moved outside of if statements.

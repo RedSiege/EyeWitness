@@ -292,7 +292,9 @@ def ghostCapture(screen_url, rep_fold, screen_name, ewitness_dir_path):
     return ghost_page, ghost_extra_resources
 
 def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwitness_path):
+
     try:
+        # Check if page is blank, due to no-cache.  If so, make a backup request via urllib2
         if page_code.content == "None":
             try:
                 response = urllib2.urlopen(outgoing_url)
@@ -300,7 +302,6 @@ def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwit
                 response.close()
             except urllib2.HTTPError:
                 page_code.content = "Sorry, but couldn't get source code for potentially a couple reasons.  If it was Basic Auth, a 50X, or a 40X error, EyeWitness won't return source code.  Couldn't get source from " + url + "."
-        # check if page is blank
         with open(iwitness_path + "/" + report_folder + "/source/" + source_code_name, 'w') as source:
             source.write(page_code.content)
 
@@ -323,6 +324,8 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
     """.format(web_url_addy=website_url).replace('    ', '')
 
     # Check if log file is empty, if so, good, otherwise, Check for SSL errors
+    # If there is a SSL error, be sure to add a note about it in the table
+    # Once done, delete the file
     if os.stat(log_path)[6]==0:
         pass
     else:
@@ -335,9 +338,12 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
         clear_logs = open(log_path, 'w')
         clear_logs.close()
 
+    # If there are some default creds, escape them, and add them to the report
     if possible_creds is not None:
         web_table_index += "<br><b>Default credentials:</b> " + htmlEncode(possible_creds) + "<br>"
 
+    # Loop through all server header responses, and add them to table
+    # Handle exception if there is a SSL error and no headers were received.
     try:
         for key, value in web_page.headers.items():
             web_table_index += "<br><b> " + htmlEncode(key.decode('utf-8')) + ":</b> " + htmlEncode(value) + "\n"
@@ -345,12 +351,14 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
     except AttributeError:
         web_table_index += "\n<br><br>Potential blank page or SSL issue with <a href=\"" + website_url + "\" target=\"_blank\">" + website_url + "</a>."
 
+    # If page is empty, or SSL errors, add it to report
     if content_empty == 1:
         web_table_index += """<br></td>
         <td><div style=\"display: inline-block; width: 850px;\">Page Blank or SSL Issues</div></td>
         </tr>
         """.replace('    ', '')
 
+    # If eyewitness could get the source code andtake a screenshot, add them to report
     else:
         web_table_index += """<br><br><a href=\"source/{page_source_name}\" target=\"_blank\">Source Code</a></div></td>
         <td><div id=\"screenshot\" style=\"display: inline-block; width: 850px; height 400px; overflow: scroll;\"><a href=\"screens/{screen_picture_name}\" target=\"_blank\"><img src=\"screens/{screen_picture_name}\" height=\"400\"></a></div></td>
@@ -385,6 +393,59 @@ if __name__ == "__main__":
 
     # Location of the log file Ghost logs to (to catch SSL errors)
     log_file_path = script_path + "/" + report_folder + "/logfile.log"
+
+    # Create the dicts which hold different user agents.
+    # Thanks to Chris John Riles for having an awesome tool which I could get this info from
+    # His tool - UAtester.py - http://blog.c22.cc/toolsscripts/ua-tester/
+    # Additional user agent strings came from - http://www.useragentstring.com/pages/useragentstring.php
+    desktop_uagents = {
+    "MSIE 9.0" : "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)",
+    "MSIE 8.0" : "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0)",
+    "MSIE 7.0" : "Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)",
+    "MSIE 6.0" : "Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)",
+    "Chrome 32.0.1667.0" : "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36",
+    "Chrome 31.0.1650.16" : "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36",
+    "Firefox 25" : "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0",
+    "Firefox 24" : "Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0,",
+    "Opera 12.14" : "Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14",
+    "Opera 12" : "Opera/12.0(Windows NT 5.1;U;en)Presto/22.9.168 Version/12.00",
+    "Safari 5.1.7" : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2",
+    "Safari 5.0" : "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0 Safari/533.16"
+    }
+
+    misc_uagents = {
+    "wget 1.9.1" : "Wget/1.9.1",
+    "curl 7.9.8" : "curl/7.9.8 (i686-pc-linux-gnu) libcurl 7.9.8 (OpenSSL 0.9.6b) (ipv6 enabled)",
+    "PyCurl 7.23.1" : "PycURL/7.23.1",
+    "Python urllib 3.1" : "Python-urllib/3.1"
+    }
+
+    crawler_uagents = {
+    "Baiduspider" : "Baiduspider+(+http://www.baidu.com/search/spider.htm)",
+    "Bingbot" : "Mozilla/5.0 (compatible; bingbot/2.0 +http://www.bing.com/bingbot.htm)",
+    "Googlebot 2.1" : "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
+    "MSNBot 2.1" : "msnbot/2.1",
+    "Yahoo Slurp!" : "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)"
+    }
+
+    mobile_uagents = {
+    "BlackBerry" : "Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.1.0.346 Mobile Safari/534.11+",
+    "Android" : "Mozilla/5.0 (Linux; U; Android 2.3.5; en-us; HTC Vision Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1",
+    "IE Mobile 9.0" : "Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0)",
+    "Opera Mobile 12.02" : "Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02",
+    "iPad Safari 6.0" : "Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25",
+    "iPhone Safari 5.2" : "Mozilla/5.0 (iPod; U; CPU iPhone OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5"
+    }
+
+    scanner_uagents = {
+    "w3af" : "w3af.org",
+    "skipfish" : "Mozilla/5.0 SF/2.10b",
+    "HTTrack" : "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)",
+    "nikto" : "Mozilla/5.00 (Nikto/2.1.5) (Evasions:None) (Test:map_codes)"
+    }
+
+    # Combine all user agents into a single dictionary
+    all_combined_uagents = dict(desktop_uagents.items() + misc_uagents.items() + crawler_uagents.items() + mobile_uagents.items())
 
     # Instantiate Ghost Object
     if browser_user_agent == "None":
