@@ -31,6 +31,7 @@ def cliParser():
     parser.add_argument('-h', '-?', '--h', '-help', '--help', action="store_true", help=argparse.SUPPRESS)
     parser.add_argument('--single', metavar="Single URL", help="Single URL to screenshot")
     parser.add_argument('--useragent', metavar="User Agent", help="User Agent to use for all requests")
+    parser.add_argument('--cycle', metavar="UA Type", help="User Agent type (Browser, Mobile, Crawler, Scanner, Misc, All")
     parser.add_argument('--jitter', metavar="# of Seconds", help="Randomize URLs and add a random delay between requests")
     parser.add_argument("--open", action='store_true', help="[Optional] Open all URLs in a browser")
     args = parser.parse_args()
@@ -75,8 +76,13 @@ def cliParser():
         except ValueError:
             args.t = 7
 
+    if args.cycle:
+        pass
+    else:
+        args.cycle = "None"
+
     # Return the file name which contains the URLs
-    return args.f, args.t, args.open, args.single, args.d, args.jitter, args.useragent
+    return args.f, args.t, args.open, args.single, args.d, args.jitter, args.useragent, args.cycle
 
 def folderOut(dir_name, full_path):
 
@@ -284,11 +290,11 @@ def htmlEncode(dangerous_data):
     encoded = cgi.escape(dangerous_data, quote=True)
     return encoded
 
-def ghostCapture(screen_url, rep_fold, screen_name, ewitness_dir_path):
+def ghostCapture(incoming_ghost_object, screen_url, rep_fold, screen_name, ewitness_dir_path):
     # Try to get our screenshot and source code of the page
     # Write both out to disk if possible (if we can get one, we can get the other)
-    ghost_page, ghost_extra_resources = ghost.open(screen_url, auth=('none', 'none'))
-    ghost.capture_to(ewitness_dir_path + "/" + rep_fold + "/screens/" + screen_name)
+    ghost_page, ghost_extra_resources = incoming_ghost_object.open(screen_url, auth=('none', 'none'))
+    incoming_ghost_object.capture_to(ewitness_dir_path + "/" + rep_fold + "/screens/" + screen_name)
     return ghost_page, ghost_extra_resources
 
 def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwitness_path):
@@ -376,28 +382,14 @@ def singleReportPage(report_source, report_path):
     with open(report_path + "/" + report_folder + "/report.html", 'w') as fo:
         fo.write(report_source)
     return
-    
-if __name__ == "__main__":
 
-    # Print the title header
-    titleScreen()
-
-    # Parse command line options and return the filename containing URLS and how long to wait for each website
-    url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter, browser_user_agent = cliParser()
-
-    # Get the exact location where the EyeWitness script is located
-    script_path = os.path.dirname(os.path.realpath(__file__))
-
-    # Create the directory needed and support files
-    report_folder, report_date, report_time = folderOut(directory_name, script_path)
-
-    # Location of the log file Ghost logs to (to catch SSL errors)
-    log_file_path = script_path + "/" + report_folder + "/logfile.log"
-
+def userAgentDefinition(cycle_value):
     # Create the dicts which hold different user agents.
     # Thanks to Chris John Riley for having an awesome tool which I could get this info from
     # His tool - UAtester.py - http://blog.c22.cc/toolsscripts/ua-tester/
     # Additional user agent strings came from - http://www.useragentstring.com/pages/useragentstring.php
+
+    # "Normal" desktop user agents
     desktop_uagents = {
     "MSIE 9.0" : "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)",
     "MSIE 8.0" : "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0)",
@@ -413,6 +405,7 @@ if __name__ == "__main__":
     "Safari 5.0" : "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0 Safari/533.16"
     }
 
+    # Miscellaneous user agents
     misc_uagents = {
     "wget 1.9.1" : "Wget/1.9.1",
     "curl 7.9.8" : "curl/7.9.8 (i686-pc-linux-gnu) libcurl 7.9.8 (OpenSSL 0.9.6b) (ipv6 enabled)",
@@ -420,6 +413,7 @@ if __name__ == "__main__":
     "Python urllib 3.1" : "Python-urllib/3.1"
     }
 
+    # Bot crawler user agents
     crawler_uagents = {
     "Baiduspider" : "Baiduspider+(+http://www.baidu.com/search/spider.htm)",
     "Bingbot" : "Mozilla/5.0 (compatible; bingbot/2.0 +http://www.bing.com/bingbot.htm)",
@@ -428,6 +422,7 @@ if __name__ == "__main__":
     "Yahoo Slurp!" : "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)"
     }
 
+    # Random mobile User agents
     mobile_uagents = {
     "BlackBerry" : "Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.1.0.346 Mobile Safari/534.11+",
     "Android" : "Mozilla/5.0 (Linux; U; Android 2.3.5; en-us; HTC Vision Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1",
@@ -437,6 +432,7 @@ if __name__ == "__main__":
     "iPhone Safari 5.2" : "Mozilla/5.0 (iPod; U; CPU iPhone OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5"
     }
 
+    # Web App Vuln Scanning user agents (give me more if you have any)
     scanner_uagents = {
     "w3af" : "w3af.org",
     "skipfish" : "Mozilla/5.0 SF/2.10b",
@@ -447,11 +443,56 @@ if __name__ == "__main__":
     # Combine all user agents into a single dictionary
     all_combined_uagents = dict(desktop_uagents.items() + misc_uagents.items() + crawler_uagents.items() + mobile_uagents.items())
 
-    # Instantiate Ghost Object
-    if browser_user_agent == "None":
-        ghost = screener.Ghost(wait_timeout=int(timeout_wait), ignore_ssl_errors=True)
+    cycle_value = cycle_value.lower()
+
+    if cycle_value == "browser":
+        return desktop_uagents
+    elif cycle_value == "misc":
+        return misc_uagents
+    elif cycle_value == "crawler":
+        return crawler_uagents
+    elif cycle_value == "mobile":
+        return mobile_uagents
+    elif cycle_value == "scanner":
+        return scanner_uagents
+    elif cycle_value == "all":
+        return all_combined_uagents
     else:
-        ghost = screener.Ghost(wait_timeout=int(timeout_wait), user_agent=browser_user_agent, ignore_ssl_errors=True)
+        print "[*] Error: You did not provide the type of user agents to cycle through!"
+        print "[*] Error: Defaulting to desktop browser user agents."
+        return desktop_uagents
+
+# This is the ghost object creation function
+def casperCreator(ua_capture, url_timeout):
+    # Instantiate Ghost Object
+    if ua_capture == "None":
+        ghost = screener.Ghost(wait_timeout=int(url_timeout), ignore_ssl_errors=True)
+    else:
+        ghost = screener.Ghost(wait_timeout=int(url_timeout), user_agent=ua_capture, ignore_ssl_errors=True)
+    return ghost
+
+if __name__ == "__main__":
+
+    # Print the title header
+    titleScreen()
+
+    # Parse command line options and return the filename containing URLS and how long to wait for each website
+    url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter, browser_user_agent, ua_cycle = cliParser()
+
+    # Get the exact location where the EyeWitness script is located
+    script_path = os.path.dirname(os.path.realpath(__file__))
+
+    # Create the directory needed and support files
+    report_folder, report_date, report_time = folderOut(directory_name, script_path)
+
+    # Location of the log file Ghost logs to (to catch SSL errors)
+    log_file_path = script_path + "/" + report_folder + "/logfile.log"
+
+    # If the user wants to cycle through user agents, return the dictionary of applicable user agents
+    if ua_cycle == "None":
+        ghost_object = casperCreator(browser_user_agent, timeout_wait)
+    else:
+        ua_dict = userAgentDefinition(ua_cycle)
 
     # Logging setup
     logging.basicConfig(filename=log_file_path, level=logging.WARNING)
@@ -478,7 +519,7 @@ if __name__ == "__main__":
         single_url, source_name, picture_name = fileNames(single_url)
 
         try:
-            page, extra_resources = ghostCapture(single_url, report_folder, picture_name, script_path)
+            page, extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
 
             content_blank, default_creds = backupRequest(page, single_url, source_name, content_blank, script_path)
 
@@ -548,7 +589,7 @@ if __name__ == "__main__":
             print "Attempting to capture: " + url
             try:
                 # Ghost capturing web page
-                page, extra_resources = ghostCapture(url, report_folder, picture_name, script_path)
+                page, extra_resources = ghostCapture(ghost_object, url, report_folder, picture_name, script_path)
 
                 # If EyeWitness receives a no-cache, it can't get the page source, therefore lets
                 # make a backup request get the source
