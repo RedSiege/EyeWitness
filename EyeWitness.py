@@ -323,7 +323,7 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
 
     # Continue adding to the table assuming that we were able to capture the screenshot
     # Only add elements if they exist
-    # Add URL to table data at the top
+    # This block adds the URL to the row at the top
     web_table_index += """<tr>
     <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
     <a href=\"{web_url_addy}\" target=\"_blank\">{web_url_addy}</a><br>
@@ -364,7 +364,10 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
         </tr>
         """.replace('    ', '')
 
-    # If eyewitness could get the source code andtake a screenshot, add them to report
+    # If eyewitness could get the source code and take a screenshot, add them to report
+    # First line adds source code to header column of table, and then closes out that <td>
+    # Second line creates new <td> for the screenshot column, adds screenshot in to report, and closes the <td>
+    # Final line closes out the row
     else:
         web_table_index += """<br><br><a href=\"source/{page_source_name}\" target=\"_blank\">Source Code</a></div></td>
         <td><div id=\"screenshot\" style=\"display: inline-block; width: 850px; height 400px; overflow: scroll;\"><a href=\"screens/{screen_picture_name}\" target=\"_blank\"><img src=\"screens/{screen_picture_name}\" height=\"400\"></a></div></td>
@@ -471,6 +474,8 @@ def casperCreator(ua_capture, url_timeout):
         ghost = screener.Ghost(wait_timeout=int(url_timeout), user_agent=ua_capture, ignore_ssl_errors=True)
     return ghost
 
+def requestComparison():
+
 if __name__ == "__main__":
 
     # Print the title header
@@ -493,6 +498,7 @@ if __name__ == "__main__":
         ghost_object = casperCreator(browser_user_agent, timeout_wait)
     else:
         ua_dict = userAgentDefinition(ua_cycle)
+        ghost_object = casperCreator(browser_user_agent, timeout_wait)
 
     # Logging setup
     logging.basicConfig(filename=log_file_path, level=logging.WARNING)
@@ -519,12 +525,28 @@ if __name__ == "__main__":
         single_url, source_name, picture_name = fileNames(single_url)
 
         try:
-            page, extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
+            # If a normal single request, then perform the request
+            if ua_cycle == "None":
+                page, extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
 
-            content_blank, default_creds = backupRequest(page, single_url, source_name, content_blank, script_path)
+                content_blank, default_creds = backupRequest(page, single_url, source_name, content_blank, script_path)
 
-            # Create the table info for the single URL (screenshot, server headers, etc.)
-            web_index= tableMaker(web_index, single_url, default_creds, page, content_blank, log_file_path)
+                # Create the table info for the single URL (screenshot, server headers, etc.)
+                web_index= tableMaker(web_index, single_url, default_creds, page, content_blank, log_file_path)
+
+            # If cycling through user agents, start that process here
+            # Create a baseline requst, then loop through the dictionary of user agents, and make requests w/those UAs
+            # Then use comparison function.  If UA request content matches baseline content, do nothing.
+            # If UA request content is different from baseline, add to report
+            else:
+                baseline_page, baseline_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
+                baseline_content_blank, baseline_default_creds = backupRequest(page, single_url, source_name, content_blank, script_path)
+
+                # Create the table info for the single URL (screenshot, server headers, etc.)
+                web_index= tableMaker(web_index, single_url, default_creds, page, content_blank, log_file_path)
+
+                for browser_key, user_agent_value in ua_dict.iteritems():
+                    
     
         # Skip a url if Ctrl-C is hit
         except KeyboardInterrupt:
