@@ -32,7 +32,7 @@ def cliParser():
     parser.add_argument('-h', '-?', '--h', '-help', '--help', action="store_true", help=argparse.SUPPRESS)
     parser.add_argument('--single', metavar="Single URL", help="Single URL to screenshot")
     parser.add_argument('--useragent', metavar="User Agent", help="User Agent to use for all requests")
-    parser.add_argument('--cycle', metavar="UA Type", help="User Agent type (Browser, Mobile, Crawler, Scanner, Misc, All")
+    parser.add_argument('--cycle', metavar="UA Type", help="User Agent type (Browser, Mobile, Crawler, Scanner, Misc, All)")
     parser.add_argument('--jitter', metavar="# of Seconds", help="Randomize URLs and add a random delay between requests")
     parser.add_argument("--open", action='store_true', help="[Optional] Open all URLs in a browser")
     args = parser.parse_args()
@@ -444,7 +444,7 @@ def userAgentDefinition(cycle_value):
     "IEMobile9.0" : "Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0)",
     "OperaMobile12.02" : "Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02",
     "iPadSafari6.0" : "Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25",
-    "iPhoneSafari5.2" : "Mozilla/5.0 (iPod; U; CPU iPhone OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5"
+    "iPhoneSafari7.0.6" : "Mozilla/5.0 (iPhone; CPU iPhone OS 7_0_6 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11B651 Safari/9537.53"
     }
 
     # Web App Vuln Scanning user agents (give me more if you have any)
@@ -545,18 +545,15 @@ if __name__ == "__main__":
         # Used for monitoring for blank pages or SSL errors
         content_blank = 0
 
-        # Create the filename to store each website's picture
-        url, source_name, picture_name = fileNames(single_url)
-
         web_index = webHeader()
         print "Trying to screenshot " + single_url
 
         # Create the filename to store each website's picture
         single_url, source_name, picture_name = fileNames(single_url)
 
-        try:
-            # If a normal single request, then perform the request
-            if ua_cycle == "None":
+        # If a normal single request, then perform the request
+        if ua_cycle == "None":
+            try:
                 page, extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
 
                 content_blank, default_creds = backupRequest(page, single_url, source_name, content_blank, script_path)
@@ -564,19 +561,37 @@ if __name__ == "__main__":
                 # Create the table info for the single URL (screenshot, server headers, etc.)
                 web_index = tableMaker(web_index, single_url, default_creds, page, content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_hash)
 
-            # If cycling through user agents, start that process here
-            # Create a baseline requst, then loop through the dictionary of user agents, and make requests w/those UAs
-            # Then use comparison function.  If UA request content matches baseline content, do nothing.
-            # If UA request content is different from baseline, add to report
-            else:
-                # Setup variables to set file names properly
-                original_source = source_name
-                original_screenshot = picture_name
+            # Skip a url if Ctrl-C is hit
+            except KeyboardInterrupt:
+                print "[*] Skipping: " + single_url
+                web_index += """<tr>
+                <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                <td>User Skipped this URL</td>
+                </tr>
+                """.format(single_given_url=single_url).replace('    ', '')
+            # Catch timeout warning
+            except screener.TimeoutError:
+                print "[*] Hit timeout limit when connecting to: " + single_url
+                web_index += """<tr>
+                <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
+                <td>Hit timeout limit while attempting screenshot</td>
+                </tr>
+                """.format(single_timeout_url=single_url)
 
-                # Create baseline file names
-                source_name = source_name + "_baseline.txt"
-                picture_name = picture_name + "_baseline.png"
+        # If cycling through user agents, start that process here
+        # Create a baseline requst, then loop through the dictionary of user agents, and make requests w/those UAs
+        # Then use comparison function.  If UA request content matches baseline content, do nothing.
+        # If UA request content is different from baseline, add to report
+        else:
+            # Setup variables to set file names properly
+            original_source = source_name
+            original_screenshot = picture_name
 
+            # Create baseline file names
+            source_name = source_name + "_baseline.txt"
+            picture_name = picture_name + "_baseline.png"
+
+            try:
                 # Get baseline screenshot
                 baseline_page, baseline_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
                 baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, single_url, source_name, content_blank, script_path)
@@ -585,18 +600,36 @@ if __name__ == "__main__":
                 # Create the table info for the single URL (screenshot, server headers, etc.)
                 web_index = tableMaker(web_index, single_url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_hash)
 
-                # Iterate through the user agents the user has selected to use, and set ghost to use them
-                # Then perform a comparison of the baseline results to the new results.  If different, add to report
-                for browser_key, user_agent_value in ua_dict.iteritems():
-                    # Create the counter to ensure our file names are unique
-                    source_name = original_source + "_" + browser_key + ".txt"
-                    picture_name = original_screenshot + "_" + browser_key + ".png"
+            # Skip a url if Ctrl-C is hit
+            except KeyboardInterrupt:
+                print "[*] Skipping: " + single_url
+                web_index += """<tr>
+                <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                <td>User Skipped this URL</td>
+                </tr>
+                """.format(single_given_url=single_url).replace('    ', '')
+            # Catch timeout warning
+            except screener.TimeoutError:
+                print "[*] Hit timeout limit when connecting to: " + single_url
+                web_index += """<tr>
+                <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
+                <td>Hit timeout limit while attempting screenshot</td>
+                </tr>
+                """.format(single_timeout_url=single_url)
 
-                    # Setting the new user agent
-                    ghost_object.page.setUserAgent(user_agent_value)
+            # Iterate through the user agents the user has selected to use, and set ghost to use them
+            # Then perform a comparison of the baseline results to the new results.  If different, add to report
+            for browser_key, user_agent_value in ua_dict.iteritems():
+                # Create the counter to ensure our file names are unique
+                source_name = original_source + "_" + browser_key + ".txt"
+                picture_name = original_screenshot + "_" + browser_key + ".png"
 
-                    # Making the request with the new user agent
-                    print "[*] Now making web request with: " + browser_key
+                # Setting the new user agent
+                ghost_object.page.setUserAgent(user_agent_value)
+
+                # Making the request with the new user agent
+                print "[*] Now making web request with: " + browser_key
+                try:
                     new_ua_page, new_ua_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
                     new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, single_url, source_name, content_blank, script_path)
 
@@ -611,23 +644,22 @@ if __name__ == "__main__":
                         web_index = tableMaker(web_index, single_url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, new_page_hash)
                         orig_page_hash = "None"
                         new_page_hash = "None"
-
-        # Skip a url if Ctrl-C is hit
-        except KeyboardInterrupt:
-            print "[*] Skipping: " + single_url
-            web_index += """<tr>
-            <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
-            <td>User Skipped this URL</td>
-            </tr>
-            """.format(single_given_url=single_url).replace('    ', '')
-        # Catch timeout warning
-        except screener.TimeoutError:
-            print "[*] Hit timeout limit when connecting to: " + single_url
-            web_index += """<tr>
-            <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
-            <td>Hit timeout limit while attempting screenshot</td>
-            </tr>
-            """.format(single_timeout_url=single_url)
+                # Skip a url if Ctrl-C is hit
+                except KeyboardInterrupt:
+                    print "[*] Skipping: " + single_url
+                    web_index += """<tr>
+                    <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                    <td>User Skipped this URL</td>
+                    </tr>
+                    """.format(single_given_url=single_url).replace('    ', '')
+                # Catch timeout warning
+                except screener.TimeoutError:
+                    print "[*] Hit timeout limit when connecting to: " + single_url
+                    web_index += """<tr>
+                    <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
+                    <td>Hit timeout limit while attempting screenshot</td>
+                    </tr>
+                    """.format(single_timeout_url=single_url)
 
         # Open each url in a browser if requested
         if open_urls:
@@ -674,38 +706,114 @@ if __name__ == "__main__":
 
             # This is the code which opens the specified URL and captures it to a screenshot
             print "Attempting to capture: " + url
-            try:
-                # Ghost capturing web page
-                page, extra_resources = ghostCapture(ghost_object, url, report_folder, picture_name, script_path)
+            # If not trying to cycle through different user agents, make the web requests as it was originall done
+            if ua_cycle == "None":
+                try:
+                    # Ghost capturing web page
+                    page, extra_resources = ghostCapture(ghost_object, url, report_folder, picture_name, script_path)
 
-                # If EyeWitness receives a no-cache, it can't get the page source, therefore lets
-                # make a backup request get the source
-                content_blank, default_creds = backupRequest(page, url, source_name, content_blank, script_path)
+                    # If EyeWitness receives a no-cache, it can't get the page source, therefore lets
+                    # make a backup request get the source
+                    content_blank, default_creds = backupRequest(page, url, source_name, content_blank, script_path)
 
-                web_index = tableMaker(web_index, url, default_creds, page, content_blank, log_file_path)
+                    web_index = tableMaker(web_index, url, default_creds, page, content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_hash)
 
-                # If user wants URL opened in a browser as it runs, do it
-                if open_urls:
-                    iceweasel_command = "iceweasel -new-tab " + url
-                    iceweasel_command = iceweasel_command.split()
-                    p = subprocess.Popen(iceweasel_command)
-            
-            # Skip a url if Ctrl-C is hit
-            except KeyboardInterrupt:
-                print "[*] Skipping: " + url
-                web_index += """<tr>
-                <td><a href=\"{multi_url}\">{multi_url}</a></td>
-                <td>User Skipped this URL</td>
-                </tr>
-                """.format(multi_url=url).replace('    ', '')
-            # Catch timeout warning
-            except screener.TimeoutError:
-                print "[*] Hit timeout limit when connecting to: " + url
-                web_index += """<tr>
-                <td><a href=\"{timeout_url}\" target=\"_blank\">{timeout_url}</a></td>
-                <td>Hit timeout limit while attempting screenshot</td>
-                </tr>
-                """.format(timeout_url=url).replace('    ', '')
+                # Skip a url if Ctrl-C is hit
+                except KeyboardInterrupt:
+                    print "[*] Skipping: " + url
+                    web_index += """<tr>
+                    <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                    <td>User Skipped this URL</td>
+                    </tr>
+                    """.format(single_given_url=url).replace('    ', '')
+                # Catch timeout warning
+                except screener.TimeoutError:
+                    print "[*] Hit timeout limit when connecting to: " + single_url
+                    web_index += """<tr>
+                    <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
+                    <td>Hit timeout limit while attempting screenshot</td>
+                    </tr>
+                    """.format(single_timeout_url=url)
+
+            else:
+                # Setup variables to set file names properly
+                original_source = source_name
+                original_screenshot = picture_name
+
+                # Create baseline file names
+                source_name = source_name + "_baseline.txt"
+                picture_name = picture_name + "_baseline.png"
+
+                try:
+                    # Get baseline screenshot
+                    baseline_page, baseline_extra_resources = ghostCapture(ghost_object, url, report_folder, picture_name, script_path)
+                    baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, url, source_name, content_blank, script_path)
+                    extra_info = "This is the baseline request"
+
+                    # Create the table info for the single URL (screenshot, server headers, etc.)
+                    web_index = tableMaker(web_index, url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_hash)
+
+                # Skip a url if Ctrl-C is hit
+                except KeyboardInterrupt:
+                    print "[*] Skipping: " + single_url
+                    web_index += """<tr>
+                    <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                    <td>User Skipped this URL</td>
+                    </tr>
+                    """.format(single_given_url=url).replace('    ', '')
+                # Catch timeout warning
+                except screener.TimeoutError:
+                    print "[*] Hit timeout limit when connecting to: " + single_url
+                    web_index += """<tr>
+                    <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
+                    <td>Hit timeout limit while attempting screenshot</td>
+                    </tr>
+                    """.format(single_timeout_url=url)
+
+                # Iterate through the user agents the user has selected to use, and set ghost to use them
+                # Then perform a comparison of the baseline results to the new results.  If different, add to report
+                for browser_key, user_agent_value in ua_dict.iteritems():
+                    # Create the counter to ensure our file names are unique
+                    source_name = original_source + "_" + browser_key + ".txt"
+                    picture_name = original_screenshot + "_" + browser_key + ".png"
+
+                    # Setting the new user agent
+                    ghost_object.page.setUserAgent(user_agent_value)
+
+                    # Making the request with the new user agent
+                    print "[*] Now making web request with: " + browser_key
+                    try:
+                        new_ua_page, new_ua_extra_resources = ghostCapture(ghost_object, url, report_folder, picture_name, script_path)
+                        new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, url, source_name, content_blank, script_path)
+
+                        # Function which hashes the original request with the new request and checks to see if they are identical
+                        same_or_different, new_page_hash = requestComparison(baseline_page.content, new_ua_page.content)
+
+                        # If they are the same, then go on to the next user agent, if they are different, add it to the report
+                        if same_or_different:
+                            pass
+                        else:
+                            # Create the table info for the single URL (screenshot, server headers, etc.)
+                            web_index = tableMaker(web_index, url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, new_page_hash)
+                            orig_page_hash = "None"
+                            new_page_hash = "None"
+
+                    # Skip a url if Ctrl-C is hit
+                    except KeyboardInterrupt:
+                        print "[*] Skipping: " + single_url
+                        web_index += """<tr>
+                        <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                        <td>User Skipped this URL</td>
+                        </tr>
+                        """.format(single_given_url=url).replace('    ', '')
+                    # Catch timeout warning
+                    except screener.TimeoutError:
+                        print "[*] Hit timeout limit when connecting to: " + single_url
+                        web_index += """<tr>
+                        <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
+                        <td>Hit timeout limit while attempting screenshot</td>
+                        </tr>
+                        """.format(single_timeout_url=url)
 
             # If user wants URL opened in a browser as it runs, do it
             if open_urls:
@@ -729,7 +837,7 @@ if __name__ == "__main__":
             url_counter = url_counter + 1
 
             # If we hit 100 urls in the counter, finish the page and start a new one
-            if url_counter == 100:
+            if url_counter == 50:
                 if page_counter == 1:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
