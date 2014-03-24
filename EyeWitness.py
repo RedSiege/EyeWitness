@@ -20,7 +20,6 @@ import re
 import logging
 import random
 import subprocess
-import hashlib
 
 def cliParser():
 
@@ -309,6 +308,8 @@ def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwit
                 response.close()
             except urllib2.HTTPError:
                 page_code.content = "Sorry, but couldn't get source code for potentially a couple reasons.  If it was Basic Auth, a 50X, or a 40X error, EyeWitness won't return source code.  Couldn't get source from " + url + "."
+            except urllib2.URLError:
+                page_code.content = "Name resolution could not happen with " + outgoing_url + "."
         with open(iwitness_path + "/" + report_folder + "/source/" + source_code_name, 'w') as source:
             source.write(page_code.content)
 
@@ -320,7 +321,7 @@ def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwit
 
     return content_value, default_creds
 
-def tableMaker(web_table_index, website_url, possible_creds, web_page, content_empty, log_path, extra_notes, browser_out, ua_out, source_code_table, screenshot_table, web_page_hash):
+def tableMaker(web_table_index, website_url, possible_creds, web_page, content_empty, log_path, extra_notes, browser_out, ua_out, source_code_table, screenshot_table, length_difference):
 
     # Continue adding to the table assuming that we were able to capture the screenshot
     # Only add elements if they exist
@@ -330,16 +331,21 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
     <a href=\"{web_url_addy}\" target=\"_blank\">{web_url_addy}</a><br>
     """.format(web_url_addy=website_url).replace('    ', '')
 
-    if extra_notes is not "None":
-        web_table_index += "<br>" + extra_notes + "<br>\n"
-
-    if browser_out is not "None" and ua_out is not "None":
+    if browser_out is not "None" and ua_out is not "None" and length_difference is not "Baseline" and length_difference is not "None":
         web_table_index += """
         <br>This request was different from the baseline.<br>
         The browser type is: <b>{browser_report}</b><br><br>
         The user agent is: <b>{useragent_report}</b><br><br>
-        Hash of webpage source is: <b>{page_source_hash}</b><br>
-        """.format(browser_report=browser_out, useragent_report=ua_out, page_source_hash=web_page_hash).replace('    ', '')
+        Difference in length of the two webpage sources is: <b>{page_source_hash}</b><br>
+        """.format(browser_report=browser_out, useragent_report=ua_out, page_source_hash=length_difference).replace('    ', '')
+
+    if length_difference == "Baseline":
+        web_table_index +="""
+        <br>This is the baseline request.<br>
+        The browser type is: <b>{browser_report}</b><br><br>
+        The user agent is: <b>{useragent_report}</b><br><br>
+        <b>This is the baseline request.</b><br>
+        """.format(browser_report=browser_out, useragent_report=ua_out).replace('    ', '')
 
     # Check if log file is empty, if so, good, otherwise, Check for SSL errors
     # If there is a SSL error, be sure to add a note about it in the table
@@ -488,18 +494,22 @@ def casperCreator(ua_capture, url_timeout):
 
 def requestComparison(original_content, new_content):
     # Function which compares the original baseline request with the new request with the modified user agent
-    original_hashing_function = hashlib.sha512()
-    original_hashing_function.update(original_content)
-    original_content_hash = original_hashing_function.hexdigest()
+    orig_request_length = len(original_content)
+    new_request_length = len(new_content)
 
-    new_hashing_function = hashlib.sha512()
-    new_hashing_function.update(new_content)
-    new_content_hash = new_hashing_function.hexdigest()
-
-    if original_content_hash == new_content_hash:
-        return True, "None"
+    if new_request_length > orig_request_length:
+        a, b = new_request_length, orig_request_length
+        total_difference = a - b
+        if total_difference > 50:
+            return False, total_difference
+        else:
+            return True, "None"
     else:
-        return False, new_content_hash
+        total_difference = orig_request_length - new_request_length
+        if total_difference > 50:
+            return False, total_difference
+        else:
+            return True, "None"
 
 if __name__ == "__main__":
 
@@ -532,7 +542,8 @@ if __name__ == "__main__":
     # Define a couple default variables
     extra_info = "None"
     blank_value = "None"
-    page_hash = "None"
+    baseline_request = "Baseline"
+    page_length = "None"
 
     if single_url is not "None":
 
@@ -559,7 +570,7 @@ if __name__ == "__main__":
                 content_blank, default_creds = backupRequest(page, single_url, source_name, content_blank, script_path)
 
                 # Create the table info for the single URL (screenshot, server headers, etc.)
-                web_index = tableMaker(web_index, single_url, default_creds, page, content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_hash)
+                web_index = tableMaker(web_index, single_url, default_creds, page, content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_length)
 
             # Skip a url if Ctrl-C is hit
             except KeyboardInterrupt:
@@ -590,32 +601,7 @@ if __name__ == "__main__":
             # Create baseline file names
             source_name = source_name + "_baseline.txt"
             picture_name = picture_name + "_baseline.png"
-
-            try:
-                # Get baseline screenshot
-                baseline_page, baseline_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
-                baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, single_url, source_name, content_blank, script_path)
-                extra_info = "This is the baseline request"
-
-                # Create the table info for the single URL (screenshot, server headers, etc.)
-                web_index = tableMaker(web_index, single_url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_hash)
-
-            # Skip a url if Ctrl-C is hit
-            except KeyboardInterrupt:
-                print "[*] Skipping: " + single_url
-                web_index += """<tr>
-                <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
-                <td>User Skipped this URL</td>
-                </tr>
-                """.format(single_given_url=single_url).replace('    ', '')
-            # Catch timeout warning
-            except screener.TimeoutError:
-                print "[*] Hit timeout limit when connecting to: " + single_url
-                web_index += """<tr>
-                <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
-                <td>Hit timeout limit while attempting screenshot</td>
-                </tr>
-                """.format(single_timeout_url=single_url)
+            request_number = 0
 
             # Iterate through the user agents the user has selected to use, and set ghost to use them
             # Then perform a comparison of the baseline results to the new results.  If different, add to report
@@ -630,20 +616,41 @@ if __name__ == "__main__":
                 # Making the request with the new user agent
                 print "[*] Now making web request with: " + browser_key
                 try:
-                    new_ua_page, new_ua_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
-                    new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, single_url, source_name, content_blank, script_path)
+                    if request_number == 0:
+                        # Get baseline screenshot
+                        baseline_page, baseline_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
+                        
+                        # Hack for a bug in Ghost at the moment
+                        baseline_page.content = "None"
 
-                    # Function which hashes the original request with the new request and checks to see if they are identical
-                    same_or_different, new_page_hash = requestComparison(baseline_page.content, new_ua_page.content)
+                        baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, single_url, source_name, content_blank, script_path)
+                        extra_info = "This is the baseline request"
 
-                    # If they are the same, then go on to the next user agent, if they are different, add it to the report
-                    if same_or_different:
-                        pass
-                    else:
                         # Create the table info for the single URL (screenshot, server headers, etc.)
-                        web_index = tableMaker(web_index, single_url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, new_page_hash)
-                        orig_page_hash = "None"
-                        new_page_hash = "None"
+                        web_index = tableMaker(web_index, single_url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, baseline_request)
+
+                        # Move beyond the baseline
+                        request_number = 1
+
+                    else:
+                        new_ua_page, new_ua_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
+
+                        # Hack for a bug in Ghost at the moment
+                        new_ua_page.content = "None"
+
+                        new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, single_url, source_name, content_blank, script_path)
+
+                        # Function which hashes the original request with the new request and checks to see if they are identical
+                        same_or_different, total_length_difference = requestComparison(baseline_page.content, new_ua_page.content)
+
+                        # If they are the same, then go on to the next user agent, if they are different, add it to the report
+                        if same_or_different:
+                            pass
+                        else:
+                            # Create the table info for the single URL (screenshot, server headers, etc.)
+                            web_index = tableMaker(web_index, single_url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, total_length_difference)
+                        total_length_difference = "None"
+           
                 # Skip a url if Ctrl-C is hit
                 except KeyboardInterrupt:
                     print "[*] Skipping: " + single_url
@@ -716,7 +723,7 @@ if __name__ == "__main__":
                     # make a backup request get the source
                     content_blank, default_creds = backupRequest(page, url, source_name, content_blank, script_path)
 
-                    web_index = tableMaker(web_index, url, default_creds, page, content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_hash)
+                    web_index = tableMaker(web_index, url, default_creds, page, content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_length)
 
                 # Skip a url if Ctrl-C is hit
                 except KeyboardInterrupt:
@@ -728,7 +735,7 @@ if __name__ == "__main__":
                     """.format(single_given_url=url).replace('    ', '')
                 # Catch timeout warning
                 except screener.TimeoutError:
-                    print "[*] Hit timeout limit when connecting to: " + single_url
+                    print "[*] Hit timeout limit when connecting to: " + url
                     web_index += """<tr>
                     <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
                     <td>Hit timeout limit while attempting screenshot</td>
@@ -743,32 +750,7 @@ if __name__ == "__main__":
                 # Create baseline file names
                 source_name = source_name + "_baseline.txt"
                 picture_name = picture_name + "_baseline.png"
-
-                try:
-                    # Get baseline screenshot
-                    baseline_page, baseline_extra_resources = ghostCapture(ghost_object, url, report_folder, picture_name, script_path)
-                    baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, url, source_name, content_blank, script_path)
-                    extra_info = "This is the baseline request"
-
-                    # Create the table info for the single URL (screenshot, server headers, etc.)
-                    web_index = tableMaker(web_index, url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_hash)
-
-                # Skip a url if Ctrl-C is hit
-                except KeyboardInterrupt:
-                    print "[*] Skipping: " + single_url
-                    web_index += """<tr>
-                    <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
-                    <td>User Skipped this URL</td>
-                    </tr>
-                    """.format(single_given_url=url).replace('    ', '')
-                # Catch timeout warning
-                except screener.TimeoutError:
-                    print "[*] Hit timeout limit when connecting to: " + single_url
-                    web_index += """<tr>
-                    <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
-                    <td>Hit timeout limit while attempting screenshot</td>
-                    </tr>
-                    """.format(single_timeout_url=url)
+                request_number = 0
 
                 # Iterate through the user agents the user has selected to use, and set ghost to use them
                 # Then perform a comparison of the baseline results to the new results.  If different, add to report
@@ -783,24 +765,40 @@ if __name__ == "__main__":
                     # Making the request with the new user agent
                     print "[*] Now making web request with: " + browser_key
                     try:
-                        new_ua_page, new_ua_extra_resources = ghostCapture(ghost_object, url, report_folder, picture_name, script_path)
-                        new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, url, source_name, content_blank, script_path)
+                        if request_number == 0:
+                            # Get baseline screenshot
+                            baseline_page, baseline_extra_resources = ghostCapture(ghost_object, url, report_folder, picture_name, script_path)
+                        
+                            # Hack for a bug in Ghost at the moment
+                            baseline_page.content = "None"
 
-                        # Function which hashes the original request with the new request and checks to see if they are identical
-                        same_or_different, new_page_hash = requestComparison(baseline_page.content, new_ua_page.content)
+                            baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, url, source_name, content_blank, script_path)
 
-                        # If they are the same, then go on to the next user agent, if they are different, add it to the report
-                        if same_or_different:
-                            pass
-                        else:
                             # Create the table info for the single URL (screenshot, server headers, etc.)
-                            web_index = tableMaker(web_index, url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, new_page_hash)
-                            orig_page_hash = "None"
-                            new_page_hash = "None"
+                            web_index = tableMaker(web_index, url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, baseline_request)
+
+                            # Move beyond the baseline
+                            request_number = 1
+
+                        else:
+                            # Get page with new screenshot/
+                            new_ua_page, new_ua_extra_resources = ghostCapture(ghost_object, url, report_folder, picture_name, script_path)
+                            new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, url, source_name, content_blank, script_path)
+
+                            # Function which hashes the original request with the new request and checks to see if they are identical
+                            same_or_different, l_difference = requestComparison(baseline_page.content, new_ua_page.content)
+
+                            # If they are the same, then go on to the next user agent, if they are different, add it to the report
+                            if same_or_different:
+                                pass
+                            else:
+                                # Create the table info for the single URL (screenshot, server headers, etc.)
+                                web_index = tableMaker(web_index, url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, l_difference)
+                            l_difference = "None"
 
                     # Skip a url if Ctrl-C is hit
                     except KeyboardInterrupt:
-                        print "[*] Skipping: " + single_url
+                        print "[*] Skipping: " + url
                         web_index += """<tr>
                         <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
                         <td>User Skipped this URL</td>
@@ -808,7 +806,7 @@ if __name__ == "__main__":
                         """.format(single_given_url=url).replace('    ', '')
                     # Catch timeout warning
                     except screener.TimeoutError:
-                        print "[*] Hit timeout limit when connecting to: " + single_url
+                        print "[*] Hit timeout limit when connecting to: " + url
                         web_index += """<tr>
                         <td><a href=\"{single_timeout_url}\" target=\"_blank\">{single_timeout_url}</a></td>
                         <td>Hit timeout limit while attempting screenshot</td>
@@ -837,7 +835,7 @@ if __name__ == "__main__":
             url_counter = url_counter + 1
 
             # If we hit 100 urls in the counter, finish the page and start a new one
-            if url_counter == 50:
+            if url_counter == 25:
                 if page_counter == 1:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
