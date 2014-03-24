@@ -300,7 +300,7 @@ def htmlEncode(dangerous_data):
 def ghostCapture(incoming_ghost_object, screen_url, rep_fold, screen_name, ewitness_dir_path):
     # Try to get our screenshot and source code of the page
     # Write both out to disk if possible (if we can get one, we can get the other)
-    ghost_page, ghost_extra_resources = incoming_ghost_object.open(screen_url, auth=('none', 'none'))
+    ghost_page, ghost_extra_resources = incoming_ghost_object.open(screen_url, auth=('none', 'none'), default_popup_response=True)
     incoming_ghost_object.capture_to(ewitness_dir_path + "/" + rep_fold + "/screens/" + screen_name)
     return ghost_page, ghost_extra_resources
 
