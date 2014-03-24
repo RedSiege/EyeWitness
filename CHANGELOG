@@ -1,5 +1,6 @@
 [3.24.2014]
     Modified..: Completed user agent switching.  It detects differences in requests from the baseline request based off of html source length.  If beyond a difference of 50 in length between the new request and the baseline, it will add the new useragent request to the report.
+    Added.....: Added in --difference, lets the user set the difference threshold, which is 50 by default.
 
 [3.20.2014]
     Added.....: Began working on adding user agent switching capabilities

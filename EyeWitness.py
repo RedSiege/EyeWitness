@@ -32,6 +32,7 @@ def cliParser():
     parser.add_argument('--single', metavar="Single URL", help="Single URL to screenshot")
     parser.add_argument('--useragent', metavar="User Agent", help="User Agent to use for all requests")
     parser.add_argument('--cycle', metavar="UA Type", help="User Agent type (Browser, Mobile, Crawler, Scanner, Misc, All)")
+    parser.add_argument("--difference", metavar="Difference Threshold", default="50", help="[Optional] Difference threshold when determining if user agent requests are close \"enough\" (Default: 50)")
     parser.add_argument('--jitter', metavar="# of Seconds", help="Randomize URLs and add a random delay between requests")
     parser.add_argument("--open", action='store_true', help="[Optional] Open all URLs in a browser")
     args = parser.parse_args()
@@ -76,13 +77,19 @@ def cliParser():
         except ValueError:
             args.t = 7
 
+    if args.difference:
+        try:
+            int(args.t)
+        except ValueError:
+            args.t = 50
+
     if args.cycle:
         pass
     else:
         args.cycle = "None"
 
     # Return the file name which contains the URLs
-    return args.f, args.t, args.open, args.single, args.d, args.jitter, args.useragent, args.cycle
+    return args.f, args.t, args.open, args.single, args.d, args.jitter, args.useragent, args.cycle, args.difference
 
 def folderOut(dir_name, full_path):
 
@@ -492,7 +499,7 @@ def casperCreator(ua_capture, url_timeout):
         ghost = screener.Ghost(wait_timeout=int(url_timeout), user_agent=ua_capture, ignore_ssl_errors=True)
     return ghost
 
-def requestComparison(original_content, new_content):
+def requestComparison(original_content, new_content, max_difference):
     # Function which compares the original baseline request with the new request with the modified user agent
     orig_request_length = len(original_content)
     new_request_length = len(new_content)
@@ -500,13 +507,13 @@ def requestComparison(original_content, new_content):
     if new_request_length > orig_request_length:
         a, b = new_request_length, orig_request_length
         total_difference = a - b
-        if total_difference > 50:
+        if total_difference > int(max_difference):
             return False, total_difference
         else:
             return True, "None"
     else:
         total_difference = orig_request_length - new_request_length
-        if total_difference > 50:
+        if total_difference > int(max_difference):
             return False, total_difference
         else:
             return True, "None"
@@ -517,7 +524,7 @@ if __name__ == "__main__":
     titleScreen()
 
     # Parse command line options and return the filename containing URLS and how long to wait for each website
-    url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter, browser_user_agent, ua_cycle = cliParser()
+    url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter, browser_user_agent, ua_cycle, diff_value = cliParser()
 
     # Get the exact location where the EyeWitness script is located
     script_path = os.path.dirname(os.path.realpath(__file__))
@@ -641,7 +648,7 @@ if __name__ == "__main__":
                         new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, single_url, source_name, content_blank, script_path)
 
                         # Function which hashes the original request with the new request and checks to see if they are identical
-                        same_or_different, total_length_difference = requestComparison(baseline_page.content, new_ua_page.content)
+                        same_or_different, total_length_difference = requestComparison(baseline_page.content, new_ua_page.content, diff_value)
 
                         # If they are the same, then go on to the next user agent, if they are different, add it to the report
                         if same_or_different:
@@ -667,6 +674,18 @@ if __name__ == "__main__":
                     <td>Hit timeout limit while attempting screenshot</td>
                     </tr>
                     """.format(single_timeout_url=single_url)
+
+                # Add Random sleep based off of user provided jitter value if requested
+                if request_jitter is not "None":
+                    sleep_value = random.randint(0,30)
+                    sleep_value = sleep_value * .01
+                    sleep_value = 1 - sleep_value
+                    sleep_value = sleep_value * int(request_jitter)
+                    print "[*] Sleeping for " + str(sleep_value) + " seconds..."
+                    try:
+                        time.sleep(sleep_value)
+                    except KeyboardInterrupt:
+                        print "[*] User cancelled sleep for this URL!"
 
         # Open each url in a browser if requested
         if open_urls:
@@ -786,7 +805,7 @@ if __name__ == "__main__":
                             new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, url, source_name, content_blank, script_path)
 
                             # Function which hashes the original request with the new request and checks to see if they are identical
-                            same_or_different, l_difference = requestComparison(baseline_page.content, new_ua_page.content)
+                            same_or_different, l_difference = requestComparison(baseline_page.content, new_ua_page.content, diff_value)
 
                             # If they are the same, then go on to the next user agent, if they are different, add it to the report
                             if same_or_different:
@@ -813,6 +832,18 @@ if __name__ == "__main__":
                         </tr>
                         """.format(single_timeout_url=url)
 
+                    # Add Random sleep based off of user provided jitter value if requested
+                    if request_jitter is not "None":
+                        sleep_value = random.randint(0,30)
+                        sleep_value = sleep_value * .01
+                        sleep_value = 1 - sleep_value
+                        sleep_value = sleep_value * int(request_jitter)
+                        print "[*] Sleeping for " + str(sleep_value) + " seconds..."
+                        try:
+                            time.sleep(sleep_value)
+                        except KeyboardInterrupt:
+                            print "[*] User cancelled sleep for this URL!"
+
             # If user wants URL opened in a browser as it runs, do it
             if open_urls:
                 iceweasel_command = "iceweasel -new-tab " + url
@@ -820,7 +851,7 @@ if __name__ == "__main__":
                 p = subprocess.Popen(iceweasel_command)
 
             # Add Random sleep based off of user provided jitter value if requested
-            if request_jitter is not "None":
+            if request_jitter is not "None" and ua_cycle is "None":
                 sleep_value = random.randint(0,30)
                 sleep_value = sleep_value * .01
                 sleep_value = 1 - sleep_value
