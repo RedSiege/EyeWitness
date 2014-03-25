@@ -35,6 +35,7 @@ def cliParser():
     parser.add_argument("--difference", metavar="Difference Threshold", default="50", help="[Optional] Difference threshold when determining if user agent requests are close \"enough\" (Default: 50)")
     parser.add_argument('--jitter', metavar="# of Seconds", help="Randomize URLs and add a random delay between requests")
     parser.add_argument("--open", action='store_true', help="[Optional] Open all URLs in a browser")
+    parser.add_argument("--skipcreds", action='store_true', help="Skip checking for default creds")
     args = parser.parse_args()
 
     if args.h:
@@ -57,7 +58,7 @@ def cliParser():
         args.jitter = "None"
 
     if args.d:
-        if re.match("^[A-Za-z0-9_-]*$", args.d):
+        if os.access(os.path.dirname(args.d), os.W_OK):
             pass
         else:
             print "[*] Error: Please provide a valid folder name. [A-Za-z0-9_] are valid character sets!\n"
@@ -89,7 +90,7 @@ def cliParser():
         args.cycle = "None"
 
     # Return the file name which contains the URLs
-    return args.f, args.t, args.open, args.single, args.d, args.jitter, args.useragent, args.cycle, args.difference
+    return args.f, args.t, args.open, args.single, args.d, args.jitter, args.useragent, args.cycle, args.difference, args.skipcreds
 
 def folderOut(dir_name, full_path):
 
@@ -100,12 +101,6 @@ def folderOut(dir_name, full_path):
         output_folder_name = dir_name
     else:
         output_folder_name = current_date.replace("/", "") + "_" + current_time.replace(":", "")
-
-    # Create a folder which stores all snapshots
-    # note- os.makedirs
-    os.system("mkdir " + full_path + "/" + output_folder_name)
-    os.system("mkdir " + full_path + "/" + output_folder_name + "/screens")
-    os.system("mkdir " + full_path + "/" + output_folder_name + "/source")
 
     # Write out the CSS stylesheet
     css_page =  """img {
@@ -119,8 +114,26 @@ def folderOut(dir_name, full_path):
     }"
     """.replace('    ', '')
 
-    with open(full_path + "/" + output_folder_name + "/style.css", 'w') as css_file:
-        css_file.write(css_page)
+    if output_folder_name.startswith('/'):
+        # Create a folder which stores all snapshots
+        # If it starts with a "/", then assume it is a full path
+        os.system("mkdir " + output_folder_name)
+        os.system("mkdir " + output_folder_name + "/screens")
+        os.system("mkdir " + output_folder_name + "/source")
+
+        with open(output_folder_name + "/style.css", 'w') as css_file:
+            css_file.write(css_page)
+
+    # If it doesn't start with a "/", then assume it should be in the same directory as EyeWitness
+    else:
+        # Create a folder which stores all snapshots
+        # note- os.makedirs
+        os.system("mkdir " + full_path + "/" + output_folder_name)
+        os.system("mkdir " + full_path + "/" + output_folder_name + "/screens")
+        os.system("mkdir " + full_path + "/" + output_folder_name + "/source")
+
+        with open(full_path + "/" + output_folder_name + "/style.css", 'w') as css_file:
+            css_file.write(css_page)
 
     return output_folder_name, current_date, current_time
 
@@ -304,7 +317,7 @@ def ghostCapture(incoming_ghost_object, screen_url, rep_fold, screen_name, ewitn
     incoming_ghost_object.capture_to(ewitness_dir_path + "/" + rep_fold + "/screens/" + screen_name)
     return ghost_page, ghost_extra_resources
 
-def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwitness_path):
+def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwitness_path, skip_cred_check):
 
     try:
         # Check if page is blank, due to no-cache.  If so, make a backup request via urllib2
@@ -320,7 +333,11 @@ def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwit
         with open(iwitness_path + "/" + report_folder + "/source/" + source_code_name, 'w') as source:
             source.write(page_code.content)
 
-        default_creds = defaultCreds(page_code.content, iwitness_path)
+        if skip_cred_check:
+            default_creds = None
+        else:
+            default_creds = defaultCreds(page_code.content, iwitness_path)
+
     except AttributeError:
         print "[*] ERROR: Web page possibly blank or SSL error!"
         content_value = 1
@@ -524,7 +541,7 @@ if __name__ == "__main__":
     titleScreen()
 
     # Parse command line options and return the filename containing URLS and how long to wait for each website
-    url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter, browser_user_agent, ua_cycle, diff_value = cliParser()
+    url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter, browser_user_agent, ua_cycle, diff_value, cred_skip = cliParser()
 
     # Get the exact location where the EyeWitness script is located
     script_path = os.path.dirname(os.path.realpath(__file__))
@@ -532,8 +549,16 @@ if __name__ == "__main__":
     # Create the directory needed and support files
     report_folder, report_date, report_time = folderOut(directory_name, script_path)
 
-    # Location of the log file Ghost logs to (to catch SSL errors)
-    log_file_path = script_path + "/" + report_folder + "/logfile.log"
+    # Change log path if full path is given for output directory
+    if directory_name.startswith('/'):
+        # Location of the log file Ghost logs to (to catch SSL errors)
+        log_file_path = directory_name + "/logfile.log"
+    elif directory_name is not "None":
+        # Location of the log file Ghost logs to (to catch SSL errors)
+        log_file_path = script_path + "/" + report_folder + "/logfile.log"
+    else:
+        # Location of the log file Ghost logs to (to catch SSL errors)
+        log_file_path = script_path + "/" + report_folder + "/logfile.log"
 
     # If the user wants to cycle through user agents, return the dictionary of applicable user agents
     if ua_cycle == "None":
@@ -574,7 +599,7 @@ if __name__ == "__main__":
             try:
                 page, extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
 
-                content_blank, default_creds = backupRequest(page, single_url, source_name, content_blank, script_path)
+                content_blank, default_creds = backupRequest(page, single_url, source_name, content_blank, script_path, cred_skip)
 
                 # Create the table info for the single URL (screenshot, server headers, etc.)
                 web_index = tableMaker(web_index, single_url, default_creds, page, content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_length)
@@ -630,7 +655,7 @@ if __name__ == "__main__":
                         # Hack for a bug in Ghost at the moment
                         baseline_page.content = "None"
 
-                        baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, single_url, source_name, content_blank, script_path)
+                        baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, single_url, source_name, content_blank, script_path, cred_skip)
                         extra_info = "This is the baseline request"
 
                         # Create the table info for the single URL (screenshot, server headers, etc.)
@@ -645,7 +670,7 @@ if __name__ == "__main__":
                         # Hack for a bug in Ghost at the moment
                         new_ua_page.content = "None"
 
-                        new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, single_url, source_name, content_blank, script_path)
+                        new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, single_url, source_name, content_blank, script_path, cred_skip)
 
                         # Function which hashes the original request with the new request and checks to see if they are identical
                         same_or_different, total_length_difference = requestComparison(baseline_page.content, new_ua_page.content, diff_value)
@@ -740,7 +765,7 @@ if __name__ == "__main__":
 
                     # If EyeWitness receives a no-cache, it can't get the page source, therefore lets
                     # make a backup request get the source
-                    content_blank, default_creds = backupRequest(page, url, source_name, content_blank, script_path)
+                    content_blank, default_creds = backupRequest(page, url, source_name, content_blank, script_path, cred_skip)
 
                     web_index = tableMaker(web_index, url, default_creds, page, content_blank, log_file_path, blank_value, blank_value, blank_value, source_name, picture_name, page_length)
 
@@ -791,7 +816,7 @@ if __name__ == "__main__":
                             # Hack for a bug in Ghost at the moment
                             baseline_page.content = "None"
 
-                            baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, url, source_name, content_blank, script_path)
+                            baseline_content_blank, baseline_default_creds = backupRequest(baseline_page, url, source_name, content_blank, script_path, cred_skip)
 
                             # Create the table info for the single URL (screenshot, server headers, etc.)
                             web_index = tableMaker(web_index, url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, baseline_request)
@@ -802,7 +827,7 @@ if __name__ == "__main__":
                         else:
                             # Get page with new screenshot/
                             new_ua_page, new_ua_extra_resources = ghostCapture(ghost_object, url, report_folder, picture_name, script_path)
-                            new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, url, source_name, content_blank, script_path)
+                            new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, url, source_name, content_blank, script_path, cred_skip)
 
                             # Function which hashes the original request with the new request and checks to see if they are identical
                             same_or_different, l_difference = requestComparison(baseline_page.content, new_ua_page.content, diff_value)

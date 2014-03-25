@@ -1,3 +1,6 @@
+[3.25.2014]
+    Added.....: Add the --skipcreds flag, which will skip checking for default credentials and will just gather header responses and a screenshot.
+
 [3.24.2014]
     Modified..: Completed user agent switching.  It detects differences in requests from the baseline request based off of html source length.  If beyond a difference of 50 in length between the new request and the baseline, it will add the new useragent request to the report.
     Added.....: Added in --difference, lets the user set the difference threshold, which is 50 by default.
