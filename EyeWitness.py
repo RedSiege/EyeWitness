@@ -58,14 +58,21 @@ def cliParser():
         args.jitter = "None"
 
     if args.d:
-        if os.access(os.path.dirname(args.d), os.W_OK):
-            pass
+        current_directory = os.path.dirname(os.path.realpath(__file__))
+        if args.d.startswith('/'):
+            if os.access(os.path.dirname(args.d), os.W_OK):
+                pass
+            else:
+                print "[*] Error: Please provide a valid folder name/Path\n"
+                parser.print_help()
+                sys.exit()
         else:
-            print "[*] Error: Please provide a valid folder name. [A-Za-z0-9_] are valid character sets!\n"
-            parser.print_help()
-            sys.exit()
-    else:
-        args.d = "None"
+            if os.access(os.path.dirname(current_directory + "/" + args.d), os.W_OK):
+                pass
+            else:
+                print "[*] Error: Please provide a valid folder name/Path\n"
+                parser.print_help()
+                sys.exit()
 
     if args.f is None and args.single == "None":
         print "[*] Error: You didn't specify a file! I need a file containing URLs!\n"
@@ -90,7 +97,7 @@ def cliParser():
         args.cycle = "None"
 
     # Return the file name which contains the URLs
-    return args.f, args.t, args.open, args.single, args.d, args.jitter, args.useragent, args.cycle, args.difference, args.skipcreds
+    return args.f, args.t, args.open, args.single, args.d, args.jitter, args.useragent, args.cycle, args.difference, args.skipcreds, current_directory
 
 def folderOut(dir_name, full_path):
 
@@ -314,7 +321,11 @@ def ghostCapture(incoming_ghost_object, screen_url, rep_fold, screen_name, ewitn
     # Try to get our screenshot and source code of the page
     # Write both out to disk if possible (if we can get one, we can get the other)
     ghost_page, ghost_extra_resources = incoming_ghost_object.open(screen_url, auth=('none', 'none'), default_popup_response=True)
-    incoming_ghost_object.capture_to(ewitness_dir_path + "/" + rep_fold + "/screens/" + screen_name)
+    
+    if rep_fold.startswith('/'):
+        incoming_ghost_object.capture_to(rep_fold + "/screens/" + screen_name)
+    else:
+        incoming_ghost_object.capture_to(ewitness_dir_path + "/" + rep_fold + "/screens/" + screen_name)
     return ghost_page, ghost_extra_resources
 
 def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwitness_path, skip_cred_check):
@@ -330,8 +341,13 @@ def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwit
                 page_code.content = "Sorry, but couldn't get source code for potentially a couple reasons.  If it was Basic Auth, a 50X, or a 40X error, EyeWitness won't return source code.  Couldn't get source from " + url + "."
             except urllib2.URLError:
                 page_code.content = "Name resolution could not happen with " + outgoing_url + "."
-        with open(iwitness_path + "/" + report_folder + "/source/" + source_code_name, 'w') as source:
-            source.write(page_code.content)
+
+        if report_folder.startswith('/'):
+            with open(report_folder + "/source/" + source_code_name, 'w') as source:
+                source.write(page_code.content)
+        else:
+            with open(iwitness_path + "/" + report_folder + "/source/" + source_code_name, 'w') as source:
+                source.write(page_code.content)
 
         if skip_cred_check:
             default_creds = None
@@ -424,8 +440,12 @@ def singleReportPage(report_source, report_path):
     </body>
     </html>
     """.replace('    ', '')
-    with open(report_path + "/" + report_folder + "/report.html", 'w') as fo:
-        fo.write(report_source)
+    if report_folder.startswith('/'):
+        with open(report_folder + "/report.html", 'w') as fo:
+            fo.write(report_source)
+    else:
+        with open(report_path + "/" + report_folder + "/report.html", 'w') as fo:
+            fo.write(report_source)
     return
 
 def userAgentDefinition(cycle_value):
@@ -541,10 +561,7 @@ if __name__ == "__main__":
     titleScreen()
 
     # Parse command line options and return the filename containing URLS and how long to wait for each website
-    url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter, browser_user_agent, ua_cycle, diff_value, cred_skip = cliParser()
-
-    # Get the exact location where the EyeWitness script is located
-    script_path = os.path.dirname(os.path.realpath(__file__))
+    url_filename, timeout_wait, open_urls, single_url, directory_name, request_jitter, browser_user_agent, ua_cycle, diff_value, cred_skip, script_path = cliParser()
 
     # Create the directory needed and support files
     report_folder, report_date, report_time = folderOut(directory_name, script_path)
