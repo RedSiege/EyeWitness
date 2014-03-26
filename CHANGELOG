@@ -1,6 +1,7 @@
 [3.25.2014]
     Added.....: Add the --skipcreds flag, which will skip checking for default credentials and will just gather header responses and a screenshot.
     Modified..: Modified the directory specification for the report output to now allow full paths. Github Issue #26
+    Added.....: Exception handling for server-side disconnects
 
 [3.24.2014]
     Modified..: Completed user agent switching.  It detects differences in requests from the baseline request based off of html source length.  If beyond a difference of 50 in length between the new request and the baseline, it will add the new useragent request to the report.

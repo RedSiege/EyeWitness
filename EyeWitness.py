@@ -38,6 +38,8 @@ def cliParser():
     parser.add_argument("--skipcreds", action='store_true', help="Skip checking for default creds")
     args = parser.parse_args()
 
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+
     if args.h:
         parser.print_help()
         sys.exit()
@@ -58,7 +60,6 @@ def cliParser():
         args.jitter = "None"
 
     if args.d:
-        current_directory = os.path.dirname(os.path.realpath(__file__))
         if args.d.startswith('/'):
             if os.access(os.path.dirname(args.d), os.W_OK):
                 pass
@@ -73,6 +74,8 @@ def cliParser():
                 print "[*] Error: Please provide a valid folder name/Path\n"
                 parser.print_help()
                 sys.exit()
+    else:
+        args.d = "None"
 
     if args.f is None and args.single == "None":
         print "[*] Error: You didn't specify a file! I need a file containing URLs!\n"
@@ -101,14 +104,6 @@ def cliParser():
 
 def folderOut(dir_name, full_path):
 
-    # Get the date and time, and create output name
-    current_date = time.strftime("%m/%d/%Y")
-    current_time = time.strftime("%H:%M:%S")
-    if dir_name is not "None":
-        output_folder_name = dir_name
-    else:
-        output_folder_name = current_date.replace("/", "") + "_" + current_time.replace(":", "")
-
     # Write out the CSS stylesheet
     css_page =  """img {
     max-width: 100%;
@@ -120,6 +115,14 @@ def folderOut(dir_name, full_path):
     max-height: 550px;
     }"
     """.replace('    ', '')
+
+    # Get the date and time, and create output name
+    current_date = time.strftime("%m/%d/%Y")
+    current_time = time.strftime("%H:%M:%S")
+    if dir_name is not "None":
+        output_folder_name = dir_name
+    else:
+        output_folder_name = current_date.replace("/", "") + "_" + current_time.replace(":", "")
 
     if output_folder_name.startswith('/'):
         # Create a folder which stores all snapshots
@@ -359,6 +362,11 @@ def backupRequest(page_code, outgoing_url, source_code_name, content_value, iwit
         content_value = 1
         default_creds = None
 
+    except:
+        print "[*] ERROR: Unknown error when accessing " + outgoing_url
+        content_value = 1
+        default_creds = None
+
     return content_value, default_creds
 
 def tableMaker(web_table_index, website_url, possible_creds, web_page, content_empty, log_path, extra_notes, browser_out, ua_out, source_code_table, screenshot_table, length_difference):
@@ -418,7 +426,7 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page, content_e
     # If page is empty, or SSL errors, add it to report
     if content_empty == 1:
         web_table_index += """<br></td>
-        <td><div style=\"display: inline-block; width: 850px;\">Page Blank or SSL Issues</div></td>
+        <td><div style=\"display: inline-block; width: 850px;\">Page Blank, Connection error, or SSL Issues</div></td>
         </tr>
         """.replace('    ', '')
 
