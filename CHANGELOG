@@ -1,3 +1,6 @@
+[3.26.2014]
+    Added.....: Exception handling in case there is an issue when grabbing a web page with a specific user agent.  Thanks Webbreacher for helping to bring that up and let me know how to replicate it.
+
 [3.25.2014]
     Added.....: Add the --skipcreds flag, which will skip checking for default credentials and will just gather header responses and a screenshot.
     Modified..: Modified the directory specification for the report output to now allow full paths. Github Issue #26

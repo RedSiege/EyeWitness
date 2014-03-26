@@ -691,21 +691,28 @@ if __name__ == "__main__":
 
                     else:
                         new_ua_page, new_ua_extra_resources = ghostCapture(ghost_object, single_url, report_folder, picture_name, script_path)
+                        try:
+                            # Hack for a bug in Ghost at the moment
+                            new_ua_page.content = "None"
 
-                        # Hack for a bug in Ghost at the moment
-                        new_ua_page.content = "None"
+                            new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, single_url, source_name, content_blank, script_path, cred_skip)
 
-                        new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, single_url, source_name, content_blank, script_path, cred_skip)
+                            # Function which hashes the original request with the new request and checks to see if they are identical
+                            same_or_different, total_length_difference = requestComparison(baseline_page.content, new_ua_page.content, diff_value)
 
-                        # Function which hashes the original request with the new request and checks to see if they are identical
-                        same_or_different, total_length_difference = requestComparison(baseline_page.content, new_ua_page.content, diff_value)
-
-                        # If they are the same, then go on to the next user agent, if they are different, add it to the report
-                        if same_or_different:
-                            pass
-                        else:
-                            # Create the table info for the single URL (screenshot, server headers, etc.)
-                            web_index = tableMaker(web_index, single_url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, total_length_difference)
+                            # If they are the same, then go on to the next user agent, if they are different, add it to the report
+                            if same_or_different:
+                                pass
+                            else:
+                                # Create the table info for the single URL (screenshot, server headers, etc.)
+                                web_index = tableMaker(web_index, single_url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, total_length_difference)
+                        except AttributeError:
+                            print "[*] Unable to request " + single_url + " with " + browser_key
+                            web_index += """<tr>
+                            <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                            <td>Unable to request {single_given_url} with {browser_user}.</td>
+                            </tr>
+                            """.format(single_given_url=single_url, browser_user=browser_key).replace('    ', '')
                         total_length_difference = "None"
            
                 # Skip a url if Ctrl-C is hit
@@ -852,17 +859,30 @@ if __name__ == "__main__":
                         else:
                             # Get page with new screenshot/
                             new_ua_page, new_ua_extra_resources = ghostCapture(ghost_object, url, report_folder, picture_name, script_path)
-                            new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, url, source_name, content_blank, script_path, cred_skip)
 
-                            # Function which hashes the original request with the new request and checks to see if they are identical
-                            same_or_different, l_difference = requestComparison(baseline_page.content, new_ua_page.content, diff_value)
+                            try:
+                                # Hack fix for potential bug in Ghost
+                                new_ua_page.content = "None"
 
-                            # If they are the same, then go on to the next user agent, if they are different, add it to the report
-                            if same_or_different:
-                                pass
-                            else:
-                                # Create the table info for the single URL (screenshot, server headers, etc.)
-                                web_index = tableMaker(web_index, url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, l_difference)
+                                new_ua_content_blank, new_ua_default_creds = backupRequest(new_ua_page, url, source_name, content_blank, script_path, cred_skip)
+
+                                # Function which hashes the original request with the new request and checks to see if they are identical
+                                same_or_different, l_difference = requestComparison(baseline_page.content, new_ua_page.content, diff_value)
+
+                                # If they are the same, then go on to the next user agent, if they are different, add it to the report
+                                if same_or_different:
+                                    pass
+                                else:
+                                    # Create the table info for the single URL (screenshot, server headers, etc.)
+                                    web_index = tableMaker(web_index, url, baseline_default_creds, baseline_page, baseline_content_blank, log_file_path, blank_value, browser_key, user_agent_value, source_name, picture_name, l_difference)
+                            except AttributeError:
+                                print "[*] Unable to request " + url + " with " + browser_key
+                                web_index += """<tr>
+                                <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                                <td>Unable to request {single_given_url} with {browser_user}.</td>
+                                </tr>
+                                """.format(single_given_url=url, browser_user=browser_key).replace('    ', '')
+
                             l_difference = "None"
 
                     # Skip a url if Ctrl-C is hit
