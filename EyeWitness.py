@@ -25,7 +25,66 @@ import random
 import subprocess
 
 
-def cliParser():
+def backup_request(page_code, outgoing_url, source_code_name, content_value,
+                   iwitness_path, skip_cred_check):
+
+    try:
+        # Check if page is blank, due to no-cache.  If so,
+        # make a backup request via urllib2
+        if page_code.content == "None":
+            try:
+                response = urllib2.urlopen(outgoing_url)
+                page_code.content = response.read()
+                response.close()
+            except urllib2.HTTPError:
+                page_code.content = "Sorry, but couldn't get source code for\
+                potentially a couple reasons.  If it was Basic Auth, a 50X,\
+                or a 40X error, EyeWitness won't return source code.  Couldn't\
+                get source from " + url + "."
+            except urllib2.URLError:
+                page_code.content = "Name resolution could not happen with " +\
+                                    outgoing_url + "."
+
+        if report_folder.startswith('/'):
+            with open(report_folder + "/source/" + source_code_name, 'w')\
+                    as source:
+                source.write(page_code.content)
+        else:
+            with open(iwitness_path + "/" + report_folder + "/source/" +
+                      source_code_name, 'w') as source:
+                source.write(page_code.content)
+
+        if skip_cred_check:
+            default_credentials_identified = None
+        else:
+            default_credentials_identified = default_creds(
+                page_code.content, iwitness_path)
+
+    except AttributeError:
+        print "[*] ERROR: Web page possibly blank or SSL error!"
+        content_value = 1
+        default_credentials_identified = None
+
+    except:
+        print "[*] ERROR: Unknown error when accessing " + outgoing_url
+        content_value = 1
+        default_credentials_identified = None
+
+    return content_value, default_credentials_identified
+
+
+def casper_creator(ua_capture, url_timeout):
+    # Instantiate Ghost Object
+    if ua_capture == "None":
+        ghost = screener.Ghost(wait_timeout=int(url_timeout),
+                               ignore_ssl_errors=True)
+    else:
+        ghost = screener.Ghost(wait_timeout=int(url_timeout),
+                               user_agent=ua_capture, ignore_ssl_errors=True)
+    return ghost
+
+
+def cli_parser():
 
     # Command line argument parser
     parser = argparse.ArgumentParser(
@@ -141,7 +200,54 @@ def cliParser():
         current_directory, args.localscan
 
 
-def folderOut(dir_name, full_path):
+def default_creds(page_content, full_file_path):
+    # Read in the file containing the web "signatures"
+    with open(full_file_path + '/signatures.txt', 'r') as sig_file:
+        signatures = sig_file.readlines()
+
+    # Loop through and see if there are any matches from the source code
+    # EyeWitness obtained
+    for sig in signatures:
+        # Find the signature(s), split them into their own list if needed
+        # Assign default creds to its own variable
+        sig_cred = sig.split('|')
+        page_sig = sig_cred[0].split(";")
+        cred_info = sig_cred[1]
+
+        # Set our variable to 1 if the signature was identified.  If it is
+        # identified, it will be added later on.  Find total number of
+        # "signatures" needed to uniquely identify the web app
+        sig_not_found = 0
+        signature_range = len(page_sig)
+
+        # This is used if there is more than one "part" of the web page needed
+        # to make a signature Delimete the "signature" by ";" before the "|",
+        # and then have the creds after the "|"
+        for individual_signature in range(0, signature_range):
+            if str(page_content).find(page_sig[individual_signature]) is not\
+                    -1:
+                pass
+            else:
+                sig_not_found = 1
+
+        # If the signature was found, break out of loops and return the creds
+        if sig_not_found == 0:
+            return cred_info
+            break
+
+
+def file_names(url_given):
+    url_given = url_given.strip()
+    pic_name = url_given
+    pic_name = pic_name.replace("//", "")
+    pic_name = pic_name.replace(":", "")
+    pic_name = pic_name.replace("/", "")
+    src_name = pic_name + ".txt"
+    pic_name = pic_name + ".png"
+    return url_given, src_name, pic_name
+
+
+def folder_out(dir_name, full_path):
 
     # Write out the CSS stylesheet
     css_page = """img {
@@ -188,6 +294,27 @@ def folderOut(dir_name, full_path):
             css_file.write(css_page)
 
     return output_folder_name, current_date, current_time
+
+
+def ghost_capture(incoming_ghost_object, screen_url, rep_fold, screen_name,
+                  ewitness_dir_path):
+    # Try to get our screenshot and source code of the page
+    # Write both out to disk if possible (if we can get one,
+    # we can get the other)
+    ghost_page, ghost_extra_resources = incoming_ghost_object.open(
+        screen_url, auth=('none', 'none'), default_popup_response=True)
+
+    if rep_fold.startswith('/'):
+        incoming_ghost_object.capture_to(rep_fold + "/screens/" + screen_name)
+    else:
+        incoming_ghost_object.capture_to(
+            ewitness_dir_path + "/" + rep_fold + "/screens/" + screen_name)
+    return ghost_page, ghost_extra_resources
+
+
+def html_encode(dangerous_data):
+    encoded = cgi.escape(dangerous_data, quote=True)
+    return encoded
 
 
 def logistics(url_file):
@@ -316,149 +443,46 @@ def logistics(url_file):
             sys.exit()
 
 
-def titleScreen():
-    os.system('clear')
-    print "#############################################################################"
-    print "#                               EyeWitness                                  #"
-    print "#############################################################################\n"
+def request_comparison(original_content, new_content, max_difference):
+    # Function which compares the original baseline request with the new
+    # request with the modified user agent
+    orig_request_length = len(original_content)
+    new_request_length = len(new_content)
 
-
-def defaultCreds(page_content, full_file_path):
-    # Read in the file containing the web "signatures"
-    with open(full_file_path + '/signatures.txt', 'r') as sig_file:
-        signatures = sig_file.readlines()
-
-    # Loop through and see if there are any matches from the source code
-    # EyeWitness obtained
-    for sig in signatures:
-        # Find the signature(s), split them into their own list if needed
-        # Assign default creds to its own variable
-        sig_cred = sig.split('|')
-        page_sig = sig_cred[0].split(";")
-        cred_info = sig_cred[1]
-
-        # Set our variable to 1 if the signature was identified.  If it is
-        # identified, it will be added later on.  Find total number of
-        # "signatures" needed to uniquely identify the web app
-        sig_not_found = 0
-        signature_range = len(page_sig)
-
-        # This is used if there is more than one "part" of the web page needed
-        # to make a signature Delimete the "signature" by ";" before the "|",
-        # and then have the creds after the "|"
-        for individual_signature in range(0, signature_range):
-            if str(page_content).find(page_sig[individual_signature]) is not\
-                    -1:
-                pass
-            else:
-                sig_not_found = 1
-
-        # If the signature was found, break out of loops and return the creds
-        if sig_not_found == 0:
-            return cred_info
-            break
-
-
-def webHeader():
-    # Start our web page report
-    web_index_head = """<html>
-    <head>
-    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
-    <title>EyeWitness Report</title>
-    </head>
-    <body>
-    <center>Report Generated on {report_day} at {reporthtml_time}</center>
-    <br><table border=\"1\">
-    <tr>
-    <th>Web Request Info</th>
-    <th>Web Screenshot</th>
-    </tr>""".format(report_day=report_date, reporthtml_time=report_time)\
-        .replace('    ', '')
-    return web_index_head
-
-
-def fileNames(url_given):
-    url_given = url_given.strip()
-    pic_name = url_given
-    pic_name = pic_name.replace("//", "")
-    pic_name = pic_name.replace(":", "")
-    pic_name = pic_name.replace("/", "")
-    src_name = pic_name + ".txt"
-    pic_name = pic_name + ".png"
-    return url_given, src_name, pic_name
-
-
-def htmlEncode(dangerous_data):
-    encoded = cgi.escape(dangerous_data, quote=True)
-    return encoded
-
-
-def ghostCapture(incoming_ghost_object, screen_url, rep_fold, screen_name,
-                 ewitness_dir_path):
-    # Try to get our screenshot and source code of the page
-    # Write both out to disk if possible (if we can get one,
-    # we can get the other)
-    ghost_page, ghost_extra_resources = incoming_ghost_object.open(
-        screen_url, auth=('none', 'none'), default_popup_response=True)
-
-    if rep_fold.startswith('/'):
-        incoming_ghost_object.capture_to(rep_fold + "/screens/" + screen_name)
+    if new_request_length > orig_request_length:
+        a, b = new_request_length, orig_request_length
+        total_difference = a - b
+        if total_difference > int(max_difference):
+            return False, total_difference
+        else:
+            return True, "None"
     else:
-        incoming_ghost_object.capture_to(
-            ewitness_dir_path + "/" + rep_fold + "/screens/" + screen_name)
-    return ghost_page, ghost_extra_resources
-
-
-def backupRequest(page_code, outgoing_url, source_code_name, content_value,
-                  iwitness_path, skip_cred_check):
-
-    try:
-        # Check if page is blank, due to no-cache.  If so,
-        # make a backup request via urllib2
-        if page_code.content == "None":
-            try:
-                response = urllib2.urlopen(outgoing_url)
-                page_code.content = response.read()
-                response.close()
-            except urllib2.HTTPError:
-                page_code.content = "Sorry, but couldn't get source code for\
-                potentially a couple reasons.  If it was Basic Auth, a 50X,\
-                or a 40X error, EyeWitness won't return source code.  Couldn't\
-                get source from " + url + "."
-            except urllib2.URLError:
-                page_code.content = "Name resolution could not happen with " +\
-                                    outgoing_url + "."
-
-        if report_folder.startswith('/'):
-            with open(report_folder + "/source/" + source_code_name, 'w')\
-                    as source:
-                source.write(page_code.content)
+        total_difference = orig_request_length - new_request_length
+        if total_difference > int(max_difference):
+            return False, total_difference
         else:
-            with open(iwitness_path + "/" + report_folder + "/source/" +
-                      source_code_name, 'w') as source:
-                source.write(page_code.content)
-
-        if skip_cred_check:
-            default_creds = None
-        else:
-            default_creds = defaultCreds(page_code.content, iwitness_path)
-
-    except AttributeError:
-        print "[*] ERROR: Web page possibly blank or SSL error!"
-        content_value = 1
-        default_creds = None
-
-    except:
-        print "[*] ERROR: Unknown error when accessing " + outgoing_url
-        content_value = 1
-        default_creds = None
-
-    return content_value, default_creds
+            return True, "None"
 
 
-def tableMaker(web_table_index, website_url, possible_creds, web_page,
-               content_empty, log_path, extra_notes, browser_out, ua_out,
-               source_code_table, screenshot_table, length_difference):
+def single_report_page(report_source, report_path):
+    # Close out the html and write it to disk
+    report_source += """</table>
+    </body>
+    </html>
+    """.replace('    ', '')
+    if report_folder.startswith('/'):
+        with open(report_folder + "/report.html", 'w') as fo:
+            fo.write(report_source)
+    else:
+        with open(report_path + "/" + report_folder + "/report.html", 'w')\
+                as fo:
+            fo.write(report_source)
+    return
+
+
+def table_maker(web_table_index, website_url, possible_creds, web_page,
+                content_empty, log_path, extra_notes, browser_out, ua_out,
+                source_code_table, screenshot_table, length_difference):
 
     # Continue adding to the table assuming that we were able
     # to capture the screenshot.  Only add elements if they exist
@@ -510,14 +534,14 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page,
     # If there are some default creds, escape them, and add them to the report
     if possible_creds is not None:
         web_table_index += "<br><b>Default credentials:</b> " +\
-            htmlEncode(possible_creds) + "<br>"
+            html_encode(possible_creds) + "<br>"
 
     # Loop through all server header responses, and add them to table
     # Handle exception if there is a SSL error and no headers were received.
     try:
         for key, value in web_page.headers.items():
-            web_table_index += "<br><b> " + htmlEncode(key.decode('utf-8')) +\
-                ":</b> " + htmlEncode(value) + "\n"
+            web_table_index += "<br><b> " + html_encode(key.decode('utf-8')) +\
+                ":</b> " + html_encode(value) + "\n"
 
     except AttributeError:
         web_table_index += "\n<br><br>Potential blank page or SSL issue with\
@@ -551,23 +575,14 @@ def tableMaker(web_table_index, website_url, possible_creds, web_page,
     return web_table_index
 
 
-def singleReportPage(report_source, report_path):
-    # Close out the html and write it to disk
-    report_source += """</table>
-    </body>
-    </html>
-    """.replace('    ', '')
-    if report_folder.startswith('/'):
-        with open(report_folder + "/report.html", 'w') as fo:
-            fo.write(report_source)
-    else:
-        with open(report_path + "/" + report_folder + "/report.html", 'w')\
-                as fo:
-            fo.write(report_source)
-    return
+def title_screen():
+    os.system('clear')
+    print "#############################################################################"
+    print "#                               EyeWitness                                  #"
+    print "#############################################################################\n"
 
 
-def userAgentDefinition(cycle_value):
+def user_agent_definition(cycle_value):
     # Create the dicts which hold different user agents.
     # Thanks to Chris John Riley for having an awesome tool which I could
     # get this info from.  His tool - UAtester.py -
@@ -672,57 +687,43 @@ def userAgentDefinition(cycle_value):
         return all_combined_uagents
     else:
         print "[*] Error: You did not provide the type of user agents\
-         to cycle through!"
+         to cycle through!".replace('    ', '')
         print "[*] Error: Defaulting to desktop browser user agents."
         return desktop_uagents
 
 
-# This is the ghost object creation function
-def casperCreator(ua_capture, url_timeout):
-    # Instantiate Ghost Object
-    if ua_capture == "None":
-        ghost = screener.Ghost(wait_timeout=int(url_timeout),
-                               ignore_ssl_errors=True)
-    else:
-        ghost = screener.Ghost(wait_timeout=int(url_timeout),
-                               user_agent=ua_capture, ignore_ssl_errors=True)
-    return ghost
+def web_header():
+    # Start our web page report
+    web_index_head = """<html>
+    <head>
+    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+    <title>EyeWitness Report</title>
+    </head>
+    <body>
+    <center>Report Generated on {report_day} at {reporthtml_time}</center>
+    <br><table border=\"1\">
+    <tr>
+    <th>Web Request Info</th>
+    <th>Web Screenshot</th>
+    </tr>""".format(report_day=report_date, reporthtml_time=report_time)\
+        .replace('    ', '')
+    return web_index_head
 
-
-def requestComparison(original_content, new_content, max_difference):
-    # Function which compares the original baseline request with the new
-    # request with the modified user agent
-    orig_request_length = len(original_content)
-    new_request_length = len(new_content)
-
-    if new_request_length > orig_request_length:
-        a, b = new_request_length, orig_request_length
-        total_difference = a - b
-        if total_difference > int(max_difference):
-            return False, total_difference
-        else:
-            return True, "None"
-    else:
-        total_difference = orig_request_length - new_request_length
-        if total_difference > int(max_difference):
-            return False, total_difference
-        else:
-            return True, "None"
 
 if __name__ == "__main__":
 
     # Print the title header
-    titleScreen()
+    title_screen()
 
     # Parse command line options and return the filename containing URLS
     # and how long to wait for each website
     url_filename, timeout_wait, open_urls, single_url, directory_name,\
         request_jitter, browser_user_agent, ua_cycle, diff_value, cred_skip,\
-        script_path, subnet_scan = cliParser()
+        script_path, subnet_scan = cli_parser()
 
     # Create the directory needed and support files
-    report_folder, report_date, report_time = folderOut(directory_name,
-                                                        script_path)
+    report_folder, report_date, report_time = folder_out(directory_name,
+                                                         script_path)
 
     # Change log path if full path is given for output directory
     if directory_name.startswith('/'):
@@ -738,10 +739,10 @@ if __name__ == "__main__":
     # If the user wants to cycle through user agents, return the dictionary
     # of applicable user agents
     if ua_cycle == "None":
-        ghost_object = casperCreator(browser_user_agent, timeout_wait)
+        ghost_object = casper_creator(browser_user_agent, timeout_wait)
     else:
-        ua_dict = userAgentDefinition(ua_cycle)
-        ghost_object = casperCreator(browser_user_agent, timeout_wait)
+        ua_dict = user_agent_definition(ua_cycle)
+        ghost_object = casper_creator(browser_user_agent, timeout_wait)
 
     # Logging setup
     logging.basicConfig(filename=log_file_path, level=logging.WARNING)
@@ -766,31 +767,31 @@ if __name__ == "__main__":
         # Used for monitoring for blank pages or SSL errors
         content_blank = 0
 
-        web_index = webHeader()
+        web_index = web_header()
         print "Trying to screenshot " + single_url
 
         # Create the filename to store each website's picture
-        single_url, source_name, picture_name = fileNames(single_url)
+        single_url, source_name, picture_name = file_names(single_url)
 
         # If a normal single request, then perform the request
         if ua_cycle == "None":
             try:
-                page, extra_resources = ghostCapture(ghost_object, single_url,
-                                                     report_folder,
-                                                     picture_name, script_path)
+                page, extra_resources = ghost_capture(ghost_object, single_url,
+                                                      report_folder,
+                                                      picture_name,
+                                                      script_path)
 
-                content_blank, default_creds = backupRequest(page, single_url,
-                                                             source_name,
-                                                             content_blank,
-                                                             script_path,
-                                                             cred_skip)
+                content_blank, single_default_credentials = backup_request(
+                    page, single_url, source_name, content_blank, script_path,
+                    cred_skip)
 
                 # Create the table info for the single URL (screenshot,
                 # server headers, etc.)
-                web_index = tableMaker(web_index, single_url, default_creds,
-                                       page, content_blank, log_file_path,
-                                       blank_value, blank_value, blank_value,
-                                       source_name, picture_name, page_length)
+                web_index = table_maker(web_index, single_url,
+                                        single_default_credentials,
+                                        page, content_blank, log_file_path,
+                                        blank_value, blank_value, blank_value,
+                                        source_name, picture_name, page_length)
 
             # Skip a url if Ctrl-C is hit
             except KeyboardInterrupt:
@@ -843,54 +844,54 @@ if __name__ == "__main__":
                     if request_number == 0:
                         # Get baseline screenshot
                         baseline_page, baseline_extra_resources = \
-                            ghostCapture(ghost_object, single_url,
-                                         report_folder, picture_name,
-                                         script_path)
+                            ghost_capture(ghost_object, single_url,
+                                          report_folder, picture_name,
+                                          script_path)
 
                         # Hack for a bug in Ghost at the moment
                         baseline_page.content = "None"
 
                         baseline_content_blank, baseline_default_creds = \
-                            backupRequest(baseline_page, single_url,
-                                          source_name, content_blank,
-                                          script_path, cred_skip)
+                            backup_request(baseline_page, single_url,
+                                           source_name, content_blank,
+                                           script_path, cred_skip)
                         extra_info = "This is the baseline request"
 
                         # Create the table info for the single URL
                         # (screenshot, server headers, etc.)
-                        web_index = tableMaker(web_index, single_url,
-                                               baseline_default_creds,
-                                               baseline_page,
-                                               baseline_content_blank,
-                                               log_file_path, blank_value,
-                                               browser_key, user_agent_value,
-                                               source_name, picture_name,
-                                               baseline_request)
+                        web_index = table_maker(web_index, single_url,
+                                                baseline_default_creds,
+                                                baseline_page,
+                                                baseline_content_blank,
+                                                log_file_path, blank_value,
+                                                browser_key, user_agent_value,
+                                                source_name, picture_name,
+                                                baseline_request)
 
                         # Move beyond the baseline
                         request_number = 1
 
                     else:
                         new_ua_page, new_ua_extra_resources = \
-                            ghostCapture(ghost_object, single_url,
-                                         report_folder, picture_name,
-                                         script_path)
+                            ghost_capture(ghost_object, single_url,
+                                          report_folder, picture_name,
+                                          script_path)
                         try:
                             # Hack for a bug in Ghost at the moment
                             new_ua_page.content = "None"
 
                             new_ua_content_blank, new_ua_default_creds = \
-                                backupRequest(new_ua_page, single_url,
-                                              source_name, content_blank,
-                                              script_path, cred_skip)
+                                backup_request(new_ua_page, single_url,
+                                               source_name, content_blank,
+                                               script_path, cred_skip)
 
                             # Function which hashes the original request with
                             # the new request and checks to see if they are
                             # identical
                             same_or_different, total_length_difference = \
-                                requestComparison(baseline_page.content,
-                                                  new_ua_page.content,
-                                                  diff_value)
+                                request_comparison(baseline_page.content,
+                                                   new_ua_page.content,
+                                                   diff_value)
 
                             # If they are the same, then go on to the next user
                             # agent, if they are different, add it to the
@@ -900,17 +901,18 @@ if __name__ == "__main__":
                             else:
                                 # Create the table info for the single URL
                                 # (screenshot, server headers, etc.)
-                                web_index = tableMaker(web_index, single_url,
-                                                       baseline_default_creds,
-                                                       baseline_page,
-                                                       baseline_content_blank,
-                                                       log_file_path,
-                                                       blank_value,
-                                                       browser_key,
-                                                       user_agent_value,
-                                                       source_name,
-                                                       picture_name,
-                                                       total_length_difference)
+                                web_index = table_maker(web_index, single_url,
+                                                        new_ua_default_creds,
+                                                        baseline_page,
+                                                        baseline_content_blank,
+                                                        log_file_path,
+                                                        blank_value,
+                                                        browser_key,
+                                                        user_agent_value,
+                                                        source_name,
+                                                        picture_name,
+                                                        total_length_difference
+                                                        )
                         except AttributeError:
                             print "[*] Unable to request " + single_url +\
                                 " with " + browser_key
@@ -965,7 +967,7 @@ if __name__ == "__main__":
             p = subprocess.Popen(iceweasel_command)
 
         # Write out the report for the single URL
-        singleReportPage(web_index, script_path)
+        single_report_page(web_index, script_path)
 
     else:
 
@@ -977,7 +979,7 @@ if __name__ == "__main__":
             random.shuffle(url_list)
 
         # Add the web "header" to our web page
-        web_index = webHeader()
+        web_index = web_header()
         print "Trying to screenshot " + str(number_urls) + " websites...\n"
 
         # Create a URL counter to know when to go to a new page
@@ -999,7 +1001,7 @@ if __name__ == "__main__":
             content_blank = 0
 
             # Create the filename to store each website's picture
-            url, source_name, picture_name = fileNames(url)
+            url, source_name, picture_name = file_names(url)
 
             # This is the code which opens the specified URL and captures
             # it to a screenshot
@@ -1009,21 +1011,21 @@ if __name__ == "__main__":
             if ua_cycle == "None":
                 try:
                     # Ghost capturing web page
-                    page, extra_resources = ghostCapture(
+                    page, extra_resources = ghost_capture(
                         ghost_object, url, report_folder, picture_name,
                         script_path)
 
                     # If EyeWitness receives a no-cache, it can't get the
                     # page source, therefore lets
                     # make a backup request get the source
-                    content_blank, default_creds = backupRequest(
+                    content_blank, multi_line_default_creds = backup_request(
                         page, url, source_name, content_blank, script_path,
                         cred_skip)
 
-                    web_index = tableMaker(
-                        web_index, url, default_creds, page, content_blank,
-                        log_file_path, blank_value, blank_value, blank_value,
-                        source_name, picture_name, page_length)
+                    web_index = table_maker(
+                        web_index, url, multi_line_default_creds, page,
+                        content_blank, log_file_path, blank_value, blank_value,
+                        blank_value, source_name, picture_name, page_length)
 
                 # Skip a url if Ctrl-C is hit
                 except KeyboardInterrupt:
@@ -1073,20 +1075,20 @@ if __name__ == "__main__":
                         if request_number == 0:
                             # Get baseline screenshot
                             baseline_page, baseline_extra_resources = \
-                                ghostCapture(ghost_object, url, report_folder,
-                                             picture_name, script_path)
+                                ghost_capture(ghost_object, url, report_folder,
+                                              picture_name, script_path)
 
                             # Hack for a bug in Ghost at the moment
                             baseline_page.content = "None"
 
                             baseline_content_blank, baseline_default_creds =\
-                                backupRequest(baseline_page, url, source_name,
-                                              content_blank, script_path,
-                                              cred_skip)
+                                backup_request(baseline_page, url, source_name,
+                                               content_blank, script_path,
+                                               cred_skip)
 
                             # Create the table info for the single URL
                             # (screenshot, server headers, etc.)
-                            web_index = tableMaker(
+                            web_index = table_maker(
                                 web_index, url, baseline_default_creds,
                                 baseline_page, baseline_content_blank,
                                 log_file_path, blank_value, browser_key,
@@ -1099,7 +1101,7 @@ if __name__ == "__main__":
                         else:
                             # Get page with new screenshot/
                             new_ua_page, new_ua_extra_resources =\
-                                ghostCapture(
+                                ghost_capture(
                                     ghost_object, url, report_folder,
                                     picture_name, script_path)
 
@@ -1108,7 +1110,7 @@ if __name__ == "__main__":
                                 new_ua_page.content = "None"
 
                                 new_ua_content_blank, new_ua_default_creds =\
-                                    backupRequest(
+                                    backup_request(
                                         new_ua_page, url, source_name,
                                         content_blank, script_path, cred_skip)
 
@@ -1116,7 +1118,7 @@ if __name__ == "__main__":
                                 # with the new request and checks to see if
                                 # they are identical
                                 same_or_different, l_difference = \
-                                    requestComparison(
+                                    request_comparison(
                                         baseline_page.content,
                                         new_ua_page.content, diff_value)
 
@@ -1128,8 +1130,8 @@ if __name__ == "__main__":
                                 else:
                                     # Create the table info for the single URL
                                     # (screenshot, server headers, etc.)
-                                    web_index = tableMaker(
-                                        web_index, url, baseline_default_creds,
+                                    web_index = table_maker(
+                                        web_index, url, new_ua_default_creds,
                                         baseline_page, baseline_content_blank,
                                         log_file_path, blank_value,
                                         browser_key, user_agent_value,
@@ -1221,7 +1223,7 @@ if __name__ == "__main__":
                     # the "header" of the new html page
                     url_counter = 0
                     page_counter = page_counter + 1
-                    web_index = webHeader()
+                    web_index = web_header()
                 else:
                     # Write out to the next page
                     web_index += "</table>\n"
@@ -1233,10 +1235,10 @@ if __name__ == "__main__":
                     # Reset the URL counter
                     url_counter = 0
                     page_counter = page_counter + 1
-                    web_index = webHeader()
+                    web_index = web_header()
 
         if page_counter == 1:
-            singleReportPage(web_index, script_path)
+            single_report_page(web_index, script_path)
         else:
             # Write out our extra page
             web_index += "</table>\n"
