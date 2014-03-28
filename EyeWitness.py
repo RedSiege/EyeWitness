@@ -136,7 +136,9 @@ def cliParser():
         args.cycle = "None"
 
     # Return the file name which contains the URLs
-    return args.f, args.t, args.open, args.single, args.d, args.jitter, args.useragent, args.cycle, args.difference, args.skipcreds, current_directory, args.localscan
+    return args.f, args.t, args.open, args.single, args.d, args.jitter,\
+        args.useragent, args.cycle, args.difference, args.skipcreds,\
+        current_directory, args.localscan
 
 
 def folderOut(dir_name, full_path):
@@ -629,8 +631,8 @@ def userAgentDefinition(cycle_value):
         "Android": "Mozilla/5.0 (Linux; U; Android 2.3.5; en-us; HTC Vision \
             Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 \
             Mobile Safari/533.1",
-        "IEMobile9.0": "Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5\
-            ; Trident/5.0; IEMobile/9.0)",
+        "IEMobile9.0": "Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS\
+            7.5; Trident/5.0; IEMobile/9.0)",
         "OperaMobile12.02": "Opera/12.02 (Android 4.1; Linux; Opera \
             Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02",
         "iPadSafari6.0": "Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) \
