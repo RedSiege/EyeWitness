@@ -6,7 +6,7 @@
  websites, and the required libraries weren't all installed by default.  I
  wanted to find something that I felt was reliable, so Ghost is being used.  I
  also wanted to automate the install of dependencies, so this is the result of
- my work.  A lot of the report output is based off of how Tim did PeepingTom
+ work.  A lot of the report output is based off of how Tim did PeepingTom
  because I thought he did a great job with it.  Finally, I also wanted it to
  be able to identify default creds.  That will be a growing process.
 """
@@ -23,6 +23,7 @@ import re
 import logging
 import random
 import subprocess
+import socket
 
 
 def backup_request(page_code, outgoing_url, source_code_name, content_value,
@@ -82,6 +83,13 @@ def casper_creator(ua_capture, url_timeout):
         ghost = screener.Ghost(wait_timeout=int(url_timeout),
                                user_agent=ua_capture, ignore_ssl_errors=True)
     return ghost
+
+
+def checkHostPort(ip_to_check, port_to_check):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = s.connect_ex((ip_to_check, port_to_check))
+    s.close()
+    return result
 
 
 def cli_parser():
@@ -171,7 +179,7 @@ def cli_parser():
     else:
         args.d = "None"
 
-    if args.f is None and args.single == "None":
+    if args.f is None and args.single == "None" and args.localscan is not True:
         print "[*] Error: You didn't specify a file! I need a file containing\
         URLs!\n"
         parser.print_help()
@@ -464,6 +472,68 @@ def request_comparison(original_content, new_content, max_difference):
             return True, "None"
 
 
+def scanner(tool_path):
+    # This function was developed by Rohan Vazarkar, and then I slightly
+    # modified it to fit.  Thanks for writing this man.
+    ports = [80, 443, 8080, 8443]
+
+    #Figure out our local IP address using some socket magic. Ooooohhhhh
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('google.com', 80))
+    my_ip = s.getsockname()[0]
+    s.close()
+
+    # Split the IP by octet
+    splitip = my_ip.split(".")
+
+    # Create a list of all identified web servers
+    live_webservers = []
+
+    # Define the timeout limit
+    timeout = 5
+
+    # Write out the live machine to same path as EyeWitness
+    try:
+        for x in range(1, 254):
+            socket.setdefaulttimeout(timeout)
+            assembled = splitip[0] + "." + splitip[1] + "." + splitip[2] +\
+                "." + str(x)
+            for port in ports:
+                print "[*] Scanning " + assembled + " on port " + str(port)
+                result = checkHostPort(assembled, port)
+                if (result == 0):
+                    # port is open, add to the list
+                    add_to_list = assembled + ":" + str(port)
+                    print "[*] Potential live webserver at " + add_to_list
+                    live_webservers.append(add_to_list)
+                else:
+                    if (result == 10035 or result == 10060):
+                        # Host is unreachable
+                        break
+
+    except KeyboardInterrupt:
+        print "[*] Scan interrupted by you rage quitting!"
+
+        # Write out the live machines which were found so far
+        for live_computer in live_webservers:
+            with open(tool_path + "/scanneroutput.txt", 'a') as scanout:
+                scanout.write(live_computer + '\n')
+
+        print "List of live machines written to: " + tool_path +\
+            "/scanneroutput.txt"
+
+        sys.exit()
+
+    for live_computer in live_webservers:
+        with open(tool_path + "/scanneroutput.txt", 'a') as scanout:
+            scanout.write(live_computer + '\n')
+
+    print "List of live machines written to: " + tool_path +\
+        "/scanneroutput.txt"
+
+    sys.exit()
+
+
 def single_report_page(report_source, report_path):
     # Close out the html and write it to disk
     report_source += """</table>
@@ -720,6 +790,11 @@ if __name__ == "__main__":
     url_filename, timeout_wait, open_urls, single_url, directory_name,\
         request_jitter, browser_user_agent, ua_cycle, diff_value, cred_skip,\
         script_path, subnet_scan = cli_parser()
+
+    # If the user wants to perform a scan for web servers locally,
+    # then perform the scan, write out to a file, and exit
+    if subnet_scan:
+        scanner(script_path)
 
     # Create the directory needed and support files
     report_folder, report_date, report_time = folder_out(directory_name,
