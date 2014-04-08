@@ -1,3 +1,6 @@
+[4.8.2014]
+    Modified..: Changed some of the directory creation logic, specifically when specifying the specific output directory to use.  Thanks to Robin Wood for pointing this out. - Github Issue #31
+
 [3.30.2014]
     Added.....: When using --localscan, Eyewitness will attempt to scan and find potential web servers by scanning for machines on the local /24 subnet for common web ports (80, 443, 8080, 8443).  It will write out the live machines to scanneroutput.txt in a format that EyeWitness can use.  Thanks to Rohan Vazarkar helping to write this and get it added to EyeWitness.
 

@@ -162,6 +162,7 @@ def cli_parser():
 
     if args.d:
         if args.d.startswith('/'):
+            args.d = args.d.rstrip("/")
             if os.access(os.path.dirname(args.d), os.W_OK):
                 pass
             else:
@@ -281,7 +282,10 @@ def folder_out(dir_name, full_path):
     if output_folder_name.startswith('/'):
         # Create a folder which stores all snapshots
         # If it starts with a "/", then assume it is a full path
-        os.system("mkdir " + output_folder_name)
+        if os.path.isdir(output_folder_name):
+            pass
+        else:
+            os.system("mkdir " + output_folder_name)
         os.system("mkdir " + output_folder_name + "/screens")
         os.system("mkdir " + output_folder_name + "/source")
 
