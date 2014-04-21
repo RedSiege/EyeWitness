@@ -72,7 +72,7 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
         content_value = 1
         default_credentials_identified = None
 
-    return content_value, default_credentials_identified
+    return content_value, default_credentials_identified, page_code
 
 
 def casper_creator(ua_capture, url_timeout):
@@ -557,8 +557,9 @@ def single_report_page(report_source, report_path):
 
 def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
                        content_empty, log_path, extra_notes, browser_out, ua_out,
-                       source_code_table, screenshot_table, length_difference):
-    html = ""
+                       source_code_table, screenshot_table, length_difference, iwitness_path):
+    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE)
+    html = u""
     html += """<tr>
     <td><div style=\"display: inline-block; width: 300px; word-wrap:\
      break-word\">
@@ -608,6 +609,23 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
         html += "<br><b>Default credentials:</b> " +\
             html_encode(possible_creds) + "<br>"
 
+    if report_folder.startswith('/'):
+        with open(report_folder + "/source/" + source_code_table, 'r')\
+                as source:
+            titletag = title_regex.search(source.read())
+    else:
+        with open(iwitness_path + "/" + report_folder + "/source/" +
+                  source_code_table, 'r') as source:
+            titletag = title_regex.search(source.read())
+
+    pagetitle = titletag.groups()[1]
+    try:
+        html += "\n<br><b> " + html_encode("Page Title") +\
+            ":</b> " + html_encode(pagetitle) + "\n"
+    except UnicodeDecodeError:
+        html += "\n<br><b> " + html_encode("Page Title") +\
+            ":</b> Unable to Display \n"
+
     # Loop through all server header responses, and add them to table
     # Handle exception if there is a SSL error and no headers were received.
     try:
@@ -645,7 +663,10 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
                    screen_picture_name=screenshot_table).replace('    ', '')
 
     if (website_url in htmldictionary):
-        htmldictionary[website_url] = htmldictionary[website_url] + html
+        htmldictionary[website_url] = (
+            htmldictionary[website_url][0], htmldictionary[website_url][1] + html)
+    else:
+        htmldictionary[website_url] = (pagetitle, html)
 
     return htmldictionary
 
@@ -956,7 +977,7 @@ if __name__ == "__main__":
                                                       picture_name,
                                                       script_path)
 
-                content_blank, single_default_credentials = backup_request(
+                content_blank, single_default_credentials, page = backup_request(
                     page, single_url, source_name, content_blank, script_path,
                     cred_skip)
 
@@ -1026,7 +1047,7 @@ if __name__ == "__main__":
                         # Hack for a bug in Ghost at the moment
                         baseline_page.content = "None"
 
-                        baseline_content_blank, baseline_default_creds = \
+                        baseline_content_blank, baseline_default_creds, baseline_page = \
                             backup_request(baseline_page, single_url,
                                            source_name, content_blank,
                                            script_path, cred_skip)
@@ -1055,7 +1076,7 @@ if __name__ == "__main__":
                             # Hack for a bug in Ghost at the moment
                             new_ua_page.content = "None"
 
-                            new_ua_content_blank, new_ua_default_creds = \
+                            new_ua_content_blank, new_ua_default_creds, new_ua_page = \
                                 backup_request(new_ua_page, single_url,
                                                source_name, content_blank,
                                                script_path, cred_skip)
@@ -1159,7 +1180,6 @@ if __name__ == "__main__":
 
         # Create a URL counter to know when to go to a new page
         # Create a page counter to track pages
-        url_counter = 0
         page_counter = 1
 
         htmldictionary = {}
@@ -1195,14 +1215,14 @@ if __name__ == "__main__":
                     # If EyeWitness receives a no-cache, it can't get the
                     # page source, therefore lets
                     # make a backup request get the source
-                    content_blank, multi_line_default_creds = backup_request(
+                    content_blank, multi_line_default_creds, page = backup_request(
                         page, url, source_name, content_blank, script_path,
                         cred_skip)
 
                     htmldictionary = create_table_entry(
                         htmldictionary, url, multi_line_default_creds, page,
                         content_blank, log_file_path, blank_value, blank_value,
-                        blank_value, source_name, picture_name, page_length)
+                        blank_value, source_name, picture_name, page_length, script_path)
 
                 # Skip a url if Ctrl-C is hit
                 except KeyboardInterrupt:
@@ -1258,19 +1278,19 @@ if __name__ == "__main__":
                             # Hack for a bug in Ghost at the moment
                             baseline_page.content = "None"
 
-                            baseline_content_blank, baseline_default_creds =\
+                            baseline_content_blank, baseline_default_creds, baseline_page =\
                                 backup_request(baseline_page, url, source_name,
                                                content_blank, script_path,
                                                cred_skip)
 
                             # Create the table info for the single URL
                             # (screenshot, server headers, etc.)
-                            htmldictionary = table_maker(
+                            htmldictionary = create_table_entry(
                                 htmldictionary, url, baseline_default_creds,
                                 baseline_page, baseline_content_blank,
                                 log_file_path, blank_value, browser_key,
                                 user_agent_value, source_name, picture_name,
-                                baseline_request)
+                                baseline_request, script_path)
 
                             # Move beyond the baseline
                             request_number = 1
@@ -1286,7 +1306,7 @@ if __name__ == "__main__":
                                 # Hack fix for potential bug in Ghost
                                 new_ua_page.content = "None"
 
-                                new_ua_content_blank, new_ua_default_creds =\
+                                new_ua_content_blank, new_ua_default_creds, new_ua_page =\
                                     backup_request(
                                         new_ua_page, url, source_name,
                                         content_blank, script_path, cred_skip)
@@ -1307,7 +1327,7 @@ if __name__ == "__main__":
                                 else:
                                     # Create the table info for the single URL
                                     # (screenshot, server headers, etc.)
-                                    htmldictionary = table_maker(
+                                    htmldictionary = create_table_entry(
                                         htmldictionary, url, new_ua_default_creds,
                                         baseline_page, baseline_content_blank,
                                         log_file_path, blank_value,
@@ -1393,12 +1413,22 @@ if __name__ == "__main__":
                 except KeyboardInterrupt:
                     print "[*] User cancelled sleep for this URL!"
 
-            # Track the number of URLs
-            url_counter = url_counter + 1
+        tosort = htmldictionary.items()
+        groupedlist = []
+        while (len(tosort) > 0):
+            element = tosort.pop()
+            groupedlist.append(element)
+            for x in tosort:
+                if (difflib.SequenceMatcher(None, element[1][0], x[1][0]).ratio() > .7):
+                    tosort.remove(x)
+                    groupedlist.append(x)
 
-            # If we hit 100 urls in the counter, finish the page and start a
-            # new one
-            if url_counter == 25:
+        groupedlist.reverse()
+
+        for i in range(0, len(groupedlist)):
+            element = groupedlist[i]
+            web_index += element[1][1]
+            if (i % 25 == 0 and not i == 0):
                 if page_counter == 1:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
@@ -1409,7 +1439,6 @@ if __name__ == "__main__":
                     # Revert URL counter back to 0, increment the page count
                     # to 1 Clear web_index of all values by giving web_index
                     # the "header" of the new html page
-                    url_counter = 0
                     page_counter = page_counter + 1
                     web_index = web_header()
                 else:
@@ -1421,12 +1450,8 @@ if __name__ == "__main__":
                         page_out.write(web_index)
 
                     # Reset the URL counter
-                    url_counter = 0
                     page_counter = page_counter + 1
                     web_index = web_header()
-
-        sortedhtml = sorted(htmldictionary.iteritems(),key=lambda x:difflib.SequenceMatcher(None,x,b).ratio())
-        print(sortedhtml)
 
         if page_counter == 1:
             single_report_page(web_index, script_path)
