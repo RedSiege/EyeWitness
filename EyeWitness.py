@@ -72,7 +72,7 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
         content_value = 1
         default_credentials_identified = None
 
-    return content_value, default_credentials_identified, page_code
+    return content_value, default_credentials_identified
 
 
 def casper_creator(ua_capture, url_timeout):
@@ -608,7 +608,8 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
         html += "<br><b>Default credentials:</b> " +\
             html_encode(possible_creds) + "<br>"
 
-    #Hacky regex. The first group takes care of anything inside the title tag, while the second group gives us our actual title
+    # Hacky regex. The first group takes care of anything inside the title
+    # tag, while the second group gives us our actual title
     title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE)
     # Ghost saves unicode strings as some crazy format, so reopen the source
     # files and read title tags from there
@@ -621,7 +622,7 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
                   source_code_table, 'r') as source:
             titletag = title_regex.search(source.read())
 
-    #Implement a fallback in case of errors, but add the page title to the table
+    # Implement a fallback in case of errors, but add the page title to the table
     pagetitle = titletag.groups()[1]
     try:
         html += "\n<br><b> " + html_encode("Page Title") +\
@@ -981,7 +982,7 @@ if __name__ == "__main__":
                                                       picture_name,
                                                       script_path)
 
-                content_blank, single_default_credentials, page = backup_request(
+                content_blank, single_default_credentials = backup_request(
                     page, single_url, source_name, content_blank, script_path,
                     cred_skip)
 
@@ -1051,7 +1052,7 @@ if __name__ == "__main__":
                         # Hack for a bug in Ghost at the moment
                         baseline_page.content = "None"
 
-                        baseline_content_blank, baseline_default_creds, baseline_page = \
+                        baseline_content_blank, baseline_default_creds = \
                             backup_request(baseline_page, single_url,
                                            source_name, content_blank,
                                            script_path, cred_skip)
@@ -1080,7 +1081,7 @@ if __name__ == "__main__":
                             # Hack for a bug in Ghost at the moment
                             new_ua_page.content = "None"
 
-                            new_ua_content_blank, new_ua_default_creds, new_ua_page = \
+                            new_ua_content_blank, new_ua_default_creds = \
                                 backup_request(new_ua_page, single_url,
                                                source_name, content_blank,
                                                script_path, cred_skip)
@@ -1219,7 +1220,7 @@ if __name__ == "__main__":
                     # If EyeWitness receives a no-cache, it can't get the
                     # page source, therefore lets
                     # make a backup request get the source
-                    content_blank, multi_line_default_creds, page = backup_request(
+                    content_blank, multi_line_default_creds = backup_request(
                         page, url, source_name, content_blank, script_path,
                         cred_skip)
 
@@ -1282,7 +1283,7 @@ if __name__ == "__main__":
                             # Hack for a bug in Ghost at the moment
                             baseline_page.content = "None"
 
-                            baseline_content_blank, baseline_default_creds, baseline_page =\
+                            baseline_content_blank, baseline_default_creds =\
                                 backup_request(baseline_page, url, source_name,
                                                content_blank, script_path,
                                                cred_skip)
@@ -1310,7 +1311,7 @@ if __name__ == "__main__":
                                 # Hack fix for potential bug in Ghost
                                 new_ua_page.content = "None"
 
-                                new_ua_content_blank, new_ua_default_creds, new_ua_page =\
+                                new_ua_content_blank, new_ua_default_creds =\
                                     backup_request(
                                         new_ua_page, url, source_name,
                                         content_blank, script_path, cred_skip)
@@ -1419,7 +1420,7 @@ if __name__ == "__main__":
 
         tosort = htmldictionary.items()
         groupedlist = []
-        #Work our way from the back of the list and find similar elements. Group the together.
+        # Work our way from the back of the list and find similar elements. Group the together.
         while (len(tosort) > 0):
             element = tosort.pop()
             groupedlist.append(element)
@@ -1428,7 +1429,7 @@ if __name__ == "__main__":
                     tosort.remove(x)
                     groupedlist.append(x)
 
-        #Reverse the list to preserve original order (sort of)
+        # Reverse the list to preserve original order (sort of)
         groupedlist.reverse()
 
         for i in range(0, len(groupedlist)):
