@@ -558,7 +558,6 @@ def single_report_page(report_source, report_path):
 def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
                        content_empty, log_path, extra_notes, browser_out, ua_out,
                        source_code_table, screenshot_table, length_difference, iwitness_path):
-    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE)
     html = u""
     html += """<tr>
     <td><div style=\"display: inline-block; width: 300px; word-wrap:\
@@ -609,6 +608,10 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
         html += "<br><b>Default credentials:</b> " +\
             html_encode(possible_creds) + "<br>"
 
+    #Hacky regex. The first group takes care of anything inside the title tag, while the second group gives us our actual title
+    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE)
+    # Ghost saves unicode strings as some crazy format, so reopen the source
+    # files and read title tags from there
     if report_folder.startswith('/'):
         with open(report_folder + "/source/" + source_code_table, 'r')\
                 as source:
@@ -618,6 +621,7 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
                   source_code_table, 'r') as source:
             titletag = title_regex.search(source.read())
 
+    #Implement a fallback in case of errors, but add the page title to the table
     pagetitle = titletag.groups()[1]
     try:
         html += "\n<br><b> " + html_encode("Page Title") +\
@@ -1415,6 +1419,7 @@ if __name__ == "__main__":
 
         tosort = htmldictionary.items()
         groupedlist = []
+        #Work our way from the back of the list and find similar elements. Group the together.
         while (len(tosort) > 0):
             element = tosort.pop()
             groupedlist.append(element)
@@ -1423,6 +1428,7 @@ if __name__ == "__main__":
                     tosort.remove(x)
                     groupedlist.append(x)
 
+        #Reverse the list to preserve original order (sort of)
         groupedlist.reverse()
 
         for i in range(0, len(groupedlist)):
