@@ -623,7 +623,10 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
         with open(filepath, 'r') as source:
             pagesource = source.read()
             titletag = title_regex.search(pagesource)
-            pagetitle = titletag.groups()[1]
+            if (not titletag is None):
+                pagetitle = titletag.groups()[1]
+            else:
+                pagetitle = "Unknown"
     else:
         pagetitle = "Unknown"
 
@@ -750,7 +753,10 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
     if (os.path.isfile(filepath)):
         with open(filepath, 'r') as source:
             titletag = title_regex.search(source.read())
-            pagetitle = titletag.groups()[1]
+            if (not titletag is None):
+                pagetitle = titletag.groups()[1]
+            else:
+                pagetitle = "Unknown"
     else:
         pagetitle = "Unknown"
 
@@ -1465,6 +1471,7 @@ if __name__ == "__main__":
         for i in range(0, len(groupedlist)):
             element = groupedlist[i]
             web_index += element[1][1]
+            print(element[0],element[1][1])
             if (i % 25 == 0 and not i == 0):
                 if page_counter == 1:
                     # Close out the html and write it to disk
