@@ -195,7 +195,7 @@ def cli_parser():
 
     if args.difference:
         try:
-            int(args.t)
+            int(args.difference)
         except ValueError:
             args.t = 50
 
@@ -924,7 +924,7 @@ def user_agent_definition(cycle_value):
         return desktop_uagents
 
 
-def web_header():
+def web_header(real_report_date, real_report_time):
     # Start our web page report
     web_index_head = """<html>
     <head>
@@ -937,8 +937,8 @@ def web_header():
     <tr>
     <th>Web Request Info</th>
     <th>Web Screenshot</th>
-    </tr>""".format(report_day=report_date, reporthtml_time=report_time)\
-        .replace('    ', '')
+    </tr>""".format(report_day=real_report_date,
+                    reporthtml_time=real_report_time).replace('    ', '')
     return web_index_head
 
 
@@ -1004,7 +1004,7 @@ if __name__ == "__main__":
         # Used for monitoring for blank pages or SSL errors
         content_blank = 0
 
-        web_index = web_header()
+        web_index = web_header(report_date, report_time)
         print "Trying to screenshot " + single_url
 
         # Create the filename to store each website's picture
@@ -1216,7 +1216,7 @@ if __name__ == "__main__":
             random.shuffle(url_list)
 
         # Add the web "header" to our web page
-        web_index = web_header()
+        web_index = web_header(report_date, report_time)
         print "Trying to screenshot " + str(number_urls) + " websites...\n"
 
         # Create a URL counter to know when to go to a new page
@@ -1483,7 +1483,7 @@ if __name__ == "__main__":
                     # to 1 Clear web_index of all values by giving web_index
                     # the "header" of the new html page
                     page_counter = page_counter + 1
-                    web_index = web_header()
+                    web_index = web_header(report_date, report_time)
                 else:
                     # Write out to the next page
                     web_index += "</table>\n"
@@ -1494,7 +1494,7 @@ if __name__ == "__main__":
 
                     # Reset the URL counter
                     page_counter = page_counter + 1
-                    web_index = web_header()
+                    web_index = web_header(report_date, report_time)
 
         if page_counter == 1:
             single_report_page(web_index, script_path)
