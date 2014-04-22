@@ -610,7 +610,7 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
 
     # Hacky regex. The first group takes care of anything inside the title
     # tag, while the second group gives us our actual title
-    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE)
+    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE+re.DOTALL)
     # Ghost saves unicode strings as some crazy format, so reopen the source
     # files and read title tags from there
     filepath = ""
@@ -621,7 +621,8 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
 
     if (os.path.isfile(filepath)):
         with open(filepath, 'r') as source:
-            titletag = title_regex.search(source.read())
+            pagesource = source.read()
+            titletag = title_regex.search(pagesource)
             pagetitle = titletag.groups()[1]
     else:
         pagetitle = "Unknown"
@@ -737,7 +738,7 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
 
     # Hacky regex. The first group takes care of anything inside the title
     # tag, while the second group gives us our actual title
-    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE)
+    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE+re.DOTALL)
     # Ghost saves unicode strings as some crazy format, so reopen the source
     # files and read title tags from there
     filepath = ""
@@ -1261,21 +1262,21 @@ if __name__ == "__main__":
                 # Skip a url if Ctrl-C is hit
                 except KeyboardInterrupt:
                     print "[*] Skipping: " + url
-                    htmldictionary[url] = """<tr>
+                    htmldictionary[url] = ('Unknown',"""<tr>
                     <td><a href=\"{single_given_url}\">{single_given_url}\
                     </a></td>
                     <td>User Skipped this URL</td>
                     </tr>
-                    """.format(single_given_url=url).replace('    ', '')
+                    """.format(single_given_url=url).replace('    ', ''))
                 # Catch timeout warning
                 except screener.TimeoutError:
                     print "[*] Hit timeout limit when connecting to: " + url
-                    htmldictionary[url] = """<tr>
+                    htmldictionary[url] = ('Unknown',"""<tr>
                     <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
                     {single_timeout_url}</a></td>
                     <td>Hit timeout limit while attempting screenshot</td>
                     </tr>
-                    """.format(single_timeout_url=url)
+                    """.format(single_timeout_url=url))
 
             else:
                 # Setup variables to set file names properly
@@ -1372,7 +1373,7 @@ if __name__ == "__main__":
                                 print "[*] Unable to request " + url +\
                                     " with " + browser_key
                                 if (url in htmldictionary):
-                                    htmldictionary[url] = htmldictionary[url] + """<tr>
+                                    htmldictionary[url][1] = htmldictionary[url][1] + """<tr>
                                 <td><a href=\"{single_given_url}\">\
                                 {single_given_url}</a></td>
                                 <td>Unable to request {single_given_url} with \
@@ -1382,7 +1383,7 @@ if __name__ == "__main__":
                                            browser_user=browser_key)\
                                         .replace('    ', '')
                                 else:
-                                    htmldictionary[url] = """<tr>
+                                    htmldictionary[url] = ('Unknown',"""<tr>
                                 <td><a href=\"{single_given_url}\">\
                                 {single_given_url}</a></td>
                                 <td>Unable to request {single_given_url} with \
@@ -1390,29 +1391,29 @@ if __name__ == "__main__":
                                 </tr>
                                 """.format(single_given_url=url,
                                            browser_user=browser_key)\
-                                        .replace('    ', '')
+                                        .replace('    ', ''))
 
                             l_difference = "None"
 
                     # Skip a url if Ctrl-C is hit
                     except KeyboardInterrupt:
                         print "[*] Skipping: " + url
-                        htmldictionary[url] = """<tr>
+                        htmldictionary[url] = ('Unknown',"""<tr>
                         <td><a href=\"{single_given_url}\">{single_given_url}\
                         </a></td>
                         <td>User Skipped this URL</td>
                         </tr>
-                        """.format(single_given_url=url).replace('    ', '')
+                        """.format(single_given_url=url).replace('    ', ''))
                     # Catch timeout warning
                     except screener.TimeoutError:
                         print "[*] Hit timeout limit when connecting to: "\
                             + url
-                        htmldictionary[url] = """<tr>
+                        htmldictionary[url] = ('Unknown',"""<tr>
                         <td><a href=\"{single_timeout_url}\" target=\"_blank\"\
                         >{single_timeout_url}</a></td>
                         <td>Hit timeout limit while attempting screenshot</td>
                         </tr>
-                        """.format(single_timeout_url=url)
+                        """.format(single_timeout_url=url))
 
                     # Add Random sleep based off of user provided jitter value
                     # if requested
