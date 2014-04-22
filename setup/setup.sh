@@ -38,7 +38,7 @@ case ${osinfo} in
   # Debian 7+ Dependency Installation
   Debian)
     echo '[*] Installing Debian Dependencies'
-    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip
+    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
@@ -53,7 +53,7 @@ case ${osinfo} in
   # Ubuntu (tested in 13.10) Dependency Installation
   Ubuntu)
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb
+    apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
@@ -77,7 +77,7 @@ case ${osinfo} in
     fi
     echo '[*] Installing CentOS Dependencies'
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse xvfb
+                python-argparse xvfb python-netaddr
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
