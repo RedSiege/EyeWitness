@@ -26,6 +26,7 @@ import subprocess
 import socket
 import difflib
 from netaddr import IPNetwork
+import platform
 
 
 def backup_request(page_code, outgoing_url, source_code_name, content_value,
@@ -137,7 +138,7 @@ def cli_parser():
         "--skipcreds", action='store_true',
         help="Skip checking for default creds")
     parser.add_argument(
-        "--localscan", metavar='192.168.1.0/24',
+        "--localscan", metavar='192.168.1.0/24', default=False,
         help="CIDR Notation of network to scan")
     args = parser.parse_args()
 
@@ -182,11 +183,19 @@ def cli_parser():
     else:
         args.d = "None"
 
-    if args.f is None and args.single == "None" and args.localscan is not True:
-        print "[*] Error: You didn't specify a file! I need a file containing\
-        URLs!\n"
+    if args.f is None and args.single == "None" and args.localscan is False:
+        print "[*] Error: You didn't specify a file! I need a file containing \
+        URLs!\n".replace('    ', '')
         parser.print_help()
         sys.exit()
+
+    if args.localscan is not False:
+        if validate_cidr(args.localscan):
+            pass
+        else:
+            print "[*] Error: Please provide valid CIDR notation!"
+            print "[*] Example: 192.168.1.0/24"
+            sys.exit()
 
     if args.t:
         try:
@@ -288,8 +297,8 @@ def folder_out(dir_name, full_path):
             pass
         else:
             os.system("mkdir " + output_folder_name)
-        os.system("mkdir " + output_folder_name + "/screens")
-        os.system("mkdir " + output_folder_name + "/source")
+            os.system("mkdir " + output_folder_name + "/screens")
+            os.system("mkdir " + output_folder_name + "/source")
 
         with open(output_folder_name + "/style.css", 'w') as css_file:
             css_file.write(css_page)
@@ -478,19 +487,10 @@ def request_comparison(original_content, new_content, max_difference):
             return True, "None"
 
 
-def scanner(tool_path):
+def scanner(cidr_range, tool_path):
     # This function was developed by Rohan Vazarkar, and then I slightly
     # modified it to fit.  Thanks for writing this man.
     ports = [80, 443, 8080, 8443]
-
-    # Figure out our local IP address using some socket magic. Ooooohhhhh
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(('google.com', 80))
-    my_ip = s.getsockname()[0]
-    s.close()
-
-    # Split the IP by octet
-    splitip = my_ip.split(".")
 
     # Create a list of all identified web servers
     live_webservers = []
@@ -500,16 +500,17 @@ def scanner(tool_path):
 
     # Write out the live machine to same path as EyeWitness
     try:
-        for x in range(1, 254):
-            socket.setdefaulttimeout(timeout)
-            assembled = splitip[0] + "." + splitip[1] + "." + splitip[2] +\
-                "." + str(x)
+        ip_range = IPNetwork(cidr_range)
+        socket.setdefaulttimeout(timeout)
+
+        for ip_to_scan in ip_range:
+            ip_to_scan = str(ip_to_scan)
             for port in ports:
-                print "[*] Scanning " + assembled + " on port " + str(port)
-                result = checkHostPort(assembled, port)
+                print "[*] Scanning " + ip_to_scan + " on port " + str(port)
+                result = checkHostPort(ip_to_scan, port)
                 if (result == 0):
                     # port is open, add to the list
-                    add_to_list = assembled + ":" + str(port)
+                    add_to_list = ip_to_scan + ":" + str(port)
                     print "[*] Potential live webserver at " + add_to_list
                     live_webservers.append(add_to_list)
                 else:
@@ -761,7 +762,8 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
     else:
         pagetitle = "Unknown"
 
-    # Implement a fallback in case of errors, but add the page title to the table
+    # Implement a fallback in case of errors, but add the page title 
+    # to the table
     try:
         web_table_index += "\n<br><b> " + html_encode("Page Title") +\
             ":</b> " + html_encode(pagetitle) + "\n"
@@ -809,7 +811,10 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
 
 
 def title_screen():
-    os.system('clear')
+    if platform.system() == "Windows":
+        os.system('cls')
+    else:
+        os.system('clear')
     print "#############################################################################"
     print "#                               EyeWitness                                  #"
     print "#############################################################################\n"
@@ -925,6 +930,34 @@ def user_agent_definition(cycle_value):
         return desktop_uagents
 
 
+def validate_cidr(val_cidr):
+    # This came from
+    # http://python-iptools.googlecode.com/svn-history/r4/trunk/iptools/__init__.py
+    cidr_re = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}/\d{1,2}$')
+    if cidr_re.match(val_cidr):
+        ip, mask = val_cidr.split('/')
+        if validate_ip(ip):
+            if int(mask) > 32:
+                return False
+        else:
+            return False
+        return True
+    return False
+
+
+def validate_ip(val_ip):
+    # This came from
+    # http://python-iptools.googlecode.com/svn-history/r4/trunk/iptools/__init__.py
+    ip_re = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')
+    if ip_re.match(val_ip):
+        quads = (int(q) for q in val_ip.split('.'))
+        for q in quads:
+            if q > 255:
+                return False
+        return True
+    return False
+
+
 def web_header(real_report_date, real_report_time):
     # Start our web page report
     web_index_head = """<html>
@@ -956,8 +989,8 @@ if __name__ == "__main__":
 
     # If the user wants to perform a scan for web servers locally,
     # then perform the scan, write out to a file, and exit
-    if subnet_scan:
-        scanner(script_path)
+    if subnet_scan is not None:
+        scanner(subnet_scan, script_path)
 
     # Create the directory needed and support files
     report_folder, report_date, report_time = folder_out(directory_name,
@@ -1525,6 +1558,9 @@ if __name__ == "__main__":
                           str(page_footer) + ".html", 'a') as page_append:
                     page_append.write(link_text)
 
-    os.system('rm ' + log_file_path)
+    if platform.system() == "Windows":
+        os.system('del ' + log_file_path)
+    else:
+        os.system('rm ' + log_file_path)
     print "\n[*] Done! Check out the report in the " + report_folder +\
         " folder!"

@@ -1,5 +1,6 @@
 [4.22.2014]
     Added.....: EyeWitness now attempts to sort similar web pages based off of their title tag - Pull Request from Rvazarker (Rohan).  Thanks to Rohan for adding this feature in to EyeWitness.
+    Modified..: --localscan now takes CIDR notation as its input
     Modified..: Bug when checking for valid input on the --difference flag
     Modified..: Bug from when the report date and time has been added to the top of the report.
     Merged....: Rohan Vazarkar's pull request
