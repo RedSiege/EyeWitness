@@ -24,6 +24,7 @@ import logging
 import random
 import subprocess
 import socket
+import difflib
 
 
 def backup_request(page_code, outgoing_url, source_code_name, content_value,
@@ -481,7 +482,7 @@ def scanner(tool_path):
     # modified it to fit.  Thanks for writing this man.
     ports = [80, 443, 8080, 8443]
 
-    #Figure out our local IP address using some socket magic. Ooooohhhhh
+    # Figure out our local IP address using some socket magic. Ooooohhhhh
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(('google.com', 80))
     my_ip = s.getsockname()[0]
@@ -554,9 +555,137 @@ def single_report_page(report_source, report_path):
     return
 
 
+def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
+                       content_empty, log_path, extra_notes, browser_out, ua_out,
+                       source_code_table, screenshot_table, length_difference, iwitness_path):
+    html = u""
+    html += """<tr>
+    <td><div style=\"display: inline-block; width: 300px; word-wrap:\
+     break-word\">
+    <a href=\"{web_url_addy}\" target=\"_blank\">{web_url_addy}</a><br>
+    """.format(web_url_addy=website_url).replace('    ', '')
+
+    if (browser_out is not "None" and ua_out is not "None" and
+       length_difference is not "Baseline" and
+       length_difference is not "None"):
+        html += """
+        <br>This request was different from the baseline.<br>
+        The browser type is: <b>{browser_report}</b><br><br>
+        The user agent is: <b>{useragent_report}</b><br><br>
+        Difference in length of the two webpage sources is\
+        : <b>{page_source_hash}</b><br>
+        """.format(browser_report=browser_out, useragent_report=ua_out,
+                   page_source_hash=length_difference).replace('    ', '')
+
+    if length_difference == "Baseline":
+        html += """
+        <br>This is the baseline request.<br>
+        The browser type is: <b>{browser_report}</b><br><br>
+        The user agent is: <b>{useragent_report}</b><br><br>
+        <b>This is the baseline request.</b><br>
+        """.format(browser_report=browser_out, useragent_report=ua_out)\
+            .replace('    ', '')
+
+    # Check if log file is empty, if so, good, otherwise, Check for SSL errors
+    # If there is a SSL error, be sure to add a note about it in the table
+    # Once done, delete the file
+    if os.stat(log_path)[6] == 0:
+        pass
+    else:
+        with open(log_path, 'r') as log_file:
+            log_contents = log_file.readlines()
+        for line in log_contents:
+            if "SSL certificate error" in line:
+                html += "<br><b>SSL Certificate error present on\
+                 <a href=\"" + website_url + "\" target=\"_blank\">" +\
+                    website_url + "</a></b><br>"
+                break
+        clear_logs = open(log_path, 'w')
+        clear_logs.close()
+
+    # If there are some default creds, escape them, and add them to the report
+    if possible_creds is not None:
+        html += "<br><b>Default credentials:</b> " +\
+            html_encode(possible_creds) + "<br>"
+
+    # Hacky regex. The first group takes care of anything inside the title
+    # tag, while the second group gives us our actual title
+    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE+re.DOTALL)
+    # Ghost saves unicode strings as some crazy format, so reopen the source
+    # files and read title tags from there
+    filepath = ""
+    if report_folder.startswith('/'):
+        filepath = report_folder + "/source/" + source_code_table
+    else:
+        filepath = iwitness_path + "/" + report_folder + "/source/" + source_code_table
+
+    if (os.path.isfile(filepath)):
+        with open(filepath, 'r') as source:
+            pagesource = source.read()
+            titletag = title_regex.search(pagesource)
+            if (not titletag is None):
+                pagetitle = titletag.groups()[1]
+            else:
+                pagetitle = "Unknown"
+    else:
+        pagetitle = "Unknown"
+
+    # Implement a fallback in case of errors, but add the page title to the table
+    try:
+        html += "\n<br><b> " + html_encode("Page Title") +\
+            ":</b> " + html_encode(pagetitle) + "\n"
+    except UnicodeDecodeError:
+        html += "\n<br><b> " + html_encode("Page Title") +\
+            ":</b> Unable to Display \n"
+
+    # Loop through all server header responses, and add them to table
+    # Handle exception if there is a SSL error and no headers were received.
+    try:
+        for key, value in web_page.headers.items():
+            html += "<br><b> " + html_encode(key.decode('utf-8')) +\
+                ":</b> " + html_encode(value) + "\n"
+
+    except AttributeError:
+        html += "\n<br><br>Potential blank page or SSL issue with\
+            <a href=\"" + website_url + "\" target=\"_blank\">" +\
+            website_url + "</a>."
+
+    # If page is empty, or SSL errors, add it to report
+    if content_empty == 1:
+        html += """<br></td>
+        <td><div style=\"display: inline-block; width: 850px;\">Page Blank,\
+        Connection error, or SSL Issues</div></td>
+        </tr>
+        """.replace('    ', '')
+
+    # If eyewitness could get the source code and take a screenshot,
+    # add them to report. First line adds source code to header column of the
+    # table, and then closes out that <td> Second line creates new <td> for
+    # the screenshot column, adds screenshot in to report, and closes the <td>
+    # Final line closes out the row
+    else:
+        html += """<br><br><a href=\"source/{page_source_name}\"\
+        target=\"_blank\">Source Code</a></div></td>
+        <td><div id=\"screenshot\" style=\"display: inline-block; width:\
+        850px; height 400px; overflow: scroll;\"><a href=\"screens/\
+        {screen_picture_name}\" target=\"_blank\"><img src=\"screens/\
+        {screen_picture_name}\" height=\"400\"></a></div></td>
+        </tr>
+        """.format(page_source_name=source_code_table,
+                   screen_picture_name=screenshot_table).replace('    ', '')
+
+    if (website_url in htmldictionary):
+        htmldictionary[website_url] = (
+            htmldictionary[website_url][0], htmldictionary[website_url][1] + html)
+    else:
+        htmldictionary[website_url] = (pagetitle, html)
+
+    return htmldictionary
+
+
 def table_maker(web_table_index, website_url, possible_creds, web_page,
                 content_empty, log_path, extra_notes, browser_out, ua_out,
-                source_code_table, screenshot_table, length_difference):
+                source_code_table, screenshot_table, length_difference, iwitness_path):
 
     # Continue adding to the table assuming that we were able
     # to capture the screenshot.  Only add elements if they exist
@@ -609,6 +738,35 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
     if possible_creds is not None:
         web_table_index += "<br><b>Default credentials:</b> " +\
             html_encode(possible_creds) + "<br>"
+
+    # Hacky regex. The first group takes care of anything inside the title
+    # tag, while the second group gives us our actual title
+    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE+re.DOTALL)
+    # Ghost saves unicode strings as some crazy format, so reopen the source
+    # files and read title tags from there
+    filepath = ""
+    if report_folder.startswith('/'):
+        filepath = report_folder + "/source/" + source_code_table
+    else:
+        filepath = iwitness_path + "/" + report_folder + "/source/" + source_code_table
+
+    if (os.path.isfile(filepath)):
+        with open(filepath, 'r') as source:
+            titletag = title_regex.search(source.read())
+            if (not titletag is None):
+                pagetitle = titletag.groups()[1]
+            else:
+                pagetitle = "Unknown"
+    else:
+        pagetitle = "Unknown"
+
+    # Implement a fallback in case of errors, but add the page title to the table
+    try:
+        web_table_index += "\n<br><b> " + html_encode("Page Title") +\
+            ":</b> " + html_encode(pagetitle) + "\n"
+    except UnicodeDecodeError:
+        web_table_index += "\n<br><b> " + html_encode("Page Title") +\
+            ":</b> Unable to Display \n"
 
     # Loop through all server header responses, and add them to table
     # Handle exception if there is a SSL error and no headers were received.
@@ -870,7 +1028,7 @@ if __name__ == "__main__":
                                         single_default_credentials,
                                         page, content_blank, log_file_path,
                                         blank_value, blank_value, blank_value,
-                                        source_name, picture_name, page_length)
+                                        source_name, picture_name, page_length, script_path)
 
             # Skip a url if Ctrl-C is hit
             except KeyboardInterrupt:
@@ -945,7 +1103,7 @@ if __name__ == "__main__":
                                                 log_file_path, blank_value,
                                                 browser_key, user_agent_value,
                                                 source_name, picture_name,
-                                                baseline_request)
+                                                baseline_request, script_path)
 
                         # Move beyond the baseline
                         request_number = 1
@@ -990,7 +1148,7 @@ if __name__ == "__main__":
                                                         user_agent_value,
                                                         source_name,
                                                         picture_name,
-                                                        total_length_difference
+                                                        total_length_difference, script_path
                                                         )
                         except AttributeError:
                             print "[*] Unable to request " + single_url +\
@@ -1063,8 +1221,9 @@ if __name__ == "__main__":
 
         # Create a URL counter to know when to go to a new page
         # Create a page counter to track pages
-        url_counter = 0
         page_counter = 1
+
+        htmldictionary = {}
 
         # Loop through all URLs and create a screenshot
         for url in url_list:
@@ -1101,29 +1260,29 @@ if __name__ == "__main__":
                         page, url, source_name, content_blank, script_path,
                         cred_skip)
 
-                    web_index = table_maker(
-                        web_index, url, multi_line_default_creds, page,
+                    htmldictionary = create_table_entry(
+                        htmldictionary, url, multi_line_default_creds, page,
                         content_blank, log_file_path, blank_value, blank_value,
-                        blank_value, source_name, picture_name, page_length)
+                        blank_value, source_name, picture_name, page_length, script_path)
 
                 # Skip a url if Ctrl-C is hit
                 except KeyboardInterrupt:
                     print "[*] Skipping: " + url
-                    web_index += """<tr>
+                    htmldictionary[url] = ('Unknown',"""<tr>
                     <td><a href=\"{single_given_url}\">{single_given_url}\
                     </a></td>
                     <td>User Skipped this URL</td>
                     </tr>
-                    """.format(single_given_url=url).replace('    ', '')
+                    """.format(single_given_url=url).replace('    ', ''))
                 # Catch timeout warning
                 except screener.TimeoutError:
                     print "[*] Hit timeout limit when connecting to: " + url
-                    web_index += """<tr>
+                    htmldictionary[url] = ('Unknown',"""<tr>
                     <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
                     {single_timeout_url}</a></td>
                     <td>Hit timeout limit while attempting screenshot</td>
                     </tr>
-                    """.format(single_timeout_url=url)
+                    """.format(single_timeout_url=url))
 
             else:
                 # Setup variables to set file names properly
@@ -1167,12 +1326,12 @@ if __name__ == "__main__":
 
                             # Create the table info for the single URL
                             # (screenshot, server headers, etc.)
-                            web_index = table_maker(
-                                web_index, url, baseline_default_creds,
+                            htmldictionary = create_table_entry(
+                                htmldictionary, url, baseline_default_creds,
                                 baseline_page, baseline_content_blank,
                                 log_file_path, blank_value, browser_key,
                                 user_agent_value, source_name, picture_name,
-                                baseline_request)
+                                baseline_request, script_path)
 
                             # Move beyond the baseline
                             request_number = 1
@@ -1209,17 +1368,18 @@ if __name__ == "__main__":
                                 else:
                                     # Create the table info for the single URL
                                     # (screenshot, server headers, etc.)
-                                    web_index = table_maker(
-                                        web_index, url, new_ua_default_creds,
+                                    htmldictionary = create_table_entry(
+                                        htmldictionary, url, new_ua_default_creds,
                                         baseline_page, baseline_content_blank,
                                         log_file_path, blank_value,
                                         browser_key, user_agent_value,
                                         source_name, picture_name,
-                                        l_difference)
+                                        l_difference, script_path)
                             except AttributeError:
                                 print "[*] Unable to request " + url +\
                                     " with " + browser_key
-                                web_index += """<tr>
+                                if (url in htmldictionary):
+                                    htmldictionary[url][1] = htmldictionary[url][1] + """<tr>
                                 <td><a href=\"{single_given_url}\">\
                                 {single_given_url}</a></td>
                                 <td>Unable to request {single_given_url} with \
@@ -1227,29 +1387,39 @@ if __name__ == "__main__":
                                 </tr>
                                 """.format(single_given_url=url,
                                            browser_user=browser_key)\
-                                    .replace('    ', '')
+                                        .replace('    ', '')
+                                else:
+                                    htmldictionary[url] = ('Unknown',"""<tr>
+                                <td><a href=\"{single_given_url}\">\
+                                {single_given_url}</a></td>
+                                <td>Unable to request {single_given_url} with \
+                                {browser_user}.</td>
+                                </tr>
+                                """.format(single_given_url=url,
+                                           browser_user=browser_key)\
+                                        .replace('    ', ''))
 
                             l_difference = "None"
 
                     # Skip a url if Ctrl-C is hit
                     except KeyboardInterrupt:
                         print "[*] Skipping: " + url
-                        web_index += """<tr>
+                        htmldictionary[url] = ('Unknown',"""<tr>
                         <td><a href=\"{single_given_url}\">{single_given_url}\
                         </a></td>
                         <td>User Skipped this URL</td>
                         </tr>
-                        """.format(single_given_url=url).replace('    ', '')
+                        """.format(single_given_url=url).replace('    ', ''))
                     # Catch timeout warning
                     except screener.TimeoutError:
                         print "[*] Hit timeout limit when connecting to: "\
                             + url
-                        web_index += """<tr>
+                        htmldictionary[url] = ('Unknown',"""<tr>
                         <td><a href=\"{single_timeout_url}\" target=\"_blank\"\
                         >{single_timeout_url}</a></td>
                         <td>Hit timeout limit while attempting screenshot</td>
                         </tr>
-                        """.format(single_timeout_url=url)
+                        """.format(single_timeout_url=url))
 
                     # Add Random sleep based off of user provided jitter value
                     # if requested
@@ -1284,12 +1454,24 @@ if __name__ == "__main__":
                 except KeyboardInterrupt:
                     print "[*] User cancelled sleep for this URL!"
 
-            # Track the number of URLs
-            url_counter = url_counter + 1
+        tosort = htmldictionary.items()
+        groupedlist = []
+        # Work our way from the back of the list and find similar elements. Group the together.
+        while (len(tosort) > 0):
+            element = tosort.pop()
+            groupedlist.append(element)
+            for x in tosort:
+                if (difflib.SequenceMatcher(None, element[1][0], x[1][0]).ratio() > .7):
+                    tosort.remove(x)
+                    groupedlist.append(x)
 
-            # If we hit 100 urls in the counter, finish the page and start a
-            # new one
-            if url_counter == 25:
+        # Reverse the list to preserve original order (sort of)
+        groupedlist.reverse()
+
+        for i in range(0, len(groupedlist)):
+            element = groupedlist[i]
+            web_index += element[1][1]
+            if (i % 25 == 0 and not i == 0):
                 if page_counter == 1:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
@@ -1300,7 +1482,6 @@ if __name__ == "__main__":
                     # Revert URL counter back to 0, increment the page count
                     # to 1 Clear web_index of all values by giving web_index
                     # the "header" of the new html page
-                    url_counter = 0
                     page_counter = page_counter + 1
                     web_index = web_header()
                 else:
@@ -1312,7 +1493,6 @@ if __name__ == "__main__":
                         page_out.write(web_index)
 
                     # Reset the URL counter
-                    url_counter = 0
                     page_counter = page_counter + 1
                     web_index = web_header()
 
@@ -1327,7 +1507,7 @@ if __name__ == "__main__":
 
             # Create the link structure at the bottom
             link_text = "\n<br>Links: <a href=\"report.html\">Page 1</a> "
-            for page in range(2, page_counter+1):
+            for page in range(2, page_counter + 1):
                 link_text += "<a href=\"report_page" + str(page) + ".html\">\
                 Page " + str(page) + "</a> "
             link_text += "\n</body>\n"
@@ -1339,7 +1519,7 @@ if __name__ == "__main__":
                 report_append.write(link_text)
 
             # Write out link structure to bottom of extra pages
-            for page_footer in range(2, page_counter+1):
+            for page_footer in range(2, page_counter + 1):
                 with open(script_path + "/" + report_folder + "/report_page" +
                           str(page_footer) + ".html", 'a') as page_append:
                     page_append.write(link_text)
