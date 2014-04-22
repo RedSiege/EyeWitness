@@ -1471,7 +1471,6 @@ if __name__ == "__main__":
         for i in range(0, len(groupedlist)):
             element = groupedlist[i]
             web_index += element[1][1]
-            print(element[0],element[1][1])
             if (i % 25 == 0 and not i == 0):
                 if page_counter == 1:
                     # Close out the html and write it to disk
