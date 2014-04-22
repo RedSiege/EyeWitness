@@ -25,6 +25,7 @@ import random
 import subprocess
 import socket
 import difflib
+from netaddr import IPNetwork
 
 
 def backup_request(page_code, outgoing_url, source_code_name, content_value,
@@ -136,8 +137,8 @@ def cli_parser():
         "--skipcreds", action='store_true',
         help="Skip checking for default creds")
     parser.add_argument(
-        "--localscan", action='store_true',
-        help="Scan local class C network for web servers")
+        "--localscan", metavar='192.168.1.0/24',
+        help="CIDR Notation of network to scan")
     args = parser.parse_args()
 
     current_directory = os.path.dirname(os.path.realpath(__file__))
