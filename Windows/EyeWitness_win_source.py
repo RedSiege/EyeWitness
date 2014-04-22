@@ -11,6 +11,10 @@
  be able to identify default creds.  That will be a growing process.
 """
 
+from PySide import QtGui, QtCore
+from PySide.QtGui import QApplication, QLineEdit
+from PySide.QtCore import QSettings, Qt
+from PySide import QtWebKit
 import ghost as screener
 import argparse
 import os
