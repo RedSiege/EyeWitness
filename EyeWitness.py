@@ -613,17 +613,20 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
     title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE)
     # Ghost saves unicode strings as some crazy format, so reopen the source
     # files and read title tags from there
+    filepath = ""
     if report_folder.startswith('/'):
-        with open(report_folder + "/source/" + source_code_table, 'r')\
-                as source:
-            titletag = title_regex.search(source.read())
+        filepath = report_folder + "/source/" + source_code_table
     else:
-        with open(iwitness_path + "/" + report_folder + "/source/" +
-                  source_code_table, 'r') as source:
+        filepath = iwitness_path + "/" + report_folder + "/source/" + source_code_table
+
+    if (os.path.isfile(filepath)):
+        with open(filepath, 'r') as source:
             titletag = title_regex.search(source.read())
+            pagetitle = titletag.groups()[1]
+    else:
+        pagetitle = "Unknown"
 
     # Implement a fallback in case of errors, but add the page title to the table
-    pagetitle = titletag.groups()[1]
     try:
         html += "\n<br><b> " + html_encode("Page Title") +\
             ":</b> " + html_encode(pagetitle) + "\n"
@@ -678,7 +681,7 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
 
 def table_maker(web_table_index, website_url, possible_creds, web_page,
                 content_empty, log_path, extra_notes, browser_out, ua_out,
-                source_code_table, screenshot_table, length_difference):
+                source_code_table, screenshot_table, length_difference, iwitness_path):
 
     # Continue adding to the table assuming that we were able
     # to capture the screenshot.  Only add elements if they exist
@@ -731,6 +734,32 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
     if possible_creds is not None:
         web_table_index += "<br><b>Default credentials:</b> " +\
             html_encode(possible_creds) + "<br>"
+
+    # Hacky regex. The first group takes care of anything inside the title
+    # tag, while the second group gives us our actual title
+    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE)
+    # Ghost saves unicode strings as some crazy format, so reopen the source
+    # files and read title tags from there
+    filepath = ""
+    if report_folder.startswith('/'):
+        filepath = report_folder + "/source/" + source_code_table
+    else:
+        filepath = iwitness_path + "/" + report_folder + "/source/" + source_code_table
+
+    if (os.path.isfile(filepath)):
+        with open(filepath, 'r') as source:
+            titletag = title_regex.search(source.read())
+            pagetitle = titletag.groups()[1]
+    else:
+        pagetitle = "Unknown"
+
+    # Implement a fallback in case of errors, but add the page title to the table
+    try:
+        web_table_index += "\n<br><b> " + html_encode("Page Title") +\
+            ":</b> " + html_encode(pagetitle) + "\n"
+    except UnicodeDecodeError:
+        web_table_index += "\n<br><b> " + html_encode("Page Title") +\
+            ":</b> Unable to Display \n"
 
     # Loop through all server header responses, and add them to table
     # Handle exception if there is a SSL error and no headers were received.
@@ -992,7 +1021,7 @@ if __name__ == "__main__":
                                         single_default_credentials,
                                         page, content_blank, log_file_path,
                                         blank_value, blank_value, blank_value,
-                                        source_name, picture_name, page_length)
+                                        source_name, picture_name, page_length, script_path)
 
             # Skip a url if Ctrl-C is hit
             except KeyboardInterrupt:
@@ -1046,7 +1075,7 @@ if __name__ == "__main__":
                         # Get baseline screenshot
                         baseline_page, baseline_extra_resources = \
                             ghost_capture(ghost_object, single_url,
-                                          report_folder, picture_name, ~
+                                          report_folder, picture_name,
                                           script_path)
 
                         # Hack for a bug in Ghost at the moment
@@ -1067,7 +1096,7 @@ if __name__ == "__main__":
                                                 log_file_path, blank_value,
                                                 browser_key, user_agent_value,
                                                 source_name, picture_name,
-                                                baseline_request)
+                                                baseline_request, script_path)
 
                         # Move beyond the baseline
                         request_number = 1
@@ -1112,7 +1141,7 @@ if __name__ == "__main__":
                                                         user_agent_value,
                                                         source_name,
                                                         picture_name,
-                                                        total_length_difference
+                                                        total_length_difference, script_path
                                                         )
                         except AttributeError:
                             print "[*] Unable to request " + single_url +\
@@ -1338,7 +1367,7 @@ if __name__ == "__main__":
                                         log_file_path, blank_value,
                                         browser_key, user_agent_value,
                                         source_name, picture_name,
-                                        l_difference)
+                                        l_difference, script_path)
                             except AttributeError:
                                 print "[*] Unable to request " + url +\
                                     " with " + browser_key
