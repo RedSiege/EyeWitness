@@ -1,6 +1,7 @@
 [4.23.2014]
     Added.....: Source code of windows version of EyeWitness is within Windows/.  Only modification are the libraries being imported.
     Modified..: EyeWitness is now windows compatible.  To run on Windows, you would need to install all the required libraries (PyQt4 or PySide, Ghost, netaddr), or simply download the .exe version of EyeWitness at https://www.christophertruncer.com/InstallMe/EyeWitness.exe
+    Modified..: EyeWitness will now still run if signatures file isn't within the same directory as EyeWitness, but it will print a warning for each URL and will skip the signature/default creds check
 
 [4.22.2014]
     Added.....: EyeWitness now attempts to sort similar web pages based off of their title tag - Pull Request from Rvazarker (Rohan).  Thanks to Rohan for adding this feature in to EyeWitness.
