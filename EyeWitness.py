@@ -80,10 +80,10 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
         content_value = 1
         default_credentials_identified = None
 
-    #except:
-     #   print "[*] ERROR: Unknown error when accessing " + outgoing_url
-     #   content_value = 1
-     #   default_credentials_identified = None
+    except:
+        print "[*] ERROR: Unknown error when accessing " + outgoing_url
+        content_value = 1
+        default_credentials_identified = None
 
     return content_value, default_credentials_identified
 
