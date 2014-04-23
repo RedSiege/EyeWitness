@@ -84,10 +84,10 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
         content_value = 1
         default_credentials_identified = None
 
-    except:
-        print "[*] ERROR: Unknown error when accessing " + outgoing_url
-        content_value = 1
-        default_credentials_identified = None
+    #except:
+     #   print "[*] ERROR: Unknown error when accessing " + outgoing_url
+     #   content_value = 1
+     #   default_credentials_identified = None
 
     return content_value, default_credentials_identified
 
@@ -244,43 +244,50 @@ def cli_parser():
 
 
 def default_creds(page_content, full_file_path, local_system_os):
-    # Read in the file containing the web "signatures"
-    if local_system_os == "Windows":
-        with open(full_file_path + '\\signatures.txt', 'r') as sig_file:
-            signatures = sig_file.readlines()
-    else:
-        with open(full_file_path + '/signatures.txt', 'r') as sig_file:
-            signatures = sig_file.readlines()
+    try:
+        # Read in the file containing the web "signatures"
+        if local_system_os == "Windows":
+            with open(full_file_path + '\\signatures.txt', 'r') as sig_file:
+                signatures = sig_file.readlines()
+        else:
+            with open(full_file_path + '/signatures.txt', 'r') as sig_file:
+                signatures = sig_file.readlines()
 
-    # Loop through and see if there are any matches from the source code
-    # EyeWitness obtained
-    for sig in signatures:
-        # Find the signature(s), split them into their own list if needed
-        # Assign default creds to its own variable
-        sig_cred = sig.split('|')
-        page_sig = sig_cred[0].split(";")
-        cred_info = sig_cred[1]
+        # Loop through and see if there are any matches from the source code
+        # EyeWitness obtained
+        for sig in signatures:
+            # Find the signature(s), split them into their own list if needed
+            # Assign default creds to its own variable
+            sig_cred = sig.split('|')
+            page_sig = sig_cred[0].split(";")
+            cred_info = sig_cred[1]
 
-        # Set our variable to 1 if the signature was identified.  If it is
-        # identified, it will be added later on.  Find total number of
-        # "signatures" needed to uniquely identify the web app
-        sig_not_found = 0
-        signature_range = len(page_sig)
+            # Set our variable to 1 if the signature was identified.  If it is
+            # identified, it will be added later on.  Find total number of
+            # "signatures" needed to uniquely identify the web app
+            sig_not_found = 0
+            signature_range = len(page_sig)
 
-        # This is used if there is more than one "part" of the web page needed
-        # to make a signature Delimete the "signature" by ";" before the "|",
-        # and then have the creds after the "|"
-        for individual_signature in range(0, signature_range):
-            if str(page_content).find(page_sig[individual_signature]) is not\
-                    -1:
-                pass
-            else:
-                sig_not_found = 1
+            # This is used if there is more than one "part" of the
+            # web page needed to make a signature Delimete the "signature"
+            # by ";" before the "|", and then have the creds after the "|"
+            for individual_signature in range(0, signature_range):
+                if str(page_content).find(page_sig[individual_signature])\
+                        is not -1:
+                    pass
+                else:
+                    sig_not_found = 1
 
-        # If the signature was found, break out of loops and return the creds
-        if sig_not_found == 0:
-            return cred_info
-            break
+            # If the signature was found, break out of loops and
+            # return the creds
+            if sig_not_found == 0:
+                return cred_info
+                break
+    except IOError:
+        print "[*] WARNING: Credentials file not in the same directory as \
+            EyeWitness!".replace('    ', '')
+        print "[*] Skipping credential check"
+        return
 
 
 def file_names(url_given):
