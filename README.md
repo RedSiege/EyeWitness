@@ -15,6 +15,8 @@ Debian 7+ (at least stable, looking into testing) (Thanks to @themightyshiv)
 
 CentOS 6.5+ (Thanks to @themightyshiv)
 
+Windows - Download from: https://www.christophertruncer.com/InstallMe/EyeWitness.exe
+
 
 E-Mail: EyeWitness [@] christophertruncer [dot] com
 

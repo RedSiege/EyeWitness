@@ -25,10 +25,12 @@ import random
 import subprocess
 import socket
 import difflib
+from netaddr import IPNetwork
+import platform
 
 
 def backup_request(page_code, outgoing_url, source_code_name, content_value,
-                   iwitness_path, skip_cred_check):
+                   iwitness_path, skip_cred_check, system_os):
 
     try:
         # Check if page is blank, due to no-cache.  If so,
@@ -42,25 +44,36 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
                 page_code.content = "Sorry, but couldn't get source code for\
                 potentially a couple reasons.  If it was Basic Auth, a 50X,\
                 or a 40X error, EyeWitness won't return source code.  Couldn't\
-                get source from " + url + "."
+                get source from " + url + ".".replace('    ', '')
             except urllib2.URLError:
                 page_code.content = "Name resolution could not happen with " +\
-                                    outgoing_url + "."
+                                    outgoing_url + ".".replace('    ', '')
 
-        if report_folder.startswith('/'):
-            with open(report_folder + "/source/" + source_code_name, 'w')\
-                    as source:
-                source.write(page_code.content)
+        # Perform OS check, then write out to disk
+        if system_os == "Windows":
+            if report_folder.startswith("C:\\"):
+                with open(report_folder + "\\source\\" +
+                          source_code_name, 'w') as source:
+                    source.write(page_code.content)
+            else:
+                with open(iwitness_path + "\\" + report_folder + "\\source\\" +
+                          source_code_name, 'w') as source:
+                    source.write(page_code.content)
         else:
-            with open(iwitness_path + "/" + report_folder + "/source/" +
-                      source_code_name, 'w') as source:
-                source.write(page_code.content)
+            if report_folder.startswith('/'):
+                with open(report_folder + "/source/" + source_code_name, 'w')\
+                        as source:
+                    source.write(page_code.content)
+            else:
+                with open(iwitness_path + "/" + report_folder + "/source/" +
+                          source_code_name, 'w') as source:
+                    source.write(page_code.content)
 
         if skip_cred_check:
             default_credentials_identified = None
         else:
             default_credentials_identified = default_creds(
-                page_code.content, iwitness_path)
+                page_code.content, iwitness_path, system_os)
 
     except AttributeError:
         print "[*] ERROR: Web page possibly blank or SSL error!"
@@ -136,8 +149,8 @@ def cli_parser():
         "--skipcreds", action='store_true',
         help="Skip checking for default creds")
     parser.add_argument(
-        "--localscan", action='store_true',
-        help="Scan local class C network for web servers")
+        "--localscan", metavar='192.168.1.0/24', default=False,
+        help="CIDR Notation of network to scan")
     args = parser.parse_args()
 
     current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -170,6 +183,14 @@ def cli_parser():
                 print "[*] Error: Please provide a valid folder name/Path\n"
                 parser.print_help()
                 sys.exit()
+        elif args.d.startswith('C:\\'):
+            args.d = args.d.rstrip("\\")
+            if os.access(os.path.dirname(args.d), os.W_OK):
+                pass
+            else:
+                print "[*] Error: Please provide a valid folder name/Path\n"
+                parser.print_help()
+                sys.exit()
         else:
             if os.access(os.path.dirname(current_directory + "/" + args.d),
                          os.W_OK):
@@ -181,11 +202,19 @@ def cli_parser():
     else:
         args.d = "None"
 
-    if args.f is None and args.single == "None" and args.localscan is not True:
-        print "[*] Error: You didn't specify a file! I need a file containing\
-        URLs!\n"
+    if args.f is None and args.single == "None" and args.localscan is False:
+        print "[*] Error: You didn't specify a file! I need a file containing \
+        URLs!\n".replace('    ', '')
         parser.print_help()
         sys.exit()
+
+    if args.localscan is not False:
+        if validate_cidr(args.localscan):
+            pass
+        else:
+            print "[*] Error: Please provide valid CIDR notation!"
+            print "[*] Example: 192.168.1.0/24"
+            sys.exit()
 
     if args.t:
         try:
@@ -210,40 +239,51 @@ def cli_parser():
         current_directory, args.localscan
 
 
-def default_creds(page_content, full_file_path):
-    # Read in the file containing the web "signatures"
-    with open(full_file_path + '/signatures.txt', 'r') as sig_file:
-        signatures = sig_file.readlines()
+def default_creds(page_content, full_file_path, local_system_os):
+    try:
+        # Read in the file containing the web "signatures"
+        if local_system_os == "Windows":
+            with open(full_file_path + '\\signatures.txt', 'r') as sig_file:
+                signatures = sig_file.readlines()
+        else:
+            with open(full_file_path + '/signatures.txt', 'r') as sig_file:
+                signatures = sig_file.readlines()
 
-    # Loop through and see if there are any matches from the source code
-    # EyeWitness obtained
-    for sig in signatures:
-        # Find the signature(s), split them into their own list if needed
-        # Assign default creds to its own variable
-        sig_cred = sig.split('|')
-        page_sig = sig_cred[0].split(";")
-        cred_info = sig_cred[1]
+        # Loop through and see if there are any matches from the source code
+        # EyeWitness obtained
+        for sig in signatures:
+            # Find the signature(s), split them into their own list if needed
+            # Assign default creds to its own variable
+            sig_cred = sig.split('|')
+            page_sig = sig_cred[0].split(";")
+            cred_info = sig_cred[1]
 
-        # Set our variable to 1 if the signature was identified.  If it is
-        # identified, it will be added later on.  Find total number of
-        # "signatures" needed to uniquely identify the web app
-        sig_not_found = 0
-        signature_range = len(page_sig)
+            # Set our variable to 1 if the signature was identified.  If it is
+            # identified, it will be added later on.  Find total number of
+            # "signatures" needed to uniquely identify the web app
+            sig_not_found = 0
+            signature_range = len(page_sig)
 
-        # This is used if there is more than one "part" of the web page needed
-        # to make a signature Delimete the "signature" by ";" before the "|",
-        # and then have the creds after the "|"
-        for individual_signature in range(0, signature_range):
-            if str(page_content).find(page_sig[individual_signature]) is not\
-                    -1:
-                pass
-            else:
-                sig_not_found = 1
+            # This is used if there is more than one "part" of the
+            # web page needed to make a signature Delimete the "signature"
+            # by ";" before the "|", and then have the creds after the "|"
+            for individual_signature in range(0, signature_range):
+                if str(page_content).find(page_sig[individual_signature])\
+                        is not -1:
+                    pass
+                else:
+                    sig_not_found = 1
 
-        # If the signature was found, break out of loops and return the creds
-        if sig_not_found == 0:
-            return cred_info
-            break
+            # If the signature was found, break out of loops and
+            # return the creds
+            if sig_not_found == 0:
+                return cred_info
+                break
+    except IOError:
+        print "[*] WARNING: Credentials file not in the same directory as \
+            EyeWitness!".replace('    ', '')
+        print "[*] Skipping credential check"
+        return
 
 
 def file_names(url_given):
@@ -257,7 +297,7 @@ def file_names(url_given):
     return url_given, src_name, pic_name
 
 
-def folder_out(dir_name, full_path):
+def folder_out(dir_name, full_path, local_os):
 
     # Write out the CSS stylesheet
     css_page = """img {
@@ -286,11 +326,24 @@ def folder_out(dir_name, full_path):
         if os.path.isdir(output_folder_name):
             pass
         else:
-            os.system("mkdir " + output_folder_name)
-        os.system("mkdir " + output_folder_name + "/screens")
-        os.system("mkdir " + output_folder_name + "/source")
+            os.makedirs(output_folder_name)
+            os.makedirs(output_folder_name + "/screens")
+            os.makedirs(output_folder_name + "/source")
 
         with open(output_folder_name + "/style.css", 'w') as css_file:
+            css_file.write(css_page)
+
+    elif output_folder_name.startswith('C:\\'):
+        # Create a folder which stores all snapshots
+        # If it starts with a "/", then assume it is a full path
+        if os.path.isdir(output_folder_name):
+            pass
+        else:
+            os.makedirs(output_folder_name)
+            os.makedirs(output_folder_name + "\\screens")
+            os.makedirs(output_folder_name + "\\source")
+
+        with open(output_folder_name + "\\style.css", 'w') as css_file:
             css_file.write(css_page)
 
     # If it doesn't start with a "/", then assume it should be in the same
@@ -298,19 +351,30 @@ def folder_out(dir_name, full_path):
     else:
         # Create a folder which stores all snapshots
         # note- os.makedirs
-        os.system("mkdir " + full_path + "/" + output_folder_name)
-        os.system("mkdir " + full_path + "/" + output_folder_name + "/screens")
-        os.system("mkdir " + full_path + "/" + output_folder_name + "/source")
 
-        with open(full_path + "/" + output_folder_name + "/style.css", 'w')\
-                as css_file:
-            css_file.write(css_page)
+        if local_os == "Windows":
+            os.makedirs(full_path + "\\" + output_folder_name)
+            os.makedirs(full_path + "\\" + output_folder_name + "\\screens")
+            os.makedirs(full_path + "\\" + output_folder_name + "\\source")
+
+            with open(full_path + "\\" + output_folder_name + "\\style.css",
+                      'w') as css_file:
+                css_file.write(css_page)
+
+        else:
+            os.makedirs(full_path + "/" + output_folder_name)
+            os.makedirs(full_path + "/" + output_folder_name + "/screens")
+            os.makedirs(full_path + "/" + output_folder_name + "/source")
+
+            with open(full_path + "/" + output_folder_name + "/style.css",
+                      'w') as css_file:
+                css_file.write(css_page)
 
     return output_folder_name, current_date, current_time
 
 
 def ghost_capture(incoming_ghost_object, screen_url, rep_fold, screen_name,
-                  ewitness_dir_path):
+                  ewitness_dir_path, local_platform):
     # Try to get our screenshot and source code of the page
     # Write both out to disk if possible (if we can get one,
     # we can get the other)
@@ -320,8 +384,17 @@ def ghost_capture(incoming_ghost_object, screen_url, rep_fold, screen_name,
     if rep_fold.startswith('/'):
         incoming_ghost_object.capture_to(rep_fold + "/screens/" + screen_name)
     else:
-        incoming_ghost_object.capture_to(
-            ewitness_dir_path + "/" + rep_fold + "/screens/" + screen_name)
+        if local_platform == "Windows":
+            if rep_fold.startswith("C:\\"):
+                incoming_ghost_object.capture_to(
+                    rep_fold + "\\screens\\" + screen_name)
+            else:
+                incoming_ghost_object.capture_to(
+                    ewitness_dir_path + "\\" + rep_fold + "\\screens\\" +
+                    screen_name)
+        else:
+            incoming_ghost_object.capture_to(
+                ewitness_dir_path + "/" + rep_fold + "/screens/" + screen_name)
     return ghost_page, ghost_extra_resources
 
 
@@ -477,19 +550,10 @@ def request_comparison(original_content, new_content, max_difference):
             return True, "None"
 
 
-def scanner(tool_path):
+def scanner(cidr_range, tool_path, system_platform):
     # This function was developed by Rohan Vazarkar, and then I slightly
     # modified it to fit.  Thanks for writing this man.
     ports = [80, 443, 8080, 8443]
-
-    # Figure out our local IP address using some socket magic. Ooooohhhhh
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(('google.com', 80))
-    my_ip = s.getsockname()[0]
-    s.close()
-
-    # Split the IP by octet
-    splitip = my_ip.split(".")
 
     # Create a list of all identified web servers
     live_webservers = []
@@ -499,16 +563,17 @@ def scanner(tool_path):
 
     # Write out the live machine to same path as EyeWitness
     try:
-        for x in range(1, 254):
-            socket.setdefaulttimeout(timeout)
-            assembled = splitip[0] + "." + splitip[1] + "." + splitip[2] +\
-                "." + str(x)
+        ip_range = IPNetwork(cidr_range)
+        socket.setdefaulttimeout(timeout)
+
+        for ip_to_scan in ip_range:
+            ip_to_scan = str(ip_to_scan)
             for port in ports:
-                print "[*] Scanning " + assembled + " on port " + str(port)
-                result = checkHostPort(assembled, port)
+                print "[*] Scanning " + ip_to_scan + " on port " + str(port)
+                result = checkHostPort(ip_to_scan, port)
                 if (result == 0):
                     # port is open, add to the list
-                    add_to_list = assembled + ":" + str(port)
+                    add_to_list = ip_to_scan + ":" + str(port)
                     print "[*] Potential live webserver at " + add_to_list
                     live_webservers.append(add_to_list)
                 else:
@@ -518,11 +583,16 @@ def scanner(tool_path):
 
     except KeyboardInterrupt:
         print "[*] Scan interrupted by you rage quitting!"
+        print "[*] Writing out live web servers found so far..."
 
         # Write out the live machines which were found so far
         for live_computer in live_webservers:
-            with open(tool_path + "/scanneroutput.txt", 'a') as scanout:
-                scanout.write(live_computer + '\n')
+            if system_platform == "Windows":
+                with open(tool_path + "\\scanneroutput.txt", 'a') as scanout:
+                    scanout.write(live_computer + '\n')
+            else:
+                with open(tool_path + "/scanneroutput.txt", 'a') as scanout:
+                    scanout.write(live_computer + '\n')
 
         print "List of live machines written to: " + tool_path +\
             "/scanneroutput.txt"
@@ -530,8 +600,12 @@ def scanner(tool_path):
         sys.exit()
 
     for live_computer in live_webservers:
-        with open(tool_path + "/scanneroutput.txt", 'a') as scanout:
-            scanout.write(live_computer + '\n')
+        if live_computer == "Windows":
+            with open(tool_path + "\\scanneroutput.txt", 'a') as scanout:
+                scanout.write(live_computer + '\n')
+        else:
+            with open(tool_path + "/scanneroutput.txt", 'a') as scanout:
+                scanout.write(live_computer + '\n')
 
     print "List of live machines written to: " + tool_path +\
         "/scanneroutput.txt"
@@ -539,7 +613,7 @@ def scanner(tool_path):
     sys.exit()
 
 
-def single_report_page(report_source, report_path):
+def single_report_page(report_source, report_path, platform_os):
     # Close out the html and write it to disk
     report_source += """</table>
     </body>
@@ -549,15 +623,26 @@ def single_report_page(report_source, report_path):
         with open(report_folder + "/report.html", 'w') as fo:
             fo.write(report_source)
     else:
-        with open(report_path + "/" + report_folder + "/report.html", 'w')\
-                as fo:
-            fo.write(report_source)
+        if platform_os == "Windows":
+            if report_folder.startswith("C:\\"):
+                with open(report_folder + "\\report.html",
+                          'w') as fo:
+                    fo.write(report_source)
+            else:
+                with open(report_path + "\\" + report_folder + "\\report.html",
+                          'w') as fo:
+                    fo.write(report_source)
+        else:
+            with open(report_path + "/" + report_folder + "/report.html", 'w')\
+                    as fo:
+                fo.write(report_source)
     return
 
 
 def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
-                       content_empty, log_path, extra_notes, browser_out, ua_out,
-                       source_code_table, screenshot_table, length_difference, iwitness_path):
+                       content_empty, log_path, extra_notes, browser_out,
+                       ua_out, source_code_table, screenshot_table,
+                       length_difference, iwitness_path, local_system):
     html = u""
     html += """<tr>
     <td><div style=\"display: inline-block; width: 300px; word-wrap:\
@@ -600,8 +685,8 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
                  <a href=\"" + website_url + "\" target=\"_blank\">" +\
                     website_url + "</a></b><br>"
                 break
-        clear_logs = open(log_path, 'w')
-        clear_logs.close()
+        with open(log_path, 'w'):
+            pass
 
     # If there are some default creds, escape them, and add them to the report
     if possible_creds is not None:
@@ -610,14 +695,21 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
 
     # Hacky regex. The first group takes care of anything inside the title
     # tag, while the second group gives us our actual title
-    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE+re.DOTALL)
+    title_regex = re.compile(
+        "<title(.*)>(.*)</title>", re.IGNORECASE+re.DOTALL
+        )
     # Ghost saves unicode strings as some crazy format, so reopen the source
     # files and read title tags from there
     filepath = ""
     if report_folder.startswith('/'):
         filepath = report_folder + "/source/" + source_code_table
     else:
-        filepath = iwitness_path + "/" + report_folder + "/source/" + source_code_table
+        if local_system == "Windows":
+            filepath = iwitness_path + "\\" + report_folder + "\\source\\" +\
+                source_code_table
+        else:
+            filepath = iwitness_path + "/" + report_folder + "/source/" +\
+                source_code_table
 
     if (os.path.isfile(filepath)):
         with open(filepath, 'r') as source:
@@ -630,7 +722,8 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
     else:
         pagetitle = "Unknown"
 
-    # Implement a fallback in case of errors, but add the page title to the table
+    # Implement a fallback in case of errors, but add the page
+    # title to the table
     try:
         html += "\n<br><b> " + html_encode("Page Title") +\
             ":</b> " + html_encode(pagetitle) + "\n"
@@ -676,7 +769,8 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
 
     if (website_url in htmldictionary):
         htmldictionary[website_url] = (
-            htmldictionary[website_url][0], htmldictionary[website_url][1] + html)
+            htmldictionary[website_url][0], htmldictionary[website_url][1] +
+            html)
     else:
         htmldictionary[website_url] = (pagetitle, html)
 
@@ -685,7 +779,8 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
 
 def table_maker(web_table_index, website_url, possible_creds, web_page,
                 content_empty, log_path, extra_notes, browser_out, ua_out,
-                source_code_table, screenshot_table, length_difference, iwitness_path):
+                source_code_table, screenshot_table, length_difference,
+                iwitness_path, system_os):
 
     # Continue adding to the table assuming that we were able
     # to capture the screenshot.  Only add elements if they exist
@@ -741,14 +836,21 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
 
     # Hacky regex. The first group takes care of anything inside the title
     # tag, while the second group gives us our actual title
-    title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE+re.DOTALL)
+    title_regex = re.compile(
+        "<title(.*)>(.*)</title>", re.IGNORECASE+re.DOTALL
+        )
     # Ghost saves unicode strings as some crazy format, so reopen the source
     # files and read title tags from there
     filepath = ""
     if report_folder.startswith('/'):
         filepath = report_folder + "/source/" + source_code_table
     else:
-        filepath = iwitness_path + "/" + report_folder + "/source/" + source_code_table
+        if system_os == "Windows":
+            filepath = iwitness_path + "\\" + report_folder + "\\source\\" +\
+                source_code_table
+        else:
+            filepath = iwitness_path + "/" + report_folder + "/source/" +\
+                source_code_table
 
     if (os.path.isfile(filepath)):
         with open(filepath, 'r') as source:
@@ -760,7 +862,8 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
     else:
         pagetitle = "Unknown"
 
-    # Implement a fallback in case of errors, but add the page title to the table
+    # Implement a fallback in case of errors, but add the page title
+    # to the table
     try:
         web_table_index += "\n<br><b> " + html_encode("Page Title") +\
             ":</b> " + html_encode(pagetitle) + "\n"
@@ -808,7 +911,10 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
 
 
 def title_screen():
-    os.system('clear')
+    if platform.system() == "Windows":
+        os.system('cls')
+    else:
+        os.system('clear')
     print "#############################################################################"
     print "#                               EyeWitness                                  #"
     print "#############################################################################\n"
@@ -924,6 +1030,36 @@ def user_agent_definition(cycle_value):
         return desktop_uagents
 
 
+def validate_cidr(val_cidr):
+    # This came from (Mult-line link for pep8 compliance)
+    # http://python-iptools.googlecode.com/svn-history/r4
+    # /trunk/iptools/__init__.py
+    cidr_re = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}/\d{1,2}$')
+    if cidr_re.match(val_cidr):
+        ip, mask = val_cidr.split('/')
+        if validate_ip(ip):
+            if int(mask) > 32:
+                return False
+        else:
+            return False
+        return True
+    return False
+
+
+def validate_ip(val_ip):
+    # This came from (Mult-line link for pep8 compliance)
+    # http://python-iptools.googlecode.com/svn-history/r4
+    # /trunk/iptools/__init__.py
+    ip_re = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')
+    if ip_re.match(val_ip):
+        quads = (int(q) for q in val_ip.split('.'))
+        for q in quads:
+            if q > 255:
+                return False
+        return True
+    return False
+
+
 def web_header(real_report_date, real_report_time):
     # Start our web page report
     web_index_head = """<html>
@@ -947,6 +1083,9 @@ if __name__ == "__main__":
     # Print the title header
     title_screen()
 
+    # Detect the Operating System EyeWitness is running on
+    operating_system = platform.system()
+
     # Parse command line options and return the filename containing URLS
     # and how long to wait for each website
     url_filename, timeout_wait, open_urls, single_url, directory_name,\
@@ -955,17 +1094,21 @@ if __name__ == "__main__":
 
     # If the user wants to perform a scan for web servers locally,
     # then perform the scan, write out to a file, and exit
-    if subnet_scan:
-        scanner(script_path)
+    if subnet_scan is not False:
+        scanner(subnet_scan, script_path, operating_system)
 
     # Create the directory needed and support files
     report_folder, report_date, report_time = folder_out(directory_name,
-                                                         script_path)
+                                                         script_path,
+                                                         operating_system)
 
     # Change log path if full path is given for output directory
     if directory_name.startswith('/'):
         # Location of the log file Ghost logs to (to catch SSL errors)
         log_file_path = directory_name + "/logfile.log"
+    elif directory_name.startswith('C:\\'):
+        # Location of the log file Ghost logs to (to catch SSL errors)
+        log_file_path = directory_name + "\\logfile.log"
     elif directory_name is not "None":
         # Location of the log file Ghost logs to (to catch SSL errors)
         log_file_path = script_path + "/" + report_folder + "/logfile.log"
@@ -1016,11 +1159,12 @@ if __name__ == "__main__":
                 page, extra_resources = ghost_capture(ghost_object, single_url,
                                                       report_folder,
                                                       picture_name,
-                                                      script_path)
+                                                      script_path,
+                                                      operating_system)
 
                 content_blank, single_default_credentials = backup_request(
                     page, single_url, source_name, content_blank, script_path,
-                    cred_skip)
+                    cred_skip, operating_system)
 
                 # Create the table info for the single URL (screenshot,
                 # server headers, etc.)
@@ -1028,7 +1172,8 @@ if __name__ == "__main__":
                                         single_default_credentials,
                                         page, content_blank, log_file_path,
                                         blank_value, blank_value, blank_value,
-                                        source_name, picture_name, page_length, script_path)
+                                        source_name, picture_name, page_length,
+                                        script_path, operating_system)
 
             # Skip a url if Ctrl-C is hit
             except KeyboardInterrupt:
@@ -1083,7 +1228,7 @@ if __name__ == "__main__":
                         baseline_page, baseline_extra_resources = \
                             ghost_capture(ghost_object, single_url,
                                           report_folder, picture_name,
-                                          script_path)
+                                          script_path, operating_system)
 
                         # Hack for a bug in Ghost at the moment
                         baseline_page.content = "None"
@@ -1091,7 +1236,8 @@ if __name__ == "__main__":
                         baseline_content_blank, baseline_default_creds = \
                             backup_request(baseline_page, single_url,
                                            source_name, content_blank,
-                                           script_path, cred_skip)
+                                           script_path, cred_skip,
+                                           operating_system)
                         extra_info = "This is the baseline request"
 
                         # Create the table info for the single URL
@@ -1103,7 +1249,8 @@ if __name__ == "__main__":
                                                 log_file_path, blank_value,
                                                 browser_key, user_agent_value,
                                                 source_name, picture_name,
-                                                baseline_request, script_path)
+                                                baseline_request, script_path,
+                                                operating_system)
 
                         # Move beyond the baseline
                         request_number = 1
@@ -1112,7 +1259,8 @@ if __name__ == "__main__":
                         new_ua_page, new_ua_extra_resources = \
                             ghost_capture(ghost_object, single_url,
                                           report_folder, picture_name,
-                                          script_path)
+                                          script_path,
+                                          operating_system)
                         try:
                             # Hack for a bug in Ghost at the moment
                             new_ua_page.content = "None"
@@ -1120,7 +1268,8 @@ if __name__ == "__main__":
                             new_ua_content_blank, new_ua_default_creds = \
                                 backup_request(new_ua_page, single_url,
                                                source_name, content_blank,
-                                               script_path, cred_skip)
+                                               script_path, cred_skip,
+                                               operating_system)
 
                             # Function which hashes the original request with
                             # the new request and checks to see if they are
@@ -1138,18 +1287,14 @@ if __name__ == "__main__":
                             else:
                                 # Create the table info for the single URL
                                 # (screenshot, server headers, etc.)
-                                web_index = table_maker(web_index, single_url,
-                                                        new_ua_default_creds,
-                                                        baseline_page,
-                                                        baseline_content_blank,
-                                                        log_file_path,
-                                                        blank_value,
-                                                        browser_key,
-                                                        user_agent_value,
-                                                        source_name,
-                                                        picture_name,
-                                                        total_length_difference, script_path
-                                                        )
+                                web_index = table_maker(
+                                    web_index, single_url,
+                                    new_ua_default_creds, baseline_page,
+                                    baseline_content_blank, log_file_path,
+                                    blank_value, browser_key, user_agent_value,
+                                    source_name, picture_name,
+                                    total_length_difference, script_path,
+                                    operating_system)
                         except AttributeError:
                             print "[*] Unable to request " + single_url +\
                                 " with " + browser_key
@@ -1204,7 +1349,7 @@ if __name__ == "__main__":
             p = subprocess.Popen(iceweasel_command)
 
         # Write out the report for the single URL
-        single_report_page(web_index, script_path)
+        single_report_page(web_index, script_path, operating_system)
 
     else:
 
@@ -1251,24 +1396,25 @@ if __name__ == "__main__":
                     # Ghost capturing web page
                     page, extra_resources = ghost_capture(
                         ghost_object, url, report_folder, picture_name,
-                        script_path)
+                        script_path, operating_system)
 
                     # If EyeWitness receives a no-cache, it can't get the
                     # page source, therefore lets
                     # make a backup request get the source
                     content_blank, multi_line_default_creds = backup_request(
                         page, url, source_name, content_blank, script_path,
-                        cred_skip)
+                        cred_skip, operating_system)
 
                     htmldictionary = create_table_entry(
                         htmldictionary, url, multi_line_default_creds, page,
                         content_blank, log_file_path, blank_value, blank_value,
-                        blank_value, source_name, picture_name, page_length, script_path)
+                        blank_value, source_name, picture_name, page_length,
+                        script_path, operating_system)
 
                 # Skip a url if Ctrl-C is hit
                 except KeyboardInterrupt:
                     print "[*] Skipping: " + url
-                    htmldictionary[url] = ('Unknown',"""<tr>
+                    htmldictionary[url] = ('Unknown', """<tr>
                     <td><a href=\"{single_given_url}\">{single_given_url}\
                     </a></td>
                     <td>User Skipped this URL</td>
@@ -1277,7 +1423,7 @@ if __name__ == "__main__":
                 # Catch timeout warning
                 except screener.TimeoutError:
                     print "[*] Hit timeout limit when connecting to: " + url
-                    htmldictionary[url] = ('Unknown',"""<tr>
+                    htmldictionary[url] = ('Unknown', """<tr>
                     <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
                     {single_timeout_url}</a></td>
                     <td>Hit timeout limit while attempting screenshot</td>
@@ -1314,7 +1460,8 @@ if __name__ == "__main__":
                             # Get baseline screenshot
                             baseline_page, baseline_extra_resources = \
                                 ghost_capture(ghost_object, url, report_folder,
-                                              picture_name, script_path)
+                                              picture_name, script_path,
+                                              operating_system)
 
                             # Hack for a bug in Ghost at the moment
                             baseline_page.content = "None"
@@ -1322,7 +1469,7 @@ if __name__ == "__main__":
                             baseline_content_blank, baseline_default_creds =\
                                 backup_request(baseline_page, url, source_name,
                                                content_blank, script_path,
-                                               cred_skip)
+                                               cred_skip, operating_system)
 
                             # Create the table info for the single URL
                             # (screenshot, server headers, etc.)
@@ -1331,7 +1478,8 @@ if __name__ == "__main__":
                                 baseline_page, baseline_content_blank,
                                 log_file_path, blank_value, browser_key,
                                 user_agent_value, source_name, picture_name,
-                                baseline_request, script_path)
+                                baseline_request, script_path,
+                                operating_system)
 
                             # Move beyond the baseline
                             request_number = 1
@@ -1341,7 +1489,8 @@ if __name__ == "__main__":
                             new_ua_page, new_ua_extra_resources =\
                                 ghost_capture(
                                     ghost_object, url, report_folder,
-                                    picture_name, script_path)
+                                    picture_name, script_path,
+                                    operating_system)
 
                             try:
                                 # Hack fix for potential bug in Ghost
@@ -1350,7 +1499,8 @@ if __name__ == "__main__":
                                 new_ua_content_blank, new_ua_default_creds =\
                                     backup_request(
                                         new_ua_page, url, source_name,
-                                        content_blank, script_path, cred_skip)
+                                        content_blank, script_path, cred_skip,
+                                        operating_system)
 
                                 # Function which hashes the original request
                                 # with the new request and checks to see if
@@ -1369,12 +1519,14 @@ if __name__ == "__main__":
                                     # Create the table info for the single URL
                                     # (screenshot, server headers, etc.)
                                     htmldictionary = create_table_entry(
-                                        htmldictionary, url, new_ua_default_creds,
-                                        baseline_page, baseline_content_blank,
-                                        log_file_path, blank_value,
-                                        browser_key, user_agent_value,
-                                        source_name, picture_name,
-                                        l_difference, script_path)
+                                        htmldictionary, url,
+                                        new_ua_default_creds, baseline_page,
+                                        baseline_content_blank, log_file_path,
+                                        blank_value, browser_key,
+                                        user_agent_value, source_name,
+                                        picture_name, l_difference,
+                                        script_path, operating_system)
+
                             except AttributeError:
                                 print "[*] Unable to request " + url +\
                                     " with " + browser_key
@@ -1389,14 +1541,14 @@ if __name__ == "__main__":
                                            browser_user=browser_key)\
                                         .replace('    ', '')
                                 else:
-                                    htmldictionary[url] = ('Unknown',"""<tr>
+                                    htmldictionary[url] = ('Unknown', """<tr>
                                 <td><a href=\"{single_given_url}\">\
                                 {single_given_url}</a></td>
                                 <td>Unable to request {single_given_url} with \
                                 {browser_user}.</td>
                                 </tr>
                                 """.format(single_given_url=url,
-                                           browser_user=browser_key)\
+                                           browser_user=browser_key)
                                         .replace('    ', ''))
 
                             l_difference = "None"
@@ -1404,7 +1556,7 @@ if __name__ == "__main__":
                     # Skip a url if Ctrl-C is hit
                     except KeyboardInterrupt:
                         print "[*] Skipping: " + url
-                        htmldictionary[url] = ('Unknown',"""<tr>
+                        htmldictionary[url] = ('Unknown', """<tr>
                         <td><a href=\"{single_given_url}\">{single_given_url}\
                         </a></td>
                         <td>User Skipped this URL</td>
@@ -1414,7 +1566,7 @@ if __name__ == "__main__":
                     except screener.TimeoutError:
                         print "[*] Hit timeout limit when connecting to: "\
                             + url
-                        htmldictionary[url] = ('Unknown',"""<tr>
+                        htmldictionary[url] = ('Unknown', """<tr>
                         <td><a href=\"{single_timeout_url}\" target=\"_blank\"\
                         >{single_timeout_url}</a></td>
                         <td>Hit timeout limit while attempting screenshot</td>
@@ -1456,12 +1608,14 @@ if __name__ == "__main__":
 
         tosort = htmldictionary.items()
         groupedlist = []
-        # Work our way from the back of the list and find similar elements. Group the together.
+        # Work our way from the back of the list and find similar elements.
+        # Group them together.
         while (len(tosort) > 0):
             element = tosort.pop()
             groupedlist.append(element)
             for x in tosort:
-                if (difflib.SequenceMatcher(None, element[1][0], x[1][0]).ratio() > .7):
+                if (difflib.SequenceMatcher(
+                        None, element[1][0], x[1][0]).ratio() > .7):
                     tosort.remove(x)
                     groupedlist.append(x)
 
@@ -1497,7 +1651,7 @@ if __name__ == "__main__":
                     web_index = web_header(report_date, report_time)
 
         if page_counter == 1:
-            single_report_page(web_index, script_path)
+            single_report_page(web_index, script_path, operating_system)
         else:
             # Write out our extra page
             web_index += "</table>\n"
@@ -1524,6 +1678,10 @@ if __name__ == "__main__":
                           str(page_footer) + ".html", 'a') as page_append:
                     page_append.write(link_text)
 
-    os.system('rm ' + log_file_path)
+    if operating_system == "Windows":
+        # Stupid windows won't let me delete the log file
+        pass
+    else:
+        os.system('rm ' + log_file_path)
     print "\n[*] Done! Check out the report in the " + report_folder +\
         " folder!"
