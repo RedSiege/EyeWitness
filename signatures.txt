@@ -1,2 +1,4 @@
 Integrated Dell Remote Access Controller|root/calvin
 ACE 4710 Device Manager;Cisco|admin/admin
+ATutor;form_login_action;/gad_search.php|admin/admin or instructor:instructor
+Apache Lenya;lenya.action=introspect|admin/levi
