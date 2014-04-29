@@ -826,8 +826,8 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
                  <a href=\"" + website_url + "\" target=\"_blank\">" +\
                     website_url + "</a></b><br>"
                 break
-        clear_logs = open(log_path, 'w')
-        clear_logs.close()
+        with open(log_path, 'w'):
+            pass
 
     # If there are some default creds, escape them, and add them to the report
     if possible_creds is not None:
