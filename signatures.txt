@@ -16,3 +16,4 @@ var debugMode = ("$$GSI_TCPIP_IP_ADDR$$".indexOf(".") > 0) ? false : true;Redire
 Dell B3465dnf Laser MFP;/cgi-bin/dynamic/dell_header.html|(Dell b3465dnf) No default username or pass
 Dell Laser Printer 3000cn;frame src="status/status.htm" name="RightFrame"|(Dell 3000cn) No default username or pass
 Xerox WorkCentre 7435;function restore_saved_params(form, key_html)|admin/1111
+WorkCentre 7120;Fuji Xerox Co;var biItms|admin/1111
