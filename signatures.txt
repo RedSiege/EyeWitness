@@ -6,3 +6,12 @@ Polycom RSS 2000|Administrator/polycom
 Polycom;HDX 8000 HD|admin/<SerialNumberofDevice>
 Drupal.settings|(Drupal) admin/<assigned at install>
 var daisy;daisy.site;daisy.site.name|(Daisy CMS) admin/admin or user/user
+Hewlett-Packard Development Company;iLO.init|Administrator/<random 8 characters>
+<frame src="framelogo.htm" name="TopLogo" title="logo" frameborder=0 scrolling=no noresize>;<frame src="frameleft.htm" name="TopFrame" title="main" frameborder=0 scrolling=auto>;<frame src="frametop.htm" name="LeftFrame" title="header" frameborder=0 scrolling=no noresize>;<frame src="status/status.htm" name="RightFrame" title="contents" frameborder=0>|No default username or pass
+Dell Color Laser 5110cn|No default username or pass
+Dell Laser Printer 1700n|No default username or pass
+Dell Laser Printer 1720dn|No default username or pass
+Dell B5465dnf;/cgi-bin/dynamic/dell_header.html|No default username or pass
+var debugMode = ("$$GSI_TCPIP_IP_ADDR$$".indexOf(".") > 0) ? false : true;RedirectToSWS()|(Dell B2375dnf) admin/admin
+Dell B3465dnf Laser MFP;/cgi-bin/dynamic/dell_header.html|(Dell b3465dnf) No default username or pass
+Dell Laser Printer 3000cn;frame src="status/status.htm" name="RightFrame"|(Dell 3000cn) No default username or pass
