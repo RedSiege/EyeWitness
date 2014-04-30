@@ -4,3 +4,5 @@ ATutor;form_login_action;/gad_search.php|admin/admin or instructor:instructor
 Apache Lenya;lenya.action=introspect|admin/levi
 Polycom RSS 2000|Administrator/polycom
 Polycom;HDX 8000 HD|admin/<SerialNumberofDevice>
+Drupal.settings|(Drupal) admin/<assigned at install>
+var daisy;daisy.site;daisy.site.name|(Daisy CMS) admin/admin or user/user
