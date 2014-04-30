@@ -19,6 +19,6 @@ Xerox WorkCentre 7435;function restore_saved_params(form, key_html)|admin/1111
 WorkCentre 7120;Fuji Xerox Co;var biItms|admin/1111
 WorkCentre 7125;Fuji Xerox Co;var nvTree|admin/1111
 Xerox WorkCentre 5225;inNN;var trItms|11111/x-admin
-Xerox Corporation;XEROX WORKCENTRE;SyncTreeToThisURL;Status_Welcome;inUriToMatch|(Potential Generic Xerox or WorkCentre 5855) admin/1111 or x-admin/11111
+Xerox Corporation;XEROX WORKCENTRE;Status_Welcome;inUriToMatch|(Potential Generic Xerox or WorkCentre 5855) admin/1111 or x-admin/11111
 Xerox Workstation M20i;var HEADER_FRAME;var BRANDING_FRAME|admin/1111
 ChangeDefWebLanguage();script/cookieCoke.js;script/Common_script.js;NOSCRIPT|(Potential Workcenter 3550) admin/1111
