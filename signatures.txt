@@ -35,3 +35,4 @@ HP LaserJet M2727nf MFP;mastheadIcon;mastheadTitle|No default username or pass
 HP LaserJet 1536dnf MFP;mastheadIcon;mastheadTitle|No default username or pass
 HP Color LaserJet CM4540 MFP;class="device-name"|No default username or pass (potential username admin, no pass)
 Synology DiskStation - Monego;DiskMessageHandler;VideoPlayer|admin/<nopass>
+Brother MFC-8480DN;Brother Industries;OpenConfirmWindow|<no username>/access or admin/access
