@@ -7,7 +7,7 @@ Polycom;HDX 8000 HD|admin/<SerialNumberofDevice>
 Drupal.settings|(Drupal) admin/<assigned at install>
 var daisy;daisy.site;daisy.site.name|(Daisy CMS) admin/admin or user/user
 Hewlett-Packard Development Company;iLO.init|Administrator/<random 8 characters>
-<frame src="framelogo.htm" name="TopLogo" title="logo" frameborder=0 scrolling=no noresize>;<frame src="frameleft.htm" name="TopFrame" title="main" frameborder=0 scrolling=auto>;<frame src="frametop.htm" name="LeftFrame" title="header" frameborder=0 scrolling=no noresize>;<frame src="status/status.htm" name="RightFrame" title="contents" frameborder=0>|No default username or pass
+<frame src="framelogo.htm" name="TopLogo" title="logo" frameborder=0 scrolling=no noresize>;<frame src="frameleft.htm" name="TopFrame" title="main" frameborder=0 scrolling=auto>;<frame src="frametop.htm" name="LeftFrame" title="header" frameborder=0 scrolling=no noresize>;<frame src="status/status.htm" name="RightFrame" title="contents" frameborder=0>|(Dell Generic Signature)No default username or pass
 Dell Color Laser 5110cn|No default username or pass
 Dell Laser Printer 1700n|No default username or pass
 Dell Laser Printer 1720dn|No default username or pass
@@ -26,3 +26,12 @@ WorkCentre 6605DN;frame src="menuhome.htm"|No default pass
 Xerox WorkCentre 7232;var nvTree;var rSec|11111/x-admin
 Xerox WorkCentre 5325;var nvTree;var csItms|admin/1111
 Xerox WorkCentre 7345;var nvTree;var csItms|admin/1111 or 11111/x-admin
+Dell Color Laser 3110cn;frameleft.htm;TopFrame|No Default Username or Pass
+HP LaserJet Pro MFP M521dn;setupUrls[index++];manageUrls|No default username or pass
+HP Color LaserJet CM2320nf MFP;applicationMastheadSmall|No default username or pass
+HP LaserJet M1522n MFP;mastheadIcon|No default username or pass
+HP LaserJet M1536dnf;buttonManager.js;mastheadIcon|No default username or pass
+HP LaserJet M2727nf MFP;mastheadIcon;mastheadTitle|No default username or pass
+HP LaserJet 1536dnf MFP;mastheadIcon;mastheadTitle|No default username or pass
+HP Color LaserJet CM4540 MFP;class="device-name"|No default username or pass (potential username admin, no pass)
+Synology DiskStation - Monego;DiskMessageHandler;VideoPlayer|admin/<nopass>
