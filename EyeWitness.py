@@ -242,12 +242,9 @@ def cli_parser():
 def default_creds(page_content, full_file_path, local_system_os):
     try:
         # Read in the file containing the web "signatures"
-        if local_system_os == "Windows":
-            with open(full_file_path + '\\signatures.txt', 'r') as sig_file:
-                signatures = sig_file.readlines()
-        else:
-            with open(full_file_path + '/signatures.txt', 'r') as sig_file:
-                signatures = sig_file.readlines()
+        file_path = os.path.join(full_file_path, 'signatures.txt')
+        with open(file_path, 'r') as sig_file:
+            signatures = sig_file.readlines()
 
         # Loop through and see if there are any matches from the source code
         # EyeWitness obtained
