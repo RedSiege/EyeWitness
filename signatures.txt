@@ -12,7 +12,6 @@ Dell Color Laser 5110cn|No default username or pass
 Dell Laser Printer 1700n|No default username or pass
 Dell Laser Printer 1720dn|No default username or pass
 Dell B5465dnf;/cgi-bin/dynamic/dell_header.html|No default username or pass
-var debugMode = ("$$GSI_TCPIP_IP_ADDR$$".indexOf(".") > 0) ? false : true;RedirectToSWS()|(Dell B2375dnf) admin/admin
 Dell B3465dnf Laser MFP;/cgi-bin/dynamic/dell_header.html|(Dell b3465dnf) No default username or pass
 Dell Laser Printer 3000cn;frame src="status/status.htm" name="RightFrame"|(Dell 3000cn) No default username or pass
 Xerox WorkCentre 7435;function restore_saved_params(form, key_html)|admin/1111
@@ -36,3 +35,6 @@ HP LaserJet 1536dnf MFP;mastheadIcon;mastheadTitle|No default username or pass
 HP Color LaserJet CM4540 MFP;class="device-name"|No default username or pass (potential username admin, no pass)
 Synology DiskStation - Monego;DiskMessageHandler;VideoPlayer|admin/<nopass>
 Brother MFC-8480DN;Brother Industries;OpenConfirmWindow|<no username>/access or admin/access
+HP LaserJet 700 color MFP M775;/hp/device/ControlPanelCustomization/Index|No default username or pass
+MB471;okilogo;replacelogo;savecolor|<nousername or root>/aaaaaa or 000000 or 0000 or root/(last 6 of mac address Uppercased)
+MB461;okilogo;var pagename;var status_ad_flag|<nousername or root>/aaaaaa or 000000 or 0000 or root/(last 6 of mac address Uppercased)
