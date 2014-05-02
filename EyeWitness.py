@@ -445,7 +445,7 @@ def logistics(url_file):
             # Open the URL file and read all URLs, and reading again to catch
             # total number of websites
             with open(url_file) as f:
-                all_urls = f.readlines()
+                all_urls = [url for url in f if url.strip()]
 
             for line in all_urls:
                 urls.append(line)
@@ -975,6 +975,21 @@ def web_header(real_report_date, real_report_time):
     return web_index_head
 
 
+def display_website(url):
+    """ Opens the passed urls in the first webbrowser which is available. """
+    browser_mapping = {"iceweasel": "-new-tab", "firefox": "--new-tab",
+                       "google-chrome": "--new-tab"}
+    for browser, command in browser_mapping.items():
+        try:
+            subprocess.Popen("{0} {1} {2}".format(browser, command, url).split())
+        except OSError:
+            # This exception is thrown when the subprocess.Popen call failed to
+            # execute the passed program, we skip to the next item inside the
+            # browser_mapping dict and try the next browser.
+            continue
+        break
+
+
 if __name__ == "__main__":
 
     # Print the title header
@@ -1232,12 +1247,8 @@ if __name__ == "__main__":
                         time.sleep(sleep_value)
                     except KeyboardInterrupt:
                         print "[*] User cancelled sleep for this URL!"
-
-        # Open each url in a browser if requested
         if open_urls:
-            iceweasel_command = "iceweasel -new-tab " + single_url
-            iceweasel_command = iceweasel_command.split()
-            p = subprocess.Popen(iceweasel_command)
+            display_websites((single_url, ))
 
         # Write out the report for the single URL
         single_report_page(web_index, script_path, operating_system)
@@ -1480,9 +1491,7 @@ if __name__ == "__main__":
 
             # If user wants URL opened in a browser as it runs, do it
             if open_urls:
-                iceweasel_command = "iceweasel -new-tab " + url
-                iceweasel_command = iceweasel_command.split()
-                p = subprocess.Popen(iceweasel_command)
+                display_website(url)
 
             # Add Random sleep based off of user provided jitter value if
             # requested
