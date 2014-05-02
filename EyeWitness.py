@@ -623,7 +623,6 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
     # files and read title tags from there
     filepath = ""
 
-    # NOTE: # DEBUG:
     if report_folder.startswith('/'):
         filepath = report_folder + "/source/" + source_code_table
     else:
@@ -633,8 +632,6 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
         else:
             filepath = iwitness_path + "/" + report_folder + "/source/" +\
                 source_code_table
-
-    print filepath
 
     if (os.path.isfile(filepath)):
         with open(filepath, 'r') as source:
