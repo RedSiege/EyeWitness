@@ -28,6 +28,8 @@ import socket
 import difflib
 from netaddr import IPNetwork
 import platform
+import webbrowser
+
 
 def backup_request(page_code, outgoing_url, source_code_name, content_value,
                    iwitness_path, skip_cred_check, system_os):
@@ -175,10 +177,8 @@ def cli_parser():
         parser.print_help()
         sys.exit()
 
-    if args.localscan is not False:
-        if validate_cidr(args.localscan):
-            pass
-        else:
+    if args.localscan:
+        if not validate_cidr(args.localscan):
             print "[*] Error: Please provide valid CIDR notation!"
             print "[*] Example: 192.168.1.0/24"
             sys.exit()
@@ -445,7 +445,7 @@ def logistics(url_file):
             # Open the URL file and read all URLs, and reading again to catch
             # total number of websites
             with open(url_file) as f:
-                all_urls = f.readlines()
+                all_urls = [url for url in f if url.strip()]
 
             for line in all_urls:
                 urls.append(line)
@@ -975,6 +975,7 @@ def web_header(real_report_date, real_report_time):
     return web_index_head
 
 
+
 if __name__ == "__main__":
 
     # Print the title header
@@ -1232,12 +1233,8 @@ if __name__ == "__main__":
                         time.sleep(sleep_value)
                     except KeyboardInterrupt:
                         print "[*] User cancelled sleep for this URL!"
-
-        # Open each url in a browser if requested
         if open_urls:
-            iceweasel_command = "iceweasel -new-tab " + single_url
-            iceweasel_command = iceweasel_command.split()
-            p = subprocess.Popen(iceweasel_command)
+            webbrowser.open_new_tab(single_url)
 
         # Write out the report for the single URL
         single_report_page(web_index, script_path, operating_system)
@@ -1266,9 +1263,7 @@ if __name__ == "__main__":
 
             # Check for http or https protocol, if not present, assume http
             url = url.strip()
-            if url.startswith('http://') or url.startswith('https://'):
-                pass
-            else:
+            if not url.startswith('http://') and not url.startswith('https://'):
                 url = "http://" + url
 
             # Used for monitoring for blank pages or SSL errors
@@ -1480,9 +1475,7 @@ if __name__ == "__main__":
 
             # If user wants URL opened in a browser as it runs, do it
             if open_urls:
-                iceweasel_command = "iceweasel -new-tab " + url
-                iceweasel_command = iceweasel_command.split()
-                p = subprocess.Popen(iceweasel_command)
+                webbrowser.open_new_tab(url)
 
             # Add Random sleep based off of user provided jitter value if
             # requested
@@ -1520,8 +1513,8 @@ if __name__ == "__main__":
                 if page_counter == 1:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
-                    with open(script_path + "/" + report_folder +
-                              "/report.html", 'w') as f1:
+                    with open(join(script_path, report_folder, "report.html"),
+                              'w') as f1:
                         f1.write(web_index)
 
                     # Revert URL counter back to 0, increment the page count
@@ -1546,8 +1539,8 @@ if __name__ == "__main__":
         else:
             # Write out our extra page
             web_index += "</table>\n"
-            with open(script_path + "/" + report_folder + "/report_page" +
-                      str(page_counter) + ".html", 'w') as page_out:
+            with open(join(script_path, report_folder, "report_page",
+                      str(page_counter), ".html"), 'w') as page_out:
                 page_out.write(web_index)
 
             # Create the link structure at the bottom
@@ -1559,14 +1552,14 @@ if __name__ == "__main__":
             link_text += "</html>"
 
             # Write out link structure to bottom of report
-            with open(script_path + "/" + report_folder + "/report.html", 'a')\
+            with open(join(script_path, report_folder, "report.html"), 'a')\
                     as report_append:
                 report_append.write(link_text)
 
             # Write out link structure to bottom of extra pages
             for page_footer in range(2, page_counter + 1):
-                with open(script_path + "/" + report_folder + "/report_page" +
-                          str(page_footer) + ".html", 'a') as page_append:
+                with open(join(script_path, report_folder, "report_page",
+                          str(page_footer), ".html"), 'a') as page_append:
                     page_append.write(link_text)
 
     if operating_system == "Windows":
