@@ -14,6 +14,7 @@
 import ghost as screener
 import argparse
 import os
+from os.path import join
 import time
 import sys
 import xml.etree.ElementTree as XMLParser
@@ -27,7 +28,6 @@ import socket
 import difflib
 from netaddr import IPNetwork
 import platform
-
 
 def backup_request(page_code, outgoing_url, source_code_name, content_value,
                    iwitness_path, skip_cred_check, system_os):
@@ -50,7 +50,6 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
                                     outgoing_url + ".".replace('    ', '')
 
         # Generate the path of the report file
-        join = os.path.join
         if report_folder.startswith("/") or report_folder.startswith("C:\\"):
             report_file = join(report_folder, "source", source_code_name)
         else:
@@ -82,8 +81,7 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
 def casper_creator(ua_capture, timeout):
     # Instantiate Ghost Object
     if ua_capture == "None":
-        ghost = screener.Ghost(wait_timeout=timeout,
-                               ignore_ssl_errors=True)
+        ghost = screener.Ghost(wait_timeout=timeout, ignore_ssl_errors=True)
     else:
         ghost = screener.Ghost(wait_timeout=timeout,
                                user_agent=ua_capture, ignore_ssl_errors=True)
@@ -165,8 +163,8 @@ def cli_parser():
                 parser.print_help()
                 sys.exit()
         else:
-            if not os.access(os.path.dirname(current_directory + "/" + args.d),
-                         os.W_OK):
+            file_path = join(current_directory, args.d)
+            if not os.access(os.path.dirname(file_path), os.W_OK):
                 print "[*] Error: Please provide a valid folder name/Path\n"
                 parser.print_help()
                 sys.exit()
@@ -198,7 +196,7 @@ def cli_parser():
 def default_creds(page_content, full_file_path, local_system_os):
     try:
         # Read in the file containing the web "signatures"
-        file_path = os.path.join(os.path.normcase(full_file_path), 'signatures.txt')
+        file_path = join(os.path.normcase(full_file_path), 'signatures.txt')
         with open(file_path) as sig_file:
             signatures = sig_file.readlines()
 
@@ -272,13 +270,12 @@ def folder_out(dir_name, full_path, local_os):
     else:
         output_folder_name = current_date.replace("/", "") + "_" +\
             current_time.replace(":", "")
+
     # Translate *nix and Windows paths accordingly, when we are on Windows the
     # slashes are replaced with backslashes, for *nix based systems the opposite
     # is performed.
     output_folder_name = os.path.normcase(output_folder_name)
-    join = os.path.join
 
-    #==========================================================================
     # NOTE: There may be other starting paths for Windows, the C: drive may be
     #       the most common but it wouldn't cover my external drive for instance.
     #
@@ -287,6 +284,7 @@ def folder_out(dir_name, full_path, local_os):
     #       use the python documentation, search for os.path, that should contain
     #       all the info you need to improve your project's code.
     #
+
     if output_folder_name.startswith('C:\\') or output_folder_name.startswith("/"):
         # Create a folder which stores all snapshots
         # If it starts with a "/" or with 'C:\', then assume it is a full path
@@ -294,10 +292,7 @@ def folder_out(dir_name, full_path, local_os):
             os.makedirs(join(output_folder_name, "screens"))
             os.makedirs(join(output_folder_name, "source"))
 
-        with open(join(output_folder_name, "style.css"), 'w') as css_file:
-            css_file.write(css_page)
-
-    # If it doesn't start with a "/" or 'C:\', then assume it should be in the
+    # If it doesn't start with a "/" or "C:\", then assume it should be in the
     # same directory as EyeWitness.
     else:
         # Create a folder which stores all snapshots
@@ -307,8 +302,8 @@ def folder_out(dir_name, full_path, local_os):
             os.makedirs(join(full_path, "screens"))
             os.makedirs(join(full_path, "source"))
 
-        with open(join(full_path, "style.css"), 'w') as css_file:
-            css_file.write(css_page)
+    with open(join(output_folder_name, "style.css"), 'w') as css_file:
+        css_file.write(css_page)
 
     return output_folder_name, current_date, current_time
 
@@ -322,10 +317,10 @@ def ghost_capture(incoming_ghost_object, screen_url, rep_fold, screen_name,
         screen_url, auth=('none', 'none'), default_popup_response=True)
 
     if rep_fold.startswith("/") or rep_fold.startswith("C:\\"):
-        capture_path = os.path.join(rep_fold, "screens", screen_name)
-    else:
-        capture_path = os.path.join(ewitness_dir_path, rep_fold, "screens",
+        capture_path = join(ewitness_dir_path, rep_fold, "screens",
                                     screen_name)
+    else:
+        capture_path = join(rep_fold, "screens", screen_name)
 
     incoming_ghost_object.capture_to(capture_path)
 
@@ -399,7 +394,7 @@ def logistics(url_file):
                                                            port)
                                 if urlBuild not in urls:
                                     urls.append(urlBuild)
-                                    num_urls = num_urls + 1
+                                    num_urls += 1
             return urls, num_urls
 
         # Find root level if it is nessus output
@@ -496,7 +491,6 @@ def scanner(cidr_range, tool_path, system_platform):
     # Define the timeout limit
     timeout = 5
 
-    join = os.path.join
     scanner_output_path = join(tool_path, "scanneroutput.txt")
 
     # Write out the live machine to same path as EyeWitness
@@ -540,23 +534,14 @@ def single_report_page(report_source, report_path, platform_os):
     </body>
     </html>
     """.replace('    ', '')
-    if report_folder.startswith('/'):
-        with open(report_folder + "/report.html", 'w') as fo:
-            fo.write(report_source)
+
+    if report_folder.startswith('/') or report_folder.startswith("C:\\"):
+        report_file = join(report_folder, "report.html")
     else:
-        if platform_os == "Windows":
-            if report_folder.startswith("C:\\"):
-                with open(report_folder + "\\report.html",
-                          'w') as fo:
-                    fo.write(report_source)
-            else:
-                with open(report_path + "\\" + report_folder + "\\report.html",
-                          'w') as fo:
-                    fo.write(report_source)
-        else:
-            with open(report_path + "/" + report_folder + "/report.html", 'w')\
-                    as fo:
-                fo.write(report_source)
+        report_file = join(report_path, report_folder, "report.html")
+
+    with open(report_file, 'w') as fo:
+        fo.write(report_source)
     return
 
 
@@ -624,20 +609,15 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
     filepath = ""
 
     if report_folder.startswith('/'):
-        filepath = report_folder + "/source/" + source_code_table
+        filepath = join(report_folder, "source", source_code_table)
     else:
-        if local_system == "Windows":
-            filepath = iwitness_path + "\\" + report_folder + "\\source\\" +\
-                source_code_table
-        else:
-            filepath = iwitness_path + "/" + report_folder + "/source/" +\
-                source_code_table
+        filepath = join(iwitness_path, report_folder, "source", source_code_table)
 
     if (os.path.isfile(filepath)):
-        with open(filepath, 'r') as source:
+        with open(filepath) as source:
             pagesource = source.read()
             titletag = title_regex.search(pagesource)
-            if (not titletag is None):
+            if titletag:
                 pagetitle = titletag.groups()[1]
             else:
                 pagetitle = "Unknown"
@@ -764,15 +744,10 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
     # Ghost saves unicode strings as some crazy format, so reopen the source
     # files and read title tags from there
     filepath = ""
-    if report_folder.startswith('/'):
-        filepath = report_folder + "/source/" + source_code_table
+    if report_folder.startswith('/') or report_folder.startswith("C:\\"):
+        filepath = join(report_folder, "source", source_code_table)
     else:
-        if system_os == "Windows":
-            filepath = iwitness_path + "\\" + report_folder + "\\source\\" +\
-                source_code_table
-        else:
-            filepath = iwitness_path + "/" + report_folder + "/source/" +\
-                source_code_table
+        filepath = join(iwitness_path, report_folder, "source", source_code_table)
 
     if (os.path.isfile(filepath)):
         with open(filepath, 'r') as source:
@@ -1027,10 +1002,10 @@ if __name__ == "__main__":
     # Change log path if full path is given for output directory
     if directory_name.startswith('/') or directory_name.startswith("C:\\"):
         # Location of the log file Ghost logs to (to catch SSL errors)
-        log_file_path = os.path.join(script_path, report_folder, "logfile.log")
+        log_file_path = join(script_path, report_folder, "logfile.log")
     else:
         # Location of the log file Ghost logs to (to catch SSL errors)
-        log_file_path = os.path.join(report_folder, "logfile.log")
+        log_file_path = join(report_folder, "logfile.log")
 
     # If the user wants to cycle through user agents, return the dictionary
     # of applicable user agents
