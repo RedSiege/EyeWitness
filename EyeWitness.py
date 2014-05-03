@@ -218,7 +218,7 @@ def default_creds(page_content, full_file_path, local_system_os):
             # web page needed to make a signature Delimete the "signature"
             # by ";" before the "|", and then have the creds after the "|"
             for individual_signature in range(0, signature_range):
-                if str(page_content).find(page_sig[individual_signature])\
+                if str(page_content).lower().find(page_sig[individual_signature].lower())\
                         is not -1:
                     pass
                 else:

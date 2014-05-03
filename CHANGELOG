@@ -1,3 +1,6 @@
+[5.3/2014]
+    Modified..: Default creds check is no longer case sensitive when looking for signatures.
+
 [5.2.2014]
     Modified..: EyeWitness codebase was largely updated to make it cleaner and more efficient.  Thanks to Daxda for your pull requests cleaning the code up!
     Modified..: Fixed OS detection
