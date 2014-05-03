@@ -1,3 +1,8 @@
+[5.2.2014]
+    Modified..: EyeWitness codebase was largely updated to make it cleaner and more efficient.  Thanks to Daxda for your pull requests cleaning the code up!
+    Modified..: Fixed OS detection
+    Modified..: Removed subprocess library since it is no longer needed
+
 [4.23.2014]
     Added.....: Source code of windows version of EyeWitness is within Windows/.  Only modification are the libraries being imported.
     Modified..: EyeWitness is now windows compatible.  To run on Windows, you would need to install all the required libraries (PyQt4 or PySide, Ghost, netaddr), or simply download the .exe version of EyeWitness at https://www.christophertruncer.com/InstallMe/EyeWitness.exe

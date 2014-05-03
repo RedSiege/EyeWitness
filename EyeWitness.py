@@ -23,7 +23,6 @@ import cgi
 import re
 import logging
 import random
-import subprocess
 import socket
 import difflib
 from netaddr import IPNetwork
