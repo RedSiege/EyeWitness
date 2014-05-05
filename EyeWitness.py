@@ -45,7 +45,7 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
                 page_code.content = "Sorry, but couldn't get source code for\
                 potentially a couple reasons.  If it was Basic Auth, a 50X,\
                 or a 40X error, EyeWitness won't return source code.  Couldn't\
-                get source from " + url + ".".replace('    ', '')
+                get source from " + outgoing_url + ".".replace('    ', '')
             except urllib2.URLError:
                 page_code.content = "Name resolution could not happen with " +\
                                     outgoing_url + ".".replace('    ', '')
