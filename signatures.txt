@@ -46,3 +46,4 @@ Avaya Aura; System manager 6.1;div class="legalNoticeDiv";div class="loginouterd
 hp LaserJet 1320 series;var ieVSupported = "MSIE 5.0";hp/device/banner.html|<no default username or password>
 hp LaserJet 4250;a.hpButtonNavigationLink;div.hpConsumableBlockData|<no default username or password>
 hp color LaserJet 4600;images/hp_invent_logo.gif;jsfiles/formatting.css|<no default username or password>
+HP Color LaserJet CP2025;td class="mastheadIcon";applicationMastheadSmall|<no default username or password>
