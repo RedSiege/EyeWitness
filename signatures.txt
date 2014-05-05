@@ -39,3 +39,4 @@ HP LaserJet 700 color MFP M775;/hp/device/ControlPanelCustomization/Index|No def
 MB471;okilogo;replacelogo;savecolor|<nousername or root>/aaaaaa or 000000 or 0000 or root/(last 6 of mac address Uppercased)
 MB461;okilogo;var pagename;var status_ad_flag|<nousername or root>/aaaaaa or 000000 or 0000 or root/(last 6 of mac address Uppercased)
 dlink;document.login_form.f_LOGIN_NAME.value!="admin";document.login_form.f_login_type.value=0;function checkID()|DNS-323 admin/<nopassword>
+var re=/root|anonymous|nobody|administrator|ftp|guest|squeezecenter|sshd|messagebus|netdev/i;var cUName = $.cookie('uname');var cPwd = $.cookie('password');/cgi-bin/login_mgr.cgi|(Potential DNS-320L NAS) admin/<setduringinstall> or admin/<none>
