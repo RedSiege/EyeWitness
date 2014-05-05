@@ -41,3 +41,4 @@ MB461;okilogo;var pagename;var status_ad_flag|<nousername or root>/aaaaaa or 000
 dlink;document.login_form.f_LOGIN_NAME.value!="admin";document.login_form.f_login_type.value=0;function checkID()|DNS-323 admin/<nopassword>
 var re=/root|anonymous|nobody|administrator|ftp|guest|squeezecenter|sshd|messagebus|netdev/i;var cUName = $.cookie('uname');var cPwd = $.cookie('password');/cgi-bin/login_mgr.cgi|(Potential DNS-320L NAS) admin/<setduringinstall> or admin/<none>
 APC;Log On;function isValidBrowser();APC Website;var nAgt|(Potential APC SmartUPS) apc/apc
+<title></title></head><head></head>;var RVL_str = "NULL";var RVL_decode_flg = "0";frameset rows="*";src="/configuration/cover_frame" scrolling="no"|(Potential IPmux-216) su/1234 or user/1234 or tech/1234
