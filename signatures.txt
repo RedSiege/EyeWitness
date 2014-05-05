@@ -45,4 +45,4 @@ APC;Log On;function isValidBrowser();APC Website;var nAgt|(Potential APC SmartUP
 Avaya Aura; System manager 6.1;div class="legalNoticeDiv";div class="loginouterdiv"|admin/admin123
 hp LaserJet 1320 series;var ieVSupported = "MSIE 5.0";hp/device/banner.html|<no default username or password>
 hp LaserJet 4250;a.hpButtonNavigationLink;div.hpConsumableBlockData|<no default username or password>
-hp LaserJet 4600;HREF="jsfiles/formatting.css";images/hp_invent_logo.gif|<no default username or password>
+hp LaserJet 4600;jsfiles/formatting.css;images/hp_invent_logo.gif|<no default username or password>
