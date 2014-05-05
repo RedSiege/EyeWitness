@@ -1,4 +1,8 @@
-[5.3/2014]
+[5.5.2014]
+    Modified..: File outputs by EyeWitness have had their delimeter changed (pull request #38)
+    Modified..: Variable within EyeWitness for an error was the wrong variable name
+
+[5.3.2014]
     Modified..: Default creds check is no longer case sensitive when looking for signatures.
 
 [5.2.2014]
