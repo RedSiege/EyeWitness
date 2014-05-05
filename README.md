@@ -5,7 +5,7 @@ EyeWitness is designed to take screenshots of websites, provide some server head
 
 Inspiration came from Tim Tomes's PeepingTom Script.  I just wanted to change some things, and then it became a thought exercise to write it myself.
 
-EyeWitness is designed to run on Kali Linux.  It will auto detect the file you give it with the -f flag as either being a text file with URLs on each new line, nmap xml output, or nessus xml output.  The -t (timeout) flag is completely optional, and lets you provice the max time to wait when trying to render and screenshot a web page.  The --open flag, which is optional, will open the URL in a new tab within iceweasel.
+EyeWitness is designed to run on Kali Linux.  It will auto detect the file you give it with the -f flag as either being a text file with URLs on each new line, nmap xml output, or nessus xml output.  The -t (timeout) flag is completely optional, and lets you provide the max time to wait when trying to render and screenshot a web page.  The --open flag, which is optional, will open the URL in a new tab within iceweasel.
 
 Supported Linux Distros:
 
