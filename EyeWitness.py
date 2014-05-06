@@ -1588,8 +1588,8 @@ if __name__ == "__main__":
 
             # Write out link structure to bottom of extra pages
             for page_footer in range(2, page_counter + 1):
-                with open(join(script_path, report_folder, "report_page",
-                          str(page_footer), ".html"), 'a') as page_append:
+                with open(script_path + "/" + report_folder + "/report_page" +
+                          str(page_footer) + ".html", 'a') as page_append:
                     page_append.write(link_text)
 
     if operating_system == "Windows":
