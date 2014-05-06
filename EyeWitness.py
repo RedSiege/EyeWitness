@@ -49,6 +49,14 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
             except urllib2.URLError:
                 page_code.content = "Name resolution could not happen with " +\
                                     outgoing_url + ".".replace('    ', '')
+            except httplib.BadStatusLine:
+                page_code.content = "Sorry, but couldn't get source code.  \
+                Was provided a bad status by the web server when connectin to "
+                + outgoing_url + ".".replace('    ', '')
+            except:
+                page_code.content = "Unknown error, server responded with an \
+                unknown error code when connecting to " + outgoing_url
+                + ".".replace('    ', '')
 
         # Generate the path of the report file
         if report_folder.startswith("/") or report_folder.startswith("C:\\"):
@@ -142,6 +150,9 @@ def cli_parser():
     parser.add_argument(
         "--localscan", metavar='192.168.1.0/24', default=False,
         help="CIDR Notation of network to scan")
+    parser.add_argument(
+        "--createtargets", action='store_true',
+        help="[Optional] Creates targets.txt containing URLs of all targets.")
     args = parser.parse_args()
 
     current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -189,7 +200,7 @@ def cli_parser():
     # Return the file name which contains the URLs
     return args.f, args.t, args.open, args.single, args.d, args.jitter,\
         args.useragent, args.cycle, args.difference, args.skipcreds,\
-        current_directory, args.localscan
+        current_directory, args.localscan, args.createtargets
 
 
 def default_creds(page_content, full_file_path, local_system_os):
@@ -332,7 +343,7 @@ def html_encode(dangerous_data):
     return encoded
 
 
-def logistics(url_file):
+def logistics(url_file, target_maker):
 
     try:
         # Setup variables
@@ -394,6 +405,13 @@ def logistics(url_file):
                                 if urlBuild not in urls:
                                     urls.append(urlBuild)
                                     num_urls += 1
+
+            if target_maker is True:
+                with open('target_servers.txt', 'w') as target_file:
+                    for item in urls:
+                        target_file.write(item + '\n')
+                print "Target file created (target_servers.txt).\n"
+                sys.exit()
             return urls, num_urls
 
         # Find root level if it is nessus output
@@ -433,6 +451,12 @@ def logistics(url_file):
                             urls.append(url)
                             num_urls = num_urls + 1
 
+            if target_maker is True:
+                with open('target_servers.txt', 'w') as target_file:
+                    for item in urls:
+                        target_file.write(item + '\n')
+                print "Target file created (target_servers.txt).\n"
+                sys.exit()
             return urls, num_urls
 
         else:
@@ -987,43 +1011,46 @@ if __name__ == "__main__":
     # and how long to wait for each website
     url_filename, timeout_wait, open_urls, single_url, directory_name,\
         request_jitter, browser_user_agent, ua_cycle, diff_value, cred_skip,\
-        script_path, subnet_scan = cli_parser()
+        script_path, subnet_scan, create_targets = cli_parser()
 
     # If the user wants to perform a scan for web servers locally,
     # then perform the scan, write out to a file, and exit
     if subnet_scan:
         scanner(subnet_scan, script_path, operating_system)
 
-    # Create the directory needed and support files
-    report_folder, report_date, report_time = folder_out(directory_name,
-                                                         script_path,
-                                                         operating_system)
-
-    # Change log path if full path is given for output directory
-    if directory_name.startswith('/') or directory_name.startswith("C:\\"):
-        # Location of the log file Ghost logs to (to catch SSL errors)
-        log_file_path = join(script_path, report_folder, "logfile.log")
+    if create_targets:
+        pass
     else:
-        # Location of the log file Ghost logs to (to catch SSL errors)
-        log_file_path = join(report_folder, "logfile.log")
+        # Create the directory needed and support files
+        report_folder, report_date, report_time = folder_out(directory_name,
+                                                             script_path,
+                                                             operating_system)
 
-    # If the user wants to cycle through user agents, return the dictionary
-    # of applicable user agents
-    if ua_cycle == "None":
-        ghost_object = casper_creator(browser_user_agent, timeout_wait)
-    else:
-        ua_dict = user_agent_definition(ua_cycle)
-        ghost_object = casper_creator(browser_user_agent, timeout_wait)
+        # Change log path if full path is given for output directory
+        if directory_name.startswith('/') or directory_name.startswith("C:\\"):
+            # Location of the log file Ghost logs to (to catch SSL errors)
+            log_file_path = join(script_path, report_folder, "logfile.log")
+        else:
+            # Location of the log file Ghost logs to (to catch SSL errors)
+            log_file_path = join(report_folder, "logfile.log")
 
-    # Logging setup
-    logging.basicConfig(filename=log_file_path, level=logging.WARNING)
-    logger = logging.getLogger('ghost')
+        # If the user wants to cycle through user agents, return the dictionary
+        # of applicable user agents
+        if ua_cycle == "None":
+            ghost_object = casper_creator(browser_user_agent, timeout_wait)
+        else:
+            ua_dict = user_agent_definition(ua_cycle)
+            ghost_object = casper_creator(browser_user_agent, timeout_wait)
 
-    # Define a couple default variables
-    extra_info = "None"
-    blank_value = "None"
-    baseline_request = "Baseline"
-    page_length = "None"
+        # Logging setup
+        logging.basicConfig(filename=log_file_path, level=logging.WARNING)
+        logger = logging.getLogger('ghost')
+
+        # Define a couple default variables
+        extra_info = "None"
+        blank_value = "None"
+        baseline_request = "Baseline"
+        page_length = "None"
 
     if single_url is not "None":
 
@@ -1241,7 +1268,7 @@ if __name__ == "__main__":
     else:
 
         # Create the output directories, open the urlfile, and return all URLs
-        url_list, number_urls = logistics(url_filename)
+        url_list, number_urls = logistics(url_filename, create_targets)
 
         # Check if user wants random URLs, if so, randomize URLs here
         if request_jitter is not "None":
@@ -1257,8 +1284,12 @@ if __name__ == "__main__":
 
         htmldictionary = {}
 
+        url_counter = 0
+
         # Loop through all URLs and create a screenshot
         for url in url_list:
+
+            url_counter += 1
 
             # Check for http or https protocol, if not present, assume http
             url = url.strip()
@@ -1273,7 +1304,7 @@ if __name__ == "__main__":
 
             # This is the code which opens the specified URL and captures
             # it to a screenshot
-            print "Attempting to capture: " + url
+            print "Attempting to capture: " + url + "  (" + str(url_counter) + "/" + str(number_urls) + ")"
             # If not trying to cycle through different user agents, make
             # the web requests as it was originall done
             if ua_cycle == "None":

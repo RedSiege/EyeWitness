@@ -1,3 +1,8 @@
+[5.6.2014]
+    Modified..: Added a specific exception and generic exception handler to backup request (previously it only handled specific exceptions).
+    Added.....: --createtargets flag will create a file of all the targets (useful to make a quick target list from a nmap xml or nessus file)
+    Added.....: There is now a website counter next to the url letting you know how many URLs EyeWitness has gone through and the total remaining.
+
 [5.5.2014]
     Modified..: File outputs by EyeWitness have had their delimeter changed (pull request #38)
     Modified..: Variable within EyeWitness for an error was the wrong variable name
