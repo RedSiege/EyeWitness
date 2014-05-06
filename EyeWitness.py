@@ -1569,8 +1569,8 @@ if __name__ == "__main__":
         else:
             # Write out our extra page
             web_index += "</table>\n"
-            with open(join(script_path, report_folder, "report_page",
-                      str(page_counter), ".html"), 'w') as page_out:
+            with open(script_path + "/" + report_folder + "/report_page" +
+                      str(page_counter) + ".html", 'w') as page_out:
                 page_out.write(web_index)
 
             # Create the link structure at the bottom
