@@ -58,3 +58,4 @@ On Board Remote Management;This site requires the use of a frames capable;Web br
 QUANTUM - Scalar i40 Login Screen;var bLoggingin = false;enterKey(event)|admin/password
 Management Console - Login;AVANCE CSS;Stratus Technologies Bermuda|admin/admin
 Login;Sun GlassFish Enterprise Server;onmouseover|admin/<nopass> admin/changeit admin/admin
+ZeroShell;cgi-bin/kerbynet?Action=Render;StartSession|admin/zeroshell
