@@ -52,3 +52,4 @@ WebDVR;var ip;var pwd;login.sitecode.value;DX8100|admin/admin
 DYMO LabelWriter Print Server;InternetExplorer3.0(or later)|admin/admin
 HP System Management Homepage Login;Check if the user is already connected;pageColumns|username and pass of OS or domain account
 Polycom RMX 1000;ondragstart;cfg_ui_hide;proxy_log_ip|POLYCOM/POLYCOM
+a username and password to login to the Webmin server;/unauthenticated/nav/button_shadow.jpg;/images;webmin_icon.png
