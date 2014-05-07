@@ -62,3 +62,4 @@ ZeroShell;cgi-bin/kerbynet?Action=Render;StartSession|admin/zeroshell
 HP System Management Homepage Login;FramesAreThere;inNimbus;imageFromStatus(|(HP System Management) username and pass of OS or domain account
 images/loytec.gif;LIP-3ECTB|admin/loytec4u
 LenovaEMC px4-300r;Enter administrator username and password;mngpwd|(Iomega px4-300r) root/ADMIN or admin/ADMIN or ADMIN/ADMIN
+My Book World Edition;Network Storage Manager;Copy Manager;Downloader|(My Book World Edition) admin/admin
