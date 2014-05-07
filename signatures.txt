@@ -61,3 +61,4 @@ Login;Sun GlassFish Enterprise Server;onmouseover|admin/<nopass> admin/changeit 
 ZeroShell;cgi-bin/kerbynet?Action=Render;StartSession|admin/zeroshell
 HP System Management Homepage Login;FramesAreThere;inNimbus;imageFromStatus(|username and pass of OS or domain account
 images/loytec.gif;LIP-3ECTB|admin/loytec4u
+LenovaEMC px4-300r;Enter administrator username and password;mngpwd|root/ADMIN or admin/ADMIN or ADMIN/ADMIN
