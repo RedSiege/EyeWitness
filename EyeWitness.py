@@ -49,10 +49,6 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
             except urllib2.URLError:
                 page_code.content = "Name resolution could not happen with " +\
                                     outgoing_url + ".".replace('    ', '')
-            except httplib.BadStatusLine:
-                page_code.content = "Sorry, but couldn't get source code.  \
-                Was provided a bad status by the web server when connectin to "
-                + outgoing_url + ".".replace('    ', '')
             except:
                 page_code.content = "Unknown error, server responded with an \
                 unknown error code when connecting to " + outgoing_url
