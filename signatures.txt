@@ -54,4 +54,4 @@ HP System Management Homepage Login;Check if the user is already connected;pageC
 Polycom RMX 1000;ondragstart;cfg_ui_hide;proxy_log_ip|POLYCOM/POLYCOM
 Sign In - Hyperic;body class="tundra";since dojo has trouble when;screencastLink|hqadmin/hqadmin
 HP System Management Homepage;HP-UX removed;Unable to create a socket to communicate|username and pass of OS or domain account
-On Board Remote Management;This site requires the use of a frames capable Web browser|guest/guest
+On Board Remote Management;This site requires the use of a frames capable;Web browser|guest/guest
