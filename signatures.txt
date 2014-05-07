@@ -53,3 +53,4 @@ DYMO LabelWriter Print Server;InternetExplorer3.0(or later)|admin/admin
 HP System Management Homepage Login;Check if the user is already connected;pageColumns|username and pass of OS or domain account
 Polycom RMX 1000;ondragstart;cfg_ui_hide;proxy_log_ip|POLYCOM/POLYCOM
 Sign In - Hyperic;body class="tundra";since dojo has trouble when;screencastLink|hqadmin/hqadmin
+HP System Management Homepage;HP-UX removed;Unable to create a socket to communicate|username and pass of OS or domain account
