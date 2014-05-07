@@ -48,3 +48,6 @@ hp LaserJet 4250;a.hpButtonNavigationLink;div.hpConsumableBlockData|<no default 
 hp color LaserJet 4600;images/hp_invent_logo.gif;jsfiles/formatting.css|<no default username or password>
 HP Color LaserJet CP2025;td class="mastheadIcon";applicationMastheadSmall|<no default username or password>
 Rainwise IP-100;Relative Humidity;Solar Rad;Leaf Wetness;var exdate=new Date()|admin/admin, admin/paradox, or paradox/paradox
+WebDVR;var ip;var pwd;login.sitecode.value;DX8100|admin/admin
+DYMO LabelWriter Print Server;InternetExplorer3.0(or later)|admin/admin
+HP System Management Homepage Login;Check if the user is already connected;pageColumns|username and pass of OS or domain account
