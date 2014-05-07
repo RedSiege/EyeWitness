@@ -1,3 +1,6 @@
+[5.7.2014]
+    Modified..: Removed specific exception EyeWitness was unaware of.
+
 [5.6.2014]
     Modified..: Added a specific exception and generic exception handler to backup request (previously it only handled specific exceptions).
     Added.....: --createtargets flag will create a file of all the targets (useful to make a quick target list from a nmap xml or nessus file)
