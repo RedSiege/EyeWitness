@@ -341,6 +341,9 @@ def html_encode(dangerous_data):
 
 def logistics(url_file, target_maker):
 
+    if target_maker is True:
+        print "Creating text file (target_servers.txt) containing all web servers..."
+
     try:
         # Setup variables
         # The nmap xml parsing code was sent to me and worked on by Jason Hill
