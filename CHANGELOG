@@ -1,3 +1,6 @@
+[5.9.2014]
+    Added.....: Message to user now displayed when using EyeWitness's --createtargets flag
+
 [5.7.2014]
     Modified..: Removed specific exception EyeWitness was unaware of.
 
