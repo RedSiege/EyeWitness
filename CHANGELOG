@@ -1,6 +1,6 @@
 [5.9.2014]
     Added.....: Message to user now displayed when using EyeWitness's --createtargets flag
-    Modified..: Windows binary of EyeWitness now can connect to https websites, fixed a bug where pyinstaller binaries specifically require the ssl import.  Thanks to Arch Beard for informing me of the issue.
+    Modified..: Windows binary of EyeWitness now can connect to https websites, fixed a bug where pyinstaller binaries specifically require the ssl import.  Thanks to Arch Beard for informing me of the issue. (Needed to specifically add ssl import for it to work with pyinstaller)
 
 [5.7.2014]
     Modified..: Removed specific exception EyeWitness was unaware of.
