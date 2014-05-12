@@ -15,7 +15,7 @@ Debian 7+ (at least stable, looking into testing) (Thanks to @themightyshiv)
 
 CentOS 6.5+ (Thanks to @themightyshiv)
 
-Windows - Download from: https://www.christophertruncer.com/InstallMe/EyeWitness.exe (Note: To check for default creds, be sure to include the signatures.txt file within the same directory as EyeWitness.exe)
+Windows - Download from: https://www.christophertruncer.com/InstallMe/EyeWitness.zip (Note: To check for default creds, be sure to include the signatures.txt file within the same directory as EyeWitness.exe)
 
 
 E-Mail: EyeWitness [@] christophertruncer [dot] com
