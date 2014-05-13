@@ -527,13 +527,16 @@ def scanner(cidr_range, tool_path, system_platform):
                 result = checkHostPort(ip_to_scan, port)
                 if (result == 0):
                     # port is open, add to the list
-                    add_to_list = ip_to_scan + ":" + str(port)
+                    if port is 443:
+                        add_to_list = "https://" + ip_to_scan + ":" + str(port)
+                    else:
+                        add_to_list = "http://" + ip_to_scan + ":" + str(port)
                     print "[*] Potential live webserver at " + add_to_list
                     live_webservers.append(add_to_list)
                 else:
                     if (result == 10035 or result == 10060):
                         # Host is unreachable
-                        break
+                        pass
 
     except KeyboardInterrupt:
         print "[*] Scan interrupted by you rage quitting!"
