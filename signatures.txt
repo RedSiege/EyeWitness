@@ -64,3 +64,4 @@ images/loytec.gif;LIP-3ECTB|(Loytec LIP-3ECTB) admin/loytec4u
 LenovaEMC px4-300r;Enter administrator username and password;mngpwd|(Iomega px4-300r) root/ADMIN or admin/ADMIN or ADMIN/ADMIN
 My Book World Edition;Network Storage Manager;Copy Manager;Downloader|(My Book World Edition) admin/admin
 THECUS 1U4500;/usr/usrgetform.html;/pub/css.css|(THECUS 1U4500) admin/admin
+HP IP Console Switch G2|(HP IP Console Switch G2) Admin/<nopassword>
