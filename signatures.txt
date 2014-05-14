@@ -65,3 +65,4 @@ LenovaEMC px4-300r;Enter administrator username and password;mngpwd|(Iomega px4-
 My Book World Edition;Network Storage Manager;Copy Manager;Downloader|(My Book World Edition) admin/admin
 THECUS 1U4500;/usr/usrgetform.html;/pub/css.css|(THECUS 1U4500) admin/admin
 HP IP Console Switch G2|(HP IP Console Switch G2) Admin/<nopassword>
+Oracle;PeopleSoft Enterprise Sign-in;function setFocus;pslogincopyright|(Oracle Peoplesoft Enterprise) PS/PS or VP1/VP1
