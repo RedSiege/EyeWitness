@@ -344,14 +344,15 @@ def logistics(url_file, target_maker):
     if target_maker is True:
         print "Creating text file (target_servers.txt) containing all web servers..."
 
+    urls = []
+    num_urls = 0
+    use_amap = False
     try:
         # Setup variables
         # The nmap xml parsing code was sent to me and worked on by Jason Hill
         # (@jasonhillva)
         http_ports = [80, 8000, 8080, 8081, 8082]
         https_ports = [443, 8443]
-        urls = []
-        num_urls = 0
 
         try:
             xml_tree = XMLParser.parse(url_file)
@@ -470,8 +471,31 @@ def logistics(url_file, target_maker):
                 all_urls = [url for url in f if url.strip()]
 
             for line in all_urls:
-                urls.append(line)
-                num_urls += 1
+                if "www.thc.org/thc-amap" in line:
+                    use_amap = True
+                    break
+
+            if use_amap is True:
+                with open(url_file) as f:
+                    for line in f:
+                        if "matches http" in line:
+                            prefix = "http://"
+                        elif "matches ssl" in line and "by trigger http" in line:
+                            prefix = "https://"
+                        else:
+                            prefix = None
+
+                        if prefix is not None:
+                            suffix = line.split("Protocol on ")[1].split("/tcp")[0]
+                            urlBuild = '%s%s' % (prefix, suffix)
+                            if urlBuild not in urls:
+                                urls.append(urlBuild)
+                                num_urls += 1
+
+            else:
+                for line in all_urls:
+                    urls.append(line)
+                    num_urls += 1
 
             return urls, num_urls
 
@@ -802,6 +826,11 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
 
     except AttributeError:
         web_table_index += "\n<br><br>Potential blank page or SSL issue with\
+            <a href=\"" + website_url + "\" target=\"_blank\">" +\
+            website_url + "</a>."
+
+    except UnicodeDecodeError:
+        web_table_index += "\n<br><br>Error properly escaping server headers for\
             <a href=\"" + website_url + "\" target=\"_blank\">" +\
             website_url + "</a>."
 
@@ -1579,20 +1608,46 @@ if __name__ == "__main__":
             link_text = "\n<br>Links: <a href=\"report.html\">Page 1</a> "
             for page in range(2, page_counter + 1):
                 link_text += "<a href=\"report_page" + str(page) + ".html\">\
-                Page " + str(page) + "</a> "
+                Page " + str(page) + "</a> ".replace('    ', '')
+            top_links = link_text
             link_text += "\n</body>\n"
             link_text += "</html>"
 
             # Write out link structure to bottom of report
+            # and add it to the top as well
             with open(join(script_path, report_folder, "report.html"), 'a')\
                     as report_append:
                 report_append.write(link_text)
 
+            with open(join(script_path, report_folder, "report.html"), 'r')\
+                    as link_add:
+                content = link_add.readlines()
+
+            content.insert(6, "<center>" + top_links + "</center>\n")
+            content = "".join(content)
+
+            with open(join(script_path, report_folder, "report.html"), 'w')\
+                    as final_report_page:
+                final_report_page.write(content)
+
             # Write out link structure to bottom of extra pages
+            # Also add links to the top of extra pages
             for page_footer in range(2, page_counter + 1):
                 with open(join(script_path, report_folder, "report_page" +
                           str(page_footer) + ".html"), 'a') as page_append:
                     page_append.write(link_text)
+
+            for page_footer in range(2, page_counter + 1):
+                with open(join(script_path, report_folder, "report_page" +
+                          str(page_footer) + ".html"), 'r') as link_add:
+                    content = link_add.readlines()
+
+                content.insert(6, "<center>" + top_links + "</center>\n")
+                content = "".join(content)
+
+                with open(join(script_path, report_folder, "report_page" +
+                          str(page_footer) + ".html"), 'w') as final_reports_page:
+                    final_reports_page.write(content)
 
     if operating_system == "Windows":
         # Stupid windows won't let me delete the log file
