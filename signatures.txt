@@ -66,4 +66,9 @@ My Book World Edition;Network Storage Manager;Copy Manager;Downloader|(My Book W
 THECUS 1U4500;/usr/usrgetform.html;/pub/css.css|(THECUS 1U4500) admin/admin
 HP IP Console Switch G2|(HP IP Console Switch G2) Admin/<nopassword>
 Oracle;PeopleSoft Enterprise Sign-in;function setFocus;pslogincopyright|(Oracle Peoplesoft Enterprise) PS/PS or VP1/VP1
-a id="id_LaCie" target="_blanck" href= "http://www.lacie.com">;LaCie;Dashboard;body class="bodynormaldashboard"|(Lacie 2Big NAS) admin/admin
+a id="id_LaCie" target="_blanck" href= "http://www.lacie.com">;LaCie;Dashboard;body class="bodynormaldashboard"|(Lacie 2Big NAS) admin/admin (changed at first login though)
+Synology;DiskStation;DS1513;Multitasking,Web Application,Personal Cloud;SynohdpackStatus|(Synology DS1513) admin/<nopassword>
+Synology;DiskStation;DS212J;modules/PersonalSettings/style.css;script type="text/javascript">SYNO.SDS.Session|(Synology DS212J) admin/<nopassword>
+Synology;DiskStation;DS214;modules/BackupReplicationApp/style.css;|(Synology Diskstation DS214) admin/<nopassword>
+Synology;DiskStation;DS413;modules/BackupReplicationApp/style.css;|(Synology Diskstation DS413) admin/<nopassword>
+Synology;DiskStation;DS713;modules/AdminCenter/style.css|(Synology Diskstation DS713) admin/<nopassword>
