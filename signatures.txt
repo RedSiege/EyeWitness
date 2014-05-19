@@ -72,4 +72,4 @@ Synology;DiskStation;DS212J;modules/PersonalSettings/style.css;script type="text
 Synology;DiskStation;DS214;modules/BackupReplicationApp/style.css;|(Synology Diskstation DS214) admin/<nopassword>
 Synology;DiskStation;DS413;modules/BackupReplicationApp/style.css;|(Synology Diskstation DS413) admin/<nopassword>
 Synology;DiskStation;DS713;modules/AdminCenter/style.css|(Synology Diskstation DS713) admin/<nopassword>
-hp color LaserJet 5550;div.hpConsumableBlockData;td = class"hpBanner"|(HP Color LaserJet 5550) <nodefaultcreds>
+hp color LaserJet 5550;div.hpConsumableBlockData;td class="hpBanner"|(HP Color LaserJet 5550) <nodefaultcreds>
