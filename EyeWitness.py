@@ -870,6 +870,16 @@ def title_screen():
     print "#                               EyeWitness                                  #"
     print "#############################################################################\n"
 
+    python_info = sys.version_info
+    if python_info[0] is not 2 or python_info[1] < 7:
+        print "[*] Error: Your version of python is not supported!"
+        print "[*] Error: Please install Python 2.7.X"
+        sys.exit()
+    else:
+        pass
+
+    return
+
 
 def user_agent_definition(cycle_value):
     # Create the dicts which hold different user agents.
@@ -1570,7 +1580,7 @@ if __name__ == "__main__":
         for i in range(0, len(groupedlist)):
             element = groupedlist[i]
             web_index += element[1][1]
-            if (i % 25 == 0 and not i == 0):
+            if (i % 45 == 0 and not i == 0):
                 if page_counter == 1:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
