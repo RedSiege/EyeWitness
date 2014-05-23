@@ -108,47 +108,60 @@ def cli_parser():
         description="EyeWitness is a tool used to capture screenshots\
         from a list of URLs")
     parser.add_argument(
+        '-h', '-?', '--h', '-help', '--help', action="store_true",
+        help=argparse.SUPPRESS)
+
+    urls_in = parser.add_argument_group('URL Options')
+    urls_in.add_argument(
         "-f", metavar="Filename",
         help="File containing URLs to screenshot, each on a new line,\
         NMap XML output, or a .nessus file")
-    parser.add_argument(
+    urls_in.add_argument(
+        '--single', metavar="Single URL", default="None",
+        help="Single URL to screenshot")
+    urls_in.add_argument(
+        "--createtargets", action='store_true',
+        help="[Optional] Creates targets.txt containing URLs of all targets.")
+
+    timing_options = parser.add_argument_group('Timing Options')
+    timing_options.add_argument(
         "-t", metavar="Timeout", default=7, type=int,
         help="[Optional] Maximum number of seconds to wait while\
         requesting a web page (Default: 7)")
-    parser.add_argument(
+    timing_options.add_argument(
+        '--jitter', metavar="# of Seconds", default="None",
+        help="Randomize URLs and add a random delay between requests")
+
+    system_options = parser.add_argument_group('Local System Options')
+    system_options.add_argument(
         "-d", metavar="Directory Name", default="None",
         help="[Optional] Directory name for report output")
-    parser.add_argument(
-        '-h', '-?', '--h', '-help', '--help', action="store_true",
-        help=argparse.SUPPRESS)
-    parser.add_argument(
-        '--single', metavar="Single URL", default="None",
-        help="Single URL to screenshot")
-    parser.add_argument(
+    system_options.add_argument(
+        "--open", action='store_true',
+        help="[Optional] Open all URLs in a browser")
+
+    ua_options = parser.add_argument_group('User Agent Options')
+    ua_options.add_argument(
         '--useragent', metavar="User Agent", default="None",
         help="User Agent to use for all requests")
-    parser.add_argument(
+    ua_options.add_argument(
         '--cycle', metavar="UA Type", default="None",
         help="User Agent type (Browser, Mobile, Crawler, Scanner, Misc, All)")
-    parser.add_argument(
+    ua_options.add_argument(
         "--difference", metavar="Difference Threshold", default=50, type=int,
         help="[Optional] Difference threshold when determining if user agent\
         requests are close \"enough\" (Default: 50)")
-    parser.add_argument(
-        '--jitter', metavar="# of Seconds", default="None",
-        help="Randomize URLs and add a random delay between requests")
-    parser.add_argument(
-        "--open", action='store_true',
-        help="[Optional] Open all URLs in a browser")
-    parser.add_argument(
+
+    cred_check_options = parser.add_argument_group('Credential Check Options')
+    cred_check_options.add_argument(
         "--skipcreds", action='store_true',
         help="Skip checking for default creds")
-    parser.add_argument(
+
+    scan_options = parser.add_argument_group('Scan Options')
+    scan_options.add_argument(
         "--localscan", metavar='192.168.1.0/24', default=False,
         help="CIDR Notation of network to scan")
-    parser.add_argument(
-        "--createtargets", action='store_true',
-        help="[Optional] Creates targets.txt containing URLs of all targets.")
+
     args = parser.parse_args()
 
     current_directory = os.path.dirname(os.path.realpath(__file__))
