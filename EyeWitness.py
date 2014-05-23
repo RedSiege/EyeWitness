@@ -177,18 +177,57 @@ def cli_parser():
                 print "[*] Error: Please provide a valid folder name/Path\n"
                 parser.print_help()
                 sys.exit()
+            else:
+                if os.path.isdir(args.d):
+                    overwrite_dir = raw_input('Directory Exists! Do you want to overwrite it? [y/n] ')
+                    overwrite_dir = overwrite_dir.lower().strip()
+                    if overwrite_dir == "n":
+                        print "Quitting... Restart and provice the \
+                        proper directory to write to.".replace('    ', '')
+                        sys.exit()
+                    elif overwrite_dir == "y":
+                        pass
+                    else:
+                        print "Quitting since you didn't provide a valid response..."
+                        sys.exit()
         elif args.d.startswith('C:\\'):
             args.d = args.d.rstrip("\\")
             if not os.access(os.path.dirname(args.d), os.W_OK):
                 print "[*] Error: Please provide a valid folder name/Path\n"
                 parser.print_help()
                 sys.exit()
+            else:
+                if os.path.isdir(args.d):
+                    overwrite_dir = raw_input('Directory Exists! Do you want to overwrite it? [y/n] ')
+                    overwrite_dir = overwrite_dir.lower().strip()
+                    if overwrite_dir == "n":
+                        print "Quitting... Restart and provice the \
+                        proper directory to write to.".replace('    ', '')
+                        sys.exit()
+                    elif overwrite_dir == "y":
+                        pass
+                    else:
+                        print "Quitting since you didn't provide a valid response..."
+                        sys.exit()
         else:
             file_path = join(current_directory, args.d)
             if not os.access(os.path.dirname(file_path), os.W_OK):
                 print "[*] Error: Please provide a valid folder name/Path\n"
                 parser.print_help()
                 sys.exit()
+            else:
+                if os.path.isdir(file_path):
+                    overwrite_dir = raw_input('Directory Exists! Do you want to overwrite it? [y/n] ')
+                    overwrite_dir = overwrite_dir.lower().strip()
+                    if overwrite_dir == "n":
+                        print "Quitting... Restart and provice the \
+                        proper directory to write to.".replace('    ', '')
+                        sys.exit()
+                    elif overwrite_dir == "y":
+                        pass
+                    else:
+                        print "Quitting since you didn't provide a valid response..."
+                        sys.exit()
 
     if args.f is None and args.single == "None" and args.localscan is False:
         print "[*] Error: You didn't specify a file! I need a file containing \
@@ -1050,7 +1089,6 @@ def web_header(real_report_date, real_report_time):
     </tr>""".format(report_day=real_report_date,
                     reporthtml_time=real_report_time).replace('    ', '')
     return web_index_head
-
 
 
 if __name__ == "__main__":

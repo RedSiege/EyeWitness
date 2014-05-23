@@ -1,6 +1,7 @@
 [5.23.2014]
     Added.....: Check to make sure user is using python version 2.7.x.  Any other version will fail (gracefully) :) - Github Issue #44 - Thanks Robin
     Modified..: Command line options are now grouped together based on similarity.
+    Added.....: Check to make sure directory (if provided by user) doesn't exist.  If so, prompt before overwriting. - Github Issue #47 - Thanks Robin
 
 [5.16.2014]
     Modified..: Added link structure to the top of the report. Thanks for suggestion Robin - Github Issue #41
