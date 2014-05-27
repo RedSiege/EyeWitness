@@ -4,6 +4,34 @@
 
 require 'selenium-webdriver'
 
+
+def folder_out()
+
+    css_file = 'img {
+    max-width: 100%;
+    height: auto;
+    }
+    #screenshot{
+    overflow: auto;
+    max-width: 850px;
+    max-height: 550px;
+    }'.gsub('    ', '')
+
+    File.open('style.css', 'w') do |stylesheet|
+        stylesheet.puts css_file
+    end
+
+    date_time = Time.new
+    date = "#{date_time.month}#{date_time.day}#{date_time.year}"
+    hours = "#{date_time.hour}#{date_time.min}#{date_time.sec}"
+    output_folder_name = "#{date}_#{hours}"
+
+    return
+end
+
+
+
+
 File.open("urls.txt", "r") do |f|
   puts "There's #{f.count} URLs to capture!"
 end
@@ -22,3 +50,5 @@ File.open("urls.txt", "r") do |f2|
 end
 
 driver.quit
+
+folder_out()
