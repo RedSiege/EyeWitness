@@ -2,7 +2,46 @@
 
 # This is a port of EyeWitness to Ruby, using a new screenshot engine
 
+require 'optparse'
+require 'ostruct'
+require 'pp'
 require 'selenium-webdriver'
+
+
+class CliParser
+
+    def self.parse(args)
+
+      # Used for a hash-like data structure
+      options = OpenStruct.new
+
+      # Set the default values
+      options.file_name = nil
+
+      opt_parser = OptionParser.new do |opts|
+        opts.banner = "Usage: [options]"
+
+        opts.on("-f Filename", "File containing URLs to screenshot,",
+            "each on a new line, NMap XML output,",
+            "or a .nessus file") do |in_filename|
+          options.file_name = in_filename
+        end
+
+        opts.on("-t [7]", Integer, "Maximum number of seconds to wait while",
+            "requesting a web page.") do |max_timeout|
+          options.timeout = max_timeout
+        end
+
+        opts.on_tail('-h', '--help', 'Show this message') do
+          puts opts
+          exit
+        end
+
+      end # end of opt_parser
+      opt_parser.parse!(args)
+      options
+    end # End of self.parse
+end # End cli_parser
 
 
 def folder_out(dir_name, full_path, local_os)
