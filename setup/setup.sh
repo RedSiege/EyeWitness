@@ -28,6 +28,11 @@ case ${osinfo} in
   Kali)
     echo '[*] Installing Kali Dependencies'
     apt-get install python-qt4 python-pip xvfb
+    if [ $? -ne 0 ]
+    then
+      echo "[*] Error: Install failed.  Please investigate install issue."
+      exit 0 
+    fi
     echo '[*] Cloning and installing Ghost'
     git clone https://github.com/ChrisTruncer/Ghost.py.git
     cd Ghost.py
@@ -39,6 +44,11 @@ case ${osinfo} in
   Debian)
     echo '[*] Installing Debian Dependencies'
     apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr
+    if [ $? -ne 0 ]
+    then
+      echo "[*] Error: Install failed.  Please investigate install issue."
+      exit 0 
+    fi
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
@@ -54,6 +64,11 @@ case ${osinfo} in
   Ubuntu)
     echo '[*] Installing Ubuntu Dependencies'
     apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr
+    if [ $? -ne 0 ]
+    then
+      echo "[*] Error: Install failed.  Please investigate install issue."
+      exit 0 
+    fi
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
