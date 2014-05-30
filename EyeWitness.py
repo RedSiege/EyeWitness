@@ -1724,6 +1724,10 @@ if __name__ == "__main__":
                           str(page_footer) + ".html"), 'w') as final_reports_page:
                     final_reports_page.write(content)
 
+    # Kill xvfb session if started
+    if hasattr(ghost_object, 'xvfb'):
+        ghost_object.xvfb.terminate()
+
     if operating_system == "Windows":
         # Stupid windows won't let me delete the log file
         pass
