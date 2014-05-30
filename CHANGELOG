@@ -1,3 +1,6 @@
+[5.29.2014]
+    Added.....: Setup script now checks the apt-get install and ensures it returns a 0 status.  Any non-zero status will alert the user of an error and stop the install process. Thanks Robin for reporting this - Github Issue #51
+
 [5.23.2014]
     Added.....: Check to make sure user is using python version 2.7.x.  Any other version will fail (gracefully) :) - Github Issue #44 - Thanks Robin
     Modified..: Command line options are now grouped together based on similarity.
