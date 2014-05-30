@@ -108,47 +108,65 @@ def cli_parser():
         description="EyeWitness is a tool used to capture screenshots\
         from a list of URLs")
     parser.add_argument(
+        '-h', '-?', '--h', '-help', '--help', action="store_true",
+        help=argparse.SUPPRESS)
+
+    urls_in = parser.add_argument_group('URL Options')
+    urls_in.add_argument(
         "-f", metavar="Filename",
         help="File containing URLs to screenshot, each on a new line,\
         NMap XML output, or a .nessus file")
-    parser.add_argument(
-        "-t", metavar="Timeout", default=7, type=int,
-        help="[Optional] Maximum number of seconds to wait while\
-        requesting a web page (Default: 7)")
-    parser.add_argument(
-        "-d", metavar="Directory Name", default="None",
-        help="[Optional] Directory name for report output")
-    parser.add_argument(
-        '-h', '-?', '--h', '-help', '--help', action="store_true",
-        help=argparse.SUPPRESS)
-    parser.add_argument(
+    urls_in.add_argument(
         '--single', metavar="Single URL", default="None",
         help="Single URL to screenshot")
-    parser.add_argument(
-        '--useragent', metavar="User Agent", default="None",
-        help="User Agent to use for all requests")
-    parser.add_argument(
-        '--cycle', metavar="UA Type", default="None",
-        help="User Agent type (Browser, Mobile, Crawler, Scanner, Misc, All)")
-    parser.add_argument(
-        "--difference", metavar="Difference Threshold", default=50, type=int,
-        help="[Optional] Difference threshold when determining if user agent\
-        requests are close \"enough\" (Default: 50)")
-    parser.add_argument(
+    urls_in.add_argument(
+        "--createtargets", metavar="targetfilename.txt", default=None,
+        help="Creates text file (of provided name) containing URLs of all targets.")
+
+    timing_options = parser.add_argument_group('Timing Options')
+    timing_options.add_argument(
+        "-t", metavar="Timeout", default=7, type=int,
+        help="Maximum number of seconds to wait while\
+        requesting a web page (Default: 7)")
+    timing_options.add_argument(
         '--jitter', metavar="# of Seconds", default="None",
         help="Randomize URLs and add a random delay between requests")
-    parser.add_argument(
+
+    report_options = parser.add_argument_group('Report Output Options')
+    report_options.add_argument(
+        "-d", metavar="Directory Name", default="None",
+        help="Directory name for report output")
+    report_options.add_argument(
+        "--results", metavar="URLs Per Page", default="25", type=int,
+        help="Number of URLs per page of the report")
+
+    ua_options = parser.add_argument_group('User Agent Options')
+    ua_options.add_argument(
+        '--useragent', metavar="User Agent", default="None",
+        help="User Agent to use for all requests")
+    ua_options.add_argument(
+        '--cycle', metavar="UA Type", default="None",
+        help="User Agent type (Browser, Mobile, Crawler, Scanner, Misc, All)")
+    ua_options.add_argument(
+        "--difference", metavar="Difference Threshold", default=50, type=int,
+        help="Difference threshold when determining if user agent\
+        requests are close \"enough\" (Default: 50)")
+
+    system_options = parser.add_argument_group('Local System Options')
+    system_options.add_argument(
         "--open", action='store_true',
-        help="[Optional] Open all URLs in a browser")
-    parser.add_argument(
+        help="Open all URLs in a browser")
+
+    cred_check_options = parser.add_argument_group('Credential Check Options')
+    cred_check_options.add_argument(
         "--skipcreds", action='store_true',
         help="Skip checking for default creds")
-    parser.add_argument(
+
+    scan_options = parser.add_argument_group('Scan Options')
+    scan_options.add_argument(
         "--localscan", metavar='192.168.1.0/24', default=False,
         help="CIDR Notation of network to scan")
-    parser.add_argument(
-        "--createtargets", action='store_true',
-        help="[Optional] Creates targets.txt containing URLs of all targets.")
+
     args = parser.parse_args()
 
     current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -164,18 +182,57 @@ def cli_parser():
                 print "[*] Error: Please provide a valid folder name/Path\n"
                 parser.print_help()
                 sys.exit()
+            else:
+                if os.path.isdir(args.d):
+                    overwrite_dir = raw_input('Directory Exists! Do you want to overwrite it? [y/n] ')
+                    overwrite_dir = overwrite_dir.lower().strip()
+                    if overwrite_dir == "n":
+                        print "Quitting... Restart and provice the \
+                        proper directory to write to.".replace('    ', '')
+                        sys.exit()
+                    elif overwrite_dir == "y":
+                        pass
+                    else:
+                        print "Quitting since you didn't provide a valid response..."
+                        sys.exit()
         elif args.d.startswith('C:\\'):
             args.d = args.d.rstrip("\\")
             if not os.access(os.path.dirname(args.d), os.W_OK):
                 print "[*] Error: Please provide a valid folder name/Path\n"
                 parser.print_help()
                 sys.exit()
+            else:
+                if os.path.isdir(args.d):
+                    overwrite_dir = raw_input('Directory Exists! Do you want to overwrite it? [y/n] ')
+                    overwrite_dir = overwrite_dir.lower().strip()
+                    if overwrite_dir == "n":
+                        print "Quitting... Restart and provice the \
+                        proper directory to write to.".replace('    ', '')
+                        sys.exit()
+                    elif overwrite_dir == "y":
+                        pass
+                    else:
+                        print "Quitting since you didn't provide a valid response..."
+                        sys.exit()
         else:
             file_path = join(current_directory, args.d)
             if not os.access(os.path.dirname(file_path), os.W_OK):
                 print "[*] Error: Please provide a valid folder name/Path\n"
                 parser.print_help()
                 sys.exit()
+            else:
+                if os.path.isdir(file_path):
+                    overwrite_dir = raw_input('Directory Exists! Do you want to overwrite it? [y/n] ')
+                    overwrite_dir = overwrite_dir.lower().strip()
+                    if overwrite_dir == "n":
+                        print "Quitting... Restart and provice the \
+                        proper directory to write to.".replace('    ', '')
+                        sys.exit()
+                    elif overwrite_dir == "y":
+                        pass
+                    else:
+                        print "Quitting since you didn't provide a valid response..."
+                        sys.exit()
 
     if args.f is None and args.single == "None" and args.localscan is False:
         print "[*] Error: You didn't specify a file! I need a file containing \
@@ -196,7 +253,7 @@ def cli_parser():
     # Return the file name which contains the URLs
     return args.f, args.t, args.open, args.single, args.d, args.jitter,\
         args.useragent, args.cycle, args.difference, args.skipcreds,\
-        current_directory, args.localscan, args.createtargets
+        current_directory, args.localscan, args.createtargets, args.results
 
 
 def default_creds(page_content, full_file_path, local_system_os):
@@ -341,8 +398,8 @@ def html_encode(dangerous_data):
 
 def logistics(url_file, target_maker):
 
-    if target_maker is True:
-        print "Creating text file (target_servers.txt) containing all web servers..."
+    if target_maker is not None:
+        print "Creating text file containing all web servers..."
 
     urls = []
     num_urls = 0
@@ -367,7 +424,7 @@ def logistics(url_file, target_maker):
                 if item.find('status').get('state') == "up":
                     # If there is no hostname then we'll set the IP as the
                     # target 'hostname'
-                    if item.find('hostnames/hostname') is not None:
+                    if (item.find('hostnames/hostname') is not None and item.find('hostnames/hostname').get('name') not in urls):
                         target = item.find('hostnames/hostname').get('name')
                     else:
                         target = item.find('address').get('addr')
@@ -406,11 +463,11 @@ def logistics(url_file, target_maker):
                                     urls.append(urlBuild)
                                     num_urls += 1
 
-            if target_maker is True:
-                with open('target_servers.txt', 'w') as target_file:
+            if target_maker is not None:
+                with open(target_maker, 'w') as target_file:
                     for item in urls:
                         target_file.write(item + '\n')
-                print "Target file created (target_servers.txt).\n"
+                print "Target file created (" + target_maker + ").\n"
                 sys.exit()
             return urls, num_urls
 
@@ -451,11 +508,11 @@ def logistics(url_file, target_maker):
                             urls.append(url)
                             num_urls = num_urls + 1
 
-            if target_maker is True:
-                with open('target_servers.txt', 'w') as target_file:
+            if target_maker is not None:
+                with open(target_maker, 'w') as target_file:
                     for item in urls:
                         target_file.write(item + '\n')
-                print "Target file created (target_servers.txt).\n"
+                print "Target file created (" + target_maker + ").\n"
                 sys.exit()
             return urls, num_urls
 
@@ -491,6 +548,15 @@ def logistics(url_file, target_maker):
                             if urlBuild not in urls:
                                 urls.append(urlBuild)
                                 num_urls += 1
+
+                # Code for parsing amap file and creating a target list within
+                # a file.
+                if target_maker is not None:
+                    with open(target_maker, 'w') as target_file:
+                        for item in urls:
+                            target_file.write(item + '\n')
+                print "Target file created (" + target_maker + ").\n"
+                sys.exit()
 
             else:
                 for line in all_urls:
@@ -870,6 +936,16 @@ def title_screen():
     print "#                               EyeWitness                                  #"
     print "#############################################################################\n"
 
+    python_info = sys.version_info
+    if python_info[0] is not 2 or python_info[1] < 7:
+        print "[*] Error: Your version of python is not supported!"
+        print "[*] Error: Please install Python 2.7.X"
+        sys.exit()
+    else:
+        pass
+
+    return
+
 
 def user_agent_definition(cycle_value):
     # Create the dicts which hold different user agents.
@@ -1029,7 +1105,6 @@ def web_header(real_report_date, real_report_time):
     return web_index_head
 
 
-
 if __name__ == "__main__":
 
     # Print the title header
@@ -1042,7 +1117,7 @@ if __name__ == "__main__":
     # and how long to wait for each website
     url_filename, timeout_wait, open_urls, single_url, directory_name,\
         request_jitter, browser_user_agent, ua_cycle, diff_value, cred_skip,\
-        script_path, subnet_scan, create_targets = cli_parser()
+        script_path, subnet_scan, create_targets, report_num_urls = cli_parser()
 
     # If the user wants to perform a scan for web servers locally,
     # then perform the scan, write out to a file, and exit
@@ -1570,7 +1645,7 @@ if __name__ == "__main__":
         for i in range(0, len(groupedlist)):
             element = groupedlist[i]
             web_index += element[1][1]
-            if (i % 25 == 0 and not i == 0):
+            if (i % report_num_urls == 0 and not i == 0):
                 if page_counter == 1:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
