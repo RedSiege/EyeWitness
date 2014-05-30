@@ -1,5 +1,6 @@
 [5.29.2014]
     Added.....: Setup script now checks the apt-get install and ensures it returns a 0 status.  Any non-zero status will alert the user of an error and stop the install process. Thanks Robin for reporting this - Github Issue #51
+    Modified..: Nmap xml parser now checks if hostname exists in the URL list before adding it to it.  If it does exist, it'll add the IP address instead. Thanks Robin for pointing out this logic issue. - Github Issue #52
 
 [5.23.2014]
     Added.....: Check to make sure user is using python version 2.7.x.  Any other version will fail (gracefully) :) - Github Issue #44 - Thanks Robin

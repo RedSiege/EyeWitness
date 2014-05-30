@@ -424,7 +424,7 @@ def logistics(url_file, target_maker):
                 if item.find('status').get('state') == "up":
                     # If there is no hostname then we'll set the IP as the
                     # target 'hostname'
-                    if item.find('hostnames/hostname') is not None:
+                    if (item.find('hostnames/hostname') is not None and item.find('hostnames/hostname').get('name') not in urls):
                         target = item.find('hostnames/hostname').get('name')
                     else:
                         target = item.find('address').get('addr')
