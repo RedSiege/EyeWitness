@@ -1,5 +1,6 @@
 [5.30.2014]
-    Modified..: Eyewitness now properly closes any xvfb session at the end of a successful run.
+    Modified..: Eyewitness now properly closes any xvfb session at the end of a successful run. - Continuation of Github Issue #45 - Thanks Robin for working and troubleshooting fixes with me.
+    Modified..: EyeWitness Nmap xml parser now checks if multiple IPs (which have a hostname) have the same hostname.  If so, it will automatically switch to using the IP to identify the web server vs. the hostname, thereby preventing overwrites. Thanks for reporting this Robin.  Really interesting logic flaw to find and fix. - Github Issue #52
 
 [5.29.2014]
     Added.....: Setup script now checks the apt-get install and ensures it returns a 0 status.  Any non-zero status will alert the user of an error and stop the install process. Thanks Robin for reporting this - Github Issue #51

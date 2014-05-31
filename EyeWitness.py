@@ -420,12 +420,14 @@ def logistics(url_file, target_maker):
 
         if root.tag.lower() == "nmaprun":
             for item in root.iter('host'):
+                check_ip_address = False
                 # We only want hosts that are alive
                 if item.find('status').get('state') == "up":
                     # If there is no hostname then we'll set the IP as the
                     # target 'hostname'
-                    if (item.find('hostnames/hostname') is not None and item.find('hostnames/hostname').get('name') not in urls):
+                    if item.find('hostnames/hostname') is not None:
                         target = item.find('hostnames/hostname').get('name')
+                        web_ip_address = item.find('address').get('addr')
                     else:
                         target = item.find('address').get('addr')
                     # find open ports that match the http/https port list or
@@ -462,6 +464,21 @@ def logistics(url_file, target_maker):
                                 if urlBuild not in urls:
                                     urls.append(urlBuild)
                                     num_urls += 1
+                                else:
+                                    check_ip_address = True
+
+                        if check_ip_address:
+                            if int(port) in http_ports or 'http' in service:
+                                protocol = 'http'
+                                if int(port) in https_ports or 'https' in\
+                                        service or ('http' in service and
+                                                    'ssl' in tunnel):
+                                    protocol = 'https'
+                                urlBuild = '%s://%s:%s' % (
+                                    protocol, web_ip_address, port)
+                                if urlBuild not in urls:
+                                        urls.append(urlBuild)
+                                        num_urls += 1
 
             if target_maker is not None:
                 with open(target_maker, 'w') as target_file:
