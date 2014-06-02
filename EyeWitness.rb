@@ -3,6 +3,7 @@
 # This is a port of EyeWitness to Ruby, using a new screenshot engine
 
 require 'net/http'
+require 'net/https'
 require 'optparse'
 require 'ostruct'
 require 'pp'
@@ -103,15 +104,26 @@ end # End cli_parser class
 
 
 def header_grab(url_to_head)
-  # code came from - http://www.rubyinside.com/nethttp-cheat-sheet-2940.html
-  uri = URI.parse(#{url_to_head})
-
-  http = Net::HTTP.new(uri.host, uri.port)
-  request = Net::HTTP::Get.new(uri.request_uri)
+  
+  uri = URI.parse("#{url_to_head}")
+  
+  if url_to_head.start_with?("http://")
+    # code came from - http://www.rubyinside.com/nethttp-cheat-sheet-2940.html
+    http = Net::HTTP.new(uri.host, uri.port)
+    request = Net::HTTP::Get.new(uri.request_uri)
+  elsif url_to_head.start_with?("https://")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    request = Net::HTTP::Get.new(uri.request_uri)
+  else
+    puts "[*] Error: Error with URL, please investigate!"
+    exit
+  end # end if statement for starting with http:// or https://
 
   # actually make the request
   response = http.request(request)
 
+  return response
 end # End header_grab function
 
 
