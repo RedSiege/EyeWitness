@@ -13,118 +13,110 @@ require 'uri'
 
 class CliParser
 
-    def self.parse(args)
+  def self.parse(args)
 
-      # Used for a hash-like data structure
-      options = OpenStruct.new
+    # Used for a hash-like data structure
+    options = OpenStruct.new
 
-      # Set the default values
-      options.file_name = nil
+    # Set the default values
+    options.file_name = nil
 
-      opt_parser = OptionParser.new do |opts|
-        opts.banner = "Usage: [options]"
+    opt_parser = OptionParser.new do |opts|
+      opts.banner = "Usage: [options]"
 
-        # Grouped for EyeWitness Input functions
-        opts.on("-f", "--filename [Filename]", "File containing URLs to screenshot",
-            "each on a new line. NMap XML output",
-            "or a .nessus file") do |in_filename|
-          options.file_name = in_filename
-        end
-        opts.on("-s", "--single [URL]", "Single URL to screenshot.") do |single_url|
-          options.single_website = single_url
-        end
-        opts.on("--createtargets [Filename]", "Create file containing web servers",
-            "from nmap or nessus output.\n\n") do |target_make|
-          options.create_targets = target_make
-        end
+      # Grouped for EyeWitness Input functions
+      opts.on("-f", "--filename [Filename]", "File containing URLs to screenshot",
+          "each on a new line. NMap XML output",
+          "or a .nessus file") do |in_filename|
+        options.file_name = in_filename
+      end
+      opts.on("-s", "--single [URL]", "Single URL to screenshot.") do |single_url|
+        options.single_website = single_url
+      end
+      opts.on("--createtargets [Filename]", "Create file containing web servers",
+          "from nmap or nessus output.\n\n") do |target_make|
+        options.create_targets = target_make
+      end
 
-        # Timing options
-        opts.on("-t", "--timeout [7]", Integer, "Maximum number of seconds to wait while",
-            "requesting a web page.") do |max_timeout|
-          options.timeout = max_timeout
-        end
-        opts.on("--jitter [15]", Integer, "Number of seconds to use as a base to",
-            "randomly deviate from when making requests.\n\n") do |jit_num|
-          opts.jitter = jit_num
-        end
+      # Timing options
+      opts.on("-t", "--timeout [7]", Integer, "Maximum number of seconds to wait while",
+          "requesting a web page.") do |max_timeout|
+        options.timeout = max_timeout
+      end
+      opts.on("--jitter [15]", Integer, "Number of seconds to use as a base to",
+          "randomly deviate from when making requests.\n\n") do |jit_num|
+        opts.jitter = jit_num
+      end
 
-        # Report output options
-        opts.on("-d [Directory Name]", "Name of directory for EyeWitness report.")\
-            do |d_name|
-          options.dir_name = d_name
-        end
-        opts.on("--results [25]", Integer, "Number of URLs displayed per page within",
-            "the EyeWitness report.\n\n") do |res_num|
-          options.results_number = res_num
-        end
+      # Report output options
+      opts.on("-d [Directory Name]", "Name of directory for EyeWitness report.")\
+          do |d_name|
+        options.dir_name = d_name
+      end
+      opts.on("--results [25]", Integer, "Number of URLs displayed per page within",
+          "the EyeWitness report.\n\n") do |res_num|
+        options.results_number = res_num
+      end
 
-        # Useragent Options
-        opts.on("--useragent [Mozilla/4.0]", "User agent to use when requesting all",
-            "websites with EyeWitness.") do |ua_string|
-          options.ua_name = ua_string
-        end
-        opts.on("--cycle [All]", "User agent \"group\" to cycle through when",
-            "requesting web pages with EyeWitness.", "Browser, Mobile, Crawler, Scanner,", "Misc, All")\
-            do |ua_cycle|
-          options.cycle = ua_cycle
-        end
-        opts.on("--difference [25]", Integer, "Difference threshold to use when comparing",
-            "baseline request with modified user", "agent request.\n\n") do |diff_value|
-          options.difference = diff_value
-        end
+      # Useragent Options
+      opts.on("--useragent [Mozilla/4.0]", "User agent to use when requesting all",
+          "websites with EyeWitness.") do |ua_string|
+        options.ua_name = ua_string
+      end
+      opts.on("--cycle [All]", "User agent \"group\" to cycle through when",
+          "requesting web pages with EyeWitness.", "Browser, Mobile, Crawler, Scanner,", "Misc, All")\
+          do |ua_cycle|
+        options.cycle = ua_cycle
+      end
+      opts.on("--difference [25]", Integer, "Difference threshold to use when comparing",
+          "baseline request with modified user", "agent request.\n\n") do |diff_value|
+        options.difference = diff_value
+      end
 
-        # Local System Options
-        opts.on("--open", "Open each URL in a browser as",
-            "EyeWitness runs.\n\n") do
-          options.open = true
-        end
+      # Local System Options
+      opts.on("--open", "Open each URL in a browser as",
+          "EyeWitness runs.\n\n") do
+        options.open = true
+      end
 
-        # Credential Check Options
-        opts.on("--skipcreds", "Skip checking for default credentials.\n\n") do
-          options.skip_creds = true
-        end
+      # Credential Check Options
+      opts.on("--skipcreds", "Skip checking for default credentials.\n\n") do
+        options.skip_creds = true
+      end
 
-        # Local Scanning Options
-        opts.on("--localscan [192.168.1.0/24]", "CIDR notation of IP range to scan.\n\n")\
-            do |scan_range|
-          options.localscan = scan_range
-        end
+      # Local Scanning Options
+      opts.on("--localscan [192.168.1.0/24]", "CIDR notation of IP range to scan.\n\n")\
+          do |scan_range|
+        options.localscan = scan_range
+      end
 
-        # Show help and command line flags
-        opts.on_tail('-h', '--help', 'Show this message') do
-          puts opts
-          exit
-        end
+      # Show help and command line flags
+      opts.on_tail('-h', '--help', 'Show this message') do
+        puts opts
+        exit
+      end
 
-      end # end of opt_parser
-      opt_parser.parse!(args)
-      options
-    end # End of self.parse
+    end # end of opt_parser
+    opt_parser.parse!(args)
+    options
+  end # End of self.parse
 end # End cli_parser class
 
 
-def header_grab(url_to_head)
-  
-  uri = URI.parse("#{url_to_head}")
-  
-  if url_to_head.start_with?("http://")
-    # code came from - http://www.rubyinside.com/nethttp-cheat-sheet-2940.html
-    http = Net::HTTP.new(uri.host, uri.port)
-    request = Net::HTTP::Get.new(uri.request_uri)
-  elsif url_to_head.start_with?("https://")
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    request = Net::HTTP::Get.new(uri.request_uri)
-  else
-    puts "[*] Error: Error with URL, please investigate!"
-    exit
-  end # end if statement for starting with http:// or https://
+def default_creds(page_content, full_file_path, local_system_os)
 
-  # actually make the request
-  response = http.request(request)
+  creds_path = File.join("#{full_file_path}", "signatures.txt")
 
-  return response
-end # End header_grab function
+  begin
+    File.open("#{creds_path}", "r") do |signature_file|
+      signature_file.each_line do |signature|
+
+  rescue Errno::ENOENT
+    puts "[*] WARNING Default credentials file not in same directory as EyeWitness!"
+    puts "[*] Skipping credential check..."
+  end
+
+end  #End of default creds function
 
 
 def folder_out(dir_name, full_path, local_os)
@@ -178,6 +170,30 @@ def folder_out(dir_name, full_path, local_os)
 end # End of folder_out function
 
 
+def source_header_grab(url_to_head)
+  
+  uri = URI.parse("#{url_to_head}")
+  
+  if url_to_head.start_with?("http://")
+    # code came from - http://www.rubyinside.com/nethttp-cheat-sheet-2940.html
+    http = Net::HTTP.new(uri.host, uri.port)
+    request = Net::HTTP::Get.new(uri.request_uri)
+  elsif url_to_head.start_with?("https://")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    request = Net::HTTP::Get.new(uri.request_uri)
+  else
+    puts "[*] Error: Error with URL, please investigate!"
+    exit
+  end # end if statement for starting with http:// or https://
+
+  # actually make the request
+  response = http.request(request)
+
+  return response
+end # End header_grab function
+
+
 def title_screen()
   system("clear")
   puts "#############################################################################"
@@ -210,6 +226,7 @@ File.open("urls.txt", "r") do |f2|
     screenshot_name = "#{screenshot_name}.png"
     puts screenshot_name
     driver.save_screenshot(screenshot_name)
+    puts driver.page_source
   end
 end
 
