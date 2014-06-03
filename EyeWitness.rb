@@ -113,6 +113,11 @@ def default_creds(page_content, full_file_path, local_system_os)
         signature_delimeted = signature.split('|')[0]
         default_creds = signature.split('|')[1]
 
+        # Values for signatures not found
+        sig_not_found = 0
+        all_signatures = signature_delimeted.split(';')
+        signature_range = all_signatures.length
+
   rescue Errno::ENOENT
     puts "[*] WARNING Default credentials file not in same directory as EyeWitness!"
     puts "[*] Skipping credential check..."
