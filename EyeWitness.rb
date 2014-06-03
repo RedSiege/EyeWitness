@@ -110,6 +110,8 @@ def default_creds(page_content, full_file_path, local_system_os)
   begin
     File.open("#{creds_path}", "r") do |signature_file|
       signature_file.each_line do |signature|
+        signature_delimeted = signature.split('|')[0]
+        default_creds = signature.split('|')[1]
 
   rescue Errno::ENOENT
     puts "[*] WARNING Default credentials file not in same directory as EyeWitness!"
