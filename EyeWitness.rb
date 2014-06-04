@@ -116,7 +116,20 @@ def default_creds(page_content, full_file_path, local_system_os)
         # Values for signatures not found
         sig_not_found = 0
         all_signatures = signature_delimeted.split(';')
-        signature_range = all_signatures.length
+        page_content = page_content.downcase
+
+        all_signatures.each do |individual_signature|
+          individual_signature = individual_signature.downcase
+          if page_content.include? "#{individual_signature}"
+          else
+            signature_not_present = true
+          end
+        end
+
+        if signature_not_present
+          return nil
+        else
+          return default_creds
 
   rescue Errno::ENOENT
     puts "[*] WARNING Default credentials file not in same directory as EyeWitness!"
