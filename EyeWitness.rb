@@ -4,6 +4,7 @@
 
 require 'net/http'
 require 'net/https'
+require 'nokogiri'
 require 'optparse'
 require 'ostruct'
 require 'pp'
@@ -134,9 +135,22 @@ def default_creds(page_content, full_file_path, local_system_os)
   rescue Errno::ENOENT
     puts "[*] WARNING Default credentials file not in same directory as EyeWitness!"
     puts "[*] Skipping credential check..."
-  end
+  end  # End try catch
 
 end  #End of default creds function
+
+
+def file_names(url_given)
+
+  url_given.gsub('\n', '')
+  pic_name = url_given
+  source_name = url_given
+  source_name = source_name.gsub('://', '').gsub('/', '.').gsub(':', '.')
+  pic_name = "#{source_name}.png"
+  source_name = "#{source_name}.txt"
+
+  return url_given, source_name, pic_name
+end  # End of file_names function
 
 
 def folder_out(dir_name, full_path, local_os)
@@ -188,6 +202,15 @@ def folder_out(dir_name, full_path, local_os)
 
     return output_folder_name, current_date, current_time
 end # End of folder_out function
+
+
+def logistics(url_file, target_maker)
+
+  File.open("urls.txt", "r") do |xml_file|
+    xml_noko = Nokogiri::XML(xml_file)
+  end
+
+end  # End of logistics function
 
 
 def source_header_grab(url_to_head)
