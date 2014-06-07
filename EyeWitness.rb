@@ -104,6 +104,63 @@ class CliParser
 end # End cli_parser class
 
 
+class MyDoc < Nokogiri::XML::SAX::Document
+  
+  def initialize
+    @ip_address = nil
+    @potential_port = nil
+    @final_port_number = nil
+    @port_state = nil
+    @protocol = nil
+  end
+
+  def start_element name, attrs = []
+    @attrs = attrs
+    
+    # Find IP addresses of all machines
+    if name == "address"
+      @ip_address = Hash[@attrs]['addr']
+    end
+
+    # Find open ports
+    if name == "port"
+      @potential_port = Hash[@attrs]['portid']
+
+      # Find port state
+      if name == "state"
+        if Hash[@attrs]['state'] == "open"
+          @port_state = "open"
+        end
+      end
+
+      # Find port state
+      if name == "state"
+        if Hash[@attrs]['state'] == "open"
+          @port_state = "open"
+        end
+      end
+
+      # Find port "name"
+      if name == "service"
+        if Hash[@attrs]['name'] == "http"
+          @protocol = "http://"
+          @final_port_number = @potential_port
+      
+        elsif Hash[@attrs]['name'] == "https"
+          @protocol = "https://"
+          @final_port_number = @potential_port
+        end
+      end
+
+    end
+  end
+
+  def end_element name
+    #puts "ending: #{name}"
+  end
+end
+
+
 def default_creds(page_content, full_file_path, local_system_os)
 
   creds_path = File.join("#{full_file_path}", "signatures.txt")
