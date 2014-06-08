@@ -108,6 +108,7 @@ class MyDoc < Nokogiri::XML::SAX::Document
   
   def initialize
     @ip_address = nil
+    @hostname = nil
     @potential_port = nil
     @final_port_number = nil
     @port_state = nil
@@ -122,36 +123,35 @@ class MyDoc < Nokogiri::XML::SAX::Document
       @ip_address = Hash[@attrs]['addr']
     end
 
+    if name == "hostname"
+      @hostname = Hash[@attrs]['name']
+      puts @hostname
+    end
+
     # Find open ports
     if name == "port"
       @potential_port = Hash[@attrs]['portid']
+    end
 
-      # Find port state
-      if name == "state"
-        if Hash[@attrs]['state'] == "open"
-          @port_state = "open"
-        end
+    # Find port state
+    if name == "state"
+      if Hash[@attrs]['state'] == "open"
+        @port_state = "open"
       end
+    end
 
-      # Find port state
-      if name == "state"
-        if Hash[@attrs]['state'] == "open"
-          @port_state = "open"
-        end
+    # Find port "name"
+    if name == "service"
+      if Hash[@attrs]['name'].include? "https"
+        @protocol = "https://"
+        @final_port_number = @potential_port
+        puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+    
+      elsif Hash[@attrs]['name'].include? "http"
+        @protocol = "http://"
+        @final_port_number = @potential_port
+        puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
       end
-
-      # Find port "name"
-      if name == "service"
-        if Hash[@attrs]['name'] == "http"
-          @protocol = "http://"
-          @final_port_number = @potential_port
-      
-        elsif Hash[@attrs]['name'] == "https"
-          @protocol = "https://"
-          @final_port_number = @potential_port
-        end
-      end
-
     end
   end
 
