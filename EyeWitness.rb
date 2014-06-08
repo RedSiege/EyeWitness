@@ -104,7 +104,7 @@ class CliParser
 end # End cli_parser class
 
 
-class MyDoc < Nokogiri::XML::SAX::Document
+class NmapParser < Nokogiri::XML::SAX::Document
   
   def initialize
     @ip_address = nil
@@ -145,20 +145,22 @@ class MyDoc < Nokogiri::XML::SAX::Document
       if Hash[@attrs]['name'].include? "https"
         @protocol = "https://"
         @final_port_number = @potential_port
-        puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
-    
+        if @hostname.nil?
+          puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+        else
+          puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+        end
       elsif Hash[@attrs]['name'].include? "http"
         @protocol = "http://"
         @final_port_number = @potential_port
-        puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+        if @hostname.nil?
+          puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+        else
+          puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+        end
       end
     end
   end
-
-  def end_element name
-    #puts "ending: #{name}"
-  end
-end
 
 
 def default_creds(page_content, full_file_path, local_system_os)
