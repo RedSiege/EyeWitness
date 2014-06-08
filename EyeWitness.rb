@@ -136,6 +136,8 @@ class NmapParser < Nokogiri::XML::SAX::Document
     if name == "state"
       if Hash[@attrs]['state'] == "open"
         @port_state = "open"
+      else
+        @port_state = "closed"
       end
     end
 
@@ -159,10 +161,6 @@ class NmapParser < Nokogiri::XML::SAX::Document
         end
       end
     end
-  end
-
-  def end_element name
-    #puts "ending: #{name}"
   end
 end
 
