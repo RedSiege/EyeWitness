@@ -125,7 +125,6 @@ class NmapParser < Nokogiri::XML::SAX::Document
 
     if name == "hostname"
       @hostname = Hash[@attrs]['name']
-      puts @hostname
     end
 
     # Find open ports
@@ -145,22 +144,27 @@ class NmapParser < Nokogiri::XML::SAX::Document
       if Hash[@attrs]['name'].include? "https"
         @protocol = "https://"
         @final_port_number = @potential_port
-        if @hostname.nil?
+        if @hostname.nil? && @port_state == "open"
           puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
-        else
+        else @port_state == "open"
           puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
         end
       elsif Hash[@attrs]['name'].include? "http"
         @protocol = "http://"
         @final_port_number = @potential_port
-        if @hostname.nil?
+        if @hostname.nil? && @port_state == "open"
           puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
-        else
+        elsif @port_state == "open"
           puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
         end
       end
     end
   end
+
+  def end_element name
+    #puts "ending: #{name}"
+  end
+end
 
 
 def default_creds(page_content, full_file_path, local_system_os)
