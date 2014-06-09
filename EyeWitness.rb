@@ -113,56 +113,95 @@ class NmapParser < Nokogiri::XML::SAX::Document
     @final_port_number = nil
     @port_state = nil
     @protocol = nil
+    @tunnel = nil
   end
 
   def start_element name, attrs = []
     @attrs = attrs
-    
+
     # Find IP addresses of all machines
     if name == "address"
-      @ip_address = Hash[@attrs]['addr']
+      @attrs.each do |key, value|
+        if key == "addr"
+          @ip_address = value
+        end
+      end
     end
 
     if name == "hostname"
-      @hostname = Hash[@attrs]['name']
+      @hostname = nil
+      @attrs.each do |key, value|
+        if key == "name"
+          @hostname = value
+        end
+      end
     end
-
-    # Find open ports
+    
     if name == "port"
-      @potential_port = Hash[@attrs]['portid']
+      @attrs.each do |key, value|
+        if key == "portid"
+          @potential_port = value
+        end
+      end
     end
 
     # Find port state
     if name == "state"
-      if Hash[@attrs]['state'] == "open"
-        @port_state = "open"
-      else
-        @port_state = "closed"
+      @attrs.each do |key, value|
+        if key == "state"
+          if value == "open"
+            @port_state = "open"
+          else
+            @port_state = "closed"
+          end
+        end
       end
     end
 
     # Find port "name"
     if name == "service"
-      if Hash[@attrs]['name'].include? "https"
-        @protocol = "https://"
-        @final_port_number = @potential_port
-        if @hostname.nil? && @port_state == "open"
-          puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
-        else @port_state == "open"
-          puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
-        end
-      elsif Hash[@attrs]['name'].include? "http"
-        @protocol = "http://"
-        @final_port_number = @potential_port
-        if @hostname.nil? && @port_state == "open"
-          puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
-        elsif @port_state == "open"
-          puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
-        end
-      end
+      @attrs.each do |key, value|
+        if key == "name"
+          if value.include? "https"
+            @protocol = "https://"
+            @final_port_number = @potential_port
+            if @hostname.nil? && @port_state == "open"
+              puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+            elsif @port_state == "open"
+              puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+            else
+            end
+          elsif value.include? "http"
+            @protocol = "http://"
+            @final_port_number = @potential_port
+            if @hostname.nil? && @port_state == "open"
+              puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+            elsif @port_state == "open"
+              puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+            else
+            end   #End of if statement printing valid servers
+          end   # End of if statement searching for https or http
+        end   # End of if statement for if the key contains "name"
+      end    # End of attrs iterator
+      
+    end    # End of if statement for the element starting with the name "service"
+  end    # End of start_element function
+
+  def end_element name
+    if name == "host"
+      @ip_address = nil
+      @hostname = nil
+    end
+
+    if name == "service"
+      @potential_port = nil
+      @final_port_number = nil
+      @port_state = nil
+      @protocol = nil
+      @tunnel = nil
     end
   end
-end
+end   # End of nmap parsing class
 
 
 def default_creds(page_content, full_file_path, local_system_os)
