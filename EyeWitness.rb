@@ -104,6 +104,8 @@ class CliParser
 end # End cli_parser class
 
 
+require 'nokogiri'
+
 class NmapParser < Nokogiri::XML::SAX::Document
   
   def initialize
@@ -114,6 +116,7 @@ class NmapParser < Nokogiri::XML::SAX::Document
     @port_state = nil
     @protocol = nil
     @tunnel = nil
+    @url_array = []
   end
 
   def start_element name, attrs = []
@@ -182,21 +185,24 @@ class NmapParser < Nokogiri::XML::SAX::Document
       if @protocol == "https://" || @tunnel == "ssl"
         @protocol = "https://"
         if @hostname.nil? && @port_state == "open"
+          @url_array << "#{@protocol}#{@ip_address}:#{@final_port_number}"
           puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
         elsif @port_state == "open"
+          @url_array << "#{@protocol}#{@hostname}:#{@final_port_number}"
           puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
         else
         end
 
       elsif @protocol == "http://"
         if @hostname.nil? && @port_state == "open"
+          @url_array << "#{@protocol}#{@ip_address}:#{@final_port_number}"
           puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
         elsif @port_state == "open"
+          @url_array << "#{@protocol}#{@hostname}:#{@final_port_number}"
           puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
         else
         end   #End of if statement printing valid servers
       end    # End if statement looking at protocol and tunnel
-      
     end    # End of if statement for the element starting with the name "service"
   end    # End of start_element function
 
