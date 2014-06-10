@@ -165,24 +165,37 @@ class NmapParser < Nokogiri::XML::SAX::Document
           if value.include? "https"
             @protocol = "https://"
             @final_port_number = @potential_port
-            if @hostname.nil? && @port_state == "open"
-              puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
-            elsif @port_state == "open"
-              puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
-            else
-            end
+
           elsif value.include? "http"
             @protocol = "http://"
             @final_port_number = @potential_port
-            if @hostname.nil? && @port_state == "open"
-              puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
-            elsif @port_state == "open"
-              puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
-            else
-            end   #End of if statement printing valid servers
-          end   # End of if statement searching for https or http
-        end   # End of if statement for if the key contains "name"
-      end    # End of attrs iterator
+          end
+        end
+
+        if key == "tunnel"
+          if value.include? "ssl"
+            @tunnel = "ssl"
+          end
+        end
+      end   # end attrs iterator
+
+      if @protocol == "https://" || @tunnel == "ssl"
+        @protocol = "https://"
+        if @hostname.nil? && @port_state == "open"
+          puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+        elsif @port_state == "open"
+          puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+        else
+        end
+
+      elsif @protocol == "http://"
+        if @hostname.nil? && @port_state == "open"
+          puts "IP: #{@ip_address} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+        elsif @port_state == "open"
+          puts "IP: #{@hostname} Port: #{@final_port_number} and port is #{@port_state}! and uses #{@protocol}!"
+        else
+        end   #End of if statement printing valid servers
+      end    # End if statement looking at protocol and tunnel
       
     end    # End of if statement for the element starting with the name "service"
   end    # End of start_element function
