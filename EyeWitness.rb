@@ -379,6 +379,9 @@ def default_creds(page_content, full_file_path, local_system_os)
           return nil
         else
           return default_creds
+        end
+      end
+    end
 
   rescue Errno::ENOENT
     puts "[*] WARNING Default credentials file not in same directory as EyeWitness!"
