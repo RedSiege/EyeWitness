@@ -455,11 +455,28 @@ def folder_out(dir_name, full_path, local_os)
 end # End of folder_out function
 
 
+def html_encode(dangerous_data)
+  encoded = CGI::escape(dangerous_data)
+  return encoded
+
+
 def logistics(url_file, target_maker)
 
-  File.open("urls.txt", "r") do |xml_file|
-    xml_noko = Nokogiri::XML(xml_file)
+  file_urls = []
+  num_urls = 0
+
+  begin
+    File.open(url_get, "r").each do |url|
+      file_urls << url
+      num_urls += 1
+    end
+  rescue Errno::ENOENT
+    puts "[*] Error: File not valid, or not found."
+    puts "[*] Error: Please rerun and provide a valid file!"
+    abort
   end
+
+  return file_urls, num_urls
 
 end  # End of logistics function
 
