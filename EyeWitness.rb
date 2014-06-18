@@ -9,6 +9,8 @@ require 'optparse'
 require 'ostruct'
 require 'pp'
 require 'selenium-webdriver'
+require 'socket'
+require 'timeout'
 require 'uri'
 
 
@@ -200,7 +202,6 @@ class NessusParser < Nokogiri::XML::SAX::Document
   def url_get
     @url_list
   end
-
 end   # End of nmap parsing class
 
 
@@ -387,7 +388,6 @@ def default_creds(page_content, full_file_path, local_system_os)
     puts "[*] WARNING Default credentials file not in same directory as EyeWitness!"
     puts "[*] Skipping credential check..."
   end  # End try catch
-
 end  #End of default creds function
 
 
@@ -458,6 +458,7 @@ end # End of folder_out function
 def html_encode(dangerous_data)
   encoded = CGI::escape(dangerous_data)
   return encoded
+end
 
 
 def logistics(url_file, target_maker)
@@ -477,8 +478,65 @@ def logistics(url_file, target_maker)
   end
 
   return file_urls, num_urls
-
 end  # End of logistics function
+
+
+def request_comparison(original_content, new_content, max_difference)
+  original_request_length = original_content.length
+  new_request_length = new_content.length
+
+  if new_request_length > original_request_length
+    a, b = new_request_length, orig_request_length
+    total_difference = a - b 
+    if total_difference > max_difference
+      return false, total_difference
+    else
+      return true, nil
+    end
+
+  else
+    total_difference = orig_request_length - new_request_length
+    if total_difference > max_difference
+      return False, total_difference
+    else
+      return True, "None"
+    end
+  end   # End of if statement determing size of requests and performing math
+end   # end of request comparison function
+
+
+def scanner(cidr_range, tool_path, system_platform)
+  ports = [80, 443, 8080, 8443]
+
+  # Live webservers
+  live_webservers = []
+
+  # port scanning code taken from
+  # http://stackoverflow.com/questions/517219/ruby-see-if-a-port-is-open
+  port_open = false
+
+  # Create scanner output path
+  scanner_output_path = File.join("#{tool_path}", "scanneroutput.txt")
+
+  net1 = NetAddr::CIDR.create(cidr_range)
+
+  net1.enumerate.each do |scan_ip|
+    ports.each do |scan_port|
+      begin
+        Timeout.timeout(5) do
+          begin
+            s = TCPSocket.new(scan_ip, scan_port)
+            s.close
+            puts "open!"
+          rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+            puts "closed!"
+          end
+        end
+      rescue Timeout::Error
+      end
+    end   # End port iterator
+  end   # End of ip iterator
+end   # End of scanner function
 
 
 def source_header_grab(url_to_head)
@@ -514,8 +572,88 @@ def title_screen()
 end # end of title_screen function
 
 
+def user_agent_definition(cycle_value)
+  # Create the dicts which hold different user agents.
+  # Thanks to Chris John Riley for having an awesome tool which I could
+  # get this info from.  His tool - UAtester.py -
+  # http://blog.c22.cc/toolsscripts/ua-tester/
+  # Additional user agent strings came from -
+  # http://www.useragentstring.com/pages/useragentstring.php
 
+  # "Normal" desktop user agents
+  desktop_uagents = {
+    "MSIE9.0" => "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1;Trident/5.0)",
+    "MSIE8.0" => "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0)",
+    "MSIE7.0" => "Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)",
+    "MSIE6.0" => "Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)",
+    "Chrome32.0.1667.0" => "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36",
+    "Chrome31.0.1650.16" => "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36(KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36",
+    "Firefox25" => "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0)Gecko/20100101 Firefox/25.0",
+    "Firefox24" => "Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0,",
+    "Opera12.14" => "Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14",
+    "Opera12" => "Opera/12.0(Windows NT 5.1;U;en)Presto/22.9.168 Version/12.00",
+    "Safari5.1.7" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2",
+    "Safari5.0" => "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0 Safari/533.16"
+  }
 
+  # Miscellaneous user agents
+  misc_uagents = {
+    "wget1.9.1" => "Wget/1.9.1",
+    "curl7.9.8" => "curl/7.9.8 (i686-pc-linux-gnu) libcurl 7.9.8 (OpenSSL 0.9.6b) (ipv6 enabled)",
+    "PyCurl7.23.1" => "PycURL/7.23.1",
+    "Pythonurllib3.1" => "Python-urllib/3.1"
+  }
+
+  # Bot crawler user agents
+  crawler_uagents = {
+    "Baiduspider" => "Baiduspider+(+http://www.baidu.com/search/spider.htm)",
+    "Bingbot" => "Mozilla/5.0 (compatible; bingbot/2.0 +http://www.bing.com/bingbot.htm)",
+    "Googlebot2.1" => "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
+    "MSNBot2.1" => "msnbot/2.1",
+    "YahooSlurp!" => "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)"
+  }
+
+  # Random mobile User agents
+  mobile_uagents = {
+    "BlackBerry" => "Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.1.0.346 Mobile Safari/534.11+",
+    "Android" => "Mozilla/5.0 (Linux; U; Android 2.3.5; en-us; HTC Vision Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1",
+    "IEMobile9.0" => "Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0)",
+    "OperaMobile12.02" => "Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02",
+    "iPadSafari6.0" => "Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25",
+    "iPhoneSafari7.0.6" => "Mozilla/5.0 (iPhone; CPU iPhone OS 7_0_6 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11B651 Safari/9537.53"
+  }
+
+  # Web App Vuln Scanning user agents (give me more if you have any)
+  scanner_uagents = {
+      "w3af" => "w3af.org",
+      "skipfish" => "Mozilla/5.0 SF/2.10b",
+      "HTTrack" => "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)",
+      "nikto" => "Mozilla/5.00 (Nikto/2.1.5) (Evasions:None) (Test:map_codes)"
+  }
+
+  # Combine all user agents into a single dictionary
+  all_combined_uagents = desktop_uagents.merge(misc_uagents).merge(crawler_uagents).merge(mobile_uagents).merge(scanner_uagents)
+
+  cycle_value = cycle_value.lower()
+
+  if cycle_value == "browser"
+    return desktop_uagents
+  elsif cycle_value == "misc"
+    return misc_uagents
+  elsif cycle_value == "crawler"
+    return crawler_uagents
+  elsif cycle_value == "mobile"
+    return mobile_uagents
+  elsif cycle_value == "scanner"
+    return scanner_uagents
+  elsif cycle_value == "all"
+    return all_combined_uagents
+  else
+    puts "[*] Error: You did not provide the type of user agents to cycle through!"
+    puts "[*] Error: Defaulting to desktop browser user agents."
+    return desktop_uagents
+  end
+end   # End user agent definition function
 
 
 title_screen()
@@ -523,24 +661,23 @@ title_screen()
 cli_parsed = CliParser.parse(ARGV)
 
 
-File.open("urls.txt", "r") do |f|
-  puts "There's #{f.count} URLs to capture!"
-end
+#File.open("urls.txt", "r") do |f|
+#  puts "There's #{f.count} URLs to capture!"
+#end
 
 # Other drivers are available as well http://selenium.googlecode.com/svn/trunk/docs/api/rb/Selenium/WebDriver.html#for-class_method
-driver = Selenium::WebDriver.for :firefox
+#driver = Selenium::WebDriver.for :firefox
 
-File.open("urls.txt", "r") do |f2|
-  f2.each_line do |line|
-    driver.navigate.to line.strip
-    screenshot_name = line.strip.gsub(':', '').gsub('//', '.').gsub('/', '.')
-    screenshot_name = "#{screenshot_name}.png"
-    puts screenshot_name
-    driver.save_screenshot(screenshot_name)
-    puts driver.page_source
-  end
-end
+#File.open("urls.txt", "r") do |f2|
+#  f2.each_line do |line|
+#    driver.navigate.to line.strip
+#    screenshot_name = line.strip.gsub(':', '').gsub('//', '.').gsub('/', '.')
+#    screenshot_name = "#{screenshot_name}.png"
+#    puts screenshot_name
+#    driver.save_screenshot(screenshot_name)
+#    puts driver.page_source
+#  end
+#end
 
-driver.quit
+#driver.quit
 
-folder_out()
