@@ -2,8 +2,10 @@
 
 # This is a port of EyeWitness to Ruby, using a new screenshot engine
 
+require 'ipaddr'
 require 'net/http'
 require 'net/https'
+require 'netaddr'
 require 'nokogiri'
 require 'optparse'
 require 'ostruct'
@@ -23,30 +25,41 @@ class CliParser
 
     # Set the default values
     options.file_name = nil
+    options.single_website = nil
+    options.create_targets = nil
+    options.timeout = 7
+    options.jitter = nil
+    options.dir_name = nil
+    options.results_number = nil
+    options.ua_name = nil
+    options.cycle = nil
+    options.difference = 50
+    options.skip_creds = false
+    options.localscan = nil
 
     opt_parser = OptionParser.new do |opts|
       opts.banner = "Usage: [options]"
 
       # Grouped for EyeWitness Input functions
-      opts.on("-f", "--filename [Filename]", "File containing URLs to screenshot",
+      opts.on("-f", "--filename Filename", "File containing URLs to screenshot",
           "each on a new line. NMap XML output",
           "or a .nessus file") do |in_filename|
         options.file_name = in_filename
       end
-      opts.on("-s", "--single [URL]", "Single URL to screenshot.") do |single_url|
+      opts.on("-s", "--single URL", "Single URL to screenshot.") do |single_url|
         options.single_website = single_url
       end
-      opts.on("--createtargets [Filename]", "Create file containing web servers",
+      opts.on("--createtargets Filename", "Create file containing web servers",
           "from nmap or nessus output.\n\n") do |target_make|
         options.create_targets = target_make
       end
 
       # Timing options
-      opts.on("-t", "--timeout [7]", Integer, "Maximum number of seconds to wait while",
+      opts.on("-t", "--timeout 7", Integer, "Maximum number of seconds to wait while",
           "requesting a web page.") do |max_timeout|
         options.timeout = max_timeout
       end
-      opts.on("--jitter [15]", Integer, "Number of seconds to use as a base to",
+      opts.on("--jitter 15", Integer, "Number of seconds to use as a base to",
           "randomly deviate from when making requests.\n\n") do |jit_num|
         opts.jitter = jit_num
       end
@@ -56,30 +69,24 @@ class CliParser
           do |d_name|
         options.dir_name = d_name
       end
-      opts.on("--results [25]", Integer, "Number of URLs displayed per page within",
+      opts.on("--results 25", Integer, "Number of URLs displayed per page within",
           "the EyeWitness report.\n\n") do |res_num|
         options.results_number = res_num
       end
 
       # Useragent Options
-      opts.on("--useragent [Mozilla/4.0]", "User agent to use when requesting all",
+      opts.on("--useragent Mozilla/4.0", "User agent to use when requesting all",
           "websites with EyeWitness.") do |ua_string|
         options.ua_name = ua_string
       end
-      opts.on("--cycle [All]", "User agent \"group\" to cycle through when",
+      opts.on("--cycle All", "User agent \"group\" to cycle through when",
           "requesting web pages with EyeWitness.", "Browser, Mobile, Crawler, Scanner,", "Misc, All")\
           do |ua_cycle|
         options.cycle = ua_cycle
       end
-      opts.on("--difference [25]", Integer, "Difference threshold to use when comparing",
+      opts.on("--difference 50", Integer, "Difference threshold to use when comparing",
           "baseline request with modified user", "agent request.\n\n") do |diff_value|
         options.difference = diff_value
-      end
-
-      # Local System Options
-      opts.on("--open", "Open each URL in a browser as",
-          "EyeWitness runs.\n\n") do
-        options.open = true
       end
 
       # Credential Check Options
@@ -88,7 +95,7 @@ class CliParser
       end
 
       # Local Scanning Options
-      opts.on("--localscan [192.168.1.0/24]", "CIDR notation of IP range to scan.\n\n")\
+      opts.on("--localscan 192.168.1.0/24", "CIDR notation of IP range to scan.\n\n")\
           do |scan_range|
         options.localscan = scan_range
       end
@@ -404,7 +411,7 @@ def file_names(url_given)
 end  # End of file_names function
 
 
-def folder_out(dir_name, full_path, local_os)
+def folder_out(dir_name, full_path)
 
     # Create the CSS file for the report, and remove the extra 4 spaces
     css_file = 'img {
@@ -423,7 +430,7 @@ def folder_out(dir_name, full_path, local_os)
         date_time = Time.new
         current_date = "#{date_time.month}#{date_time.day}#{date_time.year}"
         current_time = "#{date_time.hour}#{date_time.min}#{date_time.sec}"
-        output_folder_name = "#{date}_#{hours}"
+        output_folder_name = "#{current_date}_#{current_time}"
     else
         output_folder_name = dir_name
     end
@@ -434,11 +441,11 @@ def folder_out(dir_name, full_path, local_os)
     if (output_folder_name.start_with?("C:\\") or output_folder_name.start_with?("/"))
         # Create the paths for making the directories (valid for Win and nix)
         source_out_folder_name = File.join("#{output_folder_name}", "source")
-        screen_out_folder_name = File.join("#{output_folder_name}", "screen")
+        screen_out_folder_name = File.join("#{output_folder_name}", "screens")
     else
         output_folder_name = File.join(full_path, output_folder_name)
         source_out_folder_name = File.join("#{output_folder_name}", "source")
-        screen_out_folder_name = File.join("#{output_folder_name}", "screen")
+        screen_out_folder_name = File.join("#{output_folder_name}", "screens")
     end
 
     # Actually create the directories now
@@ -447,7 +454,7 @@ def folder_out(dir_name, full_path, local_os)
     Dir.mkdir(screen_out_folder_name)
 
     # Write the css file out
-    File.open('#{output_folder_name}/style.css', 'w') do |stylesheet|
+    File.open("#{output_folder_name}/style.css", 'w') do |stylesheet|
         stylesheet.puts css_file
     end
 
@@ -505,7 +512,7 @@ def request_comparison(original_content, new_content, max_difference)
 end   # end of request comparison function
 
 
-def scanner(cidr_range, tool_path, system_platform)
+def scanner(cidr_range, tool_path)
   ports = [80, 443, 8080, 8443]
 
   # Live webservers
@@ -527,16 +534,38 @@ def scanner(cidr_range, tool_path, system_platform)
           begin
             s = TCPSocket.new(scan_ip, scan_port)
             s.close
-            puts "open!"
+            # Determine if we need to put http or https in front based off of port number
+            if scan_port == 443 or scan_port == 8443
+              live_webservers << "https://#{scan_ip}:#{scan_port}"
+              puts "[*] #{scan_ip} looks to be listening on #{scan_port}."
+            else
+              live_webservers << "http://#{scan_ip}:#{scan_port}"
+              puts "[*] #{scan_ip} looks to be listening on #{scan_port}."
+            end
           rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-            puts "closed!"
           end
         end
       rescue Timeout::Error
       end
     end   # End port iterator
   end   # End of ip iterator
+
+  server_out_file = File.join(tool_path, "scanneroutput.txt")
+
+  File.open(server_out_file, 'w') do |srv_out|
+    live_webservers.each do |web_srv|
+      srv_out.write("#{web_srv}\n")
+    end
+  end
 end   # End of scanner function
+
+
+def selenium_driver()
+  # Other drivers are available as well 
+  #http://selenium.googlecode.com/svn/trunk/docs/api/rb/Selenium/WebDriver.html#for-class_method
+  driver = Selenium::WebDriver.for :firefox
+  return driver
+end
 
 
 def source_header_grab(url_to_head)
@@ -634,7 +663,7 @@ def user_agent_definition(cycle_value)
   # Combine all user agents into a single dictionary
   all_combined_uagents = desktop_uagents.merge(misc_uagents).merge(crawler_uagents).merge(mobile_uagents).merge(scanner_uagents)
 
-  cycle_value = cycle_value.lower()
+  cycle_value = cycle_value.downcase
 
   if cycle_value == "browser"
     return desktop_uagents
@@ -656,17 +685,60 @@ def user_agent_definition(cycle_value)
 end   # End user agent definition function
 
 
+def validate_cidr(cidr_to_val)
+  begin
+    cidr_test = NetAddr::CIDR.create("#{cidr_to_val}")
+    return true
+  rescue NetAddr::ValidationError
+    return false
+  end
+end
+
+
+def web_report_header(real_report_date, real_report_time)
+  web_index_head = "<html>"\
+    "<head>"\
+    "<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>"\
+    "<title>EyeWitness Report</title>"\
+    "</head>"\
+    "<body>"\
+    "<center>Report Generated on {report_day} at {reporthtml_time}</center>"\
+    "<br><table border=\"1\">"\
+    "<tr>"\
+    "<th>Web Request Info</th>"\
+    "<th>Web Screenshot</th>"\
+    "</tr>"
+  return web_index_head
+end
+
+
 title_screen()
 
 cli_parsed = CliParser.parse(ARGV)
+
+eyewitness_path = File.expand_path(File.dirname(__FILE__))
+
+if !cli_parsed.localscan.nil?
+  if validate_cidr(cli_parsed.localscan)
+    scanner(cli_parsed.localscan, eyewitness_path)
+  else
+    puts "[*] ERROR: You provided an invalid CIDR range."
+    puts "[*] ERROR: Please re-start EyeWitness and provide a valid range!"
+    exit
+  end
+  exit
+end   # End of if statement for local scan
+
+report_folder, report_date, report_time = folder_out(cli_parsed.dir_name, eyewitness_path)
+
+puts "Done!"
 
 
 #File.open("urls.txt", "r") do |f|
 #  puts "There's #{f.count} URLs to capture!"
 #end
 
-# Other drivers are available as well http://selenium.googlecode.com/svn/trunk/docs/api/rb/Selenium/WebDriver.html#for-class_method
-#driver = Selenium::WebDriver.for :firefox
+
 
 #File.open("urls.txt", "r") do |f2|
 #  f2.each_line do |line|
