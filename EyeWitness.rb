@@ -360,6 +360,21 @@ class NmapParser < Nokogiri::XML::SAX::Document
 end   # End of nmap parsing class
 
 
+def capture_screenshot(sel_driver, output_path, url_to_grab)
+  sel_driver.navigate.to url_to_grab
+  screenshot_name = url_to_grab.gsub(':', '').gsub('//', '.').gsub('/', '.')
+  sourcecode_name = "#{screenshot_name}.txt"
+  screenshot_name = "#{screenshot_name}.png"
+  screen_cap_path = File.join(output_path, 'screens', screenshot_name)
+  source_code_path = File.join(output_path, 'source', sourcecode_name)
+  driver.save_screenshot(screen_cap_path)
+  File.open("#{source_code_path}", 'w') do |write_sourcecode|
+    write_sourcecode.write(sel_driver.page_source)
+  end
+
+  return sel_driver.page_source
+end
+
 def default_creds(page_content, full_file_path, local_system_os)
 
   creds_path = File.join("#{full_file_path}", "signatures.txt")
@@ -729,9 +744,69 @@ if !cli_parsed.localscan.nil?
   exit
 end   # End of if statement for local scan
 
-report_folder, report_date, report_time = folder_out(cli_parsed.dir_name, eyewitness_path)
+if !cli_parsed.create_targets.nil?
+else
+  report_folder, report_date, report_time = folder_out(cli_parsed.dir_name, eyewitness_path)
+
+  # Log path only used in ghost for SSL cert issues.  If not needed with selenium
+  # then this can likely be removed.
+  if cli_parsed.dir_name.start_with?('/') or cli_parsed.dir_name.start_with?('C:\\')
+    log_file_path = File.join(cli_parsed.dir_name, report_folder, 'logfile.log')
+    report_path = File.join(cli_parsed.dir_name, report_folder)
+  else
+    log_file_path = File.join(report_folder, 'logfile.log')
+    report_path = File.join(Dir.pwd, report_folder)
+  end   # End dir name if statement
+
+  if cli_parsed.cycle.nil
+    eyewitness_selenium_driver = selenium_driver()
+  else
+    ua_group = user_agent_definition(cli_parsed.cycle)
+    eyewitness_selenium_driver = selenium_driver()
+  end   # End user agent cycle if statement
+
+  # Define a couple default variables
+  extra_info = nil
+  blank_value = nil
+  baseline_request = "Baseline"
+  page_length = nil
+end   # End create targets if statement
+
+if !cli_parsed.single_website.nil?
+  
+  if cli_parsed.single_website.start_with('http://') or cli_parsed.single_website.start_with('https://')
+  else
+    cli_parsed.single_website = "http://#{cli_parsed.single_website}"
+  end
+
+  web_index = web_report_header(report_date, report_time)
+  puts "Trying to screenshot #{cli_parsed.single_website}"
+
+  # Create the filename to store each website's picture
+  single_url, source_name, picture_name = file_names(cli_parsed.single_website)
+
+  if cli_parsed.ua_name.nil?
+    single_source = capture_screenshot(eyewitness_selenium_driver, report_path, cli_parsed.single_website)
+
+end   # end single website if statement
 
 puts "Done!"
+
+
+
+# Set the default values
+#options.file_name = nil
+#options.single_website = nil
+#options.create_targets = nil
+#options.timeout = 7
+#options.jitter = nil
+#options.dir_name = nil
+#options.results_number = nil
+#options.ua_name = nil
+#options.cycle = nil
+#options.difference = 50
+#options.skip_creds = false
+#options.localscan = nil
 
 
 #File.open("urls.txt", "r") do |f|
