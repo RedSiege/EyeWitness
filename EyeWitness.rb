@@ -603,8 +603,15 @@ def source_header_grab(url_to_head)
   # actually make the request
   response = http.request(request)
 
+  # Return the response object
+  # response.each gives header info
   return response
-end # End header_grab function
+end   # End header_grab function
+
+
+def table_maker()
+
+end   # End table maker function
 
 
 def title_screen()
@@ -787,6 +794,9 @@ if !cli_parsed.single_website.nil?
 
   if cli_parsed.ua_name.nil?
     single_source = capture_screenshot(eyewitness_selenium_driver, report_path, cli_parsed.single_website)
+
+    # returns back an object that needs to be iterated over for the headers
+    single_site_headers = source_header_grab(cli_parsed.single_website)
 
 end   # end single website if statement
 
