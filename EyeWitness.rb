@@ -29,10 +29,10 @@ class CliParser
     options.create_targets = nil
     options.timeout = 7
     options.jitter = nil
-    options.dir_name = nil
+    options.dir_name = "none"
     options.results_number = nil
     options.ua_name = nil
-    options.cycle = nil
+    options.cycle = "none"
     options.difference = 50
     options.skip_creds = false
     options.localscan = nil
@@ -440,7 +440,7 @@ def folder_out(dir_name, full_path)
     }'.gsub('    ', '')
 
     # Check to see if the directory name is null or not
-    if dir_name.nil?
+    if dir_name == "none"
         # Get the Time and Date for creating the folder structure
         date_time = Time.new
         current_date = "#{date_time.month}#{date_time.day}#{date_time.year}"
@@ -791,13 +791,11 @@ else
   # then this can likely be removed.
   if cli_parsed.dir_name.start_with?('/') or cli_parsed.dir_name.start_with?('C:\\')
     log_file_path = File.join(cli_parsed.dir_name, report_folder, 'logfile.log')
-    report_path = File.join(cli_parsed.dir_name, report_folder)
   else
     log_file_path = File.join(report_folder, 'logfile.log')
-    report_path = File.join(Dir.pwd, report_folder)
   end   # End dir name if statement
 
-  if cli_parsed.cycle.nil
+  if cli_parsed.cycle == "none"
     eyewitness_selenium_driver = selenium_driver()
   else
     ua_group = user_agent_definition(cli_parsed.cycle)
@@ -812,8 +810,10 @@ else
 end   # End create targets if statement
 
 if !cli_parsed.single_website.nil?
+
+  puts cli_parsed.single_website
   
-  if cli_parsed.single_website.start_with('http://') or cli_parsed.single_website.start_with('https://')
+  if cli_parsed.single_website.start_with?('http://') or cli_parsed.single_website.start_with?('https://')
   else
     cli_parsed.single_website = "http://#{cli_parsed.single_website}"
   end
@@ -826,7 +826,7 @@ if !cli_parsed.single_website.nil?
 
   if cli_parsed.cycle.nil?
     unused_length_difference = nil
-    single_source = capture_screenshot(eyewitness_selenium_driver, report_path, cli_parsed.single_website)
+    single_source = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website)
 
     # returns back an object that needs to be iterated over for the headers
     single_site_headers_source = source_header_grab(cli_parsed.single_website)
@@ -835,10 +835,10 @@ if !cli_parsed.single_website.nil?
 
     web_index = table_maker(web_index, cli_parsed.single_website, single_default_credentials,
       single_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-      report_path)
+      report_folder)
 
   end   # Endo of if statement looking for ua_name
-  single_report_page(web_index, report_path)
+  single_page_report(web_index, report_folder)
 end   # end single website if statement
 
 puts "Done!"
