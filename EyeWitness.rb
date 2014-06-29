@@ -2,6 +2,7 @@
 
 # This is a port of EyeWitness to Ruby, using a new screenshot engine
 
+require 'cgi'
 require 'ipaddr'
 require 'net/http'
 require 'net/https'
@@ -367,7 +368,7 @@ def capture_screenshot(sel_driver, output_path, url_to_grab)
   screenshot_name = "#{screenshot_name}.png"
   screen_cap_path = File.join(output_path, 'screens', screenshot_name)
   source_code_path = File.join(output_path, 'source', sourcecode_name)
-  driver.save_screenshot(screen_cap_path)
+  sel_driver.save_screenshot(screen_cap_path)
   File.open("#{source_code_path}", 'w') do |write_sourcecode|
     write_sourcecode.write(sel_driver.page_source)
   end
@@ -386,20 +387,18 @@ def default_creds(page_content, full_file_path)
         default_creds = signature.split('|')[1]
 
         # Values for signatures not found
-        sig_not_found = 0
         all_signatures = signature_delimeted.split(';')
         page_content = page_content.downcase
+        signature_not_present = false
 
         all_signatures.each do |individual_signature|
           individual_signature = individual_signature.downcase
-          if page_content.include? "#{individual_signature}"
-          else
+          if !page_content.include? "#{individual_signature}"
             signature_not_present = true
           end
         end
 
         if signature_not_present
-          return nil
         else
           return default_creds
         end
@@ -418,7 +417,7 @@ def file_names(url_given)
   url_given.gsub('\n', '')
   pic_name = url_given
   source_name = url_given
-  source_name = source_name.gsub('://', '').gsub('/', '.').gsub(':', '.')
+  source_name = source_name.gsub('://', '.').gsub('/', '.').gsub(':', '.')
   pic_name = "#{source_name}.png"
   source_name = "#{source_name}.txt"
 
@@ -478,7 +477,7 @@ end # End of folder_out function
 
 
 def html_encode(dangerous_data)
-  encoded = CGI::escape(dangerous_data)
+  encoded = CGI::escapeHTML(dangerous_data)
   return encoded
 end
 
@@ -623,26 +622,28 @@ end   # End header_grab function
 def table_maker(web_report_html, website_url, possible_creds, page_header_source, source_code_name,
   screenshot_name, length_difference, iwitness_dir, output_report_path)
 
-  web_table_index += "<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">
-  <a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>".gsub('  ', '')
+  web_report_html += "<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">\n"
+  web_report_html += "<a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>"
 
-  if possible_creds.nil?
+  if !possible_creds.nil?
     encoded_creds = html_encode(possible_creds)
-    web_table_index += "<br><b>Default credentials:</b> #{encoded_creds} <br>"
+    web_report_html += "<br><b>Default credentials:</b> #{encoded_creds} <br>"
   end
 
   full_source_path = File.join(output_report_path, "source", source_code_name)
 
   page_header_source.each_header do |header, value|
-    web_table_index += "<br><b>html_encode(#{header}):</b> html_encode(#{value})"
+    encoded_header = html_encode(header)
+    encoded_value = html_encode(value)
+    web_report_html += "<br><b>#{encoded_header}:</b> #{encoded_value}"
   end
 
-  web_table_index += "<br><br><a href=\"source/#{source_code_name}\"target=\"_blank\">Source Code</a></div></td>
+  web_report_html += "<br><br><a href=\"source/#{source_code_name}\"target=\"_blank\">Source Code</a></div></td>\n
     <td><div id=\"screenshot\" style=\"display: inline-block; width:850px; height 400px; overflow: scroll;\">
-    <a href=\"screens/#{screen_shot_name}\" target=\"_blank\"><img src=\"screens/{screen_shot_name}\"
-    height=\"400\"></a></div></td></tr>"
+    <a href=\"screens/#{screenshot_name}\" target=\"_blank\"><img src=\"screens/#{screenshot_name}\"
+    height=\"400\"></a></div></td></tr>".gsub('    ', '')
 
-  return web_table_index
+  return web_report_html
 end   # End table maker function
 
 
@@ -756,7 +757,7 @@ def web_report_header(real_report_date, real_report_time)
     "<title>EyeWitness Report</title>"\
     "</head>"\
     "<body>"\
-    "<center>Report Generated on {report_day} at {reporthtml_time}</center>"\
+    "<center>Report Generated on #{real_report_date} at #{real_report_time}</center>"\
     "<br><table border=\"1\">"\
     "<tr>"\
     "<th>Web Request Info</th>"\
@@ -824,22 +825,24 @@ if !cli_parsed.single_website.nil?
   # Create the filename to store each website's picture
   single_url, source_name, picture_name = file_names(cli_parsed.single_website)
 
-  if cli_parsed.cycle.nil?
+  if cli_parsed.cycle == "none"
     unused_length_difference = nil
     single_source = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website)
 
     # returns back an object that needs to be iterated over for the headers
     single_site_headers_source = source_header_grab(cli_parsed.single_website)
 
-    single_default_creds = default_creds(single_side_headers_source.body, Dir.pwd)
+    single_default_creds = default_creds(single_site_headers_source.body, Dir.pwd)
 
-    web_index = table_maker(web_index, cli_parsed.single_website, single_default_credentials,
+    web_index = table_maker(web_index, cli_parsed.single_website, single_default_creds,
       single_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
       report_folder)
 
   end   # Endo of if statement looking for ua_name
   single_page_report(web_index, report_folder)
 end   # end single website if statement
+
+eyewitness_selenium_driver.quit
 
 puts "Done!"
 
@@ -862,19 +865,6 @@ puts "Done!"
 
 #File.open("urls.txt", "r") do |f|
 #  puts "There's #{f.count} URLs to capture!"
-#end
-
-
-
-#File.open("urls.txt", "r") do |f2|
-#  f2.each_line do |line|
-#    driver.navigate.to line.strip
-#    screenshot_name = line.strip.gsub(':', '').gsub('//', '.').gsub('/', '.')
-#    screenshot_name = "#{screenshot_name}.png"
-#    puts screenshot_name
-#    driver.save_screenshot(screenshot_name)
-#    puts driver.page_source
-#  end
 #end
 
 #driver.quit
