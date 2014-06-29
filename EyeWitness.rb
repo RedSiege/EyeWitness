@@ -583,6 +583,17 @@ def selenium_driver()
 end
 
 
+def single_page_report(report_source, full_report_path)
+  report_source += "</table>\n</body>\n</html>"
+
+  report_file = File.join(full_report_path, "report.html")
+
+  File.open(report_file, 'w') do |report_done|
+    report_done.write(report_source)
+  end
+end   # End single page report function
+
+
 def source_header_grab(url_to_head)
   
   uri = URI.parse("#{url_to_head}")
@@ -624,13 +635,14 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
 
   page_header_source.each_header do |header, value|
     web_table_index += "<br><b>html_encode(#{header}):</b> html_encode(#{value})"
+  end
 
   web_table_index += "<br><br><a href=\"source/#{source_code_name}\"target=\"_blank\">Source Code</a></div></td>
     <td><div id=\"screenshot\" style=\"display: inline-block; width:850px; height 400px; overflow: scroll;\">
     <a href=\"screens/#{screen_shot_name}\" target=\"_blank\"><img src=\"screens/{screen_shot_name}\"
     height=\"400\"></a></div></td></tr>"
 
-
+  return web_table_index
 end   # End table maker function
 
 
@@ -826,7 +838,7 @@ if !cli_parsed.single_website.nil?
       report_path)
 
   end   # Endo of if statement looking for ua_name
-
+  single_report_page(web_index, report_path)
 end   # end single website if statement
 
 puts "Done!"
