@@ -34,6 +34,11 @@ case ${osinfo} in
     python setup.py install
     cd ..
     rm -rf Ghost.py
+    gem install netaddr
+    gem install nokogiri
+    gem install optparse
+    gem install selenium-webdriver
+    gem install ipaddr
   ;;
   # Debian 7+ Dependency Installation
   Debian)
