@@ -375,7 +375,7 @@ def capture_screenshot(sel_driver, output_path, url_to_grab)
   return sel_driver.page_source
 end
 
-def default_creds(page_content, full_file_path, local_system_os)
+def default_creds(page_content, full_file_path)
 
   creds_path = File.join("#{full_file_path}", "signatures.txt")
 
@@ -609,7 +609,27 @@ def source_header_grab(url_to_head)
 end   # End header_grab function
 
 
-def table_maker()
+def table_maker(web_report_html, website_url, possible_creds, page_header_source, source_code_name,
+  screenshot_name, length_difference, iwitness_dir, output_report_path)
+
+  web_table_index += "<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">
+  <a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>".gsub('  ', '')
+
+  if possible_creds.nil?
+    encoded_creds = html_encode(possible_creds)
+    web_table_index += "<br><b>Default credentials:</b> #{encoded_creds} <br>"
+  end
+
+  full_source_path = File.join(output_report_path, "source", source_code_name)
+
+  page_header_source.each_header do |header, value|
+    web_table_index += "<br><b>html_encode(#{header}):</b> html_encode(#{value})"
+
+  web_table_index += "<br><br><a href=\"source/#{source_code_name}\"target=\"_blank\">Source Code</a></div></td>
+    <td><div id=\"screenshot\" style=\"display: inline-block; width:850px; height 400px; overflow: scroll;\">
+    <a href=\"screens/#{screen_shot_name}\" target=\"_blank\"><img src=\"screens/{screen_shot_name}\"
+    height=\"400\"></a></div></td></tr>"
+
 
 end   # End table maker function
 
@@ -792,11 +812,20 @@ if !cli_parsed.single_website.nil?
   # Create the filename to store each website's picture
   single_url, source_name, picture_name = file_names(cli_parsed.single_website)
 
-  if cli_parsed.ua_name.nil?
+  if cli_parsed.cycle.nil?
+    unused_length_difference = nil
     single_source = capture_screenshot(eyewitness_selenium_driver, report_path, cli_parsed.single_website)
 
     # returns back an object that needs to be iterated over for the headers
-    single_site_headers = source_header_grab(cli_parsed.single_website)
+    single_site_headers_source = source_header_grab(cli_parsed.single_website)
+
+    single_default_creds = default_creds(single_side_headers_source.body, Dir.pwd)
+
+    web_index = table_maker(web_index, cli_parsed.single_website, single_default_credentials,
+      single_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
+      report_path)
+
+  end   # Endo of if statement looking for ua_name
 
 end   # end single website if statement
 
