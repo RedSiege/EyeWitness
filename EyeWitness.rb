@@ -409,6 +409,8 @@ def default_creds(page_content, full_file_path)
     puts "[*] WARNING Default credentials file not in same directory as EyeWitness!"
     puts "[*] Skipping credential check..."
   end  # End try catch
+
+  return nil
 end  #End of default creds function
 
 
