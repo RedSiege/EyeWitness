@@ -121,7 +121,11 @@ def cli_parser():
         help="Single URL to screenshot")
     urls_in.add_argument(
         "--createtargets", metavar="targetfilename.txt", default=None,
-        help="Creates text file (of provided name) containing URLs of all targets.")
+        help="Creates text file (of provided name) containing URLs\
+        of all targets.")
+    urls_in.add_argument(
+        "--no-dns", default=False, action='store_true',
+        help="Use IP address, not DNS hostnames,when connecting to websites.")
 
     timing_options = parser.add_argument_group('Timing Options')
     timing_options.add_argument(
@@ -253,7 +257,8 @@ def cli_parser():
     # Return the file name which contains the URLs
     return args.f, args.t, args.open, args.single, args.d, args.jitter,\
         args.useragent, args.cycle, args.difference, args.skipcreds,\
-        current_directory, args.localscan, args.createtargets, args.results
+        current_directory, args.localscan, args.createtargets, args.results,\
+        args.no_dns
 
 
 def default_creds(page_content, full_file_path, local_system_os):
@@ -396,7 +401,7 @@ def html_encode(dangerous_data):
     return encoded
 
 
-def logistics(url_file, target_maker):
+def logistics(url_file, target_maker, no_dns):
 
     if target_maker is not None:
         print "Creating text file containing all web servers..."
@@ -425,7 +430,8 @@ def logistics(url_file, target_maker):
                 if item.find('status').get('state') == "up":
                     # If there is no hostname then we'll set the IP as the
                     # target 'hostname'
-                    if item.find('hostnames/hostname') is not None:
+                    if item.find('hostnames/hostname') is not None and\
+                            no_dns is False:
                         target = item.find('hostnames/hostname').get('name')
                         web_ip_address = item.find('address').get('addr')
                     else:
@@ -1134,7 +1140,8 @@ if __name__ == "__main__":
     # and how long to wait for each website
     url_filename, timeout_wait, open_urls, single_url, directory_name,\
         request_jitter, browser_user_agent, ua_cycle, diff_value, cred_skip,\
-        script_path, subnet_scan, create_targets, report_num_urls = cli_parser()
+        script_path, subnet_scan, create_targets, report_num_urls,\
+        skip_dns = cli_parser()
 
     # If the user wants to perform a scan for web servers locally,
     # then perform the scan, write out to a file, and exit
@@ -1391,7 +1398,8 @@ if __name__ == "__main__":
     else:
 
         # Create the output directories, open the urlfile, and return all URLs
-        url_list, number_urls = logistics(url_filename, create_targets)
+        url_list, number_urls = logistics(
+            url_filename, create_targets, skip_dns)
 
         # Check if user wants random URLs, if so, randomize URLs here
         if request_jitter is not "None":
