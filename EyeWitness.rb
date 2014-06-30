@@ -26,6 +26,8 @@ class CliParser
 
     # Set the default values
     options.file_name = nil
+    options.nessus_xml = nil
+    options.nmap_xml = nil
     options.single_website = nil
     options.create_targets = nil
     options.timeout = 7
@@ -42,15 +44,19 @@ class CliParser
       opts.banner = "Usage: [options]"
 
       # Grouped for EyeWitness Input functions
-      opts.on("-f", "--filename Filename", "File containing URLs to screenshot",
-          "each on a new line. NMap XML output",
-          "or a .nessus file") do |in_filename|
+      opts.on("-f", "--filename file.txt", "File containing URLs to screenshot") do |in_filename|
         options.file_name = in_filename
       end
-      opts.on("-s", "--single URL", "Single URL to screenshot.") do |single_url|
+      opts.on("--nessus file.nessus", "Nessus .nessus file output") do |nessus_xml|
+        options.nessus_xml = nessus_xml
+      end
+      opts.on("--nmap file.xml", "Nmap XML file output") do |nmap_xml|
+        options.nmap_xml = nmap_xml
+      end
+      opts.on("-s", "--single URL", "Single URL to screenshot") do |single_url|
         options.single_website = single_url
       end
-      opts.on("--createtargets Filename", "Create file containing web servers",
+      opts.on("--createtargets Filename", "Create a file containing web servers",
           "from nmap or nessus output.\n\n") do |target_make|
         options.create_targets = target_make
       end
@@ -66,8 +72,7 @@ class CliParser
       end
 
       # Report output options
-      opts.on("-d [Directory Name]", "Name of directory for EyeWitness report.")\
-          do |d_name|
+      opts.on("-d Directory Name", "Name of directory for EyeWitness report.") do |d_name|
         options.dir_name = d_name
       end
       opts.on("--results 25", Integer, "Number of URLs displayed per page within",
@@ -798,13 +803,6 @@ else
     log_file_path = File.join(report_folder, 'logfile.log')
   end   # End dir name if statement
 
-  if cli_parsed.cycle == "none"
-    eyewitness_selenium_driver = selenium_driver()
-  else
-    ua_group = user_agent_definition(cli_parsed.cycle)
-    eyewitness_selenium_driver = selenium_driver()
-  end   # End user agent cycle if statement
-
   # Define a couple default variables
   extra_info = nil
   blank_value = nil
@@ -814,7 +812,12 @@ end   # End create targets if statement
 
 if !cli_parsed.single_website.nil?
 
-  puts cli_parsed.single_website
+  if cli_parsed.cycle == "none"
+    eyewitness_selenium_driver = selenium_driver()
+  else
+    ua_group = user_agent_definition(cli_parsed.cycle)
+    eyewitness_selenium_driver = selenium_driver()
+  end   # End user agent cycle if statement
   
   if cli_parsed.single_website.start_with?('http://') or cli_parsed.single_website.start_with?('https://')
   else
@@ -841,25 +844,49 @@ if !cli_parsed.single_website.nil?
       report_folder)
 
   end   # Endo of if statement looking for ua_name
-  single_page_report(web_index, report_folder)
-end   # end single website if statement
 
-eyewitness_selenium_driver.quit
+  single_page_report(web_index, report_folder)
+
+  eyewitness_selenium_driver.quit
+
+elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.nmap_xml.nil?
+
+  final_url_list = []
+  total_urls = 0
+  
+  # Figure out which command line option hit, and then send it to that parser
+  if !cli_parsed.file_name.nil?
+    File.open("#{cli_parsed.file_name}", 'r').each do |file_lines|
+      total_urls += 1
+      final_url_list << file_lines
+    end
+
+    puts "There's a total of #{total_urls} URLs."
+
+  elsif !cli_parsed.nessus_xml.nil?
+
+  elsif !cli_parsed.nmap_xml.nil?
+  end
+
+
+
+end   # end single website, file, or xml inputs if statement
 
 puts "Done!"
 
 
-
 # Set the default values
 #options.file_name = nil
+#options.nessus_xml = nil
+#options.nmap_xml = nil
 #options.single_website = nil
 #options.create_targets = nil
 #options.timeout = 7
 #options.jitter = nil
-#options.dir_name = nil
+#options.dir_name = "none"
 #options.results_number = nil
 #options.ua_name = nil
-#options.cycle = nil
+#options.cycle = "none"
 #options.difference = 50
 #options.skip_creds = false
 #options.localscan = nil
@@ -868,6 +895,4 @@ puts "Done!"
 #File.open("urls.txt", "r") do |f|
 #  puts "There's #{f.count} URLs to capture!"
 #end
-
-#driver.quit
 
