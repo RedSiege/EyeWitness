@@ -39,6 +39,7 @@ class CliParser
     options.difference = 50
     options.skip_creds = false
     options.localscan = nil
+    options.rid_dns = false
 
     opt_parser = OptionParser.new do |opts|
       opts.banner = "Usage: [options]"
@@ -55,6 +56,10 @@ class CliParser
       end
       opts.on("-s", "--single URL", "Single URL to screenshot") do |single_url|
         options.single_website = single_url
+      end
+      opts.on("--nodns", "Parse nmap XML and only use IP address,",
+          "instead of DNS for web server") do |rid_dns|
+        options.rid_dns = true
       end
       opts.on("--createtargets Filename", "Create a file containing web servers",
           "from nmap or nessus output.\n\n") do |target_make|
@@ -212,8 +217,8 @@ class NessusParser < Nokogiri::XML::SAX::Document
   end   # End of end_element function
 
 
-  def url_get
-    @url_list
+  def url_get()
+    return @url_list
   end
 end   # End of nmap parsing class
 
@@ -230,6 +235,10 @@ class NmapParser < Nokogiri::XML::SAX::Document
     @tunnel = nil
     @final_url = nil
     @url_array = []
+  end
+
+  def ip_only()
+    @nodns = true
   end
 
   def start_element name, attrs = []
@@ -297,7 +306,7 @@ class NmapParser < Nokogiri::XML::SAX::Document
 
       if @protocol == "https://" || @tunnel == "ssl"
         @protocol = "https://"
-        if @hostname.nil? && @port_state == "open"
+        if @hostname.nil? && @port_state == "open" || @nodns == true
           @final_url = "#{@protocol}#{@ip_address}:#{@final_port_number}"
           if !@url_array.include? @final_url
             @url_array << @final_url
@@ -319,7 +328,7 @@ class NmapParser < Nokogiri::XML::SAX::Document
         end
 
       elsif @protocol == "http://"
-        if @hostname.nil? && @port_state == "open"
+        if @hostname.nil? && @port_state == "open" || @nodns == true
           @final_url = "#{@protocol}#{@ip_address}:#{@final_port_number}"
           if !@url_array.include? @final_url
             @url_array << @final_url
@@ -360,8 +369,8 @@ class NmapParser < Nokogiri::XML::SAX::Document
   end   # End of end_element function
 
 
-  def url_get
-    @url_array
+  def url_get()
+    return @url_array
   end
 end   # End of nmap parsing class
 
@@ -489,13 +498,17 @@ def html_encode(dangerous_data)
 end
 
 
-def logistics(url_file, target_maker)
+def logistics(url_file)
 
   file_urls = []
   num_urls = 0
 
   begin
-    File.open(url_get, "r").each do |url|
+    File.open(url_file, "r").each do |url|
+      url = url.strip
+      if !url.start_with?('http://') && !url.start_with?('https://')
+        url = "http://#{url}"
+      end
       file_urls << url
       num_urls += 1
     end
@@ -856,17 +869,33 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
   
   # Figure out which command line option hit, and then send it to that parser
   if !cli_parsed.file_name.nil?
-    File.open("#{cli_parsed.file_name}", 'r').each do |file_lines|
-      total_urls += 1
-      final_url_list << file_lines
-    end
-
-    puts "There's a total of #{total_urls} URLs."
+    final_url_list, total_urls = logistics(cli_parsed.file_name)
 
   elsif !cli_parsed.nessus_xml.nil?
+    nessus_class = NessusParser.new
+
+    parser = Nokogiri::XML::SAX::Parser.new(nessus_class)
+    parser.parse(File.open(cli_parsed.nessus_xml))
+
+    final_url_list = nessus_class.url_get()
+    total_urls = final_url_list.length
 
   elsif !cli_parsed.nmap_xml.nil?
-  end
+    nmap_class = NmapParser.new
+
+    if cli_parsed.rid_dns
+      nmap_class.ip_only()
+    end
+
+    parser = Nokogiri::XML::SAX::Parser.new(nmap_class)
+    parser.parse(File.open(cli_parsed.nmap_xml))
+
+    final_url_list = nmap_class.url_get()
+    total_urls = final_url_list.length
+
+  end   # End of xml parsing section
+
+  puts "There's a total of #{total_urls} URLs."
 
 
 
@@ -890,6 +919,7 @@ puts "Done!"
 #options.difference = 50
 #options.skip_creds = false
 #options.localscan = nil
+#options.rid_dns = false
 
 
 #File.open("urls.txt", "r") do |f|
