@@ -982,6 +982,53 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
 
   puts "There's a total of #{total_urls} URLs."
 
+  if !cli_parsed.jitter.nil?
+    final_url_list = final_url_list.shuffle
+  end
+
+  # Create the first part of the report for page 1 of X
+  web_index = web_report_header(report_date, report_time)
+
+  # Create a URL counter to know when to go to a new page
+  # Create a page counter to track pages
+  page_counter = 1
+  htmldictionary = {}
+  url_counter = 0
+
+  # Start looping through all URLs and screenshotting/capturing page source for each
+  final_url_list.each do |individual_url|
+
+    # Count the number of URLs, remove the whitespace from the url
+    url_counter += 1
+    individual_url = individual_url.strip
+
+    # Get the file names for the 
+    individual_url, source_name, picture_name = file_names(individual_url)
+
+    # Print out message showing the URL being captured, and the number that it is
+    puts "Attempting to capture #{individual_url} (#{url_counter}/#{total_urls})"
+
+    if cli_parsed.cycle == "none"
+      unused_length_difference = nil
+      eyewitness_selenium_driver_multi_site = selenium_driver()
+      single_source = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url)
+      
+      # returns back an object that needs to be iterated over for the headers and source code
+      multi_site_headers_source = source_header_grab(individual_url)
+
+      multi_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
+
+      web_index = table_maker(web_index, individual_url, multi_site_default_creds,
+      multi_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
+      report_folder)
+
+    else
+      ua_group = user_agent_definition(cli_parsed.cycle)
+      eyewitness_selenium_driver_multi_site = selenium_driver()
+    end   # End file input user agent cycle if statement
+
+  end   # End of loop looping through all URLs within final_url_list
+
 
 
 end   # end single website, file, or xml inputs if statement
