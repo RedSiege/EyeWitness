@@ -125,7 +125,7 @@ def cli_parser():
         of all targets.")
     urls_in.add_argument(
         "--no-dns", default=False, action='store_true',
-        help="Use IP address, not DNS hostnames,when connecting to websites.")
+        help="Use IP address, not DNS hostnames, when connecting to websites.")
 
     timing_options = parser.add_argument_group('Timing Options')
     timing_options.add_argument(
