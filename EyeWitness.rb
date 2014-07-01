@@ -57,7 +57,7 @@ class CliParser
       opts.on("-s", "--single URL", "Single URL to screenshot") do |single_url|
         options.single_website = single_url
       end
-      opts.on("--nodns", "Parse nmap XML and only use IP address,",
+      opts.on("--no-dns", "Parse nmap XML and only use IP address,",
           "instead of DNS for web server") do |rid_dns|
         options.rid_dns = true
       end
@@ -220,7 +220,7 @@ class NessusParser < Nokogiri::XML::SAX::Document
   def url_get()
     return @url_list
   end
-end   # End of nmap parsing class
+end   # End of nessus parsing class
 
 
 class NmapParser < Nokogiri::XML::SAX::Document
@@ -376,6 +376,7 @@ end   # End of nmap parsing class
 
 
 def capture_screenshot(sel_driver, output_path, url_to_grab)
+  # Function used to capture screenshots with selenium
   sel_driver.navigate.to url_to_grab
   screenshot_name = url_to_grab.gsub(':', '').gsub('//', '.').gsub('/', '.')
   sourcecode_name = "#{screenshot_name}.txt"
@@ -392,6 +393,8 @@ end
 
 def default_creds(page_content, full_file_path)
 
+  # This function parses the signatures file, and compares it with the source code
+  # of the site connected to, and determines if there is a match
   creds_path = File.join("#{full_file_path}", "signatures.txt")
 
   begin
@@ -430,6 +433,7 @@ end  #End of default creds function
 
 def file_names(url_given)
 
+  # Create the names of the screenshot and source code file used in the report
   url_given.gsub('\n', '')
   pic_name = url_given
   source_name = url_given
@@ -493,6 +497,7 @@ end # End of folder_out function
 
 
 def html_encode(dangerous_data)
+  # html encode data so we can't execute malicious scripts
   encoded = CGI::escapeHTML(dangerous_data)
   return encoded
 end
@@ -500,6 +505,8 @@ end
 
 def logistics(url_file)
 
+  # This is basically a single function designed to parse a text file
+  # and verify that each url starts with http or https
   file_urls = []
   num_urls = 0
 
@@ -523,6 +530,8 @@ end  # End of logistics function
 
 
 def request_comparison(original_content, new_content, max_difference)
+
+  # compares the two requests and determines if it is above the "threshold"
   original_request_length = original_content.length
   new_request_length = new_content.length
 
@@ -547,6 +556,8 @@ end   # end of request comparison function
 
 
 def scanner(cidr_range, tool_path)
+
+  # Used to port scan a provided cidr range
   ports = [80, 443, 8080, 8443]
 
   # Live webservers
@@ -603,6 +614,7 @@ end
 
 
 def single_page_report(report_source, full_report_path)
+  # The end of the html for a single paged report
   report_source += "</table>\n</body>\n</html>"
 
   report_file = File.join(full_report_path, "report.html")
@@ -614,7 +626,9 @@ end   # End single page report function
 
 
 def source_header_grab(url_to_head)
-  
+
+  # All of this code basically grabs the server headers and source code of the
+  # provided URL
   uri = URI.parse("#{url_to_head}")
   
   if url_to_head.start_with?("http://")
@@ -761,6 +775,7 @@ end   # End user agent definition function
 
 
 def validate_cidr(cidr_to_val)
+  # Function used to determine if the user provided CIDR range is valid
   begin
     cidr_test = NetAddr::CIDR.create("#{cidr_to_val}")
     return true
@@ -771,6 +786,7 @@ end
 
 
 def web_report_header(real_report_date, real_report_time)
+  # Function used to create the beginning of a report page
   web_index_head = "<html>"\
     "<head>"\
     "<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>"\
@@ -787,12 +803,21 @@ def web_report_header(real_report_date, real_report_time)
 end
 
 
+#
+#
+#   Start of main()
+#
+#
+
 title_screen()
 
+# Parse all the command line arguments
 cli_parsed = CliParser.parse(ARGV)
 
+# Determine the path that EyeWitness is in
 eyewitness_path = File.expand_path(File.dirname(__FILE__))
 
+# Determine if EyeWitness is only scanning for web servers, or creating a report
 if !cli_parsed.localscan.nil?
   if validate_cidr(cli_parsed.localscan)
     scanner(cli_parsed.localscan, eyewitness_path)
@@ -804,8 +829,54 @@ if !cli_parsed.localscan.nil?
   exit
 end   # End of if statement for local scan
 
+# If just creating the targets, then parse the input files, and write them out,
+# otherwise create the report folders
 if !cli_parsed.create_targets.nil?
+
+  puts "Writing out live servers to #{cli_parsed.create_targets}"
+  create_target_url_list = []
+
+  if !cli_parsed.nessus_xml.nil?
+    nessus_class = NessusParser.new
+
+    parser = Nokogiri::XML::SAX::Parser.new(nessus_class)
+    parser.parse(File.open(cli_parsed.nessus_xml))
+
+    create_target_url_list = nessus_class.url_get()
+
+  elsif !cli_parsed.nmap_xml.nil?
+    nmap_class = NmapParser.new
+
+    # Function is called specifically when trying to return only IP addresses, not
+    # dns names of web servers while parsing nmap xml output
+    if cli_parsed.rid_dns
+      nmap_class.ip_only()
+    end
+
+    parser = Nokogiri::XML::SAX::Parser.new(nmap_class)
+    parser.parse(File.open(cli_parsed.nmap_xml))
+
+    create_target_url_list = nmap_class.url_get()
+
+  else
+    puts "[*] Error: You need need to provide nmap or nessus xml output files for use"
+    puts "[*] Error: with the create targets flag."
+    exit
+  end   # End of Parsing function for create targets
+
+  # Write out the urls to the user specified file
+  File.open(cli_parsed.create_targets, 'w') do |target_writer|
+    create_target_url_list.each do |create_target_url|
+      target_writer.write("#{create_target_url}\n")
+    end
+  end
+
+  puts "... and done!"
+  exit
+
+# If not just creating targets, then start normal execution flow
 else
+  # Create the folders that will be used
   report_folder, report_date, report_time = folder_out(cli_parsed.dir_name, eyewitness_path)
 
   # Log path only used in ghost for SSL cert issues.  If not needed with selenium
@@ -821,28 +892,37 @@ else
   blank_value = nil
   baseline_request = "Baseline"
   page_length = nil
-end   # End create targets if statement
+end   # End of create targets if statement
 
+# If only generating a report on a single website
 if !cli_parsed.single_website.nil?
 
+  #  If we're not cycling through user agents, just return the selenium web driver object
   if cli_parsed.cycle == "none"
     eyewitness_selenium_driver = selenium_driver()
+
+  # if we are cycling through user agents, return the user agent hash
+  # and the selenium web driver object
   else
     ua_group = user_agent_definition(cli_parsed.cycle)
     eyewitness_selenium_driver = selenium_driver()
   end   # End user agent cycle if statement
   
+  # Perform a quick check to make sure website starts with http or https
+  # if not, add http to the front
   if cli_parsed.single_website.start_with?('http://') or cli_parsed.single_website.start_with?('https://')
   else
     cli_parsed.single_website = "http://#{cli_parsed.single_website}"
   end
 
+  # Start drafting the report, and get the report html code (the head/start of it)
   web_index = web_report_header(report_date, report_time)
   puts "Trying to screenshot #{cli_parsed.single_website}"
 
   # Create the filename to store each website's picture
   single_url, source_name, picture_name = file_names(cli_parsed.single_website)
 
+  # If not cycling through user agents, then go to the site, capture screenshot and source code
   if cli_parsed.cycle == "none"
     unused_length_difference = nil
     single_source = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website)
@@ -856,14 +936,15 @@ if !cli_parsed.single_website.nil?
       single_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
       report_folder)
 
-  end   # Endo of if statement looking for ua_name
+  end   # Endo of if statement looking for ua cycle
 
   single_page_report(web_index, report_folder)
-
   eyewitness_selenium_driver.quit
 
+#  This is hit when providing a file for input for EyeWitness
 elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.nmap_xml.nil?
 
+  # Declare the default values of the variables being used
   final_url_list = []
   total_urls = 0
   
@@ -871,6 +952,7 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
   if !cli_parsed.file_name.nil?
     final_url_list, total_urls = logistics(cli_parsed.file_name)
 
+  # The nessus parsing class
   elsif !cli_parsed.nessus_xml.nil?
     nessus_class = NessusParser.new
 
@@ -880,9 +962,12 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
     final_url_list = nessus_class.url_get()
     total_urls = final_url_list.length
 
+  # The nmap parsing class
   elsif !cli_parsed.nmap_xml.nil?
     nmap_class = NmapParser.new
 
+    # Function is called specifically when trying to return only IP addresses, not
+    # dns names of web servers while parsing nmap xml output
     if cli_parsed.rid_dns
       nmap_class.ip_only()
     end
