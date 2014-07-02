@@ -33,7 +33,7 @@ class CliParser
     options.timeout = 7
     options.jitter = nil
     options.dir_name = "none"
-    options.results_number = nil
+    options.results_number = 25
     options.ua_name = nil
     options.cycle = "none"
     options.difference = 50
@@ -994,12 +994,15 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
   page_counter = 1
   htmldictionary = {}
   url_counter = 0
+  # use this to measure if num URL is measured against max urls per page
+  page_url_counter = 0
 
   # Start looping through all URLs and screenshotting/capturing page source for each
   final_url_list.each do |individual_url|
 
     # Count the number of URLs, remove the whitespace from the url
     url_counter += 1
+    page_url_counter += 1
     individual_url = individual_url.strip
 
     # Get the file names for the 
@@ -1022,12 +1025,58 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
       multi_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
       report_folder)
 
-    else
-      ua_group = user_agent_definition(cli_parsed.cycle)
-      eyewitness_selenium_driver_multi_site = selenium_driver()
-    end   # End file input user agent cycle if statement
-
+      if !cli_parsed.jitter.nil?
+        sleep_value = rand(30)
+        sleep_value = sleep_value * .01
+        sleep_value = 1 - sleep_value
+        sleep_value = sleep_value * cli_parsed.jitter
+        puts "[*] Sleeping for #{sleep_value} seconds..."
+        sleep(sleep_value)
+      end   # End jitter if statement
   end   # End of loop looping through all URLs within final_url_list
+
+    if page_url_counter == cli_parsed.results_number
+
+      if page_counter == 1
+        # Close out the html and write it to disk
+        web_index += "</table>\n"
+
+        # Get path to where the report will be written, and write it out
+        reporthtml = File.join(report_folder, "report.html")
+        File.open(reporthtml, 'w') do |first_report_page|
+          first_report_page.write(web_index)
+        end
+
+        page_counter += 1
+        web_index = web_report_header(report_date, report_time)
+      else
+        web_index += "</table>\n"
+        multi_page_reporthtml = File.join(report_folder, "report#{page_counter}.html")
+        File.open(multi_page_reporthtml, 'w') do |report_page_out|
+          report_page_out.write(web_index)
+        end
+
+        #Reset URL counter
+        page_counter += 1
+        web_index = web_report_header(report_date, report_time)
+      end   # End of page counter if statement
+    end   # end of if statement where url counter for the page matches max urls per page
+
+    if page_counter == 1
+      single_page_report(web_index, report_folder)
+    else
+      web_index += "</table>\n"
+      report_append = File.join(report_folder, "report_page#{page_counter}.html")
+      File.open(report_append, 'a') do |report_pages|
+        report_pages.write(web_index)
+      end
+
+    end   # End page counter final report writeout
+
+  else
+    ua_group = user_agent_definition(cli_parsed.cycle)
+    eyewitness_selenium_driver_multi_site = selenium_driver()
+  end   # End file input user agent cycle if statement
 
 
 
@@ -1045,7 +1094,7 @@ puts "Done!"
 #options.timeout = 7
 #options.jitter = nil
 #options.dir_name = "none"
-#options.results_number = nil
+#options.results_number = 25
 #options.ua_name = nil
 #options.cycle = "none"
 #options.difference = 50
