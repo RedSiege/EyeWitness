@@ -375,17 +375,23 @@ class NmapParser < Nokogiri::XML::SAX::Document
 end   # End of nmap parsing class
 
 
-def capture_screenshot(sel_driver, output_path, url_to_grab)
-  # Function used to capture screenshots with selenium
-  sel_driver.navigate.to url_to_grab
-  screenshot_name = url_to_grab.gsub(':', '').gsub('//', '.').gsub('/', '.')
-  sourcecode_name = "#{screenshot_name}.txt"
-  screenshot_name = "#{screenshot_name}.png"
-  screen_cap_path = File.join(output_path, 'screens', screenshot_name)
-  source_code_path = File.join(output_path, 'source', sourcecode_name)
-  sel_driver.save_screenshot(screen_cap_path)
-  File.open("#{source_code_path}", 'w') do |write_sourcecode|
-    write_sourcecode.write(sel_driver.page_source)
+def capture_screenshot(sel_driver, output_path, url_to_grab, max_allowed_timeout)
+
+  # do a "try catch" for timeout issues
+  begin
+    # Function used to capture screenshots with selenium
+    sel_driver.navigate.to url_to_grab
+    screenshot_name = url_to_grab.gsub(':', '').gsub('//', '.').gsub('/', '.')
+    sourcecode_name = "#{screenshot_name}.txt"
+    screenshot_name = "#{screenshot_name}.png"
+    screen_cap_path = File.join(output_path, 'screens', screenshot_name)
+    source_code_path = File.join(output_path, 'source', sourcecode_name)
+    sel_driver.save_screenshot(screen_cap_path)
+    File.open("#{source_code_path}", 'w') do |write_sourcecode|
+      write_sourcecode.write(sel_driver.page_source)
+    end
+  rescue Timeout::Error
+    sel_driver.page_source = "TIMEOUTERROR"
   end
 
   return sel_driver.page_source
@@ -644,8 +650,15 @@ def source_header_grab(url_to_head)
     exit
   end # end if statement for starting with http:// or https://
 
-  # actually make the request
-  response = http.request(request)
+  begin
+    # actually make the request
+    response = http.request(request)
+  rescue OpenSSL::SSL::SSLError
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    request = Net::HTTP::Get.new(uri.request_uri)
+  end
 
   # Return the response object
   # response.each gives header info
@@ -654,7 +667,7 @@ end   # End header_grab function
 
 
 def table_maker(web_report_html, website_url, possible_creds, page_header_source, source_code_name,
-  screenshot_name, length_difference, iwitness_dir, output_report_path)
+  screenshot_name, length_difference, iwitness_dir, output_report_path, potential_blank)
 
   web_report_html += "<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">\n"
   web_report_html += "<a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>"
@@ -672,10 +685,15 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
     web_report_html += "<br><b>#{encoded_header}:</b> #{encoded_value}"
   end
 
-  web_report_html += "<br><br><a href=\"source/#{source_code_name}\"target=\"_blank\">Source Code</a></div></td>\n
-    <td><div id=\"screenshot\" style=\"display: inline-block; width:850px; height 400px; overflow: scroll;\">
-    <a href=\"screens/#{screenshot_name}\" target=\"_blank\"><img src=\"screens/#{screenshot_name}\"
-    height=\"400\"></a></div></td></tr>".gsub('    ', '')
+  web_report_html += "<br><br><a href=\"source/#{source_code_name}\"target=\"_blank\">Source Code</a></div></td>\n"
+
+  if potential_blank == "TIMEOUTERROR"
+    web_report_html += "<td>REQUEST TIMED OUT WHILE ATTEMPTING TO CONNECT TO THE WEBSITE!</td></tr>"
+  else:
+    web_report_html += "<td><div id=\"screenshot\" style=\"display: inline-block; width:850px; height 400px; overflow: scroll;\">
+      <a href=\"screens/#{screenshot_name}\" target=\"_blank\"><img src=\"screens/#{screenshot_name}\"
+      height=\"400\"></a></div></td></tr>".gsub('    ', '')
+  end
 
   return web_report_html
 end   # End table maker function
@@ -900,6 +918,7 @@ if !cli_parsed.single_website.nil?
   #  If we're not cycling through user agents, just return the selenium web driver object
   if cli_parsed.cycle == "none"
     eyewitness_selenium_driver = selenium_driver()
+    eyewitness_selenium_driver.manage.timeouts.implicit_wait = cli_parsed.timeout
 
   # if we are cycling through user agents, return the user agent hash
   # and the selenium web driver object
@@ -925,7 +944,7 @@ if !cli_parsed.single_website.nil?
   # If not cycling through user agents, then go to the site, capture screenshot and source code
   if cli_parsed.cycle == "none"
     unused_length_difference = nil
-    single_source = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website)
+    single_source = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website, cli_parsed.timeout)
 
     # returns back an object that needs to be iterated over for the headers
     single_site_headers_source = source_header_grab(cli_parsed.single_website)
@@ -934,7 +953,7 @@ if !cli_parsed.single_website.nil?
 
     web_index = table_maker(web_index, cli_parsed.single_website, single_default_creds,
       single_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-      report_folder)
+      report_folder, single_source)
 
   end   # Endo of if statement looking for ua cycle
 
@@ -997,6 +1016,10 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
   # use this to measure if num URL is measured against max urls per page
   page_url_counter = 0
 
+  # Create the selenium object used to grab each site's screenshot
+  eyewitness_selenium_driver_multi_site = selenium_driver()
+  eyewitness_selenium_driver_multi_site.manage.timeouts.implicit_wait = cli_parsed.timeout
+
   # Start looping through all URLs and screenshotting/capturing page source for each
   final_url_list.each do |individual_url|
 
@@ -1013,76 +1036,104 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
 
     if cli_parsed.cycle == "none"
       unused_length_difference = nil
-      eyewitness_selenium_driver_multi_site = selenium_driver()
-      single_source = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url)
+      single_source = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url, cli_parsed.timeout)
       
       # returns back an object that needs to be iterated over for the headers and source code
       multi_site_headers_source = source_header_grab(individual_url)
 
-      multi_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
+      multi_site_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
 
       web_index = table_maker(web_index, individual_url, multi_site_default_creds,
       multi_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-      report_folder)
+      report_folder, single_source)
 
       if !cli_parsed.jitter.nil?
         sleep_value = rand(30)
-        sleep_value = sleep_value * .01
+        sleep_value = sleep_value * 0.01
         sleep_value = 1 - sleep_value
         sleep_value = sleep_value * cli_parsed.jitter
         puts "[*] Sleeping for #{sleep_value} seconds..."
         sleep(sleep_value)
       end   # End jitter if statement
+
+    else
+      ua_group = user_agent_definition(cli_parsed.cycle)
+      eyewitness_selenium_driver_multi_site = selenium_driver()
+    end   # End file input user agent cycle if statement
+
   end   # End of loop looping through all URLs within final_url_list
 
-    if page_url_counter == cli_parsed.results_number
-
-      if page_counter == 1
-        # Close out the html and write it to disk
-        web_index += "</table>\n"
-
-        # Get path to where the report will be written, and write it out
-        reporthtml = File.join(report_folder, "report.html")
-        File.open(reporthtml, 'w') do |first_report_page|
-          first_report_page.write(web_index)
-        end
-
-        page_counter += 1
-        web_index = web_report_header(report_date, report_time)
-      else
-        web_index += "</table>\n"
-        multi_page_reporthtml = File.join(report_folder, "report#{page_counter}.html")
-        File.open(multi_page_reporthtml, 'w') do |report_page_out|
-          report_page_out.write(web_index)
-        end
-
-        #Reset URL counter
-        page_counter += 1
-        web_index = web_report_header(report_date, report_time)
-      end   # End of page counter if statement
-    end   # end of if statement where url counter for the page matches max urls per page
+  if page_url_counter == cli_parsed.results_number
 
     if page_counter == 1
-      single_page_report(web_index, report_folder)
-    else
+      # Close out the html and write it to disk
       web_index += "</table>\n"
-      report_append = File.join(report_folder, "report_page#{page_counter}.html")
-      File.open(report_append, 'a') do |report_pages|
-        report_pages.write(web_index)
+
+      # Get path to where the report will be written, and write it out
+      report_html = File.join(report_folder, "report.html")
+      File.open(report_html, 'w') do |first_report_page|
+        first_report_page.write(web_index)
       end
 
-    end   # End page counter final report writeout
+      page_counter += 1
+      web_index = web_report_header(report_date, report_time)
+    else
+      web_index += "</table>\n"
+      multi_page_reporthtml = File.join(report_folder, "report#{page_counter}.html")
+      File.open(multi_page_reporthtml, 'w') do |report_page_out|
+        report_page_out.write(web_index)
+      end
 
+      #Reset URL counter
+      page_counter += 1
+      web_index = web_report_header(report_date, report_time)
+    end   # End of page counter if statement
+  end   # end of if statement where url counter for the page matches max urls per page
+
+  if page_counter == 1
+    single_page_report(web_index, report_folder)
   else
-    ua_group = user_agent_definition(cli_parsed.cycle)
-    eyewitness_selenium_driver_multi_site = selenium_driver()
-  end   # End file input user agent cycle if statement
+    web_index += "</table>\n"
+    report_append = File.join(report_folder, "report_page#{page_counter}.html")
+    File.open(report_append, 'w') do |report_pages|
+      report_pages.write(web_index)
+    end
 
+    # Create the link structure at the bottom
+    link_text = "\n<br>Links: <a href=\"report.html\">Page 1</a> "
 
+    # loop over pages and append text to them
+    for page in 2..page_counter
+      link_text += "<a href=\"report_page#{page}.html\">Page #{page}</a>"
+    end
+    top_links = link_text
+    link_text += "\n</body>\n"
+    link_text += "</html>"
+
+    # Append link structure to report pages
+    report_html = File.join(report_folder, "report.html")
+    File.open(report_html, 'a') do |report1_append|
+      report1_append.write(link_text)
+    end
+
+    # Write out link structure to bottom of extra pages
+    # Also add links to the top of extra pages (eventually)
+    for page_footer in 2..page_counter
+      report_pages_append = File.join(report_folder, "report_page#{page_footer}.html")
+      File.open(report_pages_append, 'a') do |report_pages_appending|
+        report_pages_appending.write(link_text)
+      end
+    end
+
+  end   # End page counter final report writeout
+
+  #  Close the selenium object for file based input
+  eyewitness_selenium_driver_multi_site.quit
 
 end   # end single website, file, or xml inputs if statement
 
-puts "Done!"
+final_report_path = File.join(report_folder)
+puts "[*] Done! Check out the report at #{final_report_path}"
 
 
 # Set the default values
