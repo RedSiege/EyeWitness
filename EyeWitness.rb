@@ -381,7 +381,7 @@ def capture_screenshot(sel_driver, output_path, url_to_grab, max_allowed_timeout
   begin
     # Function used to capture screenshots with selenium
     sel_driver.navigate.to url_to_grab
-    screenshot_name = url_to_grab.gsub(':', '').gsub('//', '.').gsub('/', '.')
+    screenshot_name = url_to_grab.gsub('://', '.').gsub('/', '.').gsub(':', '.')
     sourcecode_name = "#{screenshot_name}.txt"
     screenshot_name = "#{screenshot_name}.png"
     screen_cap_path = File.join(output_path, 'screens', screenshot_name)
@@ -391,7 +391,8 @@ def capture_screenshot(sel_driver, output_path, url_to_grab, max_allowed_timeout
       write_sourcecode.write(sel_driver.page_source)
     end
   rescue Timeout::Error
-    sel_driver.page_source = "TIMEOUTERROR"
+    blank_page_source = "TIMEOUTERROR"
+    return blank_page_source
   end
 
   return sel_driver.page_source
@@ -633,6 +634,8 @@ end   # End single page report function
 
 def source_header_grab(url_to_head)
 
+  invalid_ssl = false
+
   # All of this code basically grabs the server headers and source code of the
   # provided URL
   uri = URI.parse("#{url_to_head}")
@@ -654,20 +657,24 @@ def source_header_grab(url_to_head)
     # actually make the request
     response = http.request(request)
   rescue OpenSSL::SSL::SSLError
+    invalid_ssl = true
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request = Net::HTTP::Get.new(uri.request_uri)
+    response = http.request(request)
+  rescue Errno::ECONNREFUSED
+    response = "CONNECTIONDENIED"
   end
 
   # Return the response object
   # response.each gives header info
-  return response
+  return response, invalid_ssl
 end   # End header_grab function
 
 
 def table_maker(web_report_html, website_url, possible_creds, page_header_source, source_code_name,
-  screenshot_name, length_difference, iwitness_dir, output_report_path, potential_blank)
+  screenshot_name, length_difference, iwitness_dir, output_report_path, potential_blank, bad_ssl)
 
   web_report_html += "<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">\n"
   web_report_html += "<a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>"
@@ -677,23 +684,31 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
     web_report_html += "<br><b>Default credentials:</b> #{encoded_creds} <br>"
   end
 
-  full_source_path = File.join(output_report_path, "source", source_code_name)
+  if page_header_source == "CONNECTIONDENIED"
+    web_report_html += "CONNECTION REFUSED FROM SERVER!"
+  else
+    full_source_path = File.join(output_report_path, "source", source_code_name)
 
-  page_header_source.each_header do |header, value|
-    encoded_header = html_encode(header)
-    encoded_value = html_encode(value)
-    web_report_html += "<br><b>#{encoded_header}:</b> #{encoded_value}"
-  end
+    page_header_source.each_header do |header, value|
+      encoded_header = html_encode(header)
+      encoded_value = html_encode(value)
+      web_report_html += "<br><b>#{encoded_header}:</b> #{encoded_value}"
+    end
 
-  web_report_html += "<br><br><a href=\"source/#{source_code_name}\"target=\"_blank\">Source Code</a></div></td>\n"
+    if bad_ssl
+      web_report_html += "<br><br><b>Invalid SSL Certificate</b>"
+    end
 
-  if potential_blank == "TIMEOUTERROR"
-    web_report_html += "<td>REQUEST TIMED OUT WHILE ATTEMPTING TO CONNECT TO THE WEBSITE!</td></tr>"
-  else:
-    web_report_html += "<td><div id=\"screenshot\" style=\"display: inline-block; width:850px; height 400px; overflow: scroll;\">
-      <a href=\"screens/#{screenshot_name}\" target=\"_blank\"><img src=\"screens/#{screenshot_name}\"
-      height=\"400\"></a></div></td></tr>".gsub('    ', '')
-  end
+    web_report_html += "<br><br><a href=\"source/#{source_code_name}\"target=\"_blank\">Source Code</a></div></td>\n"
+
+    if potential_blank == "TIMEOUTERROR"
+      web_report_html += "<td>REQUEST TIMED OUT WHILE ATTEMPTING TO CONNECT TO THE WEBSITE!</td></tr>"
+    else
+      web_report_html += "<td><div id=\"screenshot\" style=\"display: inline-block; width:850px; height 400px; overflow: scroll;\">
+        <a href=\"screens/#{screenshot_name}\" target=\"_blank\"><img src=\"screens/#{screenshot_name}\"
+        height=\"400\"></a></div></td></tr>".gsub('    ', '')
+    end
+  end   # End of connection refused if statement
 
   return web_report_html
 end   # End table maker function
@@ -947,13 +962,17 @@ if !cli_parsed.single_website.nil?
     single_source = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website, cli_parsed.timeout)
 
     # returns back an object that needs to be iterated over for the headers
-    single_site_headers_source = source_header_grab(cli_parsed.single_website)
+    single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website)
 
-    single_default_creds = default_creds(single_site_headers_source.body, Dir.pwd)
+    if single_site_headers_source == "CONNECTIONDENIED"
+      single_default_creds = default_creds(single_site_headers_source, Dir.pwd)
+    else
+      single_default_creds = default_creds(single_site_headers_source.body, Dir.pwd)
+    end
 
     web_index = table_maker(web_index, cli_parsed.single_website, single_default_creds,
       single_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-      report_folder, single_source)
+      report_folder, single_source, ssl_state)
 
   end   # Endo of if statement looking for ua cycle
 
@@ -1027,6 +1046,7 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
     url_counter += 1
     page_url_counter += 1
     individual_url = individual_url.strip
+    ssl_current_state = false
 
     # Get the file names for the 
     individual_url, source_name, picture_name = file_names(individual_url)
@@ -1039,13 +1059,17 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
       single_source = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url, cli_parsed.timeout)
       
       # returns back an object that needs to be iterated over for the headers and source code
-      multi_site_headers_source = source_header_grab(individual_url)
+      multi_site_headers_source, ssl_current_state = source_header_grab(individual_url)
 
-      multi_site_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
+      if multi_site_headers_source == "CONNECTIONDENIED"
+        multi_site_default_creds = default_creds(multi_site_headers_source, Dir.pwd)
+      else
+        multi_site_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
+      end
 
       web_index = table_maker(web_index, individual_url, multi_site_default_creds,
       multi_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-      report_folder, single_source)
+      report_folder, single_source, ssl_current_state)
 
       if !cli_parsed.jitter.nil?
         sleep_value = rand(30)
@@ -1061,34 +1085,33 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
       eyewitness_selenium_driver_multi_site = selenium_driver()
     end   # End file input user agent cycle if statement
 
+    # Used to track the number of pages that is needed
+    if page_url_counter == cli_parsed.results_number
+      if page_counter == 1
+        # Close out the html and write it to disk
+        web_index += "</table>\n"
+
+        # Get path to where the report will be written, and write it out
+        report_html = File.join(report_folder, "report.html")
+        File.open(report_html, 'w') do |first_report_page|
+          first_report_page.write(web_index)
+        end   # End of report writeout
+        page_counter += 1
+        web_index = web_report_header(report_date, report_time)
+        page_url_counter = 0
+      else
+        web_index += "</table>\n"
+        multi_page_reporthtml = File.join(report_folder, "report_page#{page_counter}.html")
+        File.open(multi_page_reporthtml, 'w') do |report_page_out|
+          report_page_out.write(web_index)
+        end
+        #Reset URL counter
+        page_counter += 1
+        web_index = web_report_header(report_date, report_time)
+        page_url_counter = 0
+      end   # End of page counter if statement
+    end   # End if statement if page url counter matches max per page
   end   # End of loop looping through all URLs within final_url_list
-
-  if page_url_counter == cli_parsed.results_number
-
-    if page_counter == 1
-      # Close out the html and write it to disk
-      web_index += "</table>\n"
-
-      # Get path to where the report will be written, and write it out
-      report_html = File.join(report_folder, "report.html")
-      File.open(report_html, 'w') do |first_report_page|
-        first_report_page.write(web_index)
-      end
-
-      page_counter += 1
-      web_index = web_report_header(report_date, report_time)
-    else
-      web_index += "</table>\n"
-      multi_page_reporthtml = File.join(report_folder, "report#{page_counter}.html")
-      File.open(multi_page_reporthtml, 'w') do |report_page_out|
-        report_page_out.write(web_index)
-      end
-
-      #Reset URL counter
-      page_counter += 1
-      web_index = web_report_header(report_date, report_time)
-    end   # End of page counter if statement
-  end   # end of if statement where url counter for the page matches max urls per page
 
   if page_counter == 1
     single_page_report(web_index, report_folder)
@@ -1104,7 +1127,7 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
 
     # loop over pages and append text to them
     for page in 2..page_counter
-      link_text += "<a href=\"report_page#{page}.html\">Page #{page}</a>"
+      link_text += "<a href=\"report_page#{page}.html\">Page #{page}</a> "
     end
     top_links = link_text
     link_text += "\n</body>\n"
@@ -1129,7 +1152,6 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
 
   #  Close the selenium object for file based input
   eyewitness_selenium_driver_multi_site.quit
-
 end   # end single website, file, or xml inputs if statement
 
 final_report_path = File.join(report_folder)
