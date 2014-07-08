@@ -15,6 +15,7 @@ require 'selenium-webdriver'
 require 'socket'
 require 'timeout'
 require 'uri'
+require 'similar_text'
 
 
 class CliParser
@@ -690,7 +691,11 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
     full_source_path = File.join(output_report_path, "source", source_code_name)
 
     encoded_title_header = html_encode("Page Title")
-    encoded_title = html_encode(page_title)
+    begin
+      encoded_title = html_encode(page_title)
+    rescue
+      encoded_title = "Unable to Render"
+    end
     web_report_html += "<br><b>#{encoded_title_header}:</b> #{encoded_title}"
     page_header_source.each_header do |header, value|
       encoded_header = html_encode(header)
@@ -732,6 +737,13 @@ def multi_table_maker(html_dictionary, website_url, possible_creds, page_header_
   else
     full_source_path = File.join(output_report_path, "source", source_code_name)
 
+    encoded_title_header = html_encode("Page Title")
+    begin
+      encoded_title = html_encode(page_title)
+    rescue
+      encoded_title = "Unable to Render"
+    end
+    html += "<br><b>#{encoded_title_header}:</b> #{encoded_title}"
     page_header_source.each_header do |header, value|
       encoded_header = html_encode(header)
       encoded_value = html_encode(value)
@@ -752,7 +764,12 @@ def multi_table_maker(html_dictionary, website_url, possible_creds, page_header_
         height=\"400\"></a></div></td></tr>".gsub('    ', '')
     end
   end   # End of connection refused if statement
-  html_dictionary[website_url] = html
+  begin
+    key = "#{page_title.upcase}|#{website_url}"
+  rescue
+    key = "Unable to Render|#{website_url}"
+  end
+  html_dictionary[key] = html
   return html_dictionary
 end   # End table maker function
 
@@ -932,7 +949,7 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
   # Declare the default values of the variables being used
   final_url_list = []
   total_urls = 0
-  html_dictionary = {}
+  html_dictionary = Hash.new
   
   # Figure out which command line option hit, and then send it to that parser
   if !cli_parsed.file_name.nil?
@@ -989,7 +1006,7 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
 
   # Start looping through all URLs and screenshotting/capturing page source for each
   final_url_list.each do |individual_url|
-
+    url_counter += 1
     # Count the number of URLs, remove the whitespace from the url
     individual_url = individual_url.strip
     ssl_current_state = false
@@ -1012,9 +1029,9 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
       multi_site_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
     end
 
-    html_dictionary = multi_table_maker(web_index, individual_url, multi_site_default_creds,
+    html_dictionary = multi_table_maker(html_dictionary, individual_url, multi_site_default_creds,
     multi_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-    report_folder, single_source, ssl_current_state)
+    report_folder, single_source, ssl_current_state, page_title)
 
     if !cli_parsed.jitter.nil?
       sleep_value = rand(30)
@@ -1026,14 +1043,15 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
     end   # End jitter if statement
   end   # End of loop looping through all URLs within final_url_list
 
-  tosort = html_dictionary.keys.sort do |a,b| a.upcase <=> b.upcase end
+  tosort = html_dictionary.keys
+  tosort = tosort.sort do |a,b| a.split("|")[0] <=> b.split("|")[0] end
   keys = []
   while tosort.length != 0
     item = tosort.shift
     i = 0
     keys.push(item)
     while i < tosort.length
-        if (item.similar(tosort[i]) > 80)
+        if (item.split("|")[0].similar(tosort[i].split("|")[0]) > 80)
             keys.push(tosort[i])
             tosort.delete_at(i)
         end
@@ -1042,7 +1060,6 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
   end
 
   keys.each do |key|
-    web_index += html_dictionary[key]
     # Used to track the number of pages that is needed
     if page_url_counter == cli_parsed.results_number
       if page_counter == 1
@@ -1069,6 +1086,8 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
         page_url_counter = 0
       end   # End of page counter if statement
     end   # End if statement if page url counter matches max per page
+    web_index += html_dictionary[key]
+    page_url_counter += 1
   end
 
   if page_counter == 1
