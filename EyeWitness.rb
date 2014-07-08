@@ -1042,34 +1042,34 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
   end
 
   keys.each do |key|
-    
+    web_index += html_dictionary[key]
+    # Used to track the number of pages that is needed
+    if page_url_counter == cli_parsed.results_number
+      if page_counter == 1
+        # Close out the html and write it to disk
+        web_index += "</table>\n"
 
-  # Used to track the number of pages that is needed
-  if page_url_counter == cli_parsed.results_number
-    if page_counter == 1
-      # Close out the html and write it to disk
-      web_index += "</table>\n"
-
-      # Get path to where the report will be written, and write it out
-      report_html = File.join(report_folder, "report.html")
-      File.open(report_html, 'w') do |first_report_page|
-        first_report_page.write(web_index)
-      end   # End of report writeout
-      page_counter += 1
-      web_index = web_report_header(report_date, report_time)
-      page_url_counter = 0
-    else
-      web_index += "</table>\n"
-      multi_page_reporthtml = File.join(report_folder, "report_page#{page_counter}.html")
-      File.open(multi_page_reporthtml, 'w') do |report_page_out|
-        report_page_out.write(web_index)
-      end
-      #Reset URL counter
-      page_counter += 1
-      web_index = web_report_header(report_date, report_time)
-      page_url_counter = 0
-    end   # End of page counter if statement
-  end   # End if statement if page url counter matches max per page
+        # Get path to where the report will be written, and write it out
+        report_html = File.join(report_folder, "report.html")
+        File.open(report_html, 'w') do |first_report_page|
+          first_report_page.write(web_index)
+        end   # End of report writeout
+        page_counter += 1
+        web_index = web_report_header(report_date, report_time)
+        page_url_counter = 0
+      else
+        web_index += "</table>\n"
+        multi_page_reporthtml = File.join(report_folder, "report_page#{page_counter}.html")
+        File.open(multi_page_reporthtml, 'w') do |report_page_out|
+          report_page_out.write(web_index)
+        end
+        #Reset URL counter
+        page_counter += 1
+        web_index = web_report_header(report_date, report_time)
+        page_url_counter = 0
+      end   # End of page counter if statement
+    end   # End if statement if page url counter matches max per page
+  end
 
   if page_counter == 1
     single_page_report(web_index, report_folder)
