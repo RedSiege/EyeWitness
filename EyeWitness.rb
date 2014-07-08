@@ -685,7 +685,7 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
   end
 
   if page_header_source == "CONNECTIONDENIED"
-    web_report_html += "CONNECTION REFUSED FROM SERVER!"
+    web_report_html += "CONNECTION REFUSED FROM SERVER!</div></td><td> Connection Refused from server!</td></tr>"
   else
     full_source_path = File.join(output_report_path, "source", source_code_name)
 
@@ -723,88 +723,13 @@ def title_screen()
 end # end of title_screen function
 
 
-def user_agent_definition(cycle_value)
-  # Create the dicts which hold different user agents.
-  # Thanks to Chris John Riley for having an awesome tool which I could
-  # get this info from.  His tool - UAtester.py -
-  # http://blog.c22.cc/toolsscripts/ua-tester/
-  # Additional user agent strings came from -
-  # http://www.useragentstring.com/pages/useragentstring.php
-
-  # "Normal" desktop user agents
-  desktop_uagents = {
-    "MSIE9.0" => "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1;Trident/5.0)",
-    "MSIE8.0" => "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0)",
-    "MSIE7.0" => "Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)",
-    "MSIE6.0" => "Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)",
-    "Chrome32.0.1667.0" => "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36",
-    "Chrome31.0.1650.16" => "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36(KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36",
-    "Firefox25" => "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0)Gecko/20100101 Firefox/25.0",
-    "Firefox24" => "Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0,",
-    "Opera12.14" => "Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14",
-    "Opera12" => "Opera/12.0(Windows NT 5.1;U;en)Presto/22.9.168 Version/12.00",
-    "Safari5.1.7" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2",
-    "Safari5.0" => "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0 Safari/533.16"
-  }
-
-  # Miscellaneous user agents
-  misc_uagents = {
-    "wget1.9.1" => "Wget/1.9.1",
-    "curl7.9.8" => "curl/7.9.8 (i686-pc-linux-gnu) libcurl 7.9.8 (OpenSSL 0.9.6b) (ipv6 enabled)",
-    "PyCurl7.23.1" => "PycURL/7.23.1",
-    "Pythonurllib3.1" => "Python-urllib/3.1"
-  }
-
-  # Bot crawler user agents
-  crawler_uagents = {
-    "Baiduspider" => "Baiduspider+(+http://www.baidu.com/search/spider.htm)",
-    "Bingbot" => "Mozilla/5.0 (compatible; bingbot/2.0 +http://www.bing.com/bingbot.htm)",
-    "Googlebot2.1" => "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-    "MSNBot2.1" => "msnbot/2.1",
-    "YahooSlurp!" => "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)"
-  }
-
-  # Random mobile User agents
-  mobile_uagents = {
-    "BlackBerry" => "Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.1.0.346 Mobile Safari/534.11+",
-    "Android" => "Mozilla/5.0 (Linux; U; Android 2.3.5; en-us; HTC Vision Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1",
-    "IEMobile9.0" => "Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0)",
-    "OperaMobile12.02" => "Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02",
-    "iPadSafari6.0" => "Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25",
-    "iPhoneSafari7.0.6" => "Mozilla/5.0 (iPhone; CPU iPhone OS 7_0_6 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11B651 Safari/9537.53"
-  }
-
-  # Web App Vuln Scanning user agents (give me more if you have any)
-  scanner_uagents = {
-      "w3af" => "w3af.org",
-      "skipfish" => "Mozilla/5.0 SF/2.10b",
-      "HTTrack" => "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)",
-      "nikto" => "Mozilla/5.00 (Nikto/2.1.5) (Evasions:None) (Test:map_codes)"
-  }
-
-  # Combine all user agents into a single dictionary
-  all_combined_uagents = desktop_uagents.merge(misc_uagents).merge(crawler_uagents).merge(mobile_uagents).merge(scanner_uagents)
-
-  cycle_value = cycle_value.downcase
-
-  if cycle_value == "browser"
-    return desktop_uagents
-  elsif cycle_value == "misc"
-    return misc_uagents
-  elsif cycle_value == "crawler"
-    return crawler_uagents
-  elsif cycle_value == "mobile"
-    return mobile_uagents
-  elsif cycle_value == "scanner"
-    return scanner_uagents
-  elsif cycle_value == "all"
-    return all_combined_uagents
-  else
-    puts "[*] Error: You did not provide the type of user agents to cycle through!"
-    puts "[*] Error: Defaulting to desktop browser user agents."
-    return desktop_uagents
-  end
-end   # End user agent definition function
+def ua_changer(web_driver, user_agent)
+  # Function used to change the user agent of the current web driver object
+  profile = Selenium::WebDriver::Firefox::Profile.new
+  profile['general.useragent.override'] = "#{user_agent}"
+  web_driver = Selenium::WebDriver.for :firefox, :profile => profile
+  return web_driver
+end
 
 
 def validate_cidr(cidr_to_val)
@@ -940,6 +865,10 @@ if !cli_parsed.single_website.nil?
   else
     ua_group = user_agent_definition(cli_parsed.cycle)
     eyewitness_selenium_driver = selenium_driver()
+    ua_group.each do |single_ua_string|
+      eyewitness_selenium_driver = ua_changer(eyewitness_selenium_driver, single_ua_string)
+      single_source = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website, cli_parsed.timeout)
+    end   # End of user agent iterator
   end   # End user agent cycle if statement
   
   # Perform a quick check to make sure website starts with http or https
@@ -957,24 +886,21 @@ if !cli_parsed.single_website.nil?
   single_url, source_name, picture_name = file_names(cli_parsed.single_website)
 
   # If not cycling through user agents, then go to the site, capture screenshot and source code
-  if cli_parsed.cycle == "none"
-    unused_length_difference = nil
-    single_source = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website, cli_parsed.timeout)
+  unused_length_difference = nil
+  single_source = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website, cli_parsed.timeout)
 
-    # returns back an object that needs to be iterated over for the headers
-    single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website)
+  # returns back an object that needs to be iterated over for the headers
+  single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website)
 
-    if single_site_headers_source == "CONNECTIONDENIED"
-      single_default_creds = default_creds(single_site_headers_source, Dir.pwd)
-    else
-      single_default_creds = default_creds(single_site_headers_source.body, Dir.pwd)
-    end
+  if single_site_headers_source == "CONNECTIONDENIED"
+    single_default_creds = default_creds(single_site_headers_source, Dir.pwd)
+  else
+    single_default_creds = default_creds(single_site_headers_source.body, Dir.pwd)
+  end
 
-    web_index = table_maker(web_index, cli_parsed.single_website, single_default_creds,
-      single_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-      report_folder, single_source, ssl_state)
-
-  end   # Endo of if statement looking for ua cycle
+  web_index = table_maker(web_index, cli_parsed.single_website, single_default_creds,
+    single_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
+    report_folder, single_source, ssl_state)
 
   single_page_report(web_index, report_folder)
   eyewitness_selenium_driver.quit
@@ -1054,36 +980,33 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
     # Print out message showing the URL being captured, and the number that it is
     puts "Attempting to capture #{individual_url} (#{url_counter}/#{total_urls})"
 
-    if cli_parsed.cycle == "none"
-      unused_length_difference = nil
-      single_source = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url, cli_parsed.timeout)
-      
-      # returns back an object that needs to be iterated over for the headers and source code
-      multi_site_headers_source, ssl_current_state = source_header_grab(individual_url)
+    unused_length_difference = nil
+    single_source = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url, cli_parsed.timeout)
+    
+    # returns back an object that needs to be iterated over for the headers and source code
+    multi_site_headers_source, ssl_current_state = source_header_grab(individual_url)
 
-      if multi_site_headers_source == "CONNECTIONDENIED"
-        multi_site_default_creds = default_creds(multi_site_headers_source, Dir.pwd)
-      else
-        multi_site_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
-      end
-
-      web_index = table_maker(web_index, individual_url, multi_site_default_creds,
-      multi_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-      report_folder, single_source, ssl_current_state)
-
-      if !cli_parsed.jitter.nil?
-        sleep_value = rand(30)
-        sleep_value = sleep_value * 0.01
-        sleep_value = 1 - sleep_value
-        sleep_value = sleep_value * cli_parsed.jitter
-        puts "[*] Sleeping for #{sleep_value} seconds..."
-        sleep(sleep_value)
-      end   # End jitter if statement
-
+    if multi_site_headers_source == "CONNECTIONDENIED"
+      multi_site_default_creds = default_creds(multi_site_headers_source, Dir.pwd)
     else
-      ua_group = user_agent_definition(cli_parsed.cycle)
-      eyewitness_selenium_driver_multi_site = selenium_driver()
-    end   # End file input user agent cycle if statement
+      multi_site_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
+    end
+
+    web_index = table_maker(web_index, individual_url, multi_site_default_creds,
+    multi_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
+    report_folder, single_source, ssl_current_state)
+
+    if !cli_parsed.jitter.nil?
+      sleep_value = rand(30)
+      sleep_value = sleep_value * 0.01
+      sleep_value = 1 - sleep_value
+      sleep_value = sleep_value * cli_parsed.jitter
+      puts "[*] Sleeping for #{sleep_value} seconds..."
+      sleep(sleep_value)
+    end   # End jitter if statement
+
+    ua_group = user_agent_definition(cli_parsed.cycle)
+    eyewitness_selenium_driver_multi_site = selenium_driver()
 
     # Used to track the number of pages that is needed
     if page_url_counter == cli_parsed.results_number
