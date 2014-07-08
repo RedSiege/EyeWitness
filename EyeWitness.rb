@@ -723,15 +723,6 @@ def title_screen()
 end # end of title_screen function
 
 
-def ua_changer(web_driver, user_agent)
-  # Function used to change the user agent of the current web driver object
-  profile = Selenium::WebDriver::Firefox::Profile.new
-  profile['general.useragent.override'] = "#{user_agent}"
-  web_driver = Selenium::WebDriver.for :firefox, :profile => profile
-  return web_driver
-end
-
-
 def validate_cidr(cidr_to_val)
   # Function used to determine if the user provided CIDR range is valid
   begin
@@ -855,21 +846,9 @@ end   # End of create targets if statement
 # If only generating a report on a single website
 if !cli_parsed.single_website.nil?
 
-  #  If we're not cycling through user agents, just return the selenium web driver object
-  if cli_parsed.cycle == "none"
-    eyewitness_selenium_driver = selenium_driver()
-    eyewitness_selenium_driver.manage.timeouts.implicit_wait = cli_parsed.timeout
-
-  # if we are cycling through user agents, return the user agent hash
-  # and the selenium web driver object
-  else
-    ua_group = user_agent_definition(cli_parsed.cycle)
-    eyewitness_selenium_driver = selenium_driver()
-    ua_group.each do |single_ua_string|
-      eyewitness_selenium_driver = ua_changer(eyewitness_selenium_driver, single_ua_string)
-      single_source = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website, cli_parsed.timeout)
-    end   # End of user agent iterator
-  end   # End user agent cycle if statement
+  # Get the selenium driver
+  eyewitness_selenium_driver = selenium_driver()
+  eyewitness_selenium_driver.manage.timeouts.implicit_wait = cli_parsed.timeout
   
   # Perform a quick check to make sure website starts with http or https
   # if not, add http to the front
@@ -1004,9 +983,6 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
       puts "[*] Sleeping for #{sleep_value} seconds..."
       sleep(sleep_value)
     end   # End jitter if statement
-
-    ua_group = user_agent_definition(cli_parsed.cycle)
-    eyewitness_selenium_driver_multi_site = selenium_driver()
 
     # Used to track the number of pages that is needed
     if page_url_counter == cli_parsed.results_number
