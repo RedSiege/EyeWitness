@@ -395,7 +395,7 @@ def capture_screenshot(sel_driver, output_path, url_to_grab, max_allowed_timeout
     return blank_page_source
   end
 
-  return sel_driver.page_source
+  return sel_driver.page_source, sel_driver.title
 end
 
 def default_creds(page_content, full_file_path)
@@ -674,7 +674,7 @@ end   # End header_grab function
 
 
 def table_maker(web_report_html, website_url, possible_creds, page_header_source, source_code_name,
-  screenshot_name, length_difference, iwitness_dir, output_report_path, potential_blank, bad_ssl)
+  screenshot_name, length_difference, iwitness_dir, output_report_path, potential_blank, bad_ssl, page_title)
 
   web_report_html += "<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">\n"
   web_report_html += "<a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>"
@@ -689,6 +689,9 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
   else
     full_source_path = File.join(output_report_path, "source", source_code_name)
 
+    encoded_title_header = html_encode("Page Title")
+    encoded_title = html_encode(page_title)
+    web_report_html += "<br><b>#{encoded_title_header}:</b> #{encoded_title}"
     page_header_source.each_header do |header, value|
       encoded_header = html_encode(header)
       encoded_value = html_encode(value)
@@ -713,6 +716,45 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
   return web_report_html
 end   # End table maker function
 
+def multi_table_maker(html_dictionary, website_url, possible_creds, page_header_source, source_code_name,
+  screenshot_name, length_difference, iwitness_dir, output_report_path, potential_blank, bad_ssl, page_title)
+
+  html = "<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">\n"
+  html += "<a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>"
+
+  if !possible_creds.nil?
+    encoded_creds = html_encode(possible_creds)
+    html += "<br><b>Default credentials:</b> #{encoded_creds} <br>"
+  end
+
+  if page_header_source == "CONNECTIONDENIED"
+    html += "CONNECTION REFUSED FROM SERVER!</div></td><td> Connection Refused from server!</td></tr>"
+  else
+    full_source_path = File.join(output_report_path, "source", source_code_name)
+
+    page_header_source.each_header do |header, value|
+      encoded_header = html_encode(header)
+      encoded_value = html_encode(value)
+      html += "<br><b>#{encoded_header}:</b> #{encoded_value}"
+    end
+
+    if bad_ssl
+      html += "<br><br><b>Invalid SSL Certificate</b>"
+    end
+
+    html += "<br><br><a href=\"source/#{source_code_name}\"target=\"_blank\">Source Code</a></div></td>\n"
+
+    if potential_blank == "TIMEOUTERROR"
+      html += "<td>REQUEST TIMED OUT WHILE ATTEMPTING TO CONNECT TO THE WEBSITE!</td></tr>"
+    else
+      html += "<td><div id=\"screenshot\" style=\"display: inline-block; width:850px; height 400px; overflow: scroll;\">
+        <a href=\"screens/#{screenshot_name}\" target=\"_blank\"><img src=\"screens/#{screenshot_name}\"
+        height=\"400\"></a></div></td></tr>".gsub('    ', '')
+    end
+  end   # End of connection refused if statement
+  html_dictionary[website_url] = html
+  return html_dictionary
+end   # End table maker function
 
 def title_screen()
   system("clear")
@@ -866,7 +908,7 @@ if !cli_parsed.single_website.nil?
 
   # If not cycling through user agents, then go to the site, capture screenshot and source code
   unused_length_difference = nil
-  single_source = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website, cli_parsed.timeout)
+  single_source, page_title = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website, cli_parsed.timeout)
 
   # returns back an object that needs to be iterated over for the headers
   single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website)
@@ -879,7 +921,7 @@ if !cli_parsed.single_website.nil?
 
   web_index = table_maker(web_index, cli_parsed.single_website, single_default_creds,
     single_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-    report_folder, single_source, ssl_state)
+    report_folder, single_source, ssl_state, page_title)
 
   single_page_report(web_index, report_folder)
   eyewitness_selenium_driver.quit
@@ -890,6 +932,7 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
   # Declare the default values of the variables being used
   final_url_list = []
   total_urls = 0
+  html_dictionary = {}
   
   # Figure out which command line option hit, and then send it to that parser
   if !cli_parsed.file_name.nil?
@@ -948,8 +991,6 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
   final_url_list.each do |individual_url|
 
     # Count the number of URLs, remove the whitespace from the url
-    url_counter += 1
-    page_url_counter += 1
     individual_url = individual_url.strip
     ssl_current_state = false
 
@@ -960,7 +1001,7 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
     puts "Attempting to capture #{individual_url} (#{url_counter}/#{total_urls})"
 
     unused_length_difference = nil
-    single_source = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url, cli_parsed.timeout)
+    single_source, page_title = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url, cli_parsed.timeout)
     
     # returns back an object that needs to be iterated over for the headers and source code
     multi_site_headers_source, ssl_current_state = source_header_grab(individual_url)
@@ -971,7 +1012,7 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
       multi_site_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
     end
 
-    web_index = table_maker(web_index, individual_url, multi_site_default_creds,
+    html_dictionary = multi_table_maker(web_index, individual_url, multi_site_default_creds,
     multi_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
     report_folder, single_source, ssl_current_state)
 
@@ -983,34 +1024,52 @@ elsif !cli_parsed.file_name.nil? or !cli_parsed.nessus_xml.nil? or !cli_parsed.n
       puts "[*] Sleeping for #{sleep_value} seconds..."
       sleep(sleep_value)
     end   # End jitter if statement
-
-    # Used to track the number of pages that is needed
-    if page_url_counter == cli_parsed.results_number
-      if page_counter == 1
-        # Close out the html and write it to disk
-        web_index += "</table>\n"
-
-        # Get path to where the report will be written, and write it out
-        report_html = File.join(report_folder, "report.html")
-        File.open(report_html, 'w') do |first_report_page|
-          first_report_page.write(web_index)
-        end   # End of report writeout
-        page_counter += 1
-        web_index = web_report_header(report_date, report_time)
-        page_url_counter = 0
-      else
-        web_index += "</table>\n"
-        multi_page_reporthtml = File.join(report_folder, "report_page#{page_counter}.html")
-        File.open(multi_page_reporthtml, 'w') do |report_page_out|
-          report_page_out.write(web_index)
-        end
-        #Reset URL counter
-        page_counter += 1
-        web_index = web_report_header(report_date, report_time)
-        page_url_counter = 0
-      end   # End of page counter if statement
-    end   # End if statement if page url counter matches max per page
   end   # End of loop looping through all URLs within final_url_list
+
+  tosort = html_dictionary.keys.sort do |a,b| a.upcase <=> b.upcase end
+  keys = []
+  while tosort.length != 0
+    item = tosort.shift
+    i = 0
+    keys.push(item)
+    while i < tosort.length
+        if (item.similar(tosort[i]) > 80)
+            keys.push(tosort[i])
+            tosort.delete_at(i)
+        end
+        i = i + 1
+    end
+  end
+
+  keys.each do |key|
+    
+
+  # Used to track the number of pages that is needed
+  if page_url_counter == cli_parsed.results_number
+    if page_counter == 1
+      # Close out the html and write it to disk
+      web_index += "</table>\n"
+
+      # Get path to where the report will be written, and write it out
+      report_html = File.join(report_folder, "report.html")
+      File.open(report_html, 'w') do |first_report_page|
+        first_report_page.write(web_index)
+      end   # End of report writeout
+      page_counter += 1
+      web_index = web_report_header(report_date, report_time)
+      page_url_counter = 0
+    else
+      web_index += "</table>\n"
+      multi_page_reporthtml = File.join(report_folder, "report_page#{page_counter}.html")
+      File.open(multi_page_reporthtml, 'w') do |report_page_out|
+        report_page_out.write(web_index)
+      end
+      #Reset URL counter
+      page_counter += 1
+      web_index = web_report_header(report_date, report_time)
+      page_url_counter = 0
+    end   # End of page counter if statement
+  end   # End if statement if page url counter matches max per page
 
   if page_counter == 1
     single_page_report(web_index, report_folder)
