@@ -36,9 +36,10 @@ case ${osinfo} in
     rm -rf Ghost.py
     gem install netaddr
     gem install nokogiri
-    gem install optparse
+    gem install OptionParser
     gem install selenium-webdriver
-    gem install ipaddr
+    gem install ipaddress
+    gem install similar_text
   ;;
   # Debian 7+ Dependency Installation
   Debian)
