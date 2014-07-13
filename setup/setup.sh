@@ -27,28 +27,24 @@ case ${osinfo} in
   # Kali Dependency Installation
   Kali)
     echo '[*] Installing Kali Dependencies'
-    apt-get install python-qt4 python-pip xvfb
-    if [ $? -ne 0 ]
-    then
-      echo "[*] Error: Install failed.  Please investigate install issue."
-      exit 0 
-    fi
+    apt-get install python-qt4 python-pip xvfb ruby-dev
     echo '[*] Cloning and installing Ghost'
     git clone https://github.com/ChrisTruncer/Ghost.py.git
     cd Ghost.py
     python setup.py install
     cd ..
     rm -rf Ghost.py
+    gem install netaddr
+    gem install nokogiri
+    gem install OptionParser
+    gem install selenium-webdriver
+    gem install ipaddress
+    gem install similar_text
   ;;
   # Debian 7+ Dependency Installation
   Debian)
     echo '[*] Installing Debian Dependencies'
-    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr
-    if [ $? -ne 0 ]
-    then
-      echo "[*] Error: Install failed.  Please investigate install issue."
-      exit 0 
-    fi
+    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr ruby-dev rubygems ruby
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
@@ -59,16 +55,17 @@ case ${osinfo} in
     python setup.py install
     cd ..
     rm -rf Ghost.py
+    gem install netaddr
+    gem install nokogiri
+    gem install OptionParser
+    gem install selenium-webdriver
+    gem install ipaddress
+    gem install similar_text
   ;;
   # Ubuntu (tested in 13.10) Dependency Installation
   Ubuntu)
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr
-    if [ $? -ne 0 ]
-    then
-      echo "[*] Error: Install failed.  Please investigate install issue."
-      exit 0 
-    fi
+    apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr ruby-dev rubygems ruby
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
@@ -79,6 +76,12 @@ case ${osinfo} in
     python setup.py install
     cd ..
     rm -rf Ghost.py
+    gem install netaddr
+    gem install nokogiri
+    gem install OptionParser
+    gem install selenium-webdriver
+    gem install ipaddress
+    gem install similar_text
   ;;
   # CentOS 6.5+ Dependency Installation
   CentOS)
