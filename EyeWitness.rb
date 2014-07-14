@@ -788,7 +788,7 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
       web_report_html += "<br><br><b>Invalid SSL Certificate</b>"
     end
 
-    web_report_html += "<br><br><a href=\"source/#{source_code_name}\"target=\"_blank\">Source Code</a></div></td>\n"
+    web_report_html += "<br><br><a href=\"source/#{source_code_name}\" target=\"_blank\">Source Code</a></div></td>\n"
 
     if potential_blank == "TIMEOUTERROR"
       web_report_html += "<td>REQUEST TIMED OUT WHILE ATTEMPTING TO CONNECT TO THE WEBSITE!</td></tr>"
@@ -805,12 +805,12 @@ end   # End table maker function
 def multi_table_maker(html_dictionary, website_url, possible_creds, page_header_source, source_code_name,
   screenshot_name, length_difference, iwitness_dir, output_report_path, potential_blank, bad_ssl, page_title)
 
-  html = "<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">\n"
-  html += "<a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>"
+  html = "\n<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">\n"
+  html += "<a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>\n"
 
   if !possible_creds.nil?
     encoded_creds = html_encode(possible_creds)
-    html += "<br><b>Default credentials:</b> #{encoded_creds} <br>"
+    html += "<br><b>Default credentials:</b> #{encoded_creds} <br>\n"
   end
 
   if page_header_source == "CONNECTIONDENIED"
@@ -830,18 +830,18 @@ def multi_table_maker(html_dictionary, website_url, possible_creds, page_header_
     rescue
       encoded_title = "Unable to Render"
     end
-    html += "<br><b>#{encoded_title_header}:</b> #{encoded_title}"
+    html += "<br><b>#{encoded_title_header}:</b> #{encoded_title}\n"
     page_header_source.each_header do |header, value|
       encoded_header = html_encode(header)
       encoded_value = html_encode(value)
-      html += "<br><b>#{encoded_header}:</b> #{encoded_value}"
+      html += "<br><b>#{encoded_header}:</b> #{encoded_value}\n"
     end
 
     if bad_ssl
       html += "<br><br><b>Invalid SSL Certificate</b>"
     end
 
-    html += "<br><br><a href=\"source/#{source_code_name}\"target=\"_blank\">Source Code</a></div></td>\n"
+    html += "<br><br><a href=\"source/#{source_code_name}\" target=\"_blank\">Source Code</a></div></td>\n"
 
     if potential_blank == "TIMEOUTERROR"
       html += "<td>REQUEST TIMED OUT WHILE ATTEMPTING TO CONNECT TO THE WEBSITE!</td></tr>"
@@ -872,12 +872,13 @@ def report_writeout(page_counter, web_index, report_folder)
     end
 
     # Create the link structure at the bottom
-    link_text = "\n<br>Links: <a href=\"report.html\">Page 1</a> "
+    link_text = "\n<center><br>Links: <a href=\"report.html\">Page 1</a> "
 
     # loop over pages and append text to them
     for page in 2..page_counter
       link_text += "<a href=\"report_page#{page}.html\">Page #{page}</a> "
     end
+    link_text += "</center>"
     top_links = link_text
     link_text += "\n</body>\n"
     link_text += "</html>"
@@ -888,13 +889,55 @@ def report_writeout(page_counter, web_index, report_folder)
       report1_append.write(link_text)
     end
 
+    # Read in page 1 of report to learn where to add link structure
+    p1_counter = 0
+    injected_html = ''
+    File.open(report_html, 'r') do |report_p1_file|
+      report_p1_file.each do |p1_line|
+        p1_counter += 1
+        injected_html += p1_line
+        if p1_counter == 7
+          injected_html += top_links
+          injected_html += "\n"
+        end
+      end
+    end
+
+    # Write out page 1 of report with link structure at the top
+    File.open(report_html, 'w') do |write_p1_report|
+      write_p1_report.write(injected_html)
+    end
+
     # Write out link structure to bottom of extra pages
     # Also add links to the top of extra pages (eventually)
     for page_footer in 2..page_counter
+
       report_pages_append = File.join(report_folder, "report_page#{page_footer}.html")
       File.open(report_pages_append, 'a') do |report_pages_appending|
         report_pages_appending.write(link_text)
       end
+
+      #Counter for reading in lines for each page
+      multi_line_counter = 0
+      multi_injected_html = ''
+
+      # Read in file and add links to top of page
+      File.open(report_pages_append, 'r') do |multi_page_read|
+        multi_page_read.each do |multi_page_report_line|
+          multi_line_counter += 1
+          multi_injected_html += multi_page_report_line
+          if multi_line_counter == 7
+            multi_injected_html += top_links
+            multi_injected_html += "\n"
+          end
+        end
+      end
+
+      # Write out the link structure to top of current page
+      File.open(report_pages_append, 'w') do |write_multi_report_page|
+        write_multi_report_page.write(multi_injected_html)
+      end
+
     end
   end   # End page counter final report writeout
 end   #  End report_writeout function
@@ -921,17 +964,17 @@ end
 
 def web_report_header(real_report_date, real_report_time)
   # Function used to create the beginning of a report page
-  web_index_head = "<html>"\
-    "<head>"\
-    "<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>"\
-    "<title>EyeWitness Report</title>"\
-    "</head>"\
-    "<body>"\
-    "<center>Report Generated on #{real_report_date} at #{real_report_time}</center>"\
-    "<br><table border=\"1\">"\
-    "<tr>"\
-    "<th>Web Request Info</th>"\
-    "<th>Web Screenshot</th>"\
+  web_index_head = "<html>\n"\
+    "<head>\n"\
+    "<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>\n"\
+    "<title>EyeWitness Report</title>\n"\
+    "</head>\n"\
+    "<body>\n"\
+    "<center>Report Generated on #{real_report_date} at #{real_report_time}</center>\n"\
+    "<br><table border=\"1\">\n"\
+    "<tr>\n"\
+    "<th>Web Request Info</th>\n"\
+    "<th>Web Screenshot</th>\n"\
     "</tr>"
   return web_index_head
 end

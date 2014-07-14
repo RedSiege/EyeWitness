@@ -1,5 +1,7 @@
 [7.14.2014]
     Modified..: Fixed bug in nmap parser that would return mac addresses as the hostname when parsing nmap xml output.  Thanks for Steve Borosch (rvrsh3ll) for pointing out the issue to me.
+    Modified..: HTML source code is now readable, '\n' is used to help :)
+    Modified..: Link structure is now placed at the top of the page (and bottom)
 
 [7.13.2014]
     Released..: Ruby version of Eyewitness (Use this one unless you have to use the python version)
