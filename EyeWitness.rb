@@ -1074,6 +1074,13 @@ begin
 
   # If not just creating targets, then start normal execution flow
   else
+
+    if cli_parsed.single_website.nil? && cli_parsed.file_name.nil? && cli_parsed.nessus_xml.nil? && cli_parsed.nmap_xml.nil?
+      puts "[*] Error: You didn't provide a website to scan!"
+      puts "[*] Error: Please re-run and provide valid options!\n\n"
+      puts "\"Let me guess... No pool...\""
+      exit
+    end
     # Create the folders that will be used
     report_folder, report_date, report_time = folder_out(cli_parsed.dir_name, eyewitness_path)
 
