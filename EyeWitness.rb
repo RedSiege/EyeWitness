@@ -236,7 +236,9 @@ class NmapParser < Nokogiri::XML::SAX::Document
     if name == "address"
       @attrs.each do |key, value|
         if key == "addr"
-          @ip_address = value
+          if @ip_address == nil
+            @ip_address = value
+          end
         end
       end
     end

@@ -1,3 +1,9 @@
+[7.14.2014]
+    Modified..: Fixed bug in nmap parser that would return mac addresses as the hostname when parsing nmap xml output.  Thanks for Steve Borosch (rvrsh3ll) for pointing out the issue to me.
+
+[7.13.2014]
+    Released..: Ruby version of Eyewitness (Use this one unless you have to use the python version)
+
 [6.30.2014]
     Added.....: --no-dns flag can be used when parsing nmap or nessus xml to generate the web server list by IP addresses, and not dns names.  Thanks to @digininja for initially bringing this up, being patient while I try to think of a decent way to do this, and then @webbreacher for providing the simple solution I should have thought of.
 
