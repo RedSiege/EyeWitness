@@ -18,6 +18,19 @@ require 'uri'
 require 'similar_text'
 
 
+# Change timeout in Net::HTTP
+module Net
+    class HTTP
+        alias old_initialize initialize
+
+        def initialize(*args)
+            old_initialize(*args)
+            @read_timeout = 10     # 10 seconds
+        end
+    end
+end
+
+
 class CliParser
 
   def self.parse(args)
@@ -32,7 +45,7 @@ class CliParser
     options.single_website = nil
     options.create_targets = nil
     options.skip_sort = false
-    options.timeout = 7
+    options.timeout = 10
     options.jitter = nil
     options.dir_name = "none"
     options.results_number = 25
@@ -69,8 +82,8 @@ class CliParser
       end
 
       # Timing options
-      opts.on("-t", "--timeout 7", Integer, "Maximum number of seconds to wait while",
-          "requesting a web page.") do |max_timeout|
+      opts.on("-t", "--timeout 7", Integer, "Maximum number of seconds to wait for",
+          "server headers (timeout of 10 seconds for screenshot).") do |max_timeout|
         options.timeout = max_timeout
       end
       opts.on("--jitter 15", Integer, "Number of seconds to use as a base to",

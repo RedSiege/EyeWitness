@@ -1,5 +1,6 @@
 [7.15.2014]
     Modified..: Fixed bug when encountering an unknown error.  Thanks to @harmj0y for reporting this.
+    Modified..: Changed how timeout works with Selenium.  By default, EyeWitness will wait up to 10 seconds for a web page to load for the screenshot.  If it doesn't load in time, it will throw an error.  This value cannot currently be changed via the command line.  If it needs to be changed, simple change the value on line 28 within EyeWitness.rb.  The timeout value specified with --timeout is for the server header information.  This is still modified by the value passed with --timeout.
 
 [7.14.2014]
     Modified..: Fixed bug in nmap parser that would return mac addresses as the hostname when parsing nmap xml output.  Thanks for Steve Borosch (rvrsh3ll) for pointing out the issue to me.
