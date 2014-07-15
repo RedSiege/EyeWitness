@@ -365,12 +365,12 @@ class NmapParser < Nokogiri::XML::SAX::Document
 end   # End of nmap parsing class
 
 
-def capture_screenshot(sel_driver, output_path, url_to_grab, max_allowed_timeout)
+def capture_screenshot(sel_driver, output_path, url_to_grab)
 
   # do a "try catch" for timeout issues
   begin
     # Function used to capture screenshots with selenium
-    sel_driver.navigate.to url_to_grab
+    sel_driver.get url_to_grab
     screenshot_name = url_to_grab.gsub('://', '.').gsub('/', '.').gsub(':', '.')
     sourcecode_name = "#{screenshot_name}.txt"
     screenshot_name = "#{screenshot_name}.png"
@@ -382,6 +382,7 @@ def capture_screenshot(sel_driver, output_path, url_to_grab, max_allowed_timeout
     end
     return sel_driver.page_source, sel_driver.title
   rescue Timeout::Error
+    puts "[*] Error: Request Timed out for screenshot..."
     blank_page_source = "TIMEOUTERROR"
     no_title = "timeout error"
     return blank_page_source, no_title
@@ -700,7 +701,7 @@ def single_page_report(report_source, full_report_path)
 end   # End single page report function
 
 
-def source_header_grab(url_to_head)
+def source_header_grab(url_to_head, total_timeout)
 
   invalid_ssl = false
 
@@ -711,10 +712,12 @@ def source_header_grab(url_to_head)
   if url_to_head.start_with?("http://")
     # code came from - http://www.rubyinside.com/nethttp-cheat-sheet-2940.html
     http = Net::HTTP.new(uri.host, uri.port)
+    http.read_timeout = total_timeout
     request = Net::HTTP::Get.new(uri.request_uri)
   elsif url_to_head.start_with?("https://")
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
+    http.read_timeout = total_timeout
     request = Net::HTTP::Get.new(uri.request_uri)
   else
     puts "[*] Error: Error with URL, please investigate!"
@@ -1104,7 +1107,7 @@ begin
 
     # Get the selenium driver
     eyewitness_selenium_driver = selenium_driver(cli_parsed.ua_name)
-    eyewitness_selenium_driver.manage.timeouts.implicit_wait = cli_parsed.timeout
+    eyewitness_selenium_driver.manage.timeouts.page_load = cli_parsed.timeout
     
     # Perform a quick check to make sure website starts with http or https
     # if not, add http to the front
@@ -1122,10 +1125,10 @@ begin
 
     # If not cycling through user agents, then go to the site, capture screenshot and source code
     unused_length_difference = nil
-    single_source, page_title = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website, cli_parsed.timeout)
+    single_source, page_title = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website)
 
     # returns back an object that needs to be iterated over for the headers
-    single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website)
+    single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website, cli_parsed.timeout)
 
     if single_site_headers_source == "CONNECTIONDENIED" || single_site_headers_source == "BADURL" || single_site_headers_source == "TIMEDOUT" || single_site_headers_source == "UNKNOWNERROR"
       single_default_creds = default_creds(single_site_headers_source, Dir.pwd)
@@ -1200,7 +1203,7 @@ begin
 
     # Create the selenium object used to grab each site's screenshot
     eyewitness_selenium_driver_multi_site = selenium_driver(cli_parsed.ua_name)
-    eyewitness_selenium_driver_multi_site.manage.timeouts.implicit_wait = cli_parsed.timeout
+    eyewitness_selenium_driver_multi_site.manage.timeouts.page_load = cli_parsed.timeout
 
     # Start looping through all URLs and screenshotting/capturing page source for each
     final_url_list.each do |individual_url|
@@ -1227,10 +1230,10 @@ begin
         puts "Attempting to capture #{individual_url} (#{url_counter}/#{total_urls})"
 
         unused_length_difference = nil
-        single_source, page_title = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url, cli_parsed.timeout)
+        single_source, page_title = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url)
         
         # returns back an object that needs to be iterated over for the headers and source code
-        multi_site_headers_source, ssl_current_state = source_header_grab(individual_url)
+        multi_site_headers_source, ssl_current_state = source_header_grab(individual_url, cli_parsed.timeout)
 
         if multi_site_headers_source == "CONNECTIONDENIED" || multi_site_headers_source == "BADURL" || multi_site_headers_source == "TIMEDOUT" || multi_site_headers_source == "UNKNOWNERROR"
           multi_site_default_creds = default_creds(multi_site_headers_source, Dir.pwd)
