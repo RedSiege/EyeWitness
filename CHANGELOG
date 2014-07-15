@@ -1,3 +1,6 @@
+[7.15.2014]
+    Modified..: Fixed bug when encountering an unknown error.  Thanks to @harmj0y for reporting this.
+
 [7.14.2014]
     Modified..: Fixed bug in nmap parser that would return mac addresses as the hostname when parsing nmap xml output.  Thanks for Steve Borosch (rvrsh3ll) for pointing out the issue to me.
     Modified..: HTML source code is now readable, '\n' is used to help :)

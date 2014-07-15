@@ -1127,9 +1127,7 @@ begin
     # returns back an object that needs to be iterated over for the headers
     single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website)
 
-    if single_site_headers_source == "CONNECTIONDENIED"
-      single_default_creds = default_creds(single_site_headers_source, Dir.pwd)
-    elsif single_site_headers_source == "BADURL"
+    if single_site_headers_source == "CONNECTIONDENIED" || single_site_headers_source == "BADURL" || single_site_headers_source == "TIMEDOUT" || single_site_headers_source == "UNKNOWNERROR"
       single_default_creds = default_creds(single_site_headers_source, Dir.pwd)
     else
       single_default_creds = default_creds(single_site_headers_source.body, Dir.pwd)
@@ -1234,7 +1232,7 @@ begin
         # returns back an object that needs to be iterated over for the headers and source code
         multi_site_headers_source, ssl_current_state = source_header_grab(individual_url)
 
-        if multi_site_headers_source == "CONNECTIONDENIED" || multi_site_headers_source == "BADURL" || multi_site_headers_source == "TIMEDOUT"
+        if multi_site_headers_source == "CONNECTIONDENIED" || multi_site_headers_source == "BADURL" || multi_site_headers_source == "TIMEDOUT" || multi_site_headers_source == "UNKNOWNERROR"
           multi_site_default_creds = default_creds(multi_site_headers_source, Dir.pwd)
         else
           multi_site_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
