@@ -397,7 +397,7 @@ def capture_screenshot(sel_driver, output_path, url_to_grab)
   rescue Timeout::Error
     puts "[*] Error: Request Timed out for screenshot..."
     blank_page_source = "TIMEOUTERROR"
-    no_title = "timeout error"
+    no_title = "Timeout Error"
     return blank_page_source, no_title
   rescue Errno::ECONNREFUSED
     blank_page_source = "CONNREFUSED"
