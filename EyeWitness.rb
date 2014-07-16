@@ -746,7 +746,12 @@ def source_header_grab(url_to_head, total_timeout)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request = Net::HTTP::Get.new(uri.request_uri)
-    response = http.request(request)
+    begin
+      response = http.request(request)
+    rescue OpenSSL::SSL::SSLError
+      puts "[*] Error: SSL Error connecting to #{url_to_head}"
+      response = "SSLERROR"
+    end
   rescue Timeout::Error
     response = "TIMEDOUT"
   rescue Errno::ECONNREFUSED
@@ -784,6 +789,8 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
     web_report_html += "Unknown error when connecting to web server!</div></td><td> Unknown error when connecting to web server.  Please contact developer and give him details (like the URL) to investigate this!</td></tr>"
   elsif page_header_source == "BADURL"
     web_report_html += "Potentially unable to resolve URL!</div></td><td> Potentially unable to resolve URL!</td></tr>"
+  elsif page_header_source == "SSLERROR"
+    web_report_html += "SSL Error when connecting to website! </div></td><td> SSL Error when connecting to website!</td></tr>"
   else
     full_source_path = File.join(output_report_path, "source", source_code_name)
 
@@ -837,6 +844,8 @@ def multi_table_maker(html_dictionary, website_url, possible_creds, page_header_
     html += "Unknown error when connecting to web server!</div></td><td> Unknown error when connecting to web server.  Please contact developer and give him details (like the URL) to investigate this!</td></tr>"
   elsif page_header_source == "BADURL"
     html += "Potentially unable to resolve URL!</div></td><td> Potentially unable to resolve URL!</td></tr>"
+  elsif page_header_source == "SSLERROR"
+    html += "SSL Error when connecting to website! </div></td><td> SSL Error when connecting to website!</td></tr>"
   else
     full_source_path = File.join(output_report_path, "source", source_code_name)
 
@@ -1143,7 +1152,7 @@ begin
     # returns back an object that needs to be iterated over for the headers
     single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website, cli_parsed.timeout)
 
-    if single_site_headers_source == "CONNECTIONDENIED" || single_site_headers_source == "BADURL" || single_site_headers_source == "TIMEDOUT" || single_site_headers_source == "UNKNOWNERROR"
+    if single_site_headers_source == "CONNECTIONDENIED" || single_site_headers_source == "BADURL" || single_site_headers_source == "TIMEDOUT" || single_site_headers_source == "UNKNOWNERROR" || single_site_headers_source == "SSLERROR"
       single_default_creds = default_creds(single_site_headers_source, Dir.pwd)
     else
       single_default_creds = default_creds(single_site_headers_source.body, Dir.pwd)
@@ -1248,7 +1257,7 @@ begin
         # returns back an object that needs to be iterated over for the headers and source code
         multi_site_headers_source, ssl_current_state = source_header_grab(individual_url, cli_parsed.timeout)
 
-        if multi_site_headers_source == "CONNECTIONDENIED" || multi_site_headers_source == "BADURL" || multi_site_headers_source == "TIMEDOUT" || multi_site_headers_source == "UNKNOWNERROR"
+        if multi_site_headers_source == "CONNECTIONDENIED" || multi_site_headers_source == "BADURL" || multi_site_headers_source == "TIMEDOUT" || multi_site_headers_source == "UNKNOWNERROR" || multi_site_headers_source == "SSLERROR"
           multi_site_default_creds = default_creds(multi_site_headers_source, Dir.pwd)
         else
           multi_site_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
