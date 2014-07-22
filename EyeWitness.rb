@@ -529,6 +529,11 @@ def folder_out(dir_name, full_path)
         stylesheet.puts css_file
     end
 
+    # Get the time for the top of the report
+    date_time = Time.new
+    current_date = "#{date_time.month}/#{date_time.day}/#{date_time.year}"
+    current_time = "#{date_time.hour}:#{date_time.min}:#{date_time.sec}"
+
     return output_folder_name, current_date, current_time
 end # End of folder_out function
 

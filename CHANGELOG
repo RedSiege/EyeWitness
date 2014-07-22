@@ -1,3 +1,6 @@
+[7.21.2014]
+    Modified..: Fixed a bug where the time and date wouldn't be shown at the top of the report when providing the directory path for the report.
+
 [7.16.2014]
     Modified..: Fixed bug when encountering a web page over ssl that a handshake can't be established.  Thanks to @harmj0y for reporting this.
 
