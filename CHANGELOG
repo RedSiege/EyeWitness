@@ -1,3 +1,6 @@
+[7.27.2014]
+	Modified..: Changed header request to perform a HEAD request, vs. a get.  Hopefully should save some time.  Thanks @harmj0y for the suggestion.
+
 [7.21.2014]
     Modified..: Fixed a bug where the time and date wouldn't be shown at the top of the report when providing the directory path for the report.
 

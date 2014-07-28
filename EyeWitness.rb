@@ -393,40 +393,50 @@ def capture_screenshot(sel_driver, output_path, url_to_grab)
     File.open("#{source_code_path}", 'w') do |write_sourcecode|
       write_sourcecode.write(sel_driver.page_source)
     end
-    return sel_driver.page_source, sel_driver.title
+    return sel_driver.page_source, sel_driver.title, source_code_path
   rescue Timeout::Error
     puts "[*] Error: Request Timed out for screenshot..."
     blank_page_source = "TIMEOUTERROR"
     no_title = "Timeout Error"
-    return blank_page_source, no_title
+    return blank_page_source, no_title, source_code_path
   rescue Errno::ECONNREFUSED
     blank_page_source = "CONNREFUSED"
     no_title = "Connection Refused or URL Skipped"
-    return blank_page_source, no_title
+    return blank_page_source, no_title, source_code_path
   rescue Selenium::WebDriver::Error::UnknownError
     blank_page_source = "POSSIBLEXML"
     no_title = "Bad response, or possible XML"
-    return blank_page_source, no_title
+    return blank_page_source, no_title, source_code_path
   rescue Selenium::WebDriver::Error::UnhandledAlertError
     blank_page_source = "POSSIBLEXML"
     no_title = "Bad response, or possible XML"
-    return blank_page_source, no_title
+    return blank_page_source, no_title, source_code_path
   rescue NameError
     blank_page_source = "POSSIBLEXML"
     no_title = "Bad response, or possible XML"
-    return blank_page_source, no_title
+    return blank_page_source, no_title, source_code_path
   rescue
     blank_page_source = "UNKNOWNERROR"
     no_title = "Unknown error when connecting to web server"
-    return blank_page_source, no_title
+    return blank_page_source, no_title, source_code_path
   end
 end
 
-def default_creds(page_content, full_file_path)
+def default_creds(source_code_path, full_file_path)
 
   # This function parses the signatures file, and compares it with the source code
   # of the site connected to, and determines if there is a match
   creds_path = File.join("#{full_file_path}", "signatures.txt")
+
+  # Create the blank variable which will store the web page's source code
+  page_content = ''
+
+  # Open the page, and read the source code into the variable
+  File.open("#{source_code_path}", "r") do |source_code|
+    source_code.each_line do |source_line|
+      page_content += source_line
+    end
+  end
 
   begin
     File.open("#{creds_path}", "r") do |signature_file|
@@ -725,18 +735,19 @@ def source_header_grab(url_to_head, total_timeout)
 
   # All of this code basically grabs the server headers and source code of the
   # provided URL
+  # Code for timeout - http://stackoverflow.com/questions/8014291/making-http-head-request-with-timeout-in-ruby
   uri = URI.parse("#{url_to_head}")
   
   if url_to_head.start_with?("http://")
     # code came from - http://www.rubyinside.com/nethttp-cheat-sheet-2940.html
     http = Net::HTTP.new(uri.host, uri.port)
     http.read_timeout = total_timeout
-    request = Net::HTTP::Get.new(uri.request_uri)
+    #request = Net::HTTP::Get.new(uri.request_uri)
   elsif url_to_head.start_with?("https://")
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.read_timeout = total_timeout
-    request = Net::HTTP::Get.new(uri.request_uri)
+    #request = Net::HTTP::Get.new(uri.request_uri)
   else
     puts "[*] Error: Error with URL, please investigate!"
     exit
@@ -744,7 +755,7 @@ def source_header_grab(url_to_head, total_timeout)
 
   begin
     # actually make the request
-    response = http.request(request)
+    response = http.head(uri.request_uri)
   rescue OpenSSL::SSL::SSLError
     invalid_ssl = true
     http = Net::HTTP.new(uri.host, uri.port)
@@ -752,7 +763,7 @@ def source_header_grab(url_to_head, total_timeout)
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request = Net::HTTP::Get.new(uri.request_uri)
     begin
-      response = http.request(request)
+      response = http.head(uri.request_uri)
     rescue OpenSSL::SSL::SSLError
       puts "[*] Error: SSL Error connecting to #{url_to_head}"
       response = "SSLERROR"
@@ -781,11 +792,13 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
   web_report_html += "<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">\n"
   web_report_html += "<a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>"
 
+  # If there's any creds identified by EyeWitness, add them to the report
   if !possible_creds.nil?
     encoded_creds = html_encode(possible_creds)
     web_report_html += "<br><b>Default credentials:</b> #{encoded_creds} <br>"
   end
 
+  # If EyeWitness encountered any of the identified errors, add it to the report
   if page_header_source == "CONNECTIONDENIED"
     web_report_html += "CONNECTION REFUSED FROM SERVER!</div></td><td> Connection Refused from server!</td></tr>"
   elsif page_header_source == "TIMEDOUT"
@@ -806,7 +819,7 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
       encoded_title = "Unable to Render"
     end
     web_report_html += "<br><b>#{encoded_title_header}:</b> #{encoded_title}"
-    page_header_source.each_header do |header, value|
+    page_header_source.each do |header, value|
       encoded_header = html_encode(header)
       encoded_value = html_encode(value)
       web_report_html += "<br><b>#{encoded_header}:</b> #{encoded_value}"
@@ -1152,7 +1165,7 @@ begin
 
     # If not cycling through user agents, then go to the site, capture screenshot and source code
     unused_length_difference = nil
-    single_source, page_title = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website)
+    single_source, page_title, web_source_code = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website)
 
     # returns back an object that needs to be iterated over for the headers
     single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website, cli_parsed.timeout)
@@ -1160,7 +1173,7 @@ begin
     if single_site_headers_source == "CONNECTIONDENIED" || single_site_headers_source == "BADURL" || single_site_headers_source == "TIMEDOUT" || single_site_headers_source == "UNKNOWNERROR" || single_site_headers_source == "SSLERROR"
       single_default_creds = default_creds(single_site_headers_source, Dir.pwd)
     else
-      single_default_creds = default_creds(single_site_headers_source.body, Dir.pwd)
+      single_default_creds = default_creds(web_source_code, Dir.pwd)
     end
 
     web_index = table_maker(web_index, cli_parsed.single_website, single_default_creds,
@@ -1257,7 +1270,7 @@ begin
         puts "Attempting to capture #{individual_url} (#{url_counter}/#{total_urls})"
 
         unused_length_difference = nil
-        single_source, page_title = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url)
+        single_source, page_title, web_source_code = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url)
         
         # returns back an object that needs to be iterated over for the headers and source code
         multi_site_headers_source, ssl_current_state = source_header_grab(individual_url, cli_parsed.timeout)
@@ -1265,7 +1278,7 @@ begin
         if multi_site_headers_source == "CONNECTIONDENIED" || multi_site_headers_source == "BADURL" || multi_site_headers_source == "TIMEDOUT" || multi_site_headers_source == "UNKNOWNERROR" || multi_site_headers_source == "SSLERROR"
           multi_site_default_creds = default_creds(multi_site_headers_source, Dir.pwd)
         else
-          multi_site_default_creds = default_creds(multi_site_headers_source.body, Dir.pwd)
+          multi_site_default_creds = default_creds(web_source_code, Dir.pwd)
         end
 
         # If not grouping page
@@ -1341,4 +1354,3 @@ rescue Interrupt
   puts "\"If I win, you wear a dress.\" \"And if I win, you do too.\" \"...Deal\""
   exit
 end
-
