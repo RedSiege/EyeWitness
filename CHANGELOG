@@ -1,3 +1,6 @@
+[8.4.2014]
+    Modified..: Code that parses file input (single URL per line) now ignored blank lines within the file.  Thanks to webyeti and the APT students at blackhat.
+
 [7.27.2014]
 	Modified..: Changed header request to perform a HEAD request, vs. a get.  Hopefully should save some time.  Thanks @harmj0y for the suggestion.
 

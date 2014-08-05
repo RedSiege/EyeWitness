@@ -564,12 +564,15 @@ def logistics(url_file)
 
   begin
     File.open(url_file, "r").each do |url|
-      url = url.strip
-      if !url.start_with?('http://') && !url.start_with?('https://')
-        url = "http://#{url}"
+      if url == "" || url == "\n" || url == "\r"
+      else
+        url = url.strip
+        if !url.start_with?('http://') && !url.start_with?('https://')
+          url = "http://#{url}"
+        end
+        file_urls << url
+        num_urls += 1
       end
-      file_urls << url
-      num_urls += 1
     end
   rescue Errno::ENOENT
     puts "[*] Error: File not valid, or not found."
