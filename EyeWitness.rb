@@ -2,20 +2,39 @@
 
 # This is a port of EyeWitness to Ruby, using a new screenshot engine
 
-require 'cgi'
-require 'ipaddr'
-require 'net/http'
-require 'net/https'
-require 'netaddr'
-require 'nokogiri'
-require 'optparse'
-require 'ostruct'
-require 'pp'
-require 'selenium-webdriver'
-require 'socket'
-require 'timeout'
-require 'uri'
-require 'similar_text'
+# This gem import checker is from Robin Woods (@digininja).  Thanks for
+# the help and showing me how you check for it.  Works awesome :)
+
+begin
+  require 'cgi'
+  require 'ipaddr'
+  require 'net/http'
+  require 'net/https'
+  require 'netaddr'
+  require 'nokogiri'
+  require 'optparse'
+  require 'ostruct'
+  require 'pp'
+  require 'selenium-webdriver'
+  require 'socket'
+  require 'timeout'
+  require 'uri'
+  require 'similar_text'
+
+rescue LoadError => e
+# Trying to catch errors and let user know which gem caused it
+if e.to_s =~ /cannot load such file -- (.*)/
+  missing_gem = $1
+  puts "\nError: #{missing_gem} gem not installed\n"
+  puts "\t use: \"gem install #{missing_gem}\" to install the required gem\n\n"
+  exit
+else
+  puts "There was an error loading the gems:"
+  puts
+  puts e.to_s
+  exit
+end
+end
 
 
 # Change timeout in Net::HTTP
