@@ -49,7 +49,7 @@ case ${osinfo} in
     echo '[*] Checking Ruby Environment'
     rvmhere=`which rvm | wc -l`
     rubyhere=`which ruby | wc -l`
-    if [ rvmhere -eq 0 ] && [ rubyhere -eq 0]
+    if [[ $rvmhere -eq 0  && $rubyhere -eq 0 ]]
     then
         curl -sSL https://get.rvm.io | bash -s stable
         source /usr/local/rvm/scripts/rvm
