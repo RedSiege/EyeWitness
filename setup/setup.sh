@@ -46,15 +46,6 @@ case ${osinfo} in
     echo '[*] Installing Debian Dependencies'
     apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr
     echo
-    echo '[*] Checking Ruby Environment'
-    rvmhere=`which rvm | wc -l`
-    rubyhere=`which ruby | wc -l`
-    if [[ $rvmhere -eq 0  && $rubyhere -eq 0 ]]
-    then
-        curl -sSL https://get.rvm.io | bash -s stable
-        source /usr/local/rvm/scripts/rvm
-    fi
-    gem install bundler
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     echo
@@ -64,6 +55,21 @@ case ${osinfo} in
     python setup.py install
     cd ..
     rm -rf Ghost.py
+    echo
+    echo '[*] Checking Ruby Environment'
+    rvmhere=`which rvm | wc -l`
+    rubyhere=`which ruby | wc -l`
+    if [[ $rvmhere -eq 0  && $rubyhere -eq 0 ]]
+    then
+        curl -sSL https://get.rvm.io | bash -s stable
+        echo
+        echo "[*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*]"
+    	echo "[*]  Please run the script specified above to begin using RVM/Ruby.  [*]"
+    	echo "[*]                     Then run \"bundle install\"                    [*]"
+    	echo "[*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*]"
+    	echo
+    fi
+
   ;;
   # Ubuntu (tested in 13.10) Dependency Installation
   Ubuntu)
