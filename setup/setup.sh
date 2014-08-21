@@ -44,15 +44,16 @@ case ${osinfo} in
   # Debian 7+ Dependency Installation
   Debian)
     echo '[*] Installing Debian Dependencies'
-    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr ruby-dev rubygems ruby
+    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr
     echo
     echo '[*] Checking Ruby Environment'
     rvmhere=`which rvm | wc -l`
-    if [[ rvmhere -eq 0 ]]
+    rubyhere=`which ruby | wc -l`
+    if [ rvmhere -eq 0 ] && [ rubyhere -eq 0]
     then
         curl -sSL https://get.rvm.io | bash -s stable
+        source /usr/local/rvm/scripts/rvm
     fi
-    source /usr/local/rvm/scripts/rvm
     gem install bundler
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
