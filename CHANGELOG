@@ -1,4 +1,4 @@
-[8.21.2014]
+[8.22.2014]
     Modified..: Fixed -d issue in python version of EyeWitness. Thanks for letting me know Robin. - Issue #60
     Modified..: While working on the -d issue, an off by one error was found for the report generation.  This has been fixed.
 
