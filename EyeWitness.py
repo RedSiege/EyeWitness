@@ -1686,9 +1686,8 @@ if __name__ == "__main__":
                 else:
                     # Write out to the next page
                     web_index += "</table>\n"
-                    with open(script_path + "/" + report_folder +
-                              "/report_page" + str(page_counter) +
-                              ".html", 'w') as page_out:
+                    with open(join(script_path, report_folder, "report_page" + str(page_counter) +
+                            ".html"), 'w') as page_out:
                         page_out.write(web_index)
 
                     # Reset the URL counter
