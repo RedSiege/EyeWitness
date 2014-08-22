@@ -1667,10 +1667,10 @@ if __name__ == "__main__":
         # Reverse the list to preserve original order (sort of)
         groupedlist.reverse()
 
-        for i in range(0, len(groupedlist)):
-            element = groupedlist[i]
+        for i in range(1, len(groupedlist) + 1):
+            element = groupedlist[i - 1]
             web_index += element[1][1]
-            if (i % report_num_urls == 0 and not i == 0):
+            if (i % report_num_urls == 0 and not i - 1 == 0):
                 if page_counter == 1:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
