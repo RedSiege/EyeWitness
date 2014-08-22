@@ -34,17 +34,12 @@ case ${osinfo} in
     python setup.py install
     cd ..
     rm -rf Ghost.py
-    gem install netaddr
-    gem install nokogiri
-    gem install OptionParser
-    gem install selenium-webdriver
-    gem install ipaddress
-    gem install similar_text
+    bundle install
   ;;
   # Debian 7+ Dependency Installation
   Debian)
     echo '[*] Installing Debian Dependencies'
-    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr ruby-dev rubygems ruby
+    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
@@ -55,12 +50,19 @@ case ${osinfo} in
     python setup.py install
     cd ..
     rm -rf Ghost.py
-    gem install netaddr
-    gem install nokogiri
-    gem install OptionParser
-    gem install selenium-webdriver
-    gem install ipaddress
-    gem install similar_text
+    echo
+    echo '[*] Checking Ruby Environment'
+    rvmhere=`which rvm | wc -l`
+    rubyhere=`which ruby | wc -l`
+    if [[ $rvmhere -eq 0  && $rubyhere -eq 0 ]]
+    then
+        echo
+        echo "[*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*]"
+    	echo "[*]    To use the ruby version of EyeWitness please install Ruby.    [*]"
+    	echo "[*]                     Then run \"bundle install\"                    [*]"
+    	echo "[*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*]"
+    	echo
+    fi
   ;;
   # Ubuntu (tested in 13.10) Dependency Installation
   Ubuntu)
@@ -76,12 +78,19 @@ case ${osinfo} in
     python setup.py install
     cd ..
     rm -rf Ghost.py
-    gem install netaddr
-    gem install nokogiri
-    gem install OptionParser
-    gem install selenium-webdriver
-    gem install ipaddress
-    gem install similar_text
+    echo
+    echo '[*] Checking Ruby Environment'
+    rvmhere=`which rvm | wc -l`
+    rubyhere=`which ruby | wc -l`
+    if [[ $rvmhere -eq 0  && $rubyhere -eq 0 ]]
+    then
+        echo
+        echo "[*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*]"
+    	echo "[*]    To use the ruby version of EyeWitness please install Ruby.    [*]"
+    	echo "[*]                     Then run \"bundle install\"                    [*]"
+    	echo "[*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*]"
+    	echo
+    fi
   ;;
   # CentOS 6.5+ Dependency Installation
   CentOS)
@@ -106,6 +115,19 @@ case ${osinfo} in
     python setup.py install
     cd ..
     rm -rf Ghost.py
+    echo
+    echo '[*] Checking Ruby Environment'
+    rvmhere=`which rvm | wc -l`
+    rubyhere=`which ruby | wc -l`
+    if [[ $rvmhere -eq 0  && $rubyhere -eq 0 ]]
+    then
+        echo
+        echo "[*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*]"
+    	echo "[*]    To use the ruby version of EyeWitness please install Ruby.    [*]"
+    	echo "[*]                     Then run \"bundle install\"                    [*]"
+    	echo "[*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*]"
+    	echo
+    fi
   ;;
   # Notify Manual Installation Requirement And Exit
   *)

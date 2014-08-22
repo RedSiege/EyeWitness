@@ -1411,7 +1411,7 @@ if __name__ == "__main__":
 
         # Create a URL counter to know when to go to a new page
         # Create a page counter to track pages
-        page_counter = 1
+        page_counter = 0
 
         htmldictionary = {}
 
@@ -1667,11 +1667,11 @@ if __name__ == "__main__":
         # Reverse the list to preserve original order (sort of)
         groupedlist.reverse()
 
-        for i in range(0, len(groupedlist)):
-            element = groupedlist[i]
+        for i in range(1, len(groupedlist) + 1):
+            element = groupedlist[i - 1]
             web_index += element[1][1]
-            if (i % report_num_urls == 0 and not i == 0):
-                if page_counter == 1:
+            if (i % report_num_urls == 0 and not i - 1 == 0):
+                if page_counter == 0:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
                     with open(join(script_path, report_folder, "report.html"),
@@ -1686,14 +1686,14 @@ if __name__ == "__main__":
                 else:
                     # Write out to the next page
                     web_index += "</table>\n"
-                    with open(script_path + "/" + report_folder +
-                              "/report_page" + str(page_counter) +
-                              ".html", 'w') as page_out:
+                    with open(join(script_path, report_folder, "report_page" + str(page_counter+1) +
+                            ".html"), 'w') as page_out:
                         page_out.write(web_index)
 
                     # Reset the URL counter
-                    page_counter = page_counter + 1
-                    web_index = web_header(report_date, report_time)
+                    if i != len(groupedlist):
+                        page_counter = page_counter + 1
+                        web_index = web_header(report_date, report_time)
 
         if page_counter == 1:
             single_report_page(web_index, script_path, operating_system)
@@ -1701,16 +1701,16 @@ if __name__ == "__main__":
             # Write out our extra page
             web_index += "</table>\n"
             with open(join(script_path, report_folder, "report_page" +
-                      str(page_counter) + ".html"), 'w') as page_out:
+                      str(page_counter+1) + ".html"), 'w') as page_out:
                 page_out.write(web_index)
 
             # Create the link structure at the bottom
-            link_text = "\n<br>Links: <a href=\"report.html\">Page 1</a> "
-            for page in range(2, page_counter + 1):
+            link_text = "\n<center><br>Links: <a href=\"report.html\">Page 1</a> "
+            for page in range(2, page_counter + 2):
                 link_text += "<a href=\"report_page" + str(page) + ".html\">\
                 Page " + str(page) + "</a> ".replace('    ', '')
             top_links = link_text
-            link_text += "\n</body>\n"
+            link_text += "</center>\n</body>\n"
             link_text += "</html>"
 
             # Write out link structure to bottom of report
@@ -1732,12 +1732,12 @@ if __name__ == "__main__":
 
             # Write out link structure to bottom of extra pages
             # Also add links to the top of extra pages
-            for page_footer in range(2, page_counter + 1):
+            for page_footer in range(2, page_counter + 2):
                 with open(join(script_path, report_folder, "report_page" +
                           str(page_footer) + ".html"), 'a') as page_append:
                     page_append.write(link_text)
 
-            for page_footer in range(2, page_counter + 1):
+            for page_footer in range(2, page_counter + 2):
                 with open(join(script_path, report_folder, "report_page" +
                           str(page_footer) + ".html"), 'r') as link_add:
                     content = link_add.readlines()
