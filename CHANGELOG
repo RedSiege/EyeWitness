@@ -1,6 +1,7 @@
 [8.22.2014]
     Modified..: Fixed -d issue in python version of EyeWitness. Thanks for letting me know Robin. - Issue #60
     Modified..: While working on the -d issue, an off by one error was found for the report generation.  This has been fixed.
+    Modified..: Localscan options now handles ENETUNREACH error that is still super odd and can't figure out why this is seen (when the user encountering it can ping the host...?)
 
 [8.20.2014]
     Modified..: Added error checking from Robin Woods's (@digininja) supplied code. - Issue # 55

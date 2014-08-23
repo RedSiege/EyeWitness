@@ -683,17 +683,19 @@ def scanner(cidr_range, tool_path)
         begin
           Timeout.timeout(5) do
             begin
+              puts "[*] Attempting to connect to #{scan_ip}:#{scan_port}..."
               s = TCPSocket.new(scan_ip, scan_port)
               s.close
               # Determine if we need to put http or https in front based off of port number
               if scan_port == 443 or scan_port == 8443
                 live_webservers << "https://#{scan_ip}:#{scan_port}"
-                puts "[*] #{scan_ip} looks to be listening on #{scan_port}."
+                puts "[*][*] #{scan_ip} looks to be listening on #{scan_port}."
               else
                 live_webservers << "http://#{scan_ip}:#{scan_port}"
-                puts "[*] #{scan_ip} looks to be listening on #{scan_port}."
+                puts "[*][*] #{scan_ip} looks to be listening on #{scan_port}."
               end
-            rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+            rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ENETUNREACH
+              puts "[*] Error: Unable to connect to host or network (#{scan_ip}:#{scan_port})"
             end
           end
         rescue Timeout::Error
