@@ -450,12 +450,18 @@ def default_creds(source_code_path, full_file_path)
   # Create the blank variable which will store the web page's source code
   page_content = ''
 
-  # Open the page, and read the source code into the variable
-  File.open("#{source_code_path}", "r") do |source_code|
-    source_code.each_line do |source_line|
-      page_content += source_line
+  begin
+    # Open the page, and read the source code into the variable
+    File.open("#{source_code_path}", "r") do |source_code|
+      source_code.each_line do |source_line|
+        page_content += source_line
+      end
     end
-  end
+  rescue Errno::ENOENT
+    puts "[*] WARNING source code file not found!"
+    puts "[*] Skipping credential check..."
+    return nil
+  end  # End try catch
 
   begin
     File.open("#{creds_path}", "r") do |signature_file|
