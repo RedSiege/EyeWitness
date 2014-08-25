@@ -812,8 +812,10 @@ def source_header_grab(url_to_head, total_timeout)
 
   # Return the response object
   # response.each gives header info
-  if response.code == "401"
-    response = "UNAUTHORIZED"
+  if response.respond_to?('code')
+    if response.code == "401"
+      response = "UNAUTHORIZED"
+    end
   end
   return response, invalid_ssl
 end   # End header_grab function
