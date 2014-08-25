@@ -806,6 +806,9 @@ def source_header_grab(url_to_head, total_timeout)
 
   # Return the response object
   # response.each gives header info
+  if response.code == "401"
+    response = "UNAUTHORIZED"
+  end
   return response, invalid_ssl
 end   # End header_grab function
 
@@ -827,6 +830,8 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
     web_report_html += "CONNECTION REFUSED FROM SERVER!</div></td><td> Connection Refused from server!</td></tr>"
   elsif page_header_source == "TIMEDOUT"
     web_report_html += "Connection to web server timed out!</div></td><td> Connection to web server timed out!</td></tr>"
+  elsif page_header_source == "UNAUTHORIZED"
+    web_report_html += "Can't auth to page (Basic auth?)!</div></td><td> Can't authenticate to web page (Basic auth?)</td></tr>"
   elsif page_header_source == "UNKNOWNERROR"
     web_report_html += "Unknown error when connecting to web server!</div></td><td> Unknown error when connecting to web server.  Please contact developer and give him details (like the URL) to investigate this!</td></tr>"
   elsif page_header_source == "BADURL"
@@ -882,6 +887,8 @@ def multi_table_maker(html_dictionary, website_url, possible_creds, page_header_
     html += "CONNECTION REFUSED FROM SERVER!</div></td><td> Connection Refused from server!</td></tr>"
   elsif page_header_source == "TIMEDOUT"
     html += "Connection to web server timed out!</div></td><td> Connection to web server timed out!</td></tr>"
+  elsif page_header_source == "UNAUTHORIZED"
+    html += "Can't auth to page (Basic auth?)!</div></td><td> Can't authenticate to web page (Basic auth?)</td></tr>"
   elsif page_header_source == "UNKNOWNERROR"
     html += "Unknown error when connecting to web server!</div></td><td> Unknown error when connecting to web server.  Please contact developer and give him details (like the URL) to investigate this!</td></tr>"
   elsif page_header_source == "BADURL"
@@ -1194,8 +1201,8 @@ begin
     # returns back an object that needs to be iterated over for the headers
     single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website, cli_parsed.timeout)
 
-    if single_site_headers_source == "CONNECTIONDENIED" || single_site_headers_source == "BADURL" || single_site_headers_source == "TIMEDOUT" || single_site_headers_source == "UNKNOWNERROR" || single_site_headers_source == "SSLERROR"
-      single_default_creds = default_creds(single_site_headers_source, Dir.pwd)
+    if single_site_headers_source == "CONNECTIONDENIED" || single_site_headers_source == "BADURL" || single_site_headers_source == "TIMEDOUT" || single_site_headers_source == "UNKNOWNERROR" || single_site_headers_source == "SSLERROR" || single_site_headers_source == "UNAUTHORIZED"
+      # If we hit this condition, there's no source code to check for default creds, so do nothing
     else
       single_default_creds = default_creds(web_source_code, Dir.pwd)
     end
@@ -1299,8 +1306,8 @@ begin
         # returns back an object that needs to be iterated over for the headers and source code
         multi_site_headers_source, ssl_current_state = source_header_grab(individual_url, cli_parsed.timeout)
 
-        if multi_site_headers_source == "CONNECTIONDENIED" || multi_site_headers_source == "BADURL" || multi_site_headers_source == "TIMEDOUT" || multi_site_headers_source == "UNKNOWNERROR" || multi_site_headers_source == "SSLERROR"
-          multi_site_default_creds = default_creds(multi_site_headers_source, Dir.pwd)
+        if multi_site_headers_source == "CONNECTIONDENIED" || multi_site_headers_source == "BADURL" || multi_site_headers_source == "TIMEDOUT" || multi_site_headers_source == "UNKNOWNERROR" || multi_site_headers_source == "SSLERROR" || multi_site_headers_source == "UNAUTHORIZED"
+          # If we hit this condition, there's no source code to check for default creds, so do nothing
         else
           multi_site_default_creds = default_creds(web_source_code, Dir.pwd)
         end

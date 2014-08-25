@@ -1,3 +1,6 @@
+[8.25.2014]
+    Modified..: Hopefully fixed an issue when encountering basic auth web pages, and other connection errors.  Fix included to not check for default creds against non-existant source code (code doesn't exist because of the error encountered) - thanks @harmj0y for letting me know
+
 [8.22.2014]
     Modified..: Fixed -d issue in python version of EyeWitness. Thanks for letting me know Robin. - Issue #60
     Modified..: While working on the -d issue, an off by one error was found for the report generation.  This has been fixed.
