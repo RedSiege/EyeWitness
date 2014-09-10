@@ -132,7 +132,14 @@ class CliParser
       end
 
       # Show help and command line flags
-      opts.on_tail('-h', '--help', 'Show this message') do
+      opts.on_tail('-h', '--help', '-?', 'Show this message') do
+        puts opts
+        exit
+      end
+
+      if options.f.nil? && options.nessus_xml.nil? && options.nmap_xml.nil? && options.single_website.nil? && options.create_targets.nil? && options.localscan.nil?
+        puts "[*] Error: You need to provide EyeWitness a valid command!"
+        puts "[*] Error: Please restart EyeWitness!\n\n"
         puts opts
         exit
       end
@@ -452,6 +459,7 @@ def default_creds(source_code_path, full_file_path)
 
   begin
     # Open the page, and read the source code into the variable
+    puts source_code_path
     File.open("#{source_code_path}", "r") do |source_code|
       source_code.each_line do |source_line|
         page_content += source_line
