@@ -138,15 +138,21 @@ class CliParser
       end
 
     end # end of opt_parser
-    opt_parser.parse!(args)
+    begin
+      opt_parser.parse!(args)
 
-    if options.single_website.nil? && options.file_name.nil? && options.nessus_xml.nil? && options.nmap_xml.nil? && options.create_targets.nil? && options.localscan.nil?
-      puts "[*] Error: You need to provide EyeWitness a valid command!"
+      if options.single_website.nil? && options.file_name.nil? && options.nessus_xml.nil? && options.nmap_xml.nil? && options.create_targets.nil? && options.localscan.nil?
+        puts "[*] Error: You need to provide EyeWitness a valid command!"
+        puts "[*] Error: Please restart EyeWitness!\n\n"
+        exit
+      end
+
+      return options
+    rescue OptionParser::InvalidOption
+      puts "[*] Error: Invalid command line option provided!"
       puts "[*] Error: Please restart EyeWitness!\n\n"
       exit
-    end
-
-    return options
+    end # End of try catch for invalid option
   end # End of self.parse
 end # End cli_parser class
 

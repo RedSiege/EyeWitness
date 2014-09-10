@@ -1,6 +1,7 @@
 [9.10.2014]
-    Modified..: Added -? to alias the help option for EyeWitness CLI interface.
+    Modified..: Added -? to alias the help option for EyeWitness CLI interface, thanks @digininja! - Github Issue #64
     Modified..: If not given any input, or missing key commands via the cli, EyeWitness will error out and print the command line options it takes.  Thanks to @harmj0y for pestering me every assessment until I finally added this in.
+    Modified..: Added checks for inavlid command line options, thanks @digininja! - Github Issue #63
 
 [8.25.2014]
     Modified..: Hopefully fixed an issue when encountering basic auth web pages, and other connection errors.  Fix included to not check for default creds against non-existant source code (code doesn't exist because of the error encountered) - thanks @harmj0y for letting me know
