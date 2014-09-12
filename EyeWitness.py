@@ -255,8 +255,7 @@ def cli_parser():
     #       defined - just an idea.
 
     # Return the file name which contains the URLs
-    return current_directory, args.localscan, args.createtargets, args.results,\
-        args.no_dns
+    return current_directory, args
 
 
 def default_creds(page_content, full_file_path, local_system_os):
@@ -1136,15 +1135,14 @@ if __name__ == "__main__":
 
     # Parse command line options and return the filename containing URLS
     # and how long to wait for each website
-    script_path, subnet_scan, create_targets, report_num_urls,\
-        skip_dns cli_parsed = cli_parser()
+    script_path, cli_parsed = cli_parser()
 
     # If the user wants to perform a scan for web servers locally,
     # then perform the scan, write out to a file, and exit
-    if subnet_scan:
-        scanner(subnet_scan, script_path, operating_system)
+    if cli_parsed.localscan:
+        scanner(cli.parsed.localscan, script_path, operating_system)
 
-    if create_targets:
+    if cli_parsed.createtargets:
         pass
     else:
         # Create the directory needed and support files
@@ -1395,7 +1393,7 @@ if __name__ == "__main__":
 
         # Create the output directories, open the urlfile, and return all URLs
         url_list, number_urls = logistics(
-            cli_parsed.f, create_targets, skip_dns)
+            cli_parsed.f, cli_parsed.createtargets, cli_parsed.no_dns)
 
         # Check if user wants random URLs, if so, randomize URLs here
         if cli_parsed.jitter is not "None":
@@ -1666,7 +1664,7 @@ if __name__ == "__main__":
         for i in range(1, len(groupedlist) + 1):
             element = groupedlist[i - 1]
             web_index += element[1][1]
-            if (i % report_num_urls == 0 and not i - 1 == 0):
+            if (i % cli_parsed.results == 0 and not i - 1 == 0):
                 if page_counter == 0:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
