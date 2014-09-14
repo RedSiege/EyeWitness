@@ -255,10 +255,7 @@ def cli_parser():
     #       defined - just an idea.
 
     # Return the file name which contains the URLs
-    return args.f, args.t, args.open, args.single, args.d, args.jitter,\
-        args.useragent, args.cycle, args.difference, args.skipcreds,\
-        current_directory, args.localscan, args.createtargets, args.results,\
-        args.no_dns
+    return current_directory, args
 
 
 def default_creds(page_content, full_file_path, local_system_os):
@@ -1138,26 +1135,23 @@ if __name__ == "__main__":
 
     # Parse command line options and return the filename containing URLS
     # and how long to wait for each website
-    url_filename, timeout_wait, open_urls, single_url, directory_name,\
-        request_jitter, browser_user_agent, ua_cycle, diff_value, cred_skip,\
-        script_path, subnet_scan, create_targets, report_num_urls,\
-        skip_dns = cli_parser()
+    script_path, cli_parsed = cli_parser()
 
     # If the user wants to perform a scan for web servers locally,
     # then perform the scan, write out to a file, and exit
-    if subnet_scan:
-        scanner(subnet_scan, script_path, operating_system)
+    if cli_parsed.localscan:
+        scanner(cli.parsed.localscan, script_path, operating_system)
 
-    if create_targets:
+    if cli_parsed.createtargets:
         pass
     else:
         # Create the directory needed and support files
-        report_folder, report_date, report_time = folder_out(directory_name,
+        report_folder, report_date, report_time = folder_out(cli_parsed.d,
                                                              script_path,
                                                              operating_system)
 
         # Change log path if full path is given for output directory
-        if directory_name.startswith('/') or directory_name.startswith("C:\\"):
+        if cli_parsed.d.startswith('/') or cli_parsed.d.startswith("C:\\"):
             # Location of the log file Ghost logs to (to catch SSL errors)
             log_file_path = join(script_path, report_folder, "logfile.log")
         else:
@@ -1166,11 +1160,11 @@ if __name__ == "__main__":
 
         # If the user wants to cycle through user agents, return the dictionary
         # of applicable user agents
-        if ua_cycle == "None":
-            ghost_object = casper_creator(browser_user_agent, timeout_wait)
+        if cli_parsed.cycle == "None":
+            ghost_object = casper_creator(cli_parsed.useragent, cli_parsed.t)
         else:
-            ua_dict = user_agent_definition(ua_cycle)
-            ghost_object = casper_creator(browser_user_agent, timeout_wait)
+            ua_dict = user_agent_definition(cli_parsed.cycle)
+            ghost_object = casper_creator(cli_parsed.useragent, cli_parsed.t)
 
         # Logging setup
         logging.basicConfig(filename=log_file_path, level=logging.WARNING)
@@ -1182,41 +1176,41 @@ if __name__ == "__main__":
         baseline_request = "Baseline"
         page_length = "None"
 
-    if single_url is not "None":
+    if cli_parsed.single is not "None":
 
         # If URL doesn't start with http:// or https://, assume it is http://
         # and add it to URL
-        if single_url.startswith('http://') or single_url\
+        if cli_parsed.single.startswith('http://') or cli_parsed.single\
                 .startswith('https://'):
             pass
         else:
-            single_url = "http://" + single_url
+            cli_parsed.single = "http://" + cli_parsed.single
 
         # Used for monitoring for blank pages or SSL errors
         content_blank = 0
 
         web_index = web_header(report_date, report_time)
-        print "Trying to screenshot " + single_url
+        print "Trying to screenshot " + cli_parsed.single
 
         # Create the filename to store each website's picture
-        single_url, source_name, picture_name = file_names(single_url)
+        cli_parsed.single, source_name, picture_name = file_names(cli_parsed.single)
 
         # If a normal single request, then perform the request
-        if ua_cycle == "None":
+        if cli_parsed.cycle == "None":
             try:
-                page, extra_resources = ghost_capture(ghost_object, single_url,
+                page, extra_resources = ghost_capture(ghost_object, cli_parsed.single,
                                                       report_folder,
                                                       picture_name,
                                                       script_path,
                                                       operating_system)
 
                 content_blank, single_default_credentials = backup_request(
-                    page, single_url, source_name, content_blank, script_path,
-                    cred_skip, operating_system)
+                    page, cli_parsed.single, source_name, content_blank, script_path,
+                    cli_parsed.skipcreds, operating_system)
 
                 # Create the table info for the single URL (screenshot,
                 # server headers, etc.)
-                web_index = table_maker(web_index, single_url,
+                web_index = table_maker(web_index, cli_parsed.single,
                                         single_default_credentials,
                                         page, content_blank, log_file_path,
                                         blank_value, blank_value, blank_value,
@@ -1225,21 +1219,21 @@ if __name__ == "__main__":
 
             # Skip a url if Ctrl-C is hit
             except KeyboardInterrupt:
-                print "[*] Skipping: " + single_url
+                print "[*] Skipping: " + cli_parsed.single
                 web_index += """<tr>
                 <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
                 <td>User Skipped this URL</td>
                 </tr>
-                """.format(single_given_url=single_url).replace('    ', '')
+                """.format(single_given_url=cli_parsed.single).replace('    ', '')
             # Catch timeout warning
             except screener.TimeoutError:
-                print "[*] Hit timeout limit when connecting to: " + single_url
+                print "[*] Hit timeout limit when connecting to: " + cli_parsed.single
                 web_index += """<tr>
                 <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
                 {single_timeout_url}</a></td>
                 <td>Hit timeout limit while attempting screenshot</td>
                 </tr>
-                """.format(single_timeout_url=single_url)
+                """.format(single_timeout_url=cli_parsed.single)
 
         # If cycling through user agents, start that process here
         # Create a baseline requst, then loop through the dictionary of user
@@ -1274,7 +1268,7 @@ if __name__ == "__main__":
                     if request_number == 0:
                         # Get baseline screenshot
                         baseline_page, baseline_extra_resources = \
-                            ghost_capture(ghost_object, single_url,
+                            ghost_capture(ghost_object, cli_parsed.single,
                                           report_folder, picture_name,
                                           script_path, operating_system)
 
@@ -1282,15 +1276,15 @@ if __name__ == "__main__":
                         baseline_page.content = "None"
 
                         baseline_content_blank, baseline_default_creds = \
-                            backup_request(baseline_page, single_url,
+                            backup_request(baseline_page, cli_parsed.single,
                                            source_name, content_blank,
-                                           script_path, cred_skip,
+                                           script_path, cli_parsed.skipcreds,
                                            operating_system)
                         extra_info = "This is the baseline request"
 
                         # Create the table info for the single URL
                         # (screenshot, server headers, etc.)
-                        web_index = table_maker(web_index, single_url,
+                        web_index = table_maker(web_index, cli_parsed.single,
                                                 baseline_default_creds,
                                                 baseline_page,
                                                 baseline_content_blank,
@@ -1305,7 +1299,7 @@ if __name__ == "__main__":
 
                     else:
                         new_ua_page, new_ua_extra_resources = \
-                            ghost_capture(ghost_object, single_url,
+                            ghost_capture(ghost_object, cli_parsed.single,
                                           report_folder, picture_name,
                                           script_path,
                                           operating_system)
@@ -1314,9 +1308,9 @@ if __name__ == "__main__":
                             new_ua_page.content = "None"
 
                             new_ua_content_blank, new_ua_default_creds = \
-                                backup_request(new_ua_page, single_url,
+                                backup_request(new_ua_page, cli_parsed.single,
                                                source_name, content_blank,
-                                               script_path, cred_skip,
+                                               script_path, cli_parsed.skipcreds,
                                                operating_system)
 
                             # Function which hashes the original request with
@@ -1325,7 +1319,7 @@ if __name__ == "__main__":
                             same_or_different, total_length_difference = \
                                 request_comparison(baseline_page.content,
                                                    new_ua_page.content,
-                                                   diff_value)
+                                                   cli_parsed.difference)
 
                             # If they are the same, then go on to the next user
                             # agent, if they are different, add it to the
@@ -1336,7 +1330,7 @@ if __name__ == "__main__":
                                 # Create the table info for the single URL
                                 # (screenshot, server headers, etc.)
                                 web_index = table_maker(
-                                    web_index, single_url,
+                                    web_index, cli_parsed.single,
                                     new_ua_default_creds, baseline_page,
                                     baseline_content_blank, log_file_path,
                                     blank_value, browser_key, user_agent_value,
@@ -1344,7 +1338,7 @@ if __name__ == "__main__":
                                     total_length_difference, script_path,
                                     operating_system)
                         except AttributeError:
-                            print "[*] Unable to request " + single_url +\
+                            print "[*] Unable to request " + cli_parsed.single +\
                                 " with " + browser_key
                             web_index += """<tr>
                             <td><a href=\"{single_given_url}\">\
@@ -1352,45 +1346,45 @@ if __name__ == "__main__":
                             <td>Unable to request {single_given_url} with \
                             {browser_user}.</td>
                             </tr>
-                            """.format(single_given_url=single_url,
+                            """.format(single_given_url=cli_parsed.single,
                                        browser_user=browser_key).\
                                 replace('    ', '')
                         total_length_difference = "None"
 
                 # Skip a url if Ctrl-C is hit
                 except KeyboardInterrupt:
-                    print "[*] Skipping: " + single_url
+                    print "[*] Skipping: " + cli_parsed.single
                     web_index += """<tr>
                     <td><a href=\"{single_given_url}\">{single_given_url}\
                     </a></td>
                     <td>User Skipped this URL</td>
                     </tr>
-                    """.format(single_given_url=single_url).replace('    ', '')
+                    """.format(single_given_url=cli_parsed.single).replace('    ', '')
                 # Catch timeout warning
                 except screener.TimeoutError:
                     print "[*] Hit timeout limit when connecting to: "\
-                        + single_url
+                        + cli_parsed.single
                     web_index += """<tr>
                     <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
                     {single_timeout_url}</a></td>
                     <td>Hit timeout limit while attempting screenshot</td>
                     </tr>
-                    """.format(single_timeout_url=single_url)
+                    """.format(single_timeout_url=cli_parsed.single)
 
                 # Add Random sleep based off of user provided jitter value
                 #  if requested
-                if request_jitter is not "None":
+                if cli_parsed.jitter is not "None":
                     sleep_value = random.randint(0, 30)
                     sleep_value = sleep_value * .01
                     sleep_value = 1 - sleep_value
-                    sleep_value = sleep_value * int(request_jitter)
+                    sleep_value = sleep_value * int(cli_parsed.jitter)
                     print "[*] Sleeping for " + str(sleep_value) + " seconds.."
                     try:
                         time.sleep(sleep_value)
                     except KeyboardInterrupt:
                         print "[*] User cancelled sleep for this URL!"
-        if open_urls:
-            webbrowser.open_new_tab(single_url)
+        if cli_parsed.open:
+            webbrowser.open_new_tab(cli_parsed.single)
 
         # Write out the report for the single URL
         single_report_page(web_index, script_path, operating_system)
@@ -1399,10 +1393,10 @@ if __name__ == "__main__":
 
         # Create the output directories, open the urlfile, and return all URLs
         url_list, number_urls = logistics(
-            url_filename, create_targets, skip_dns)
+            cli_parsed.f, cli_parsed.createtargets, cli_parsed.no_dns)
 
         # Check if user wants random URLs, if so, randomize URLs here
-        if request_jitter is not "None":
+        if cli_parsed.jitter is not "None":
             random.shuffle(url_list)
 
         # Add the web "header" to our web page
@@ -1438,7 +1432,7 @@ if __name__ == "__main__":
             print "Attempting to capture: " + url + "  (" + str(url_counter) + "/" + str(number_urls) + ")"
             # If not trying to cycle through different user agents, make
             # the web requests as it was originall done
-            if ua_cycle == "None":
+            if cli_parsed.cycle == "None":
                 try:
                     # Ghost capturing web page
                     page, extra_resources = ghost_capture(
@@ -1450,7 +1444,7 @@ if __name__ == "__main__":
                     # make a backup request get the source
                     content_blank, multi_line_default_creds = backup_request(
                         page, url, source_name, content_blank, script_path,
-                        cred_skip, operating_system)
+                        cli_parsed.skipcreds, operating_system)
 
                     htmldictionary = create_table_entry(
                         htmldictionary, url, multi_line_default_creds, page,
@@ -1516,7 +1510,7 @@ if __name__ == "__main__":
                             baseline_content_blank, baseline_default_creds =\
                                 backup_request(baseline_page, url, source_name,
                                                content_blank, script_path,
-                                               cred_skip, operating_system)
+                                               cli_parsed.skipcreds, operating_system)
 
                             # Create the table info for the single URL
                             # (screenshot, server headers, etc.)
@@ -1546,7 +1540,7 @@ if __name__ == "__main__":
                                 new_ua_content_blank, new_ua_default_creds =\
                                     backup_request(
                                         new_ua_page, url, source_name,
-                                        content_blank, script_path, cred_skip,
+                                        content_blank, script_path, cli_parsed.skipcreds,
                                         operating_system)
 
                                 # Function which hashes the original request
@@ -1555,7 +1549,7 @@ if __name__ == "__main__":
                                 same_or_different, l_difference = \
                                     request_comparison(
                                         baseline_page.content,
-                                        new_ua_page.content, diff_value)
+                                        new_ua_page.content, cli_parsed.difference)
 
                                 # If they are the same, then go on to the next
                                 # user agent, if they are different, add it to
@@ -1622,11 +1616,11 @@ if __name__ == "__main__":
 
                     # Add Random sleep based off of user provided jitter value
                     # if requested
-                    if request_jitter is not "None":
+                    if cli_parsed.jitter is not "None":
                         sleep_value = random.randint(0, 30)
                         sleep_value = sleep_value * .01
                         sleep_value = 1 - sleep_value
-                        sleep_value = sleep_value * int(request_jitter)
+                        sleep_value = sleep_value * int(cli_parsed.jitter)
                         print "[*] Sleeping for " + str(sleep_value) +\
                             " seconds..."
                         try:
@@ -1635,16 +1629,16 @@ if __name__ == "__main__":
                             print "[*] User cancelled sleep for this URL!"
 
             # If user wants URL opened in a browser as it runs, do it
-            if open_urls:
+            if cli_parsed.open:
                 webbrowser.open_new_tab(url)
 
             # Add Random sleep based off of user provided jitter value if
             # requested
-            if request_jitter is not "None" and ua_cycle is "None":
+            if cli_parsed.jitter is not "None" and cli_parsed.cycle is "None":
                 sleep_value = random.randint(0, 30)
                 sleep_value = sleep_value * .01
                 sleep_value = 1 - sleep_value
-                sleep_value = sleep_value * int(request_jitter)
+                sleep_value = sleep_value * int(cli_parsed.jitter)
                 print "[*] Sleeping for " + str(sleep_value) + " seconds..."
                 try:
                     time.sleep(sleep_value)
@@ -1670,7 +1664,7 @@ if __name__ == "__main__":
         for i in range(1, len(groupedlist) + 1):
             element = groupedlist[i - 1]
             web_index += element[1][1]
-            if (i % report_num_urls == 0 and not i - 1 == 0):
+            if (i % cli_parsed.results == 0 or i == len(groupedlist)):
                 if page_counter == 0:
                     # Close out the html and write it to disk
                     web_index += "</table>\n"
@@ -1682,7 +1676,8 @@ if __name__ == "__main__":
                     # to 1 Clear web_index of all values by giving web_index
                     # the "header" of the new html page
                     page_counter = page_counter + 1
-                    web_index = web_header(report_date, report_time)
+                    if i < len(groupedlist):
+                        web_index = web_header(report_date, report_time)
                 else:
                     # Write out to the next page
                     web_index += "</table>\n"
