@@ -72,6 +72,28 @@ class CliParser
     options.localscan = nil
     options.rid_dns = false
 
+    # Check for config's file existance, and if present, read in its values
+    begin
+      File.open("eyewitness.config", "r") do |config_file|
+      config_file.each_line do |config_line|
+        if config_line.split("=")[0].downcase == "timeout"
+          options.timeout = config_line.split("=")[1]
+        elsif config_line.split("=")[0].downcase == "useragent"
+          options.ua_name = config_line.split("=")[1]
+        elsif config_line.split("=")[0].downcase == "jitter"
+          options.jitter = config_line.split("=")[1]
+        elsif config_line.split("=")[0].downcase == "results"
+          options.results_number = config_line.split("=")[1]
+        elsif config_line.split("=")[0].downcase == "nodns"
+          options.rid_dns = config_line.split("=")[1]
+        else
+          # Do nothing, since we don't care about anything else in the file
+        end   # End if statement for reading key => values from the config file
+      end
+    rescue Errno::ENOENT
+      # just do nothing, since no config file is present
+    end
+
     opt_parser = OptionParser.new do |opts|
       opts.banner = "Usage: [options]"
 
