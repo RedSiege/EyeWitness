@@ -1,3 +1,6 @@
+[9.14.2014]
+    Modified..: Link structure and results in each page is now working correctly.  Somehow, a bug was introduced at some point.  Hopefully this should be fixed for good now.
+
 [9.10.2014]
     Modified..: Added -? to alias the help option for EyeWitness CLI interface, thanks @digininja! - Github Issue #64
     Modified..: If not given any input, or missing key commands via the cli, EyeWitness will error out and print the command line options it takes.  Thanks to @harmj0y for pestering me every assessment until I finally added this in.
