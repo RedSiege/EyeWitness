@@ -329,6 +329,11 @@ class NmapParser < Nokogiri::XML::SAX::Document
           elsif value.include? "http"
             @protocol = "http://"
             @final_port_number = @potential_port
+
+           # This is needed for port 8081
+           elsif value.include? "blackice"
+           	@protocol = "http://"
+           	@final_port_number = @potential_port
           end
         end
 
