@@ -1,3 +1,6 @@
+[9.16.2014]
+	Modified..: Fixed issue in python nmap parser
+
 [9.15.2014]
 	Modified..: Added an additional service detection to nmap parsing for port 8081
 

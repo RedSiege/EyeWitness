@@ -425,6 +425,7 @@ def logistics(url_file, target_maker, no_dns):
                 check_ip_address = False
                 # We only want hosts that are alive
                 if item.find('status').get('state') == "up":
+                	web_ip_address = None
                     # If there is no hostname then we'll set the IP as the
                     # target 'hostname'
                     if item.find('hostnames/hostname') is not None and\
@@ -477,8 +478,12 @@ def logistics(url_file, target_maker, no_dns):
                                         service or ('http' in service and
                                                     'ssl' in tunnel):
                                     protocol = 'https'
-                                urlBuild = '%s://%s:%s' % (
-                                    protocol, web_ip_address, port)
+                                if web_ip_address is not None:
+	                                urlBuild = '%s://%s:%s' % (
+	                                    protocol, web_ip_address, port)
+	                            else:
+	                            	urlBuild = '%s://%s:%s' % (
+	                                    protocol, target, port)
                                 if urlBuild not in urls:
                                         urls.append(urlBuild)
                                         num_urls += 1
