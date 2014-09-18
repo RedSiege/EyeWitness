@@ -74,4 +74,6 @@ Synology;DiskStation;DS413;modules/BackupReplicationApp/style.css;|(Synology Dis
 Synology;DiskStation;DS713;modules/AdminCenter/style.css|(Synology Diskstation DS713) admin/<nopassword>
 hp color LaserJet 5550;div.hpConsumableBlockData;td class="hpBanner"|(HP Color LaserJet 5550) <nodefaultcreds>
 HP LaserJet P4015;td style="vertical-align;this.LCDispatcher;deviceStatusPage|(HP Color LaserJet P4015) <nodefaultcreds>
-function initFavoriteDevices(;function javaPluginExists();Dominion;function addDiscoveredDevices| Raritan Dominion KX II admin/raritan
+function initFavoriteDevices(;function javaPluginExists();Dominion;function addDiscoveredDevices|Raritan Dominion KX II admin/raritan
+EasyCoder PM4i;navframe;FRAME src;FRAMESET;noresize scrolling| EasyCoder PM4i admin/pass
+Symmetricom SyncServer S100;var serverName;function usernameKey;function answerKey;loginPasswordTable;passedit|Symmetricom SyncServer S100 admin/symmetricom
