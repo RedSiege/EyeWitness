@@ -71,6 +71,8 @@ class CliParser
     options.ua_name = nil
     options.localscan = nil
     options.rid_dns = false
+    options.proxy_ip = nil
+    options.proxy_port = nil
 
     # Check for config's file existance, and if present, read in its values
     begin
@@ -86,6 +88,10 @@ class CliParser
             options.results_number = config_line.split("=")[1].gsub('\n', '').to_i
           elsif config_line.split("=")[0].downcase == "nodns"
             options.rid_dns = config_line.split("=")[1].gsub('\n', '')
+          elsif config_line.split("=")[0].downcase == "proxy_ip"
+            options.proxy_ip = config_line.split("=")[1].gsub('\n', '')
+          elsif config_line.split("=")[0].downcase == "proxy_port"
+            options.proxy_port = config_line.split("=")[1].gsub('\n', '')
           else
             # Do nothing, since we don't care about anything else in the file
           end   # End if statement for reading key => values from the config file
@@ -121,6 +127,14 @@ class CliParser
       opts.on("--createtargets Filename", "Create a file containing web servers",
           "from nmap or nessus output.\n\n") do |target_make|
         options.create_targets = target_make
+      end
+
+      # Proxy Settings for EyeWitness
+      opts.on("--proxyip", "IP address of web proxy proxy.") do |prox_ip|
+        options.proxy_ip = prox_ip
+      end
+      opts.on("--proxyport 8080", Integer, "Port number of web proxy.\n\n") do |prox_port_num|
+        options.proxy_port = prox_port_num
       end
 
       # Timing options
