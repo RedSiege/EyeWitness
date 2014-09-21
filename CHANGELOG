@@ -1,3 +1,6 @@
+[9.20.2014]
+    Modified..: EyeWitness can now use a config file for the ruby version (python support for config files will be added shortly).  Command line options always take precedence over the config file, but the config file is next.  Uncomment any config you would like.  To use a config file, copy the sample config from the configs directory and place it in the same directory as EyeWitness as eyewitness.config.
+
 [9.14.2014]
     Modified..: Link structure and results in each page is now working correctly.  Somehow, a bug was introduced at some point.  Hopefully this should be fixed for good now.
 
