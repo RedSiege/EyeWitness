@@ -644,6 +644,10 @@ def logistics(url_file)
     puts "[*] Error: File not valid, or not found."
     puts "[*] Error: Please rerun and provide a valid file!"
     abort
+  rescue Errno::EISDIR
+    puts "[*] Error: You provided a directory instead of a file!"
+    puts "[*] Error: Please rerun and provide a valid input file containing URLS!\n\n"
+    abort
   end
 
   return file_urls, num_urls
