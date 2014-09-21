@@ -1,5 +1,6 @@
 [9.20.2014]
     Modified..: EyeWitness can now use a config file for the ruby version (python support for config files will be added shortly).  Command line options always take precedence over the config file, but the config file is next.  Uncomment any config you would like.  To use a config file, copy the sample config from the configs directory and place it in the same directory as EyeWitness as eyewitness.config.
+    Modified..: Fixed file input bug.  If provided a directory, EyeWitness should now error out and state that the user needs to provide a valid text file containing URLs.  Thanks to @digininja for letting me know about this error - Github Issue #73
 
 [9.16.2014]
 	Modified..: Fixed issue in python nmap parser
