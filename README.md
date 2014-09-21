@@ -37,6 +37,9 @@ Examples:
 
 ./EyeWitness -f urls.xml -t 8 --open
 
+Config File:
+There is a sample config file within the "configs" directory.  To use a config file, copy it (and modify it as needed) into the same directory as EyeWitness.  Currently, the config file only works with the ruby version, however this will be added into the python version shortly.  The config file is always trumped by the command line options.
+
 Thanks:
 Thanks to Jason Hill (@jasonhillva) for helping to get the xml parsing working.  And thanks to the group of guys I work with giving me their thoughts on new features I could add in, ways to optimize the code, and more.
 
