@@ -1248,16 +1248,6 @@ begin
       puts "\"Let me guess... No pool...\""
       exit
     end
-    # Create the folders that will be used
-    report_folder, report_date, report_time = folder_out(cli_parsed.dir_name, eyewitness_path)
-
-    # Log path only used in ghost for SSL cert issues.  If not needed with selenium
-    # then this can likely be removed.
-    if cli_parsed.dir_name.start_with?('/') or cli_parsed.dir_name.start_with?('C:\\')
-      log_file_path = File.join(cli_parsed.dir_name, report_folder, 'logfile.log')
-    else
-      log_file_path = File.join(report_folder, 'logfile.log')
-    end   # End dir name if statement
 
     # Define a couple default variables
     extra_info = nil
@@ -1268,6 +1258,17 @@ begin
 
   # If only generating a report on a single website
   if !cli_parsed.single_website.nil?
+
+    # Create the folders that will be used
+    report_folder, report_date, report_time = folder_out(cli_parsed.dir_name, eyewitness_path)
+
+    # Log path only used in ghost for SSL cert issues.  If not needed with selenium
+    # then this can likely be removed.
+    if cli_parsed.dir_name.start_with?('/') or cli_parsed.dir_name.start_with?('C:\\')
+      log_file_path = File.join(cli_parsed.dir_name, report_folder, 'logfile.log')
+    else
+      log_file_path = File.join(report_folder, 'logfile.log')
+    end   # End dir name if statement
 
     # Get the selenium driver
     eyewitness_selenium_driver = selenium_driver(cli_parsed.ua_name, cli_parsed.proxy_ip, cli_parsed.proxy_port)
@@ -1347,6 +1348,23 @@ begin
       total_urls = final_url_list.length
 
     end   # End of xml parsing section
+
+    if total_urls == 0
+      puts "[*] Error: There's no URLs to scan with EyeWitness!"
+      puts "[*] Error: Please re-start EyeWitness and provide a file with URLs!\n\n"
+      exit
+    end
+
+    # Create the folders that will be used
+    report_folder, report_date, report_time = folder_out(cli_parsed.dir_name, eyewitness_path)
+
+    # Log path only used in ghost for SSL cert issues.  If not needed with selenium
+    # then this can likely be removed.
+    if cli_parsed.dir_name.start_with?('/') or cli_parsed.dir_name.start_with?('C:\\')
+      log_file_path = File.join(cli_parsed.dir_name, report_folder, 'logfile.log')
+    else
+      log_file_path = File.join(report_folder, 'logfile.log')
+    end   # End dir name if statement
 
     puts "There's a total of #{total_urls} URLs..."
 

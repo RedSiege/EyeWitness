@@ -1,3 +1,6 @@
+[9.22.2014]
+    Modified..: EyeWitness now displays an error if no URLs are passed in, quits out, and doesn't generate the report folder.  Thanks @digininja for the info! - Github Issue #78
+
 [9.21.2014]
     Modified..: Added proxy support to EyeWitness.  Proxy usage requires both an ip and port to be passed via the command line or the config file.  Thanks @digininja for suggesting the feature!  This was a really good idea Robin.  Github Issue #65
 
