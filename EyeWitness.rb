@@ -91,7 +91,7 @@ class CliParser
           elsif config_line.split("=")[0].downcase == "proxy_ip"
             options.proxy_ip = config_line.split("=")[1].gsub('\n', '')
           elsif config_line.split("=")[0].downcase == "proxy_port"
-            options.proxy_port = config_line.split("=")[1].gsub('\n', '')
+            options.proxy_port = config_line.split("=")[1].gsub('\n', '').to_i
           else
             # Do nothing, since we don't care about anything else in the file
           end   # End if statement for reading key => values from the config file
@@ -182,7 +182,13 @@ class CliParser
         puts "[*] Error: You need to provide EyeWitness a valid command!"
         puts "[*] Error: Please restart EyeWitness!\n\n"
         exit
-      end
+      end   # end if statement checking to make sure you gave eyewitness a valid command
+
+      if (!options.proxy_ip.nil? && options.proxy_port.nil?) || (options.proxy_ip.nil? && !options.proxy_port.nil?)
+        puts "[*] Error: When using a proxy, you must provide both the IP and port to use!"
+        puts "[*] Error: Please restart Eyewitness!\n\n"
+        exit
+      end   # End if statement if using proxy and gave IP but not port, or vice versa
 
       return options
     rescue OptionParser::InvalidOption
@@ -810,6 +816,7 @@ def selenium_driver(possible_user_agent, possible_proxy_ip, possible_proxy_port)
       driver = Selenium::WebDriver.for :firefox, :profile => profile
     end   # End checking for proxy within user agent name
   elsif !possible_proxy_ip.nil? && !possible_proxy_port.nil?
+    puts "in the right area"
     profile = Selenium::WebDriver::Firefox::Profile.new
     profile['network.proxy.type'] = 1
     profile['network.proxy.http'] = possible_proxy_ip
