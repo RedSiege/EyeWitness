@@ -93,6 +93,8 @@ class CliParser
             options.proxy_ip = config_line.split("=")[1].gsub('\n', '')
           elsif config_line.split("=")[0].downcase == "proxy_port"
             options.proxy_port = config_line.split("=")[1].gsub('\n', '').to_i
+          elsif config_line.split("=")[0].downcase == "redirects"
+            options.redirection = config_line.split("=")[1].gsub('\n', '')
           else
             # Do nothing, since we don't care about anything else in the file
           end   # End if statement for reading key => values from the config file
@@ -582,13 +584,12 @@ def fetch(uri_str, url_list, limit = 10)
   response = http.request(request)
   case response
   when Net::HTTPSuccess
-    url_list.push("#{uri_str} <- Final URL")
+    url_list.push("<b>#{uri_str}</b> <- Final URL")
     return url_list
   when Net::HTTPRedirection
-    url_list.push("#{uri_str} redirects to...")
+    url_list.push("<b>#{uri_str}</b> redirects to...<br>")
     fetch(response['location'], url_list, limit - 1)
   else
-    response.error!
   end
 end
 
@@ -903,21 +904,15 @@ def source_header_grab(url_to_head, total_timeout, trace_redirect)
     exit
   end # end if statement for starting with http:// or https://
 
+  if trace_redirect
+    # Array containing redirected urls
+    all_redirects = []
+    fetch(url_to_head, all_redirects)
+  end   # End trace redirect if statement
+
   begin
     # actually make the request
     response = http.request(request)
-
-    if trace_redirect
-      case response
-      when Net::HTTPSuccess
-        url_list.push("#{uri_str} <- Final URL")
-      when Net::HTTPRedirection
-        url_list.push("#{uri_str} redirects to...")
-        fetch(response['location'], url_list, limit - 1)
-      else
-        response.error!
-      end
-    end   # End trace redirect if statement
   rescue OpenSSL::SSL::SSLError
     invalid_ssl = true
     http = Net::HTTP.new(uri.host, uri.port)
@@ -949,12 +944,13 @@ def source_header_grab(url_to_head, total_timeout, trace_redirect)
       response = "UNAUTHORIZED"
     end
   end
-  return response, invalid_ssl
+  return response, invalid_ssl, all_redirects
 end   # End header_grab function
 
 
 def table_maker(web_report_html, website_url, possible_creds, page_header_source, source_code_name,
-  screenshot_name, length_difference, iwitness_dir, output_report_path, potential_blank, bad_ssl, page_title)
+  screenshot_name, length_difference, iwitness_dir, output_report_path, potential_blank, bad_ssl,
+  page_title, redirect_list, check_redirs)
 
   web_report_html += "<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">\n"
   web_report_html += "<a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>"
@@ -998,6 +994,18 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
       web_report_html += "<br><br><b>Invalid SSL Certificate</b>"
     end
 
+    if check_redirs
+      web_report_html += "<br><br><b>Redirects:</b><br><br>"
+      if redirect_list.length == 1
+        web_report_html += "<br><br>No Redirections"
+      else
+        redirect_list.each do |ind_url|
+          web_report_html += "#{ind_url}"
+        end
+      end
+      web_report_html += "<br>"
+    end
+
     web_report_html += "<br><br><a href=\"source/#{source_code_name}\" target=\"_blank\">Source Code</a></div></td>\n"
 
     if potential_blank == "TIMEOUTERROR"
@@ -1013,7 +1021,8 @@ def table_maker(web_report_html, website_url, possible_creds, page_header_source
 end   # End table maker function
 
 def multi_table_maker(html_dictionary, website_url, possible_creds, page_header_source, source_code_name,
-  screenshot_name, length_difference, iwitness_dir, output_report_path, potential_blank, bad_ssl, page_title)
+  screenshot_name, length_difference, iwitness_dir, output_report_path, potential_blank, bad_ssl, page_title,
+  possible_redirs, check_redir)
 
   html = "\n<tr>\n<td><div style=\"display: inline-block; width: 300px; word-wrap:break-word\">\n"
   html += "<a href=\"#{website_url}\" target=\"_blank\">#{website_url}</a><br>\n"
@@ -1053,6 +1062,18 @@ def multi_table_maker(html_dictionary, website_url, possible_creds, page_header_
 
     if bad_ssl
       html += "<br><br><b>Invalid SSL Certificate</b>"
+    end
+
+    if check_redir
+      html += "<br><br><b>Redirects:</b><br><br>"
+      if possible_redirs.length == 1
+        html += "<br><br>No Redirections"
+      else
+        possible_redirs.each do |ind_url1|
+          html += "#{ind_url1}"
+        end
+      end
+      html += "<br>"
     end
 
     html += "<br><br><a href=\"source/#{source_code_name}\" target=\"_blank\">Source Code</a></div></td>\n"
@@ -1340,7 +1361,7 @@ begin
     single_source, page_title, web_source_code = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website)
 
     # returns back an object that needs to be iterated over for the headers
-    single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website, cli_parsed.timeout, cli_parsed.redirection)
+    single_site_headers_source, ssl_state, any_redirect = source_header_grab(cli_parsed.single_website, cli_parsed.timeout, cli_parsed.redirection)
 
     if single_site_headers_source == "CONNECTIONDENIED" || single_site_headers_source == "BADURL" || single_site_headers_source == "TIMEDOUT" || single_site_headers_source == "UNKNOWNERROR" || single_site_headers_source == "SSLERROR" || single_site_headers_source == "UNAUTHORIZED"
       # If we hit this condition, there's no source code to check for default creds, so do nothing
@@ -1350,7 +1371,7 @@ begin
 
     web_index = table_maker(web_index, cli_parsed.single_website, single_default_creds,
       single_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-      report_folder, single_source, ssl_state, page_title)
+      report_folder, single_source, ssl_state, page_title, any_redirect, cli_parsed.redirection)
 
     single_page_report(web_index, report_folder)
     eyewitness_selenium_driver.quit
@@ -1462,7 +1483,7 @@ begin
         single_source, page_title, web_source_code = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url)
         
         # returns back an object that needs to be iterated over for the headers and source code
-        multi_site_headers_source, ssl_current_state = source_header_grab(individual_url, cli_parsed.timeout, cli_parsed.redirection)
+        multi_site_headers_source, ssl_current_state, potential_redirects = source_header_grab(individual_url, cli_parsed.timeout, cli_parsed.redirection)
 
         if multi_site_headers_source == "CONNECTIONDENIED" || multi_site_headers_source == "BADURL" || multi_site_headers_source == "TIMEDOUT" || multi_site_headers_source == "UNKNOWNERROR" || multi_site_headers_source == "SSLERROR" || multi_site_headers_source == "UNAUTHORIZED"
           # If we hit this condition, there's no source code to check for default creds, so do nothing
@@ -1474,11 +1495,11 @@ begin
         if !cli_parsed.skip_sort
           html_dictionary = multi_table_maker(html_dictionary, individual_url, multi_site_default_creds,
           multi_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-          report_folder, single_source, ssl_current_state, page_title)
+          report_folder, single_source, ssl_current_state, page_title, potential_redirects, cli_parsed.redirection)
         else
           web_index = table_maker(web_index, individual_url, multi_site_default_creds,
           multi_site_headers_source, source_name, picture_name, unused_length_difference, Dir.pwd,
-          report_folder, single_source, ssl_current_state, page_title)
+          report_folder, single_source, ssl_current_state, page_title, potential_redirects, cli_parsed.redirection)
         end
 
         if !cli_parsed.jitter.nil?

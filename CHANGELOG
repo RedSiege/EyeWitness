@@ -1,8 +1,11 @@
+[10.9.2014]
+    Modified..: EyeWitness now supports website "traceroute" functionality.  This provides really interesting information to see where you may be redirected.  Thanks to @digininja for the suggestion, this is really cool functionality. - Github Issue #75
+
 [9.22.2014]
     Modified..: EyeWitness now displays an error if no URLs are passed in, quits out, and doesn't generate the report folder.  Thanks @digininja for the info! - Github Issue #78
 
 [9.21.2014]
-    Modified..: Added proxy support to EyeWitness.  Proxy usage requires both an ip and port to be passed via the command line or the config file.  Thanks @digininja for suggesting the feature!  This was a really good idea Robin.  Github Issue #65
+    Modified..: Added proxy support to EyeWitness.  Proxy usage requires both an ip and port to be passed via the command line or the config file.  Thanks @digininja for suggesting the feature!  This was a really good idea Robin. - Github Issue #65
 
 [9.20.2014]
     Modified..: EyeWitness can now use a config file for the ruby version (python support for config files will be added shortly).  Command line options always take precedence over the config file, but the config file is next.  Uncomment any config you would like.  To use a config file, copy the sample config from the configs directory and place it in the same directory as EyeWitness as eyewitness.config.
