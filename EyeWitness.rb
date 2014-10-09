@@ -73,6 +73,7 @@ class CliParser
     options.rid_dns = false
     options.proxy_ip = nil
     options.proxy_port = nil
+    options.redirection = nil
 
     # Check for config's file existance, and if present, read in its values
     begin
@@ -127,6 +128,9 @@ class CliParser
       opts.on("--createtargets Filename", "Create a file containing web servers",
           "from nmap or nessus output.\n\n") do |target_make|
         options.create_targets = target_make
+      end
+      opts.on("--redirects", "Show 302 redirections in the report") do |redir|
+        options.redirection = true
       end
 
       # Proxy Settings for EyeWitness
@@ -558,6 +562,37 @@ def default_creds(source_code_path, full_file_path)
 end  #End of default creds function
 
 
+def fetch(uri_str, url_list, limit = 10)
+  # This checks up to 10 redirects.  If it keeps going further, change the limit value
+  raise ArgumentError, 'HTTP redirect too deep' if limit == 0
+
+  uri = URI.parse(uri_str)
+
+  if uri_str.start_with?("http://")
+    # code came from - http://www.rubyinside.com/nethttp-cheat-sheet-2940.html
+    http = Net::HTTP.new(uri.host, uri.port)
+    request = Net::HTTP::Get.new(uri.request_uri)
+  elsif uri_str.start_with?("https://")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    request = Net::HTTP::Get.new(uri.request_uri)
+  end
+
+  response = http.request(request)
+  case response
+  when Net::HTTPSuccess
+    url_list.push("#{uri_str} <- Final URL")
+    return url_list
+  when Net::HTTPRedirection
+    url_list.push("#{uri_str} redirects to...")
+    fetch(response['location'], url_list, limit - 1)
+  else
+    response.error!
+  end
+end
+
+
 def file_names(url_given)
 
   # Create the names of the screenshot and source code file used in the report
@@ -844,7 +879,7 @@ def single_page_report(report_source, full_report_path)
 end   # End single page report function
 
 
-def source_header_grab(url_to_head, total_timeout)
+def source_header_grab(url_to_head, total_timeout, trace_redirect)
 
   invalid_ssl = false
 
@@ -871,6 +906,18 @@ def source_header_grab(url_to_head, total_timeout)
   begin
     # actually make the request
     response = http.request(request)
+
+    if trace_redirect
+      case response
+      when Net::HTTPSuccess
+        url_list.push("#{uri_str} <- Final URL")
+      when Net::HTTPRedirection
+        url_list.push("#{uri_str} redirects to...")
+        fetch(response['location'], url_list, limit - 1)
+      else
+        response.error!
+      end
+    end   # End trace redirect if statement
   rescue OpenSSL::SSL::SSLError
     invalid_ssl = true
     http = Net::HTTP.new(uri.host, uri.port)
@@ -1293,7 +1340,7 @@ begin
     single_source, page_title, web_source_code = capture_screenshot(eyewitness_selenium_driver, report_folder, cli_parsed.single_website)
 
     # returns back an object that needs to be iterated over for the headers
-    single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website, cli_parsed.timeout)
+    single_site_headers_source, ssl_state = source_header_grab(cli_parsed.single_website, cli_parsed.timeout, cli_parsed.redirection)
 
     if single_site_headers_source == "CONNECTIONDENIED" || single_site_headers_source == "BADURL" || single_site_headers_source == "TIMEDOUT" || single_site_headers_source == "UNKNOWNERROR" || single_site_headers_source == "SSLERROR" || single_site_headers_source == "UNAUTHORIZED"
       # If we hit this condition, there's no source code to check for default creds, so do nothing
@@ -1415,7 +1462,7 @@ begin
         single_source, page_title, web_source_code = capture_screenshot(eyewitness_selenium_driver_multi_site, report_folder, individual_url)
         
         # returns back an object that needs to be iterated over for the headers and source code
-        multi_site_headers_source, ssl_current_state = source_header_grab(individual_url, cli_parsed.timeout)
+        multi_site_headers_source, ssl_current_state = source_header_grab(individual_url, cli_parsed.timeout, cli_parsed.redirection)
 
         if multi_site_headers_source == "CONNECTIONDENIED" || multi_site_headers_source == "BADURL" || multi_site_headers_source == "TIMEDOUT" || multi_site_headers_source == "UNKNOWNERROR" || multi_site_headers_source == "SSLERROR" || multi_site_headers_source == "UNAUTHORIZED"
           # If we hit this condition, there's no source code to check for default creds, so do nothing
