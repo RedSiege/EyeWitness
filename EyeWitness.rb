@@ -26,7 +26,7 @@ rescue LoadError => e
 if e.to_s =~ /cannot load such file -- (.*)/
   missing_gem = $1
   puts "\nError: #{missing_gem} gem not installed\n"
-  puts "\t use: \"gem install #{missing_gem}\" to install the required gem\n\n"
+  puts "\t use: \"bundle install\" to install all required gems or \"gem install netaddr\" to install individually\n\n"
   exit
 else
   puts "There was an error loading the gems:"

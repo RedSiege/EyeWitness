@@ -2,6 +2,7 @@
     Modified..: EyeWitness now supports website "traceroute" functionality.  This provides really interesting information to see where you may be redirected.  Thanks to @digininja for the suggestion, this is really cool functionality. - Github Issue #75
     Modified..: Changed error message when EyeWitness is not given a proper command. Thanks Digininja for the suggestion.  - Github Issue #84
     Modified..: Removed debug message left in code.  Thanks for pointing this out @digininja - Github Issue #85
+    Modified..: Updated gem error message when gem is not present.  Thanks @digininja - Github Issue #88
 
 [9.22.2014]
     Modified..: EyeWitness now displays an error if no URLs are passed in, quits out, and doesn't generate the report folder.  Thanks @digininja for the info! - Github Issue #78
