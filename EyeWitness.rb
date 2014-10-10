@@ -852,7 +852,6 @@ def selenium_driver(possible_user_agent, possible_proxy_ip, possible_proxy_port)
       driver = Selenium::WebDriver.for :firefox, :profile => profile
     end   # End checking for proxy within user agent name
   elsif !possible_proxy_ip.nil? && !possible_proxy_port.nil?
-    puts "in the right area"
     profile = Selenium::WebDriver::Firefox::Profile.new
     profile['network.proxy.type'] = 1
     profile['network.proxy.http'] = possible_proxy_ip
