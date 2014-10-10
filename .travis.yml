@@ -1,0 +1,8 @@
+language: python
+python:
+  - "2.7"
+before_install:
+  - cd setup
+  - sudo ./setup.sh
+script:
+  - "sudo ./EyeWitness.py --single www.google.com"
