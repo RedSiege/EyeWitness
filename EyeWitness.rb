@@ -186,7 +186,7 @@ class CliParser
 
       if options.single_website.nil? && options.file_name.nil? && options.nessus_xml.nil? && options.nmap_xml.nil? && options.create_targets.nil? && options.localscan.nil?
         puts "[*] Error: You need to provide EyeWitness a valid command!"
-        puts "[*] Error: Please restart EyeWitness!\n\n"
+        puts "[*] Error: Use --help to show usage options!\n\n"
         exit
       end   # end if statement checking to make sure you gave eyewitness a valid command
 
