@@ -1,5 +1,5 @@
 [10.10.2014]
-    Modified..: Eyewitness is now split between two repos, one for python, one for Ruby.  This will allow for easier issue/feature request tracking.
+    Modified..: Eyewitness is now split between two repos, one for python, one for Ruby.  This will allow for easier issue/feature request tracking. 
 
 [10.9.2014]
     Modified..: EyeWitness now supports website "traceroute" functionality.  This provides really interesting information to see where you may be redirected.  Thanks to @digininja for the suggestion, this is really cool functionality. - Github Issue #75
