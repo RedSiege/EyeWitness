@@ -584,12 +584,20 @@ def fetch(uri_str, url_list, limit = 10)
   response = http.request(request)
   case response
   when Net::HTTPSuccess
-    url_list.push("<b>#{uri_str}</b> <- Final URL")
-    return url_list
+    url_list.push("<b>#{uri_str}</b> <- Final URL<br>")
   when Net::HTTPRedirection
     url_list.push("<b>#{uri_str}</b> redirects to...<br>")
-    fetch(response['location'], url_list, limit - 1)
+    uri = URI.parse(uri_str)
+    base_url = "#{uri.scheme}://#{uri.host}"
+    new_url = URI.parse(response.header['location'])
+    if (new_url.relative?)
+      new_url = base_url + response.header['location']
+      fetch(new_url, url_list, limit - 1)
+    else
+      fetch(response['location'], url_list, limit - 1)
+    end
   else
+    response.error!
   end
 end
 
