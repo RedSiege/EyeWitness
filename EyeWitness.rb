@@ -131,7 +131,7 @@ class CliParser
           "from nmap or nessus output.\n\n") do |target_make|
         options.create_targets = target_make
       end
-      opts.on("--redirects", "Show 302 redirections in the report") do |redir|
+      opts.on("--redirects", "Show web redirections in the report") do |redir|
         options.redirection = true
       end
 
