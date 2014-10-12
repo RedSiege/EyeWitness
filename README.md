@@ -1,6 +1,9 @@
 EyeWitness
 ======
 
+### Status
+[![Build Status](https://travis-ci.org/ChrisTruncer/EyeWitness.png)](https://travis-ci.org/simkimsia/ChrisTruncer/EyeWitness)
+
 EyeWitness is designed to take screenshots of websites, provide some server header info, and identify default credentials if possible.
 
 Inspiration came from Tim Tomes's PeepingTom Script.  I just wanted to change some things, and then it became a thought exercise to write it myself.
