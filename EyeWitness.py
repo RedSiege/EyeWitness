@@ -255,6 +255,203 @@ def scanner(cidr_range, tool_path, system_platform):
     sys.exit()
 
 
+def target_creator(url_file, target_maker, no_dns, command_line_object):
+
+    if target_maker is not None:
+        print "Creating text file containing all web servers..."
+
+    urls = []
+    num_urls = 0
+    use_amap = False
+    try:
+        # Setup variables
+        # The nmap xml parsing code was sent to me and worked on by Jason Hill
+        # (@jasonhillva)
+        http_ports = [80, 8000, 8080, 8081, 8082]
+        https_ports = [443, 8443]
+
+        try:
+            xml_tree = XMLParser.parse(url_file)
+        except IOError:
+            print "Error: EyeWitness needs a text or XML file to parse URLs!"
+            sys.exit()
+        root = xml_tree.getroot()
+
+        if root.tag.lower() == "nmaprun":
+            for item in root.iter('host'):
+                check_ip_address = False
+                # We only want hosts that are alive
+                if item.find('status').get('state') == "up":
+                    web_ip_address = None
+                    # If there is no hostname then we'll set the IP as the
+                    # target 'hostname'
+                    if item.find('hostnames/hostname') is not None and no_dns is False:
+                        target = item.find('hostnames/hostname').get('name')
+                        web_ip_address = item.find('address').get('addr')
+                    else:
+                        target = item.find('address').get('addr')
+                    # find open ports that match the http/https port list or
+                    # have http/https as a service
+                    for ports in item.iter('port'):
+                        if ports.find('state').get('state') == 'open':
+                            port = ports.attrib.get('portid')
+                            try:
+                                service = ports.find('service').get('name')\
+                                    .lower()
+                            except AttributeError:
+                                # This hits when it finds an open port, but
+                                # isn't able to Determine the name of the
+                                # service running on it, so we'll just
+                                # pass in this instance
+                                pass
+                            try:
+                                tunnel = ports.find('service').get('tunnel')\
+                                    .lower()
+                            except AttributeError:
+                                # This hits when it finds an open port, but
+                                # isn't able to Determine the name of the
+                                # service running on it, so we'll just pass
+                                # in this instance
+                                tunnel = "fakeportservicedoesntexist"
+                            if int(port) in http_ports or 'http' in service:
+                                protocol = 'http'
+                                if int(port) in https_ports or 'https' in\
+                                        service or ('http' in service and
+                                                    'ssl' in tunnel):
+                                    protocol = 'https'
+                                urlBuild = '%s://%s:%s' % (protocol, target,
+                                                           port)
+                                if urlBuild not in urls:
+                                    urls.append(urlBuild)
+                                    num_urls += 1
+                                else:
+                                    check_ip_address = True
+
+                        if check_ip_address:
+                            if int(port) in http_ports or 'http' in service:
+                                protocol = 'http'
+                                if int(port) in https_ports or 'https' in\
+                                        service or ('http' in service and
+                                                    'ssl' in tunnel):
+                                    protocol = 'https'
+                                if web_ip_address is not None:
+                                    urlBuild = '%s://%s:%s' % (
+                                        protocol, web_ip_address, port)
+                                else:
+                                    urlBuild = '%s://%s:%s' % (
+                                        protocol, target, port)
+                                if urlBuild not in urls:
+                                        urls.append(urlBuild)
+                                        num_urls += 1
+
+            if target_maker is not None:
+                with open(target_maker, 'w') as target_file:
+                    for item in urls:
+                        target_file.write(item + '\n')
+                print "Target file created (" + target_maker + ").\n"
+                sys.exit()
+            return urls, num_urls
+
+        # Find root level if it is nessus output
+        # This took a little bit to do, to learn to parse the nessus output.
+        # There are a variety of scripts that do it, but also being able to
+        # reference PeepingTom really helped.  Tim did a great job figuring
+        # out how to parse this file format
+        elif root.tag.lower() == "nessusclientdata_v2":
+            # Find each host in the nessus report
+            for host in root.iter("ReportHost"):
+                name = host.get('name')
+                for item in host.iter('ReportItem'):
+                    service_name = item.get('svc_name')
+                    plugin_name = item.get('pluginName')
+                    # I had www, but later checked out PeepingTom and Tim had
+                    # http? and https? for here.  Small tests of mine haven't
+                    # shown those, but as he's smarter than I am, I'll add them
+                    if (service_name in ['www', 'http?', 'https?'] and
+                            plugin_name.lower()
+                            .startswith('service detection')):
+                        port_number = item.get('port')
+                        # Convert essentially to a text string and then strip
+                        # newlines
+                        plugin_output = item.find('plugin_output').text.strip()
+                        # Look to see if web page is over SSL or TLS.
+                        # If so assume it is over https and prepend https,
+                        # otherwise, http
+                        http_output = re.search('TLS', plugin_output) or\
+                            re.search('SSL', plugin_output)
+                        if http_output:
+                            url = "https://" + name + ":" + port_number
+                        else:
+                            url = "http://" + name + ":" + port_number
+                        # Just do a quick check to make sure the url we are
+                        # adding doesn't already exist
+                        if url not in urls:
+                            urls.append(url)
+                            num_urls = num_urls + 1
+
+            if target_maker is not None:
+                with open(target_maker, 'w') as target_file:
+                    for item in urls:
+                        target_file.write(item + '\n')
+                print "Target file created (" + target_maker + ").\n"
+                sys.exit()
+            return urls, num_urls
+
+        else:
+            print "ERROR: EyeWitness only accepts NMap XML files!"
+
+    except XMLParser.ParseError:
+
+        try:
+            # Open the URL file and read all URLs, and reading again to catch
+            # total number of websites
+            with open(url_file) as f:
+                all_urls = [url for url in f if url.strip()]
+
+            for line in all_urls:
+                if "www.thc.org/thc-amap" in line:
+                    use_amap = True
+                    break
+
+            if use_amap is True:
+                with open(url_file) as f:
+                    for line in f:
+                        if "matches http" in line:
+                            prefix = "http://"
+                        elif "matches ssl" in line and "by trigger http" in line:
+                            prefix = "https://"
+                        else:
+                            prefix = None
+
+                        if prefix is not None:
+                            suffix = line.split("Protocol on ")[1].split("/tcp")[0]
+                            urlBuild = '%s%s' % (prefix, suffix)
+                            if urlBuild not in urls:
+                                urls.append(urlBuild)
+                                num_urls += 1
+
+                # Code for parsing amap file and creating a target list within
+                # a file.
+                if target_maker is not None:
+                    with open(target_maker, 'w') as target_file:
+                        for item in urls:
+                            target_file.write(item + '\n')
+                print "Target file created (" + target_maker + ").\n"
+                sys.exit()
+
+            else:
+                for line in all_urls:
+                    urls.append(line)
+                    num_urls += 1
+
+            return urls, num_urls
+
+        except IOError:
+            print "ERROR: You didn't give me a valid file name! I need a valid\
+            file containing URLs!"
+            sys.exit()
+
+
 def title_screen():
     if platform.system() == "Windows":
         os.system('cls')
