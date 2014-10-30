@@ -23,6 +23,23 @@ import platform
 import webbrowser
 
 
+def casper_creator(ua_capture, timeout):
+    # Instantiate Ghost Object
+    if ua_capture is None:
+        ghost = screener.Ghost(wait_timeout=timeout, ignore_ssl_errors=True)
+    else:
+        ghost = screener.Ghost(wait_timeout=timeout,
+                               user_agent=ua_capture, ignore_ssl_errors=True)
+    return ghost
+
+
+def checkHostPort(ip_to_check, port_to_check):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = s.connect_ex((ip_to_check, port_to_check))
+    s.close()
+    return result
+
+
 def cli_parser():
 
     # Command line argument parser
@@ -67,12 +84,12 @@ def cli_parser():
         help="Maximum number of seconds to wait while\
         requesting a web page (Default: 7)")
     timing_options.add_argument(
-        '--jitter', metavar="# of Seconds", default="None",
+        '--jitter', metavar="# of Seconds", default=None,
         help="Randomize URLs and add a random delay between requests")
 
     report_options = parser.add_argument_group('Report Output Options')
     report_options.add_argument(
-        "-d", metavar="Directory Name", default="None",
+        "-d", metavar="Directory Name", default=None,
         help="Directory name for report output")
     report_options.add_argument(
         "--results", metavar="URLs Per Page", default="25", type=int,
@@ -80,16 +97,16 @@ def cli_parser():
 
     ua_options = parser.add_argument_group('Web Options')
     ua_options.add_argument(
-        '--ghost', metavar="Ghost Screenshot Library", default=False,
-        action='store_true', help="Use Ghost to screenshot web pages")
+        '--ghost', default=False, action='store_true',
+        help="Use Ghost to screenshot web pages")
     ua_options.add_argument(
-        '--selenium', metavar="Selenium Screenshot Library", default=False,
-        action='store_true', help="Use Selenium to screenshot web pages")
+        '--selenium', default=False, action='store_true',
+        help="Use Selenium to screenshot web pages")
     ua_options.add_argument(
-        '--useragent', metavar="User Agent", default="None",
+        '--useragent', metavar="User Agent", default=None,
         help="User Agent to use for all requests")
     ua_options.add_argument(
-        '--cycle', metavar="UA Type", default="None",
+        '--cycle', metavar="UA Type", default=False,
         help="User Agent type (Browser, Mobile, Crawler, Scanner, Misc, All)")
     ua_options.add_argument(
         "--difference", metavar="Difference Threshold", default=50, type=int,
@@ -185,8 +202,57 @@ def cli_parser():
             print "[*] Error: Please provide valid CIDR notation!"
             print "[*] Example: 192.168.1.0/24"
             sys.exit()
-
     return current_directory, args
+
+
+def scanner(cidr_range, tool_path, system_platform):
+    # This function was developed by Rohan Vazarkar, and then I slightly
+    # modified it to fit.  Thanks for writing this man.
+    ports = [80, 443, 8080, 8443]
+
+    # Create a list of all identified web servers
+    live_webservers = []
+
+    # Define the timeout limit
+    timeout = 5
+
+    scanner_output_path = join(tool_path, "scanneroutput.txt")
+
+    # Write out the live machine to same path as EyeWitness
+    try:
+        ip_range = IPNetwork(cidr_range)
+        socket.setdefaulttimeout(timeout)
+
+        for ip_to_scan in ip_range:
+            ip_to_scan = str(ip_to_scan)
+            for port in ports:
+                print "[*] Scanning " + ip_to_scan + " on port " + str(port)
+                result = checkHostPort(ip_to_scan, port)
+                if (result == 0):
+                    # port is open, add to the list
+                    if port is 443:
+                        add_to_list = "https://" + ip_to_scan + ":" + str(port)
+                    else:
+                        add_to_list = "http://" + ip_to_scan + ":" + str(port)
+                    print "[*] Potential live webserver at " + add_to_list
+                    live_webservers.append(add_to_list)
+                else:
+                    if (result == 10035 or result == 10060):
+                        # Host is unreachable
+                        pass
+
+    except KeyboardInterrupt:
+        print "[*] Scan interrupted by you rage quitting!"
+        print "[*] Writing out live web servers found so far..."
+
+    # Write out the live machines which were found so far
+    for live_computer in live_webservers:
+        with open(scanner_output_path, 'a') as scanout:
+            scanout.write("{0}{1}".format(live_computer, os.linesep))
+
+    frmt_str = "List of live machines written to: {0}"
+    print frmt_str.format(scanner_output_path)
+    sys.exit()
 
 
 def title_screen():
@@ -194,9 +260,9 @@ def title_screen():
         os.system('cls')
     else:
         os.system('clear')
-    print "#############################################################################"
-    print "#                               EyeWitness                                  #"
-    print "#############################################################################\n"
+    print "################################################################################"
+    print "#                                  EyeWitness                                  #"
+    print "################################################################################\n"
 
     python_info = sys.version_info
     if python_info[0] is not 2 or python_info[1] < 7:
@@ -205,7 +271,6 @@ def title_screen():
         sys.exit()
     else:
         pass
-
     return
 
 
@@ -347,3 +412,22 @@ def validate_ip(val_ip):
                 return False
         return True
     return False
+
+
+if __name__ == "__main__":
+
+    # Print the title header
+    title_screen()
+
+    # Detect the Operating System EyeWitness is running on
+    operating_system = platform.system()
+
+    # Parse command line options and return the filename containing URLS
+    # and how long to wait for each website
+    eyewitness_directory_path, cli_parsed = cli_parser()
+
+    # If the user wants to perform a scan for web servers locally,
+    # then perform the scan, write out to a file, and exit
+    if cli_parsed.localscan:
+        scanner(cli_parsed.localscan, eyewitness_directory_path,
+                operating_system)
