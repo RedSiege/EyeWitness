@@ -41,8 +41,11 @@ def cli_parser():
                            help="Screenshot RDP services!")
     protocols.add_argument("--vnc", default=False, action='store_true',
                            help="Screenshot open VNC services!")
+    protocols.add_argument("--all-protocols", default=False,
+                           action='store_true', help="Screenshot all\
+                           supported protocols!")
 
-    urls_in = parser.add_argument_group('Web Options')
+    urls_in = parser.add_argument_group('Input Options')
     urls_in.add_argument(
         "-f", metavar="Filename",
         help="File containing URLs to screenshot, each on a new line,\
@@ -75,7 +78,13 @@ def cli_parser():
         "--results", metavar="URLs Per Page", default="25", type=int,
         help="Number of URLs per page of the report")
 
-    ua_options = parser.add_argument_group('User Agent Options')
+    ua_options = parser.add_argument_group('Web Options')
+    ua_options.add_argument(
+        '--ghost', metavar="Ghost Screenshot Library", default=False,
+        action='store_true', help="Use Ghost to screenshot web pages")
+    ua_options.add_argument(
+        '--selenium', metavar="Selenium Screenshot Library", default=False,
+        action='store_true', help="Use Selenium to screenshot web pages")
     ua_options.add_argument(
         '--useragent', metavar="User Agent", default="None",
         help="User Agent to use for all requests")
@@ -86,16 +95,6 @@ def cli_parser():
         "--difference", metavar="Difference Threshold", default=50, type=int,
         help="Difference threshold when determining if user agent\
         requests are close \"enough\" (Default: 50)")
-
-    system_options = parser.add_argument_group('Local System Options')
-    system_options.add_argument(
-        "--open", action='store_true',
-        help="Open all URLs in a browser")
-
-    cred_check_options = parser.add_argument_group('Credential Check Options')
-    cred_check_options.add_argument(
-        "--skipcreds", action='store_true',
-        help="Skip checking for default creds")
 
     scan_options = parser.add_argument_group('Scan Options')
     scan_options.add_argument(
