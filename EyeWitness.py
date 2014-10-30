@@ -1144,7 +1144,7 @@ if __name__ == "__main__":
     # If the user wants to perform a scan for web servers locally,
     # then perform the scan, write out to a file, and exit
     if cli_parsed.localscan:
-        scanner(cli.parsed.localscan, script_path, operating_system)
+        scanner(cli_parsed.localscan, script_path, operating_system)
 
     if cli_parsed.createtargets:
         pass
