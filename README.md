@@ -1,8 +1,10 @@
 EyeWitness
 ======
 
+<!---
 ### Status
 [![Build Status](https://travis-ci.org/ChrisTruncer/EyeWitness.png)](https://travis-ci.org/simkimsia/ChrisTruncer/EyeWitness)
+-->
 
 EyeWitness is designed to take screenshots of websites, provide some server header info, and identify default credentials if possible.
 
