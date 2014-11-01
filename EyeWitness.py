@@ -23,13 +23,15 @@ import platform
 import webbrowser
 
 
-def casper_creator(ua_capture, timeout):
+def casper_creator(command_line_object):
     # Instantiate Ghost Object
-    if ua_capture is None:
-        ghost = screener.Ghost(wait_timeout=timeout, ignore_ssl_errors=True)
+    if command_line_object.useragent is None:
+        ghost = screener.Ghost(wait_timeout=command_line_object.t,
+                               ignore_ssl_errors=True)
     else:
-        ghost = screener.Ghost(wait_timeout=timeout,
-                               user_agent=ua_capture, ignore_ssl_errors=True)
+        ghost = screener.Ghost(wait_timeout=command_line_object.t,
+                               user_agent=command_line_object.useragent,
+                               ignore_ssl_errors=True)
     return ghost
 
 
@@ -205,6 +207,66 @@ def cli_parser():
     return current_directory, args
 
 
+def folder_out(dir_name, full_path, local_os):
+
+    # Write out the CSS stylesheet
+    css_page = """img {
+    max-width: 100%;
+    height: auto;
+    }
+    #screenshot{
+    overflow: auto;
+    max-width: 850px;
+    max-height: 550px;
+    }"
+    """.replace('    ', '')
+
+    # Get the date and time, and create output name
+    current_date = time.strftime("%m/%d/%Y")
+    current_time = time.strftime("%H:%M:%S")
+    if dir_name is not "None":
+        output_folder_name = dir_name
+    else:
+        output_folder_name = current_date.replace("/", "") + "_" +\
+            current_time.replace(":", "")
+
+    # Translate *nix and Windows paths accordingly, when we are on Windows the
+    # slashes are replaced with backslashes, for *nix based systems the opposite
+    # is performed.
+    output_folder_name = os.path.normcase(output_folder_name)
+
+    # NOTE: There may be other starting paths for Windows, the C: drive may be
+    #       the most common but it wouldn't cover my external drive for instance.
+    #
+    #       Additionally, we could check for relative paths instead of just
+    #       checking for the current directory or absolute paths. For reference
+    #       use the python documentation, search for os.path, that should contain
+    #       all the info you need to improve your project's code.
+    #
+
+    if output_folder_name.startswith('C:\\') or output_folder_name.startswith("/"):
+        # Create a folder which stores all snapshots
+        # If it starts with a "/" or with 'C:\', then assume it is a full path
+        if not os.path.isdir(output_folder_name):
+            os.makedirs(join(output_folder_name, "screens"))
+            os.makedirs(join(output_folder_name, "source"))
+
+    # If it doesn't start with a "/" or "C:\", then assume it should be in the
+    # same directory as EyeWitness.
+    else:
+        # Create a folder which stores all snapshots
+        # note- os.makedirs
+        full_path = join(full_path, output_folder_name)
+        if not os.path.isdir(full_path):
+            os.makedirs(join(full_path, "screens"))
+            os.makedirs(join(full_path, "source"))
+
+    with open(join(output_folder_name, "style.css"), 'w') as css_file:
+        css_file.write(css_page)
+
+    return output_folder_name, current_date, current_time
+
+
 def scanner(cidr_range, tool_path, system_platform):
     # This function was developed by Rohan Vazarkar, and then I slightly
     # modified it to fit.  Thanks for writing this man.
@@ -255,9 +317,9 @@ def scanner(cidr_range, tool_path, system_platform):
     sys.exit()
 
 
-def target_creator(url_file, target_maker, no_dns, command_line_object):
+def target_creator(command_line_object):
 
-    if target_maker is not None:
+    if command_line_object.createtargets is not None:
         print "Creating text file containing all web servers..."
 
     urls = []
@@ -269,9 +331,11 @@ def target_creator(url_file, target_maker, no_dns, command_line_object):
         # (@jasonhillva)
         http_ports = [80, 8000, 8080, 8081, 8082]
         https_ports = [443, 8443]
+        rdp_port = [3389]
+        vnc_ports = []
 
         try:
-            xml_tree = XMLParser.parse(url_file)
+            xml_tree = XMLParser.parse(command_line_object.f)
         except IOError:
             print "Error: EyeWitness needs a text or XML file to parse URLs!"
             sys.exit()
@@ -285,7 +349,7 @@ def target_creator(url_file, target_maker, no_dns, command_line_object):
                     web_ip_address = None
                     # If there is no hostname then we'll set the IP as the
                     # target 'hostname'
-                    if item.find('hostnames/hostname') is not None and no_dns is False:
+                    if item.find('hostnames/hostname') is not None and command_line_object.no_dns is False:
                         target = item.find('hostnames/hostname').get('name')
                         web_ip_address = item.find('address').get('addr')
                     else:
@@ -344,11 +408,11 @@ def target_creator(url_file, target_maker, no_dns, command_line_object):
                                         urls.append(urlBuild)
                                         num_urls += 1
 
-            if target_maker is not None:
-                with open(target_maker, 'w') as target_file:
+            if command_line_object.createtargets is not None:
+                with open(command_line_object.createtargets, 'w') as target_file:
                     for item in urls:
                         target_file.write(item + '\n')
-                print "Target file created (" + target_maker + ").\n"
+                print "Target file created (" + command_line_object.createtargets + ").\n"
                 sys.exit()
             return urls, num_urls
 
@@ -389,11 +453,11 @@ def target_creator(url_file, target_maker, no_dns, command_line_object):
                             urls.append(url)
                             num_urls = num_urls + 1
 
-            if target_maker is not None:
-                with open(target_maker, 'w') as target_file:
+            if command_line_object.createtargets is not None:
+                with open(command_line_object.createtargets, 'w') as target_file:
                     for item in urls:
                         target_file.write(item + '\n')
-                print "Target file created (" + target_maker + ").\n"
+                print "Target file created (" + command_line_object.createtargets + ").\n"
                 sys.exit()
             return urls, num_urls
 
@@ -405,7 +469,7 @@ def target_creator(url_file, target_maker, no_dns, command_line_object):
         try:
             # Open the URL file and read all URLs, and reading again to catch
             # total number of websites
-            with open(url_file) as f:
+            with open(command_line_object.f) as f:
                 all_urls = [url for url in f if url.strip()]
 
             for line in all_urls:
@@ -414,7 +478,7 @@ def target_creator(url_file, target_maker, no_dns, command_line_object):
                     break
 
             if use_amap is True:
-                with open(url_file) as f:
+                with open(command_line_object.f) as f:
                     for line in f:
                         if "matches http" in line:
                             prefix = "http://"
@@ -432,11 +496,11 @@ def target_creator(url_file, target_maker, no_dns, command_line_object):
 
                 # Code for parsing amap file and creating a target list within
                 # a file.
-                if target_maker is not None:
-                    with open(target_maker, 'w') as target_file:
+                if command_line_object.createtargets is not None:
+                    with open(command_line_object.createtargets, 'w') as target_file:
                         for item in urls:
                             target_file.write(item + '\n')
-                print "Target file created (" + target_maker + ").\n"
+                print "Target file created (" + command_line_object.createtargets + ").\n"
                 sys.exit()
 
             else:
@@ -628,3 +692,28 @@ if __name__ == "__main__":
     if cli_parsed.localscan:
         scanner(cli_parsed.localscan, eyewitness_directory_path,
                 operating_system)
+
+    if cli_parsed.createtargets:
+        pass
+    else:
+        # Create the directory needed and support files
+        report_folder, report_date, report_time = folder_out(cli_parsed,
+            eyewitness_directory_path, operating_system)
+
+        # Change log path if full path is given for output directory
+        if cli_parsed.d.startswith('/') or cli_parsed.d.startswith("C:\\"):
+            # Location of the log file Ghost logs to (to catch SSL errors)
+            log_file_path = join(eyewitness_directory_path, report_folder,
+                                 "logfile.log")
+        else:
+            # Location of the log file Ghost logs to (to catch SSL errors)
+            log_file_path = join(report_folder, "logfile.log")
+
+        if cli_parsed.ghost is True:
+            # If the user wants to cycle through user agents, return the
+            # disctionary of applicable user agents
+            if cli_parsed.cycle is False:
+                ghost_object = casper_creator(cli_parsed)
+            else:
+                ua_dict = user_agent_definition(cli_parsed.cycle)
+                ghost_object = casper_creator(cli_parsed)
