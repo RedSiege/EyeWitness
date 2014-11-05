@@ -713,13 +713,16 @@ if __name__ == "__main__":
 
     if cli_parsed.createtargets:
         all_urls, all_rdp, all_vnc = target_creator
-    else:
-        # Create the directory needed and support files
-        report_folder, report_date, report_time = folder_out(cli_parsed,
-            eyewitness_directory_path, operating_system)
+        sys.exit()
+
+    # Create the directory needed and support files
+    report_folder, report_date, report_time = folder_out(cli_parsed,
+        eyewitness_directory_path, operating_system)
+
+    if cli_parsed.ghost is True:
 
         # Change log path if full path is given for output directory
-        if ((cli_parsed.d.startswith('/') or cli_parsed.d.startswith("C:\\")) and cli_parsed.ghost):
+        if cli_parsed.d.startswith('/') or cli_parsed.d.startswith("C:\\"):
             # Location of the log file Ghost logs to (to catch SSL errors)
             log_file_path = join(eyewitness_directory_path, report_folder,
                                  "logfile.log")
@@ -727,17 +730,37 @@ if __name__ == "__main__":
             # Location of the log file Ghost logs to (to catch SSL errors)
             log_file_path = join(report_folder, "logfile.log")
 
-        if cli_parsed.ghost is True:
-            # If the user wants to cycle through user agents, return the
-            # disctionary of applicable user agents
-            if cli_parsed.cycle is False:
-                ghost_object = casper_creator(cli_parsed)
+        # If the user wants to cycle through user agents, return the
+        # disctionary of applicable user agents
+        if cli_parsed.cycle is False:
+            ghost_object = casper_creator(cli_parsed)
+        else:
+            ua_dict = user_agent_definition(cli_parsed.cycle)
+            ghost_object = casper_creator(cli_parsed)
+
+        # Logging setup
+        logging.basicConfig(filename=log_file_path, level=logging.WARNING)
+        logger = logging.getLogger('ghost')
+
+        # Define a couple default variables
+        extra_info = "None"
+        blank_value = "None"
+        baseline_request = "Baseline"
+        page_length = "None"
+
+        if cli_parsed.single is not "None":
+
+            # If URL doesn't start with http:// or https://, assume it is http://
+            # and add it to URL
+            if cli_parsed.single.startswith('http://') or cli_parsed.single\
+                    .startswith('https://'):
+                pass
             else:
-                ua_dict = user_agent_definition(cli_parsed.cycle)
-                ghost_object = casper_creator(cli_parsed)
+                cli_parsed.single = "http://" + cli_parsed.single
 
-            s
+            # Used for monitoring for blank pages or SSL errors
+            content_blank = 0
 
-        elif cli_parsed.selenium is True:
+    elif cli_parsed.selenium is True:
 
-            # Begin using ghost
+        # Begin using selenium
