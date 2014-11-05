@@ -21,6 +21,7 @@ import difflib
 from netaddr import IPNetwork
 import platform
 import webbrowser
+from selenium import webdriver
 
 
 def casper_creator(command_line_object):
@@ -40,6 +41,21 @@ def checkHostPort(ip_to_check, port_to_check):
     result = s.connect_ex((ip_to_check, port_to_check))
     s.close()
     return result
+
+
+def createSeleniumDriver(user_agent=None, proxy_ip=None, proxy_port=None):
+    profile = webdriver.FirefoxProfile()
+    if user_agent is not None:
+        profile.set_preference('general.useragent.override', user_agent)
+
+    if proxy_ip is not None and proxy_port is not None:
+        profile.set_preference('network.proxy.type', 1)
+        profile.set_preference('network.proxy.http', proxy_ip)
+        profile.set_preference('network.proxy.http_port', proxy_port)
+        profile.set_preference('network.proxy.ssl', proxy_ip)
+        profile.set_preference('network.proxy.ssl_port', proxy_port)
+
+    return webdriver.Firefox(profile)
 
 
 def cli_parser():

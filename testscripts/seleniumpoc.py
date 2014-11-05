@@ -14,15 +14,11 @@ driver = webdriver.Firefox(profile)
 driver.get('http://whatsmyuseragent.com/')
 
 # Selenium with a proxy
-proxhost = "localhost:8080"
 
-proxy = Proxy({
-    'proxyType': ProxyType.MANUAL,
-    'httpProxy': proxhost,
-    'ftpProxy': proxhost,
-    'sslProxy': proxhost,
-    'noProxy': ''
-})
+profile = webdriver.FirefoxProfile()
+profile.set_preference('network.proxy.type', 1)
+profile.set_preference('network.proxy.http', 'localhost')
+profile.set_preference('network.proxy.http_port', 8080)
 
-driver = webdriver.Firefox(proxy=proxy)
+driver = webdriver.Firefox(profile)
 driver.get('http://www.google.com')
