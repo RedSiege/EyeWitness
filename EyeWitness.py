@@ -432,7 +432,7 @@ def target_creator(command_line_object):
                         target_file.write(item + '\n')
                 print "Target file created (" + command_line_object.createtargets + ").\n"
                 sys.exit()
-            return urls, rdp, vnc, num_urls
+            return urls, rdp, vnc
 
         # Find root level if it is nessus output
         # This took a little bit to do, to learn to parse the nessus output.
@@ -477,7 +477,7 @@ def target_creator(command_line_object):
                         target_file.write(item + '\n')
                 print "Target file created (" + command_line_object.createtargets + ").\n"
                 sys.exit()
-            return urls, rdp, vnc, num_urls
+            return urls, rdp, vnc
 
         else:
             print "ERROR: EyeWitness only accepts NMap XML files!"
@@ -526,7 +526,7 @@ def target_creator(command_line_object):
                     urls.append(line)
                     num_urls += 1
 
-            return urls, rdp, vnc, num_urls
+            return urls, rdp, vnc
 
         except IOError:
             print "ERROR: You didn't give me a valid file name! I need a valid\
@@ -712,7 +712,7 @@ if __name__ == "__main__":
                 operating_system)
 
     if cli_parsed.createtargets:
-        target_creator
+        all_urls, all_rdp, all_vnc = target_creator
     else:
         # Create the directory needed and support files
         report_folder, report_date, report_time = folder_out(cli_parsed,
