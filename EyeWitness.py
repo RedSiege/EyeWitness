@@ -701,7 +701,7 @@ if __name__ == "__main__":
             eyewitness_directory_path, operating_system)
 
         # Change log path if full path is given for output directory
-        if cli_parsed.d.startswith('/') or cli_parsed.d.startswith("C:\\"):
+        if ((cli_parsed.d.startswith('/') or cli_parsed.d.startswith("C:\\")) and cli_parsed.ghost):
             # Location of the log file Ghost logs to (to catch SSL errors)
             log_file_path = join(eyewitness_directory_path, report_folder,
                                  "logfile.log")
