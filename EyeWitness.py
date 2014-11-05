@@ -223,6 +223,17 @@ def cli_parser():
     return current_directory, args
 
 
+def file_names(url_given):
+    url_given = url_given.strip()
+    pic_name = url_given
+    pic_name = pic_name.replace("://", ".")
+    pic_name = pic_name.replace(":", ".")
+    pic_name = pic_name.replace("/", "")
+    src_name = pic_name + ".txt"
+    pic_name = pic_name + ".png"
+    return url_given, src_name, pic_name
+
+
 def folder_out(dir_name, full_path, local_os):
 
     # Write out the CSS stylesheet
@@ -693,6 +704,24 @@ def validate_ip(val_ip):
     return False
 
 
+def web_header(real_report_date, real_report_time):
+    # Start our web page report
+    web_index_head = """<html>
+    <head>
+    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+    <title>EyeWitness Report</title>
+    </head>
+    <body>
+    <center>Report Generated on {report_day} at {reporthtml_time}</center>
+    <br><table border=\"1\">
+    <tr>
+    <th>Web Request Info</th>
+    <th>Web Screenshot</th>
+    </tr>""".format(report_day=real_report_date,
+                    reporthtml_time=real_report_time).replace('    ', '')
+    return web_index_head
+
+
 if __name__ == "__main__":
 
     # Print the title header
@@ -761,6 +790,205 @@ if __name__ == "__main__":
             # Used for monitoring for blank pages or SSL errors
             content_blank = 0
 
+            web_index = web_header(report_date, report_time)
+            print "Trying to screenshot " + cli_parsed.single
+
+            # Create the filename to store each website's picture
+            cli_parsed.single, source_name, picture_name = file_names(cli_parsed.single)
+
+            # If a normal single request, then perform the request
+            if cli_parsed.cycle == "None":
+                try:
+                    page, extra_resources = ghost_capture(ghost_object, cli_parsed.single,
+                                                          report_folder,
+                                                          picture_name,
+                                                          eyewitness_directory_path,
+                                                          operating_system)
+
+                    content_blank, single_default_credentials = backup_request(
+                        page, cli_parsed.single, source_name, content_blank, eyewitness_directory_path,
+                        cli_parsed.skipcreds, operating_system)
+
+                    # Create the table info for the single URL (screenshot,
+                    # server headers, etc.)
+                    web_index = table_maker(web_index, cli_parsed.single,
+                                            single_default_credentials,
+                                            page, content_blank, log_file_path,
+                                            blank_value, blank_value, blank_value,
+                                            source_name, picture_name, page_length,
+                                            eyewitness_directory_path, operating_system)
+
+                # Skip a url if Ctrl-C is hit
+                except KeyboardInterrupt:
+                    print "[*] Skipping: " + cli_parsed.single
+                    web_index += """<tr>
+                    <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                    <td>User Skipped this URL</td>
+                    </tr>
+                    """.format(single_given_url=cli_parsed.single).replace('    ', '')
+                # Catch timeout warning
+                except screener.TimeoutError:
+                    print "[*] Hit timeout limit when connecting to: " + cli_parsed.single
+                    web_index += """<tr>
+                    <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
+                    {single_timeout_url}</a></td>
+                    <td>Hit timeout limit while attempting screenshot</td>
+                    </tr>
+                    """.format(single_timeout_url=cli_parsed.single)
+
+            # If cycling through user agents, start that process here
+            # Create a baseline requst, then loop through the dictionary of user
+            # agents, and make requests w/those UAs
+            # Then use comparison function.  If UA request content matches baseline
+            # content, do nothing. If UA request content is different from baseline
+            # add it to report
+            else:
+                # Setup variables to set file names properly
+                original_source = source_name
+                original_screenshot = picture_name
+
+                # Create baseline file names
+                source_name = source_name + "_baseline.txt"
+                picture_name = picture_name + "_baseline.png"
+                request_number = 0
+
+                # Iterate through the user agents the user has selected to use,
+                # and set ghost to use them. Then perform a comparison of the
+                # baseline results to the new results.  If different, add to report
+                for browser_key, user_agent_value in ua_dict.iteritems():
+                    # Create the counter to ensure our file names are unique
+                    source_name = original_source + "_" + browser_key + ".txt"
+                    picture_name = original_screenshot + "_" + browser_key + ".png"
+
+                    # Setting the new user agent
+                    ghost_object.page.setUserAgent(user_agent_value)
+
+                    # Making the request with the new user agent
+                    print "[*] Now making web request with: " + browser_key
+                    try:
+                        if request_number == 0:
+                            # Get baseline screenshot
+                            baseline_page, baseline_extra_resources = \
+                                ghost_capture(ghost_object, cli_parsed.single,
+                                              report_folder, picture_name,
+                                              eyewitness_directory_path, operating_system)
+
+                            # Hack for a bug in Ghost at the moment
+                            baseline_page.content = "None"
+
+                            baseline_content_blank, baseline_default_creds = \
+                                backup_request(baseline_page, cli_parsed.single,
+                                               source_name, content_blank,
+                                               eyewitness_directory_path, cli_parsed.skipcreds,
+                                               operating_system)
+                            extra_info = "This is the baseline request"
+
+                            # Create the table info for the single URL
+                            # (screenshot, server headers, etc.)
+                            web_index = table_maker(web_index, cli_parsed.single,
+                                                    baseline_default_creds,
+                                                    baseline_page,
+                                                    baseline_content_blank,
+                                                    log_file_path, blank_value,
+                                                    browser_key, user_agent_value,
+                                                    source_name, picture_name,
+                                                    baseline_request, eyewitness_directory_path,
+                                                    operating_system)
+
+                            # Move beyond the baseline
+                            request_number = 1
+
+                        else:
+                            new_ua_page, new_ua_extra_resources = \
+                                ghost_capture(ghost_object, cli_parsed.single,
+                                              report_folder, picture_name,
+                                              eyewitness_directory_path,
+                                              operating_system)
+                            try:
+                                # Hack for a bug in Ghost at the moment
+                                new_ua_page.content = "None"
+
+                                new_ua_content_blank, new_ua_default_creds = \
+                                    backup_request(new_ua_page, cli_parsed.single,
+                                                   source_name, content_blank,
+                                                   eyewitness_directory_path, cli_parsed.skipcreds,
+                                                   operating_system)
+
+                                # Function which hashes the original request with
+                                # the new request and checks to see if they are
+                                # identical
+                                same_or_different, total_length_difference = \
+                                    request_comparison(baseline_page.content,
+                                                       new_ua_page.content,
+                                                       cli_parsed.difference)
+
+                                # If they are the same, then go on to the next user
+                                # agent, if they are different, add it to the
+                                # report
+                                if same_or_different:
+                                    pass
+                                else:
+                                    # Create the table info for the single URL
+                                    # (screenshot, server headers, etc.)
+                                    web_index = table_maker(
+                                        web_index, cli_parsed.single,
+                                        new_ua_default_creds, baseline_page,
+                                        baseline_content_blank, log_file_path,
+                                        blank_value, browser_key, user_agent_value,
+                                        source_name, picture_name,
+                                        total_length_difference, eyewitness_directory_path,
+                                        operating_system)
+                            except AttributeError:
+                                print "[*] Unable to request " + cli_parsed.single +\
+                                    " with " + browser_key
+                                web_index += """<tr>
+                                <td><a href=\"{single_given_url}\">\
+                                {single_given_url}</a></td>
+                                <td>Unable to request {single_given_url} with \
+                                {browser_user}.</td>
+                                </tr>
+                                """.format(single_given_url=cli_parsed.single,
+                                           browser_user=browser_key).\
+                                    replace('    ', '')
+                            total_length_difference = "None"
+
+                    # Skip a url if Ctrl-C is hit
+                    except KeyboardInterrupt:
+                        print "[*] Skipping: " + cli_parsed.single
+                        web_index += """<tr>
+                        <td><a href=\"{single_given_url}\">{single_given_url}\
+                        </a></td>
+                        <td>User Skipped this URL</td>
+                        </tr>
+                        """.format(single_given_url=cli_parsed.single).replace('    ', '')
+                    # Catch timeout warning
+                    except screener.TimeoutError:
+                        print "[*] Hit timeout limit when connecting to: "\
+                            + cli_parsed.single
+                        web_index += """<tr>
+                        <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
+                        {single_timeout_url}</a></td>
+                        <td>Hit timeout limit while attempting screenshot</td>
+                        </tr>
+                        """.format(single_timeout_url=cli_parsed.single)
+
+                    # Add Random sleep based off of user provided jitter value
+                    #  if requested
+                    if cli_parsed.jitter is not "None":
+                        sleep_value = random.randint(0, 30)
+                        sleep_value = sleep_value * .01
+                        sleep_value = 1 - sleep_value
+                        sleep_value = sleep_value * int(cli_parsed.jitter)
+                        print "[*] Sleeping for " + str(sleep_value) + " seconds.."
+                        try:
+                            time.sleep(sleep_value)
+                        except KeyboardInterrupt:
+                            print "[*] User cancelled sleep for this URL!"
+
+            # Write out the report for the single URL
+            single_report_page(web_index, eyewitness_directory_path, operating_system)
+
     elif cli_parsed.selenium is True:
 
         # Begin using selenium
+        pass
