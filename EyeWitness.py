@@ -413,7 +413,7 @@ def target_creator(command_line_object):
                                 rdp.append(target)
 
                             if int(port) in vnc_ports or 'vnc' in services:
-                                vnc.append(target)
+                                vnc.append((target, port))
 
                         if check_ip_address:
                             if int(port) in http_ports or 'http' in service:
@@ -476,7 +476,11 @@ def target_creator(command_line_object):
                         if url not in urls:
                             urls.append(url)
                             num_urls = num_urls + 1
-
+                    elif 'vnc' in service_name and plugin_name.lower().startswith('service detection'):
+                        port_number = item.get('port')
+                        vnc.append((name, port))
+                    elif 'msrdp' in service_name and plugin_name.lower().startswith('windows terminal services'):
+                        rdp.append(name)
             if command_line_object.createtargets is not None:
                 with open(command_line_object.createtargets, 'w') as target_file:
                     for item in urls:
