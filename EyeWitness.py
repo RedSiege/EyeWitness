@@ -25,7 +25,7 @@ from selenium import webdriver
 
 
 def backup_request(page_code, outgoing_url, source_code_name, content_value,
-                   iwitness_path, skip_cred_check, system_os):
+                   iwitness_path, system_os):
 
     try:
         # Check if page is blank, due to no-cache.  If so,
@@ -58,11 +58,8 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
         with open(report_file, 'w') as source:
             source.write(page_code.content)
 
-        if skip_cred_check:
-            default_credentials_identified = None
-        else:
-            default_credentials_identified = default_creds(
-                page_code.content, iwitness_path, system_os)
+        default_credentials_identified = default_creds(
+            page_code.content, iwitness_path, system_os)
 
     except AttributeError:
         print "[*] ERROR: Web page possibly blank or SSL error!"
@@ -123,8 +120,9 @@ def cli_parser():
         help=argparse.SUPPRESS)
 
     protocols = parser.add_argument_group('Protocol Options')
-    protocols.add_argument("--web", default=False, action='store_true',
-                           help="Screenshot websites!")
+    protocols.add_argument(
+        "-web", default="None", metavar="[ghost] or [selenium]",
+        help="Select the web screenshot library to use.")
     protocols.add_argument("--rdp", default=False, action='store_true',
                            help="Screenshot RDP services!")
     protocols.add_argument("--vnc", default=False, action='store_true',
@@ -160,7 +158,7 @@ def cli_parser():
 
     report_options = parser.add_argument_group('Report Output Options')
     report_options.add_argument(
-        "-d", metavar="Directory Name", default=None,
+        "-d", metavar="Directory Name", default="None",
         help="Directory name for report output")
     report_options.add_argument(
         "--results", metavar="URLs Per Page", default="25", type=int,
@@ -168,16 +166,10 @@ def cli_parser():
 
     ua_options = parser.add_argument_group('Web Options')
     ua_options.add_argument(
-        '--ghost', default=False, action='store_true',
-        help="Use Ghost to screenshot web pages")
-    ua_options.add_argument(
-        '--selenium', default=False, action='store_true',
-        help="Use Selenium to screenshot web pages")
-    ua_options.add_argument(
         '--useragent', metavar="User Agent", default=None,
         help="User Agent to use for all requests")
     ua_options.add_argument(
-        '--cycle', metavar="UA Type", default=False,
+        '--cycle', metavar="UA Type", default=None,
         help="User Agent type (Browser, Mobile, Crawler, Scanner, Misc, All)")
     ua_options.add_argument(
         "--difference", metavar="Difference Threshold", default=50, type=int,
@@ -349,7 +341,7 @@ def folder_out(dir_name, full_path, local_os):
     # Get the date and time, and create output name
     current_date = time.strftime("%m/%d/%Y")
     current_time = time.strftime("%H:%M:%S")
-    if dir_name is not None:
+    if dir_name is not "None":
         output_folder_name = dir_name
     else:
         output_folder_name = current_date.replace("/", "") + "_" +\
@@ -411,6 +403,11 @@ def ghost_capture(incoming_ghost_object, screen_url, rep_fold, screen_name,
     incoming_ghost_object.capture_to(capture_path)
 
     return ghost_page, ghost_extra_resources
+
+
+def html_encode(dangerous_data):
+    encoded = cgi.escape(dangerous_data, quote=True)
+    return encoded
 
 
 def request_comparison(original_content, new_content, max_difference):
@@ -482,6 +479,23 @@ def scanner(cidr_range, tool_path, system_platform):
     frmt_str = "List of live machines written to: {0}"
     print frmt_str.format(scanner_output_path)
     sys.exit()
+
+
+def single_report_page(report_source, report_path, platform_os):
+    # Close out the html and write it to disk
+    report_source += """</table>
+    </body>
+    </html>
+    """.replace('    ', '')
+
+    if report_folder.startswith('/') or report_folder.startswith("C:\\"):
+        report_file = join(report_folder, "report.html")
+    else:
+        report_file = join(report_path, report_folder, "report.html")
+
+    with open(report_file, 'w') as fo:
+        fo.write(report_source)
+    return
 
 
 def table_maker(web_table_index, website_url, possible_creds, web_page,
@@ -1021,7 +1035,7 @@ if __name__ == "__main__":
     report_folder, report_date, report_time = folder_out(
         cli_parsed.d, eyewitness_directory_path, operating_system)
 
-    if cli_parsed.ghost is True:
+    if cli_parsed.web.lower() == "ghost":
 
         # Change log path if full path is given for output directory
         if cli_parsed.d.startswith('/') or cli_parsed.d.startswith("C:\\"):
@@ -1034,7 +1048,7 @@ if __name__ == "__main__":
 
         # If the user wants to cycle through user agents, return the
         # disctionary of applicable user agents
-        if cli_parsed.cycle is False:
+        if cli_parsed.cycle is None:
             ghost_object = casper_creator(cli_parsed)
         else:
             ua_dict = user_agent_definition(cli_parsed.cycle)
@@ -1050,7 +1064,7 @@ if __name__ == "__main__":
         baseline_request = "Baseline"
         page_length = "None"
 
-        if cli_parsed.single is not "None":
+        if cli_parsed.single is not None:
 
             # If URL doesn't start with http:// or https://, assume it is
             # http:// and add it to URL
@@ -1072,6 +1086,7 @@ if __name__ == "__main__":
 
             # If a normal single request, then perform the request
             if cli_parsed.cycle is None:
+
                 try:
                     page, extra_resources = ghost_capture(
                         ghost_object, cli_parsed.single, report_folder,
@@ -1080,15 +1095,14 @@ if __name__ == "__main__":
 
                     content_blank, single_default_credentials = backup_request(
                         page, cli_parsed.single, source_name, content_blank,
-                        eyewitness_directory_path, cli_parsed.skipcreds,
-                        operating_system)
+                        eyewitness_directory_path, operating_system)
 
                     # Create the table info for the single URL (screenshot,
                     # server headers, etc.)
                     web_index = table_maker(
                         web_index, cli_parsed.single,
                         single_default_credentials, page, content_blank,
-                        log_file_path, blank_value, blank_value, blank_value,
+                        log_file_path, blank_value, blank_value,
                         source_name, picture_name, page_length,
                         eyewitness_directory_path, operating_system)
 
@@ -1158,7 +1172,7 @@ if __name__ == "__main__":
                                     baseline_page, cli_parsed.single,
                                     source_name, content_blank,
                                     eyewitness_directory_path,
-                                    cli_parsed.skipcreds, operating_system)
+                                    operating_system)
                             extra_info = "This is the baseline request"
 
                             # Create the table info for the single URL
@@ -1189,7 +1203,7 @@ if __name__ == "__main__":
                                         new_ua_page, cli_parsed.single,
                                         source_name, content_blank,
                                         eyewitness_directory_path,
-                                        cli_parsed.skipcreds, operating_system)
+                                        operating_system)
 
                                 # Function which hashes the original request
                                 # with the new request and checks to see if
@@ -1266,7 +1280,7 @@ if __name__ == "__main__":
             # Write out the report for the single URL
             single_report_page(web_index, eyewitness_directory_path, operating_system)
 
-    elif cli_parsed.selenium is True:
+    elif cli_parsed.web.lower() == "selenium":
 
         # Begin using selenium
         pass
