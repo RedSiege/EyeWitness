@@ -3,6 +3,7 @@
 # This is the request object that will be created for every IP/URL passed in.
 # It will contain the protocol(s) to be captured, IP/URL, port, response, etc.
 
+
 class RequestObject:
 
     def __init__(self):
