@@ -350,7 +350,7 @@ def target_creator(command_line_object):
         http_ports = [80, 8000, 8080, 8081, 8082]
         https_ports = [443, 8443]
         rdp_port = [3389]
-        vnc_ports = []
+        vnc_ports = [5900, 5901]
 
         try:
             xml_tree = XMLParser.parse(command_line_object.f)
@@ -408,6 +408,12 @@ def target_creator(command_line_object):
                                     num_urls += 1
                                 else:
                                     check_ip_address = True
+
+                            if int(port) in rdp_ports or 'ms-wbt' in service:
+                                rdp.append(target)
+
+                            if int(port) in vnc_ports or 'vnc' in services:
+                                vnc.append(target)
 
                         if check_ip_address:
                             if int(port) in http_ports or 'http' in service:
