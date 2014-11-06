@@ -43,19 +43,22 @@ def checkHostPort(ip_to_check, port_to_check):
     return result
 
 
-def createSeleniumDriver(user_agent=None, proxy_ip=None, proxy_port=None):
+def createSeleniumDriver(cli_parsed):
     profile = webdriver.FirefoxProfile()
-    if user_agent is not None:
-        profile.set_preference('general.useragent.override', user_agent)
 
-    if proxy_ip is not None and proxy_port is not None:
+    if cli_parsed.user_agent is not None:
+        profile.set_preference('general.useragent.override', cli_parsed.user_agent)
+
+    if cli_parsed.proxy_ip is not None and cli_parsed.proxy_port is not None:
         profile.set_preference('network.proxy.type', 1)
-        profile.set_preference('network.proxy.http', proxy_ip)
-        profile.set_preference('network.proxy.http_port', proxy_port)
-        profile.set_preference('network.proxy.ssl', proxy_ip)
-        profile.set_preference('network.proxy.ssl_port', proxy_port)
+        profile.set_preference('network.proxy.http', cli_parsed.proxy_ip)
+        profile.set_preference('network.proxy.http_port', cli_parsed.proxy_port)
+        profile.set_preference('network.proxy.ssl', cli_parsed.proxy_ip)
+        profile.set_preference('network.proxy.ssl_port', cli_parsed.proxy_port)
 
-    return webdriver.Firefox(profile)
+    driver = webdriver.Firefox(profile)
+    driver.set_page_load_timeout(cli_parsed.t)
+    return driver
 
 
 def cli_parser():
@@ -500,41 +503,50 @@ def target_creator(command_line_object):
             with open(command_line_object.f) as f:
                 all_urls = [url for url in f if url.strip()]
 
+            # for line in all_urls:
+            #    if "www.thc.org/thc-amap" in line:
+            #        use_amap = True
+            #        break
+
+            # if use_amap is True:
+            #     with open(command_line_object.f) as f:
+            #         for line in f:
+            #             if "matches http" in line:
+            #                 prefix = "http://"
+            #             elif "matches ssl" in line and "by trigger http" in line:
+            #                 prefix = "https://"
+            #             else:
+            #                 prefix = None
+
+            #             if prefix is not None:
+            #                 suffix = line.split("Protocol on ")[1].split("/tcp")[0]
+            #                 urlBuild = '%s%s' % (prefix, suffix)
+            #                 if urlBuild not in urls:
+            #                     urls.append(urlBuild)
+            #                     num_urls += 1
+
+            #     # Code for parsing amap file and creating a target list within
+            #     # a file.
+            #     if command_line_object.createtargets is not None:
+            #         with open(command_line_object.createtargets, 'w') as target_file:
+            #             for item in urls:
+            #                 target_file.write(item + '\n')
+            #     print "Target file created (" + command_line_object.createtargets + ").\n"
+            #     sys.exit()
+
+            # else:
             for line in all_urls:
-                if "www.thc.org/thc-amap" in line:
-                    use_amap = True
-                    break
-
-            if use_amap is True:
-                with open(command_line_object.f) as f:
-                    for line in f:
-                        if "matches http" in line:
-                            prefix = "http://"
-                        elif "matches ssl" in line and "by trigger http" in line:
-                            prefix = "https://"
-                        else:
-                            prefix = None
-
-                        if prefix is not None:
-                            suffix = line.split("Protocol on ")[1].split("/tcp")[0]
-                            urlBuild = '%s%s' % (prefix, suffix)
-                            if urlBuild not in urls:
-                                urls.append(urlBuild)
-                                num_urls += 1
-
-                # Code for parsing amap file and creating a target list within
-                # a file.
-                if command_line_object.createtargets is not None:
-                    with open(command_line_object.createtargets, 'w') as target_file:
-                        for item in urls:
-                            target_file.write(item + '\n')
-                print "Target file created (" + command_line_object.createtargets + ").\n"
-                sys.exit()
-
-            else:
-                for line in all_urls:
+                if line.startswith('http://') or line.startswith('https://'):
                     urls.append(line)
-                    num_urls += 1
+                elif line.startswith('rdp://'):
+                    rdp.append(line[6:])
+                elif line.startswith('vnc://'):
+                    vnc.append(line[6:])
+                else:
+                    urls.append(line)
+                    rdp.append(line)
+                    vnc.append(line)
+                num_urls += 1
 
             return urls, rdp, vnc
 
