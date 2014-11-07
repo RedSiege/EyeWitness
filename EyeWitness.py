@@ -93,19 +93,22 @@ def checkHostPort(ip_to_check, port_to_check):
     return result
 
 
-def createSeleniumDriver(user_agent=None, proxy_ip=None, proxy_port=None):
+def createSeleniumDriver(cli_parsed):
     profile = webdriver.FirefoxProfile()
-    if user_agent is not None:
-        profile.set_preference('general.useragent.override', user_agent)
 
-    if proxy_ip is not None and proxy_port is not None:
+    if cli_parsed.user_agent is not None:
+        profile.set_preference('general.useragent.override', cli_parsed.user_agent)
+
+    if cli_parsed.proxy_ip is not None and cli_parsed.proxy_port is not None:
         profile.set_preference('network.proxy.type', 1)
-        profile.set_preference('network.proxy.http', proxy_ip)
-        profile.set_preference('network.proxy.http_port', proxy_port)
-        profile.set_preference('network.proxy.ssl', proxy_ip)
-        profile.set_preference('network.proxy.ssl_port', proxy_port)
+        profile.set_preference('network.proxy.http', cli_parsed.proxy_ip)
+        profile.set_preference('network.proxy.http_port', cli_parsed.proxy_port)
+        profile.set_preference('network.proxy.ssl', cli_parsed.proxy_ip)
+        profile.set_preference('network.proxy.ssl_port', cli_parsed.proxy_port)
 
-    return webdriver.Firefox(profile)
+    driver = webdriver.Firefox(profile)
+    driver.set_page_load_timeout(cli_parsed.t)
+    return driver
 
 
 def cli_parser():
@@ -648,7 +651,7 @@ def target_creator(command_line_object):
         http_ports = [80, 8000, 8080, 8081, 8082]
         https_ports = [443, 8443]
         rdp_port = [3389]
-        vnc_ports = []
+        vnc_ports = [5900, 5901]
 
         try:
             xml_tree = XMLParser.parse(command_line_object.f)
@@ -706,6 +709,12 @@ def target_creator(command_line_object):
                                     num_urls += 1
                                 else:
                                     check_ip_address = True
+
+                            if int(port) in rdp_ports or 'ms-wbt' in service:
+                                rdp.append(target)
+
+                            if int(port) in vnc_ports or 'vnc' in services:
+                                vnc.append((target, port))
 
                         if check_ip_address:
                             if int(port) in http_ports or 'http' in service:
@@ -768,7 +777,11 @@ def target_creator(command_line_object):
                         if url not in urls:
                             urls.append(url)
                             num_urls = num_urls + 1
-
+                    elif 'vnc' in service_name and plugin_name.lower().startswith('service detection'):
+                        port_number = item.get('port')
+                        vnc.append((name, port))
+                    elif 'msrdp' in service_name and plugin_name.lower().startswith('windows terminal services'):
+                        rdp.append(name)
             if command_line_object.createtargets is not None:
                 with open(command_line_object.createtargets, 'w') as target_file:
                     for item in urls:
@@ -788,41 +801,50 @@ def target_creator(command_line_object):
             with open(command_line_object.f) as f:
                 all_urls = [url for url in f if url.strip()]
 
+            # for line in all_urls:
+            #    if "www.thc.org/thc-amap" in line:
+            #        use_amap = True
+            #        break
+
+            # if use_amap is True:
+            #     with open(command_line_object.f) as f:
+            #         for line in f:
+            #             if "matches http" in line:
+            #                 prefix = "http://"
+            #             elif "matches ssl" in line and "by trigger http" in line:
+            #                 prefix = "https://"
+            #             else:
+            #                 prefix = None
+
+            #             if prefix is not None:
+            #                 suffix = line.split("Protocol on ")[1].split("/tcp")[0]
+            #                 urlBuild = '%s%s' % (prefix, suffix)
+            #                 if urlBuild not in urls:
+            #                     urls.append(urlBuild)
+            #                     num_urls += 1
+
+            #     # Code for parsing amap file and creating a target list within
+            #     # a file.
+            #     if command_line_object.createtargets is not None:
+            #         with open(command_line_object.createtargets, 'w') as target_file:
+            #             for item in urls:
+            #                 target_file.write(item + '\n')
+            #     print "Target file created (" + command_line_object.createtargets + ").\n"
+            #     sys.exit()
+
+            # else:
             for line in all_urls:
-                if "www.thc.org/thc-amap" in line:
-                    use_amap = True
-                    break
-
-            if use_amap is True:
-                with open(command_line_object.f) as f:
-                    for line in f:
-                        if "matches http" in line:
-                            prefix = "http://"
-                        elif "matches ssl" in line and "by trigger http" in line:
-                            prefix = "https://"
-                        else:
-                            prefix = None
-
-                        if prefix is not None:
-                            suffix = line.split("Protocol on ")[1].split("/tcp")[0]
-                            urlBuild = '%s%s' % (prefix, suffix)
-                            if urlBuild not in urls:
-                                urls.append(urlBuild)
-                                num_urls += 1
-
-                # Code for parsing amap file and creating a target list within
-                # a file.
-                if command_line_object.createtargets is not None:
-                    with open(command_line_object.createtargets, 'w') as target_file:
-                        for item in urls:
-                            target_file.write(item + '\n')
-                print "Target file created (" + command_line_object.createtargets + ").\n"
-                sys.exit()
-
-            else:
-                for line in all_urls:
+                if line.startswith('http://') or line.startswith('https://'):
                     urls.append(line)
-                    num_urls += 1
+                elif line.startswith('rdp://'):
+                    rdp.append(line[6:])
+                elif line.startswith('vnc://'):
+                    vnc.append(line[6:])
+                else:
+                    urls.append(line)
+                    rdp.append(line)
+                    vnc.append(line)
+                num_urls += 1
 
             return urls, rdp, vnc
 
