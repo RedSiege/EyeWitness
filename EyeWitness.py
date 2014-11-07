@@ -178,6 +178,12 @@ def cli_parser():
         "--difference", metavar="Difference Threshold", default=50, type=int,
         help="Difference threshold when determining if user agent\
         requests are close \"enough\" (Default: 50)")
+    ua_options.add_argument(
+        '--proxy-ip', metavar="127.0.0.1", default=None,
+        help="IP of web proxy to go through")
+    ua_options.add_argument(
+        '--proxy-port', metavar="8080", default=None, type=int,
+        help="Port of web proxy to go through")
 
     scan_options = parser.add_argument_group('Scan Options')
     scan_options.add_argument(
