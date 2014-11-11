@@ -17,15 +17,15 @@ import re
 import logging
 import random
 import socket
-import difflib
+#import difflib
 from netaddr import IPNetwork
 import platform
-import webbrowser
+#import webbrowser
 from selenium import webdriver
 
 
 def backup_request(page_code, outgoing_url, source_code_name, content_value,
-                   iwitness_path, system_os):
+                   iwitness_path, system_os, report_out_path):
 
     try:
         # Check if page is blank, due to no-cache.  If so,
@@ -49,10 +49,10 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
                 + ".".replace('    ', '')
 
         # Generate the path of the report file
-        if report_folder.startswith("/") or report_folder.startswith("C:\\"):
-            report_file = join(report_folder, "source", source_code_name)
+        if report_out_path.startswith("/") or report_out_path.startswith("C:\\"):
+            report_file = join(report_out_path, "source", source_code_name)
         else:
-            report_file = join(iwitness_path, report_folder, "source",
+            report_file = join(iwitness_path, report_out_path, "source",
                                source_code_name)
         # Write the obtained source to file
         with open(report_file, 'w') as source:
@@ -111,6 +111,65 @@ def createSeleniumDriver(cli_parsed):
     return driver
 
 
+def create_link_structure(
+    number_of_pages, ew_script_path, report_out_path, report_out_html):
+    if number_of_pages == 1:
+        single_report_page(report_out_html, ew_script_path, operating_system,
+                           report_out_path)
+    else:
+        # Write out our extra page
+        report_out_html += "</table>\n"
+        with open(join(ew_script_path, report_out_path, "report_page" +
+                  str(number_of_pages+1) + ".html"), 'w') as page_out:
+            page_out.write(report_out_html)
+
+        # Create the link structure at the bottom
+        link_text = "\n<center><br>Links: <a href=\"report.html\">Page 1</a> "
+        for page in range(2, number_of_pages + 2):
+            link_text += "<a href=\"report_page" + str(page) + ".html\">\
+            Page " + str(page) + "</a> ".replace('    ', '')
+        top_links = link_text
+        link_text += "</center>\n</body>\n"
+        link_text += "</html>"
+
+        # Write out link structure to bottom of report
+        # and add it to the top as well
+        with open(join(ew_script_path, report_out_path, "report.html"), 'a')\
+                as report_append:
+            report_append.write(link_text)
+
+        with open(join(ew_script_path, report_out_path, "report.html"), 'r')\
+                as link_add:
+            content = link_add.readlines()
+
+        content.insert(6, "<center>" + top_links + "</center>\n")
+        content = "".join(content)
+
+        with open(join(ew_script_path, report_out_path, "report.html"), 'w')\
+                as final_report_page:
+            final_report_page.write(content)
+
+        # Write out link structure to bottom of extra pages
+        # Also add links to the top of extra pages
+        for page_footer in range(2, number_of_pages + 2):
+            with open(join(ew_script_path, report_out_path, "report_page" +
+                      str(page_footer) + ".html"), 'a') as page_append:
+                page_append.write(link_text)
+
+        for page_footer in range(2, number_of_pages + 2):
+            with open(join(ew_script_path, report_out_path, "report_page" +
+                      str(page_footer) + ".html"), 'r') as link_add:
+                content = link_add.readlines()
+
+            content.insert(6, "<center>" + top_links + "</center>\n")
+            content = "".join(content)
+
+            with open(join(ew_script_path, report_out_path, "report_page" +
+                      str(page_footer) + ".html"), 'w') as final_reports_page:
+                final_reports_page.write(content)
+    return
+
+
 def cli_parser():
 
     # Command line argument parser
@@ -124,7 +183,7 @@ def cli_parser():
 
     protocols = parser.add_argument_group('Protocol Options')
     protocols.add_argument(
-        "-web", default="None", metavar="[ghost] or [selenium]",
+        "--web", default="None", metavar="[ghost] or [selenium]",
         help="Select the web screenshot library to use.")
     protocols.add_argument("--rdp", default=False, action='store_true',
                            help="Screenshot RDP services!")
@@ -490,17 +549,18 @@ def scanner(cidr_range, tool_path, system_platform):
     sys.exit()
 
 
-def single_report_page(report_source, report_path, platform_os):
+def single_report_page(
+        report_source, report_path, platform_os, report_out_path):
     # Close out the html and write it to disk
     report_source += """</table>
     </body>
     </html>
     """.replace('    ', '')
 
-    if report_folder.startswith('/') or report_folder.startswith("C:\\"):
-        report_file = join(report_folder, "report.html")
+    if report_out_path.startswith('/') or report_out_path.startswith("C:\\"):
+        report_file = join(report_out_path, "report.html")
     else:
-        report_file = join(report_path, report_folder, "report.html")
+        report_file = join(report_path, report_out_path, "report.html")
 
     with open(report_file, 'w') as fo:
         fo.write(report_source)
@@ -510,7 +570,7 @@ def single_report_page(report_source, report_path, platform_os):
 def table_maker(web_table_index, website_url, possible_creds, web_page,
                 content_empty, log_path, browser_out, ua_out,
                 source_code_table, screenshot_table, length_difference,
-                iwitness_path, system_os):
+                iwitness_path, system_os, report_out_path):
 
     # Continue adding to the table assuming that we were able
     # to capture the screenshot.  Only add elements if they exist
@@ -572,10 +632,10 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
     # Ghost saves unicode strings as some crazy format, so reopen the source
     # files and read title tags from there
     filepath = ""
-    if report_folder.startswith('/') or report_folder.startswith("C:\\"):
-        filepath = join(report_folder, "source", source_code_table)
+    if report_out_path.startswith('/') or report_out_path.startswith("C:\\"):
+        filepath = join(report_out_path, "source", source_code_table)
     else:
-        filepath = join(iwitness_path, report_folder, "source", source_code_table)
+        filepath = join(iwitness_path, report_out_path, "source", source_code_table)
 
     if (os.path.isfile(filepath)):
         with open(filepath, 'r') as source:
@@ -1091,6 +1151,7 @@ if __name__ == "__main__":
         blank_value = "None"
         baseline_request = "Baseline"
         page_length = "None"
+        page_counter = 1
 
         if cli_parsed.single is not None:
 
@@ -1123,7 +1184,7 @@ if __name__ == "__main__":
 
                     content_blank, single_default_credentials = backup_request(
                         page, cli_parsed.single, source_name, content_blank,
-                        eyewitness_directory_path, operating_system)
+                        eyewitness_directory_path, operating_system, report_folder)
 
                     # Create the table info for the single URL (screenshot,
                     # server headers, etc.)
@@ -1132,7 +1193,8 @@ if __name__ == "__main__":
                         single_default_credentials, page, content_blank,
                         log_file_path, blank_value, blank_value,
                         source_name, picture_name, page_length,
-                        eyewitness_directory_path, operating_system)
+                        eyewitness_directory_path, operating_system,
+                        report_folder)
 
                 # Skip a url if Ctrl-C is hit
                 except KeyboardInterrupt:
@@ -1200,7 +1262,7 @@ if __name__ == "__main__":
                                     baseline_page, cli_parsed.single,
                                     source_name, content_blank,
                                     eyewitness_directory_path,
-                                    operating_system)
+                                    operating_system, report_folder)
                             extra_info = "This is the baseline request"
 
                             # Create the table info for the single URL
@@ -1211,7 +1273,8 @@ if __name__ == "__main__":
                                 baseline_content_blank, log_file_path,
                                 blank_value, browser_key, user_agent_value,
                                 source_name, picture_name, baseline_request,
-                                eyewitness_directory_path, operating_system)
+                                eyewitness_directory_path, operating_system,
+                                report_folder)
 
                             # Move beyond the baseline
                             request_number = 1
@@ -1231,7 +1294,7 @@ if __name__ == "__main__":
                                         new_ua_page, cli_parsed.single,
                                         source_name, content_blank,
                                         eyewitness_directory_path,
-                                        operating_system)
+                                        operating_system, report_folder)
 
                                 # Function which hashes the original request
                                 # with the new request and checks to see if
@@ -1257,7 +1320,7 @@ if __name__ == "__main__":
                                         blank_value, browser_key, user_agent_value,
                                         source_name, picture_name,
                                         total_length_difference, eyewitness_directory_path,
-                                        operating_system)
+                                        operating_system, report_folder)
                             except AttributeError:
                                 print "[*] Unable to request " + cli_parsed.single +\
                                     " with " + browser_key
@@ -1306,7 +1369,21 @@ if __name__ == "__main__":
                             print "[*] User cancelled sleep for this URL!"
 
             # Write out the report for the single URL
-            single_report_page(web_index, eyewitness_directory_path, operating_system)
+            create_link_structure(
+                page_counter, eyewitness_directory_path, report_folder,
+                web_index)
+
+            # Kill xvfb session if started
+            if hasattr(ghost_object, 'xvfb'):
+                ghost_object.xvfb.terminate()
+
+            if operating_system == "Windows":
+                # Stupid windows won't let me delete the log file
+                pass
+            else:
+                os.system('rm ' + log_file_path)
+            print "\n[*] Done! Check out the report in the " + report_folder +\
+                " folder!"
 
     elif cli_parsed.web.lower() == "selenium":
 
