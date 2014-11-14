@@ -22,6 +22,7 @@ from netaddr import IPNetwork
 import platform
 #import webbrowser
 from selenium import webdriver
+from objects import request_object
 
 
 def backup_request(page_code, outgoing_url, source_code_name, content_value,
@@ -382,14 +383,12 @@ def default_creds(page_content, full_file_path, local_system_os):
 
 
 def file_names(url_given):
-    url_given = url_given.strip()
-    pic_name = url_given
-    pic_name = pic_name.replace("://", ".")
+    pic_name = url_given.replace("://", ".")
     pic_name = pic_name.replace(":", ".")
     pic_name = pic_name.replace("/", "")
     src_name = pic_name + ".txt"
     pic_name = pic_name + ".png"
-    return url_given, src_name, pic_name
+    return src_name, pic_name
 
 
 def folder_out(dir_name, full_path, local_os):
@@ -454,13 +453,14 @@ def folder_out(dir_name, full_path, local_os):
     return output_folder_name, current_date, current_time
 
 
-def ghost_capture(incoming_ghost_object, screen_url, rep_fold, screen_name,
+def ghost_capture(incoming_ghost_object, requesting_object, rep_fold, screen_name,
                   ewitness_dir_path, local_platform):
     # Try to get our screenshot and source code of the page
     # Write both out to disk if possible (if we can get one,
     # we can get the other)
     ghost_page, ghost_extra_resources = incoming_ghost_object.open(
-        screen_url, auth=('none', 'none'), default_popup_response=True)
+        requesting_object.return_remote_system_address(),
+        auth=('none', 'none'), default_popup_response=True)
 
     if rep_fold.startswith("/") or rep_fold.startswith("C:\\"):
         capture_path = join(
@@ -470,7 +470,10 @@ def ghost_capture(incoming_ghost_object, screen_url, rep_fold, screen_name,
 
     incoming_ghost_object.capture_to(capture_path)
 
-    return ghost_page, ghost_extra_resources
+    requesting_object.set_web_response_attributes(
+        ghost_page.content, ghost_page.headers, capture_path)
+
+    return requesting_object
 
 
 def html_encode(dangerous_data):
@@ -1155,36 +1158,36 @@ if __name__ == "__main__":
 
         if cli_parsed.single is not None:
 
-            # If URL doesn't start with http:// or https://, assume it is
-            # http:// and add it to URL
-            if cli_parsed.single.startswith('http://') or cli_parsed.single\
-                    .startswith('https://'):
-                pass
-            else:
-                cli_parsed.single = "http://" + cli_parsed.single
+            # Create the request object that will be passed around
+            web_request_object = request_object.RequestObject()
+
+            # Set the web request info for the request object
+            web_request_object.set_web_request_attributes(cli_parsed.single)
 
             # Used for monitoring for blank pages or SSL errors
             content_blank = 0
 
             web_index = web_header(report_date, report_time)
-            print "Trying to screenshot " + cli_parsed.single
+            print "Trying to screenshot " + web_request_object.\
+                return_remote_system_address()
 
             # Create the filename to store each website's picture
-            cli_parsed.single, source_name, picture_name = file_names(
-                cli_parsed.single)
+            source_name, picture_name = file_names(
+                web_request_object.return_remote_system_address())
 
             # If a normal single request, then perform the request
             if cli_parsed.cycle is None:
 
                 try:
-                    page, extra_resources = ghost_capture(
-                        ghost_object, cli_parsed.single, report_folder,
+                    web_request_object = ghost_capture(
+                        ghost_object, web_request_object, report_folder,
                         picture_name, eyewitness_directory_path,
                         operating_system)
 
                     content_blank, single_default_credentials = backup_request(
-                        page, cli_parsed.single, source_name, content_blank,
-                        eyewitness_directory_path, operating_system, report_folder)
+                        web_request_object, cli_parsed.single, source_name,
+                        content_blank, eyewitness_directory_path,
+                        operating_system, report_folder)
 
                     # Create the table info for the single URL (screenshot,
                     # server headers, etc.)

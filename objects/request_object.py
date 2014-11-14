@@ -10,32 +10,45 @@ class RequestObject:
         self.web_protocol = False
         self.rdp_protocol = False
         self.vnc_protocol = False
-        self.rdp_port = 3389
-        self.vnc_port = 5900
-        self.remote_ip = None
+        self.rdp_port = None
+        self.vnc_port = None
+        self.remote_system = None
         self.web_source_code = None
         self.web_server_headers = None
         self.web_screenshot_path = None
+        self.web_default_credentials = None
         self.rdp_screenshot_path = None
         self.vnc_screenshot_path = None
 
-    def set_web_request_attributes(self):
+    def set_web_request_attributes(self, web_address):
         # attributes for the upcoming web request
         self.web_protocol = True
-        self.remote_ip = "X"
+
+        # If URL doesn't start with http:// or https://, assume it is
+        # http:// and add it to URL
+        if web_address.startswith('http://') or web_address.\
+                startswith('https://'):
+            pass
+        else:
+            web_address = "http://" + web_address
+
+        self.remote_system = web_address.strip()
         return
 
-    def set_web_response_attributes(self):
+    def return_remote_system_address(self):
+        return self.remote_system
+
+    def set_web_response_attributes(self, source, headers, web_screen_path):
         # Attributes based on the server response
-        self.web_source_code = "X"
-        self.web_server_headers = "Y"
-        self.web_screenshot_path = "Z"
+        self.web_source_code = source
+        self.web_server_headers = headers
+        self.web_screenshot_path = web_screen_path
         return
 
     def set_rdp_request_attributes(self):
         # Attributes for connecting to RDP services
         self.rdp_protocol = True
-        self.remote_ip = "X"
+        self.remote_system = "X"
         return
 
     def set_rdp_response_attributes(self):
