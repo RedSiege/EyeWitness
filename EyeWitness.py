@@ -25,28 +25,28 @@ from selenium import webdriver
 from objects import request_object
 
 
-def backup_request(page_code, outgoing_url, source_code_name, content_value,
-                   iwitness_path, system_os, report_out_path):
+def backup_request(request_object, source_code_name,
+                   content_value, iwitness_path, system_os, report_out_path):
 
     try:
         # Check if page is blank, due to no-cache.  If so,
         # make a backup request via urllib2
-        if page_code.content == "None":
+        if request_object.web_source_code == "None":
             try:
-                response = urllib2.urlopen(outgoing_url)
-                page_code.content = response.read()
+                response = urllib2.urlopen(request_object.return_remote_system_address())
+                request_object.web_source_code = response.read()
                 response.close()
             except urllib2.HTTPError:
-                page_code.content = "Sorry, but couldn't get source code for\
+                request_object.web_source_code = "Sorry, but couldn't get source code for\
                 potentially a couple reasons.  If it was Basic Auth, a 50X,\
                 or a 40X error, EyeWitness won't return source code.  Couldn't\
-                get source from " + outgoing_url + ".".replace('    ', '')
+                get source from " + request_object.return_remote_system_address() + ".".replace('    ', '')
             except urllib2.URLError:
-                page_code.content = "Name resolution could not happen with " +\
-                                    outgoing_url + ".".replace('    ', '')
+                request_object.web_source_code = "Name resolution could not happen with " +\
+                                    request_object.return_remote_system_address() + ".".replace('    ', '')
             except:
-                page_code.content = "Unknown error, server responded with an \
-                unknown error code when connecting to " + outgoing_url
+                request_object.web_source_code = "Unknown error, server responded with an \
+                unknown error code when connecting to " + request_object.return_remote_system_address()
                 + ".".replace('    ', '')
 
         # Generate the path of the report file
@@ -57,10 +57,10 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
                                source_code_name)
         # Write the obtained source to file
         with open(report_file, 'w') as source:
-            source.write(page_code.content)
+            source.write(request_object.web_source_code)
 
         default_credentials_identified = default_creds(
-            page_code.content, iwitness_path, system_os)
+            request_object.web_source_code, iwitness_path, system_os)
 
     except AttributeError:
         print "[*] ERROR: Web page possibly blank or SSL error!"
@@ -68,7 +68,7 @@ def backup_request(page_code, outgoing_url, source_code_name, content_value,
         default_credentials_identified = None
 
     except:
-        print "[*] ERROR: Unknown error when accessing " + outgoing_url
+        print "[*] ERROR: Unknown error when accessing " + request_object.return_remote_system_address()
         content_value = 1
         default_credentials_identified = None
 
@@ -570,7 +570,7 @@ def single_report_page(
     return
 
 
-def table_maker(web_table_index, website_url, possible_creds, web_page,
+def table_maker(request_object, web_table_index, possible_creds,
                 content_empty, log_path, browser_out, ua_out,
                 source_code_table, screenshot_table, length_difference,
                 iwitness_path, system_os, report_out_path):
@@ -582,7 +582,7 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
     <td><div style=\"display: inline-block; width: 300px; word-wrap:\
      break-word\">
     <a href=\"{web_url_addy}\" target=\"_blank\">{web_url_addy}</a><br>
-    """.format(web_url_addy=website_url).replace('    ', '')
+    """.format(web_url_addy=request_object.return_remote_system_address()).replace('    ', '')
 
     if (browser_out is not "None" and ua_out is not "None" and
        length_difference is not "Baseline" and
@@ -616,8 +616,8 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
         for line in log_contents:
             if "SSL certificate error" in line:
                 web_table_index += "<br><b>SSL Certificate error present on\
-                 <a href=\"" + website_url + "\" target=\"_blank\">" +\
-                    website_url + "</a></b><br>"
+                 <a href=\"" + request_object.return_remote_system_address() + "\" target=\"_blank\">" +\
+                    request_object.return_remote_system_address() + "</a></b><br>"
                 break
         with open(log_path, 'w'):
             pass
@@ -662,19 +662,19 @@ def table_maker(web_table_index, website_url, possible_creds, web_page,
     # Loop through all server header responses, and add them to table
     # Handle exception if there is a SSL error and no headers were received.
     try:
-        for key, value in web_page.headers.items():
+        for key, value in request_object.web_server_headers.items():
             web_table_index += "<br><b> " + html_encode(key.decode('utf-8')) +\
                 ":</b> " + html_encode(value) + "\n"
 
     except AttributeError:
         web_table_index += "\n<br><br>Potential blank page or SSL issue with\
-            <a href=\"" + website_url + "\" target=\"_blank\">" +\
-            website_url + "</a>."
+            <a href=\"" + request_object.return_remote_system_address() + "\" target=\"_blank\">" +\
+            request_object.return_remote_system_address() + "</a>."
 
     except UnicodeDecodeError:
         web_table_index += "\n<br><br>Error properly escaping server headers for\
-            <a href=\"" + website_url + "\" target=\"_blank\">" +\
-            website_url + "</a>."
+            <a href=\"" + request_object.return_remote_system_address() + "\" target=\"_blank\">" +\
+            request_object.return_remote_system_address() + "</a>."
 
     # If page is empty, or SSL errors, add it to report
     if content_empty == 1:
@@ -712,7 +712,6 @@ def target_creator(command_line_object):
     rdp = []
     vnc = []
     num_urls = 0
-    use_amap = False
     try:
         # Setup variables
         # The nmap xml parsing code was sent to me and worked on by Jason Hill
@@ -869,37 +868,6 @@ def target_creator(command_line_object):
             # total number of websites
             with open(command_line_object.f) as f:
                 all_urls = [url for url in f if url.strip()]
-
-            # for line in all_urls:
-            #    if "www.thc.org/thc-amap" in line:
-            #        use_amap = True
-            #        break
-
-            # if use_amap is True:
-            #     with open(command_line_object.f) as f:
-            #         for line in f:
-            #             if "matches http" in line:
-            #                 prefix = "http://"
-            #             elif "matches ssl" in line and "by trigger http" in line:
-            #                 prefix = "https://"
-            #             else:
-            #                 prefix = None
-
-            #             if prefix is not None:
-            #                 suffix = line.split("Protocol on ")[1].split("/tcp")[0]
-            #                 urlBuild = '%s%s' % (prefix, suffix)
-            #                 if urlBuild not in urls:
-            #                     urls.append(urlBuild)
-            #                     num_urls += 1
-
-            #     # Code for parsing amap file and creating a target list within
-            #     # a file.
-            #     if command_line_object.createtargets is not None:
-            #         with open(command_line_object.createtargets, 'w') as target_file:
-            #             for item in urls:
-            #                 target_file.write(item + '\n')
-            #     print "Target file created (" + command_line_object.createtargets + ").\n"
-            #     sys.exit()
 
             # else:
             for line in all_urls:
@@ -1185,15 +1153,15 @@ if __name__ == "__main__":
                         operating_system)
 
                     content_blank, single_default_credentials = backup_request(
-                        web_request_object, cli_parsed.single, source_name,
+                        web_request_object, source_name,
                         content_blank, eyewitness_directory_path,
                         operating_system, report_folder)
 
                     # Create the table info for the single URL (screenshot,
                     # server headers, etc.)
                     web_index = table_maker(
-                        web_index, cli_parsed.single,
-                        single_default_credentials, page, content_blank,
+                        web_request_object, web_index,
+                        single_default_credentials, content_blank,
                         log_file_path, blank_value, blank_value,
                         source_name, picture_name, page_length,
                         eyewitness_directory_path, operating_system,
@@ -1271,7 +1239,7 @@ if __name__ == "__main__":
                             # Create the table info for the single URL
                             # (screenshot, server headers, etc.)
                             web_index = table_maker(
-                                web_index, cli_parsed.single,
+                                request_object, web_index,
                                 baseline_default_creds, baseline_page,
                                 baseline_content_blank, log_file_path,
                                 blank_value, browser_key, user_agent_value,
