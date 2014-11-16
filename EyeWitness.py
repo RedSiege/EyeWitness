@@ -23,10 +23,11 @@ import platform
 #import webbrowser
 from selenium import webdriver
 from objects import request_object
+from objects import output_object
 
 
-def backup_request(request_object, source_code_name,
-                   content_value, iwitness_path, system_os, report_out_path):
+def backup_request(request_object, source_code_name, content_value,
+                   output_obj):
 
     try:
         # Check if page is blank, due to no-cache.  If so,
@@ -43,34 +44,34 @@ def backup_request(request_object, source_code_name,
                 get source from " + request_object.return_remote_system_address() + ".".replace('    ', '')
             except urllib2.URLError:
                 request_object.web_source_code = "Could not resolve the following domain: " +\
-                                    request_object.return_remote_system_address() + ".".replace('    ', '')
+                    request_object.return_remote_system_address() + ".".replace('    ', '')
             except:
                 request_object.web_source_code = "Unknown error, server responded with an \
                 unknown error code when connecting to " + request_object.return_remote_system_address()
                 + ".".replace('    ', '')
 
         # Generate the path of the report file
-        if report_out_path.startswith("/") or report_out_path.startswith("C:\\"):
-            report_file = join(report_out_path, "source", source_code_name)
+        if output_obj.report_folder.startswith("/") or output_obj.report_folder.startswith("C:\\"):
+            report_file = join(output_obj.report_folder, "source", source_code_name)
         else:
-            report_file = join(iwitness_path, report_out_path, "source",
+            report_file = join(output_obj.eyewitness_path, output_obj.report_folder, "source",
                                source_code_name)
         # Write the obtained source to file
         with open(report_file, 'w') as source:
             source.write(request_object.web_source_code)
 
         default_credentials_identified = default_creds(
-            request_object.web_source_code, iwitness_path, system_os)
+            request_object.web_source_code, output_obj.eyewitness_path, output_obj.operating_system)
 
     except AttributeError:
         print "[*] ERROR: Web page possibly blank or SSL error!"
         content_value = 1
         default_credentials_identified = None
 
-    #except:
-    #    print "[*] ERROR: Unknown error when accessing " + request_object.return_remote_system_address()
-    #    content_value = 1
-    #    default_credentials_identified = None
+    except:
+        print "[*] ERROR: Unknown error when accessing " + request_object.return_remote_system_address()
+        content_value = 1
+        default_credentials_identified = None
 
     return content_value, default_credentials_identified
 
@@ -172,7 +173,7 @@ def create_link_structure(
     return
 
 
-def cli_parser():
+def cli_parser(output_obj):
 
     # Command line argument parser
     parser = argparse.ArgumentParser(
@@ -253,7 +254,7 @@ def cli_parser():
 
     args = parser.parse_args()
 
-    current_directory = os.path.dirname(os.path.realpath(__file__))
+    output_obj.set_ew_path(os.path.dirname(os.path.realpath(__file__)))
 
     if args.h:
         parser.print_help()
@@ -303,7 +304,7 @@ def cli_parser():
                             response..."
                         sys.exit()
         else:
-            file_path = join(current_directory, args.d)
+            file_path = join(output_obj.eyewitness_path, args.d)
             if not os.access(os.path.dirname(file_path), os.W_OK):
                 print "[*] Error: Please provide a valid folder name/Path\n"
                 parser.print_help()
@@ -335,7 +336,7 @@ def cli_parser():
             print "[*] Error: Please provide valid CIDR notation!"
             print "[*] Example: 192.168.1.0/24"
             sys.exit()
-    return current_directory, args
+    return output_obj, args
 
 
 def default_creds(page_content, full_file_path, local_system_os):
@@ -391,7 +392,7 @@ def file_names(url_given):
     return src_name, pic_name
 
 
-def folder_out(dir_name, full_path, local_os):
+def folder_out(dir_name, output_obj):
 
     # Write out the CSS stylesheet
     css_page = """img {
@@ -442,7 +443,7 @@ def folder_out(dir_name, full_path, local_os):
     else:
         # Create a folder which stores all snapshots
         # note- os.makedirs
-        full_path = join(full_path, output_folder_name)
+        full_path = join(output_obj.eyewitness_path, output_folder_name)
         if not os.path.isdir(full_path):
             os.makedirs(join(full_path, "screens"))
             os.makedirs(join(full_path, "source"))
@@ -450,11 +451,13 @@ def folder_out(dir_name, full_path, local_os):
     with open(join(output_folder_name, "style.css"), 'w') as css_file:
         css_file.write(css_page)
 
-    return output_folder_name, current_date, current_time
+    output_obj.set_report_folder(output_folder_name)
+
+    return current_date, current_time
 
 
-def ghost_capture(incoming_ghost_object, requesting_object, rep_fold, screen_name,
-                  ewitness_dir_path, local_platform):
+def ghost_capture(incoming_ghost_object, requesting_object,
+                  screen_name, output_obj):
     # Try to get our screenshot and source code of the page
     # Write both out to disk if possible (if we can get one,
     # we can get the other)
@@ -462,11 +465,12 @@ def ghost_capture(incoming_ghost_object, requesting_object, rep_fold, screen_nam
         requesting_object.return_remote_system_address(),
         auth=('none', 'none'), default_popup_response=True)
 
-    if rep_fold.startswith("/") or rep_fold.startswith("C:\\"):
+    if output_obj.report_folder.startswith("/") or output_obj.report_folder.startswith("C:\\"):
         capture_path = join(
-            ewitness_dir_path, rep_fold, "screens", screen_name)
+            output_obj.eyewitness_path, output_obj.report_folder,
+            "screens", screen_name)
     else:
-        capture_path = join(rep_fold, "screens", screen_name)
+        capture_path = join(output_obj.report_folder, "screens", screen_name)
 
     incoming_ghost_object.capture_to(capture_path)
 
@@ -502,7 +506,7 @@ def request_comparison(original_content, new_content, max_difference):
             return True, "None"
 
 
-def scanner(cidr_range, tool_path, system_platform):
+def scanner(cidr_range, output_obj):
     # This function was developed by Rohan Vazarkar, and then I slightly
     # modified it to fit.  Thanks for writing this man.
     ports = [80, 443, 8080, 8443]
@@ -513,7 +517,7 @@ def scanner(cidr_range, tool_path, system_platform):
     # Define the timeout limit
     timeout = 5
 
-    scanner_output_path = join(tool_path, "scanneroutput.txt")
+    scanner_output_path = join(output_obj.eyewitness_path, "scanneroutput.txt")
 
     # Write out the live machine to same path as EyeWitness
     try:
@@ -573,7 +577,7 @@ def single_report_page(
 def table_maker(request_object, web_table_index, possible_creds,
                 content_empty, log_path, browser_out, ua_out,
                 source_code_table, screenshot_table, length_difference,
-                iwitness_path, system_os, report_out_path):
+                output_obj):
 
     # Continue adding to the table assuming that we were able
     # to capture the screenshot.  Only add elements if they exist
@@ -1073,37 +1077,39 @@ if __name__ == "__main__":
     # Print the title header
     title_screen()
 
+    # Instantiate report/output object
+    ew_output_object = output_object.OutputObject()
+
     # Detect the Operating System EyeWitness is running on
-    operating_system = platform.system()
+    ew_output_object.set_os(platform.system())
 
     # Parse command line options and return the filename containing URLS
     # and how long to wait for each website
-    eyewitness_directory_path, cli_parsed = cli_parser()
+    ew_output_object, cli_parsed = cli_parser(ew_output_object)
 
     # If the user wants to perform a scan for web servers locally,
     # then perform the scan, write out to a file, and exit
     if cli_parsed.localscan:
-        scanner(cli_parsed.localscan, eyewitness_directory_path,
-                operating_system)
+        scanner(cli_parsed.localscan, ew_output_object)
 
     if cli_parsed.createtargets:
         all_urls, all_rdp, all_vnc = target_creator
         sys.exit()
 
     # Create the directory needed and support files
-    report_folder, report_date, report_time = folder_out(
-        cli_parsed.d, eyewitness_directory_path, operating_system)
+    report_date, report_time = folder_out(
+        cli_parsed.d, ew_output_object)
 
     if cli_parsed.web.lower() == "ghost":
 
         # Change log path if full path is given for output directory
         if cli_parsed.d.startswith('/') or cli_parsed.d.startswith("C:\\"):
             # Location of the log file Ghost logs to (to catch SSL errors)
-            log_file_path = join(eyewitness_directory_path, report_folder,
-                                 "logfile.log")
+            log_file_path = join(ew_output_object.eyewitness_path,
+                                 ew_output_object.report_folder, "logfile.log")
         else:
             # Location of the log file Ghost logs to (to catch SSL errors)
-            log_file_path = join(report_folder, "logfile.log")
+            log_file_path = join(ew_output_object.report_folder, "logfile.log")
 
         # If the user wants to cycle through user agents, return the
         # disctionary of applicable user agents
@@ -1148,14 +1154,12 @@ if __name__ == "__main__":
 
                 try:
                     web_request_object = ghost_capture(
-                        ghost_object, web_request_object, report_folder,
-                        picture_name, eyewitness_directory_path,
-                        operating_system)
+                        ghost_object, web_request_object,
+                        picture_name, ew_output_object)
 
                     content_blank, single_default_credentials = backup_request(
                         web_request_object, source_name,
-                        content_blank, eyewitness_directory_path,
-                        operating_system, report_folder)
+                        content_blank, ew_output_object)
 
                     # Create the table info for the single URL (screenshot,
                     # server headers, etc.)
@@ -1164,8 +1168,7 @@ if __name__ == "__main__":
                         single_default_credentials, content_blank,
                         log_file_path, blank_value, blank_value,
                         source_name, picture_name, page_length,
-                        eyewitness_directory_path, operating_system,
-                        report_folder)
+                        ew_output_object)
 
                 # Skip a url if Ctrl-C is hit
                 except KeyboardInterrupt:
