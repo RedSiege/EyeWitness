@@ -42,7 +42,7 @@ def backup_request(request_object, source_code_name,
                 or a 40X error, EyeWitness won't return source code.  Couldn't\
                 get source from " + request_object.return_remote_system_address() + ".".replace('    ', '')
             except urllib2.URLError:
-                request_object.web_source_code = "Name resolution could not happen with " +\
+                request_object.web_source_code = "Could not resolve the following domain: " +\
                                     request_object.return_remote_system_address() + ".".replace('    ', '')
             except:
                 request_object.web_source_code = "Unknown error, server responded with an \
@@ -67,10 +67,10 @@ def backup_request(request_object, source_code_name,
         content_value = 1
         default_credentials_identified = None
 
-    except:
-        print "[*] ERROR: Unknown error when accessing " + request_object.return_remote_system_address()
-        content_value = 1
-        default_credentials_identified = None
+    #except:
+    #    print "[*] ERROR: Unknown error when accessing " + request_object.return_remote_system_address()
+    #    content_value = 1
+    #    default_credentials_identified = None
 
     return content_value, default_credentials_identified
 
@@ -113,10 +113,11 @@ def createSeleniumDriver(cli_parsed):
 
 
 def create_link_structure(
-    number_of_pages, ew_script_path, report_out_path, report_out_html):
+        number_of_pages, ew_script_path, report_out_path, report_out_html):
     if number_of_pages == 1:
         single_report_page(report_out_html, ew_script_path, operating_system,
                            report_out_path)
+
     else:
         # Write out our extra page
         report_out_html += "</table>\n"
@@ -271,7 +272,7 @@ def cli_parser():
                         Do you want to overwrite it? [y/n] ')
                     overwrite_dir = overwrite_dir.lower().strip()
                     if overwrite_dir == "n":
-                        print "Quitting... Restart and provice the \
+                        print "Quitting... Restart and provide the \
                         proper directory to write to.".replace('    ', '')
                         sys.exit()
                     elif overwrite_dir == "y":
@@ -313,7 +314,7 @@ def cli_parser():
                         to overwrite it? [y/n] ')
                     overwrite_dir = overwrite_dir.lower().strip()
                     if overwrite_dir == "n":
-                        print "Quitting... Restart and provice the \
+                        print "Quitting... Restart and provide the \
                         proper directory to write to.".replace('    ', '')
                         sys.exit()
                     elif overwrite_dir == "y":
@@ -357,15 +358,14 @@ def default_creds(page_content, full_file_path, local_system_os):
             # identified, it will be added later on.  Find total number of
             # "signatures" needed to uniquely identify the web app
             sig_not_found = 0
-            signature_range = len(page_sig)
+            #signature_range = len(page_sig)
 
             # This is used if there is more than one "part" of the
             # web page needed to make a signature Delimete the "signature"
             # by ";" before the "|", and then have the creds after the "|"
-            for individual_signature in range(0, signature_range):
+            for individual_signature in page_sig:
                 if str(page_content).lower().find(
-                    page_sig[individual_signature].lower())\
-                        is not -1:
+                        individual_signature.lower()) is not -1:
                     pass
                 else:
                     sig_not_found = 1
