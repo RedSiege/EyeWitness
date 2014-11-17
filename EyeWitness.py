@@ -114,16 +114,19 @@ def createSeleniumDriver(cli_parsed):
 
 
 def create_link_structure(
-        number_of_pages, ew_script_path, report_out_path, report_out_html):
+        number_of_pages, output_obj, report_out_html):
     if number_of_pages == 1:
-        single_report_page(report_out_html, ew_script_path, operating_system,
-                           report_out_path)
+        single_report_page(
+            report_out_html, output_obj.eyewitness_path,
+            output_obj.operating_system, output_obj.report_folder)
 
     else:
         # Write out our extra page
         report_out_html += "</table>\n"
-        with open(join(ew_script_path, report_out_path, "report_page" +
-                  str(number_of_pages+1) + ".html"), 'w') as page_out:
+        with open(
+            join(output_obj.eyewitness_path, output_obj.report_folder,
+                 "report_page" + str(number_of_pages+1) + ".html"), 'w')\
+                as page_out:
             page_out.write(report_out_html)
 
         # Create the link structure at the bottom
@@ -137,37 +140,37 @@ def create_link_structure(
 
         # Write out link structure to bottom of report
         # and add it to the top as well
-        with open(join(ew_script_path, report_out_path, "report.html"), 'a')\
+        with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report.html"), 'a')\
                 as report_append:
             report_append.write(link_text)
 
-        with open(join(ew_script_path, report_out_path, "report.html"), 'r')\
+        with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report.html"), 'r')\
                 as link_add:
             content = link_add.readlines()
 
         content.insert(6, "<center>" + top_links + "</center>\n")
         content = "".join(content)
 
-        with open(join(ew_script_path, report_out_path, "report.html"), 'w')\
+        with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report.html"), 'w')\
                 as final_report_page:
             final_report_page.write(content)
 
         # Write out link structure to bottom of extra pages
         # Also add links to the top of extra pages
         for page_footer in range(2, number_of_pages + 2):
-            with open(join(ew_script_path, report_out_path, "report_page" +
+            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page" +
                       str(page_footer) + ".html"), 'a') as page_append:
                 page_append.write(link_text)
 
         for page_footer in range(2, number_of_pages + 2):
-            with open(join(ew_script_path, report_out_path, "report_page" +
+            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page" +
                       str(page_footer) + ".html"), 'r') as link_add:
                 content = link_add.readlines()
 
             content.insert(6, "<center>" + top_links + "</center>\n")
             content = "".join(content)
 
-            with open(join(ew_script_path, report_out_path, "report_page" +
+            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page" +
                       str(page_footer) + ".html"), 'w') as final_reports_page:
                 final_reports_page.write(content)
     return
@@ -269,10 +272,8 @@ def cli_parser(output_obj):
                 sys.exit()
             else:
                 if os.path.isdir(args.d):
-                    overwrite_dir = raw_input('Directory Exists!\
-                        Do you want to overwrite it? [y/n] ')
-                    overwrite_dir = overwrite_dir.lower().strip()
-                    if overwrite_dir == "n":
+                    overwrite_dir = raw_input('Directory Exists! Do you want to overwrite it? [y/n] ')
+                    if overwrite_dir.lower().strip() == "n":
                         print "Quitting... Restart and provide the \
                         proper directory to write to.".replace('    ', '')
                         sys.exit()
@@ -586,7 +587,7 @@ def table_maker(request_object, web_table_index, possible_creds,
     <td><div style=\"display: inline-block; width: 300px; word-wrap:\
      break-word\">
     <a href=\"{web_url_addy}\" target=\"_blank\">{web_url_addy}</a><br>
-    """.format(web_url_addy=request_object.return_remote_system_address()).replace('    ', '')
+    """.format(web_url_addy=request_object.remote_system).replace('    ', '')
 
     if (browser_out is not "None" and ua_out is not "None" and
        length_difference is not "Baseline" and
@@ -620,8 +621,8 @@ def table_maker(request_object, web_table_index, possible_creds,
         for line in log_contents:
             if "SSL certificate error" in line:
                 web_table_index += "<br><b>SSL Certificate error present on\
-                 <a href=\"" + request_object.return_remote_system_address() + "\" target=\"_blank\">" +\
-                    request_object.return_remote_system_address() + "</a></b><br>"
+                 <a href=\"" + request_object.remote_system + "\" target=\"_blank\">" +\
+                    request_object.remote_system + "</a></b><br>"
                 break
         with open(log_path, 'w'):
             pass
@@ -639,10 +640,10 @@ def table_maker(request_object, web_table_index, possible_creds,
     # Ghost saves unicode strings as some crazy format, so reopen the source
     # files and read title tags from there
     filepath = ""
-    if report_out_path.startswith('/') or report_out_path.startswith("C:\\"):
-        filepath = join(report_out_path, "source", source_code_table)
+    if output_obj.report_folder.startswith('/') or output_obj.report_folder.startswith("C:\\"):
+        filepath = join(output_obj.report_folder, "source", source_code_table)
     else:
-        filepath = join(iwitness_path, report_out_path, "source", source_code_table)
+        filepath = join(output_obj.eyewitness_path, output_obj.report_folder, "source", source_code_table)
 
     if (os.path.isfile(filepath)):
         with open(filepath, 'r') as source:
@@ -672,13 +673,13 @@ def table_maker(request_object, web_table_index, possible_creds,
 
     except AttributeError:
         web_table_index += "\n<br><br>Potential blank page or SSL issue with\
-            <a href=\"" + request_object.return_remote_system_address() + "\" target=\"_blank\">" +\
-            request_object.return_remote_system_address() + "</a>."
+            <a href=\"" + request_object.remote_system + "\" target=\"_blank\">" +\
+            request_object.remote_system + "</a>."
 
     except UnicodeDecodeError:
         web_table_index += "\n<br><br>Error properly escaping server headers for\
-            <a href=\"" + request_object.return_remote_system_address() + "\" target=\"_blank\">" +\
-            request_object.return_remote_system_address() + "</a>."
+            <a href=\"" + request_object.remote_system + "\" target=\"_blank\">" +\
+            request_object.remote_system + "</a>."
 
     # If page is empty, or SSL errors, add it to report
     if content_empty == 1:
@@ -1142,12 +1143,11 @@ if __name__ == "__main__":
             content_blank = 0
 
             web_index = web_header(report_date, report_time)
-            print "Trying to screenshot " + web_request_object.\
-                return_remote_system_address()
+            print "Trying to screenshot " + web_request_object.remote_system
 
             # Create the filename to store each website's picture
             source_name, picture_name = file_names(
-                web_request_object.return_remote_system_address())
+                web_request_object.remote_system)
 
             # If a normal single request, then perform the request
             if cli_parsed.cycle is None:
@@ -1344,20 +1344,19 @@ if __name__ == "__main__":
 
             # Write out the report for the single URL
             create_link_structure(
-                page_counter, eyewitness_directory_path, report_folder,
-                web_index)
+                page_counter, ew_output_object, web_index)
 
             # Kill xvfb session if started
             if hasattr(ghost_object, 'xvfb'):
                 ghost_object.xvfb.terminate()
 
-            if operating_system == "Windows":
+            if ew_output_object.operating_system == "Windows":
                 # Stupid windows won't let me delete the log file
                 pass
             else:
                 os.system('rm ' + log_file_path)
-            print "\n[*] Done! Check out the report in the " + report_folder +\
-                " folder!"
+            print "\n[*] Done! Check out the report in the " +\
+                ew_output_object.report_folder + " folder!"
 
     elif cli_parsed.web.lower() == "selenium":
 
