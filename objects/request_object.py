@@ -15,6 +15,7 @@ class RequestObject:
         self.remote_system = None
         self.web_source_code = None
         self.web_server_headers = None
+        self.web_sourcecode_path = None
         self.web_screenshot_path = None
         self.web_default_credentials = None
         self.rdp_screenshot_path = None
@@ -33,6 +34,10 @@ class RequestObject:
             web_address = "http://" + web_address
 
         self.remote_system = web_address.strip()
+        return
+
+    def set_default_creds(self, creds):
+        self.web_default_credentials = creds
         return
 
     def return_remote_system_address(self):

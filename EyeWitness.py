@@ -34,20 +34,20 @@ def backup_request(request_object, source_code_name, content_value,
         # make a backup request via urllib2
         if request_object.web_source_code == "None":
             try:
-                response = urllib2.urlopen(request_object.return_remote_system_address())
+                response = urllib2.urlopen(request_object.remote_system)
                 request_object.web_source_code = response.read()
                 response.close()
             except urllib2.HTTPError:
                 request_object.web_source_code = "Sorry, but couldn't get source code for\
                 potentially a couple reasons.  If it was Basic Auth, a 50X,\
                 or a 40X error, EyeWitness won't return source code.  Couldn't\
-                get source from " + request_object.return_remote_system_address() + ".".replace('    ', '')
+                get source from " + request_object.remote_system + ".".replace('    ', '')
             except urllib2.URLError:
                 request_object.web_source_code = "Could not resolve the following domain: " +\
-                    request_object.return_remote_system_address() + ".".replace('    ', '')
+                    request_object.remote_system + ".".replace('    ', '')
             except:
                 request_object.web_source_code = "Unknown error, server responded with an \
-                unknown error code when connecting to " + request_object.return_remote_system_address()
+                unknown error code when connecting to " + request_object.remote_system
                 + ".".replace('    ', '')
 
         # Generate the path of the report file
@@ -56,24 +56,27 @@ def backup_request(request_object, source_code_name, content_value,
         else:
             report_file = join(output_obj.eyewitness_path, output_obj.report_folder, "source",
                                source_code_name)
+
         # Write the obtained source to file
         with open(report_file, 'w') as source:
             source.write(request_object.web_source_code)
 
-        default_credentials_identified = default_creds(
-            request_object.web_source_code, output_obj.eyewitness_path, output_obj.operating_system)
+        request_object.set_default_creds(default_creds(
+            request_object.web_source_code, output_obj.eyewitness_path,
+            output_obj.operating_system))
 
     except AttributeError:
         print "[*] ERROR: Web page possibly blank or SSL error!"
         content_value = 1
-        default_credentials_identified = None
+        request_object.set_default_creds(None)
 
     except:
-        print "[*] ERROR: Unknown error when accessing " + request_object.return_remote_system_address()
+        print "[*] ERROR: Unknown error when accessing " +\
+            request_object.remote_system
         content_value = 1
-        default_credentials_identified = None
+        request_object.set_default_creds(None)
 
-    return content_value, default_credentials_identified
+    return content_value
 
 
 def casper_creator(command_line_object):
@@ -221,7 +224,7 @@ def cli_parser(output_obj):
         help="Maximum number of seconds to wait while\
         requesting a web page (Default: 7)")
     timing_options.add_argument(
-        '--jitter', metavar="# of Seconds", default=None,
+        '--jitter', metavar="# of Seconds", default="None",
         help="Randomize URLs and add a random delay between requests")
 
     report_options = parser.add_argument_group('Report Output Options')
@@ -356,7 +359,7 @@ def default_creds(page_content, full_file_path, local_system_os):
             page_sig = sig_cred[0].split(";")
             cred_info = sig_cred[1]
 
-            # Set our variable to 1 if the signature was identified.  If it is
+            # Set our variable to 1 if the signature was not identified.  If it is
             # identified, it will be added later on.  Find total number of
             # "signatures" needed to uniquely identify the web app
             sig_not_found = 0
@@ -377,11 +380,14 @@ def default_creds(page_content, full_file_path, local_system_os):
             if sig_not_found == 0:
                 return cred_info
                 break
+
+        return None
+
     except IOError:
         print "[*] WARNING: Credentials file not in the same directory as \
             EyeWitness!".replace('    ', '')
         print "[*] Skipping credential check"
-        return
+        return None
 
 
 def file_names(url_given):
@@ -462,6 +468,7 @@ def ghost_capture(incoming_ghost_object, requesting_object,
     # Try to get our screenshot and source code of the page
     # Write both out to disk if possible (if we can get one,
     # we can get the other)
+
     ghost_page, ghost_extra_resources = incoming_ghost_object.open(
         requesting_object.return_remote_system_address(),
         auth=('none', 'none'), default_popup_response=True)
@@ -575,7 +582,7 @@ def single_report_page(
     return
 
 
-def table_maker(request_object, web_table_index, possible_creds,
+def table_maker(request_object, web_table_index,
                 content_empty, log_path, browser_out, ua_out,
                 source_code_table, screenshot_table, length_difference,
                 output_obj):
@@ -628,9 +635,9 @@ def table_maker(request_object, web_table_index, possible_creds,
             pass
 
     # If there are some default creds, escape them, and add them to the report
-    if possible_creds is not None:
+    if request_object.web_default_credentials is not None:
         web_table_index += "<br><b>Default credentials:</b> " +\
-            html_encode(possible_creds) + "<br>"
+            html_encode(request_object.web_default_creds) + "<br>"
 
     # Hacky regex. The first group takes care of anything inside the title
     # tag, while the second group gives us our actual title
@@ -1157,7 +1164,7 @@ if __name__ == "__main__":
                         ghost_object, web_request_object,
                         picture_name, ew_output_object)
 
-                    content_blank, single_default_credentials = backup_request(
+                    content_blank = backup_request(
                         web_request_object, source_name,
                         content_blank, ew_output_object)
 
@@ -1165,7 +1172,7 @@ if __name__ == "__main__":
                     # server headers, etc.)
                     web_index = table_maker(
                         web_request_object, web_index,
-                        single_default_credentials, content_blank,
+                        content_blank,
                         log_file_path, blank_value, blank_value,
                         source_name, picture_name, page_length,
                         ew_output_object)
@@ -1195,6 +1202,7 @@ if __name__ == "__main__":
             # baseline content, do nothing. If UA request content is different
             # from baseline add it to report
             else:
+
                 # Setup variables to set file names properly
                 original_source = source_name
                 original_screenshot = picture_name
@@ -1209,6 +1217,7 @@ if __name__ == "__main__":
                 # baseline results to the new results.  If different, add to
                 # the report
                 for browser_key, user_agent_value in ua_dict.iteritems():
+
                     # Create the counter to ensure our file names are unique
                     source_name = original_source + "_" + browser_key + ".txt"
                     picture_name = original_screenshot + "_" + browser_key + ".png"
@@ -1221,80 +1230,75 @@ if __name__ == "__main__":
                     try:
                         if request_number == 0:
                             # Get baseline screenshot
-                            baseline_page, baseline_extra_resources = \
-                                ghost_capture(
-                                    ghost_object, cli_parsed.single,
-                                    report_folder, picture_name,
-                                    eyewitness_directory_path,
-                                    operating_system)
+                            web_request_object = ghost_capture(
+                                ghost_object, web_request_object,
+                                picture_name, ew_output_object)
 
                             # Hack for a bug in Ghost at the moment
-                            baseline_page.content = "None"
+                            #baseline_page.content = "None"
 
-                            baseline_content_blank, baseline_default_creds = \
-                                backup_request(
-                                    baseline_page, cli_parsed.single,
-                                    source_name, content_blank,
-                                    eyewitness_directory_path,
-                                    operating_system, report_folder)
+                            baseline_content_blank = backup_request(
+                                web_request_object, source_name,
+                                content_blank, ew_output_object)
                             extra_info = "This is the baseline request"
 
                             # Create the table info for the single URL
                             # (screenshot, server headers, etc.)
                             web_index = table_maker(
-                                request_object, web_index,
-                                baseline_default_creds, baseline_page,
-                                baseline_content_blank, log_file_path,
-                                blank_value, browser_key, user_agent_value,
-                                source_name, picture_name, baseline_request,
-                                eyewitness_directory_path, operating_system,
-                                report_folder)
+                                web_request_object, web_index,
+                                content_blank,
+                                log_file_path, blank_value, blank_value,
+                                source_name, picture_name, page_length,
+                                ew_output_object)
 
                             # Move beyond the baseline
                             request_number = 1
 
                         else:
-                            new_ua_page, new_ua_extra_resources = \
-                                ghost_capture(ghost_object, cli_parsed.single,
-                                              report_folder, picture_name,
-                                              eyewitness_directory_path,
-                                              operating_system)
+
+                            # Create the request object that will be passed
+                            new_web_request_object =\
+                                request_object.RequestObject()
+
+                            # Set the web request info for the request object
+                            new_web_request_object.set_web_request_attributes(
+                                cli_parsed.single)
+
+                            new_web_request_object = ghost_capture(
+                                ghost_object, new_web_request_object,
+                                picture_name, ew_output_object)
+
                             try:
                                 # Hack for a bug in Ghost at the moment
-                                new_ua_page.content = "None"
+                                # new_ua_page.content = "None"
 
-                                new_ua_content_blank, new_ua_default_creds = \
-                                    backup_request(
-                                        new_ua_page, cli_parsed.single,
-                                        source_name, content_blank,
-                                        eyewitness_directory_path,
-                                        operating_system, report_folder)
+                                new_ua_content_blank = backup_request(
+                                    new_web_request_object, source_name,
+                                    content_blank, ew_output_object)
 
                                 # Function which hashes the original request
                                 # with the new request and checks to see if
                                 # they are identical
                                 same_or_different, total_length_difference = \
                                     request_comparison(
-                                        baseline_page.content,
-                                        new_ua_page.content,
+                                        web_request_object.web_source_code,
+                                        new_web_request_object.web_source_code,
                                         cli_parsed.difference)
 
-                                # If they are the same, then go on to the next user
-                                # agent, if they are different, add it to the
-                                # report
+                                # If they are the same, then go on to the next
+                                # user agent, if they are different, add it to
+                                # the report
                                 if same_or_different:
                                     pass
                                 else:
                                     # Create the table info for the single URL
                                     # (screenshot, server headers, etc.)
                                     web_index = table_maker(
-                                        web_index, cli_parsed.single,
-                                        new_ua_default_creds, baseline_page,
-                                        baseline_content_blank, log_file_path,
-                                        blank_value, browser_key, user_agent_value,
-                                        source_name, picture_name,
-                                        total_length_difference, eyewitness_directory_path,
-                                        operating_system, report_folder)
+                                        new_web_request_object, web_index,
+                                        content_blank,
+                                        log_file_path, blank_value,
+                                        blank_value, source_name, picture_name,
+                                        page_length, ew_output_object)
                             except AttributeError:
                                 print "[*] Unable to request " + cli_parsed.single +\
                                     " with " + browser_key
