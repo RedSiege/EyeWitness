@@ -1246,9 +1246,9 @@ if __name__ == "__main__":
                             # (screenshot, server headers, etc.)
                             web_index = table_maker(
                                 web_request_object, web_index,
-                                content_blank,
-                                log_file_path, blank_value, blank_value,
-                                source_name, picture_name, page_length,
+                                baseline_content_blank,
+                                log_file_path, browser_key, user_agent_value,
+                                source_name, picture_name, baseline_request,
                                 ew_output_object)
 
                             # Move beyond the baseline
@@ -1296,9 +1296,11 @@ if __name__ == "__main__":
                                     web_index = table_maker(
                                         new_web_request_object, web_index,
                                         content_blank,
-                                        log_file_path, blank_value,
-                                        blank_value, source_name, picture_name,
-                                        page_length, ew_output_object)
+                                        log_file_path, browser_key,
+                                        user_agent_value, source_name,
+                                        picture_name, total_length_difference,
+                                        ew_output_object)
+
                             except AttributeError:
                                 print "[*] Unable to request " + cli_parsed.single +\
                                     " with " + browser_key
