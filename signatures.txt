@@ -77,3 +77,4 @@ HP LaserJet P4015;td style="vertical-align;this.LCDispatcher;deviceStatusPage|(H
 function initFavoriteDevices(;function javaPluginExists();Dominion;function addDiscoveredDevices|Raritan Dominion KX II admin/raritan
 EasyCoder PM4i;navframe;FRAME src;FRAMESET;noresize scrolling| EasyCoder PM4i admin/pass
 Symmetricom SyncServer S100;var serverName;function usernameKey;function answerKey;loginPasswordTable;passedit|Symmetricom SyncServer S100 admin/symmetricom
+KYOCERA;idxlang;opt_msg1_;startwlm|Kyocera Printer (General) Admin/Admin
