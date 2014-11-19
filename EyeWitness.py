@@ -717,6 +717,10 @@ def table_maker(request_object, web_table_index,
 
 def target_creator(command_line_object):
 
+    print command_line_object.web
+    print command_line_object.rdp
+    print command_line_object.vnc
+
     if command_line_object.createtargets is not None:
         print "Creating text file containing all web servers..."
 
@@ -790,11 +794,13 @@ def target_creator(command_line_object):
                                 else:
                                     check_ip_address = True
 
-                            if int(port) in rdp_ports or 'ms-wbt' in service:
-                                rdp.append(target)
+                            if command_line_object.rdp:
+                                if int(port) in rdp_ports or 'ms-wbt' in service:
+                                    rdp.append(target)
 
-                            if int(port) in vnc_ports or 'vnc' in services:
-                                vnc.append((target, port))
+                            if command_line_object.vnc:
+                                if int(port) in vnc_ports or 'vnc' in services:
+                                    vnc.append((target, port))
 
                         if check_ip_address:
                             if int(port) in http_ports or 'http' in service:
@@ -857,10 +863,10 @@ def target_creator(command_line_object):
                         if url not in urls:
                             urls.append(url)
                             num_urls = num_urls + 1
-                    elif 'vnc' in service_name and plugin_name.lower().startswith('service detection'):
+                    elif 'vnc' in service_name and plugin_name.lower().startswith('service detection') and command_line_object.vnc:
                         port_number = item.get('port')
                         vnc.append((name, port))
-                    elif 'msrdp' in service_name and plugin_name.lower().startswith('windows terminal services'):
+                    elif 'msrdp' in service_name and plugin_name.lower().startswith('windows terminal services') and command_line_object.rdp:
                         rdp.append(name)
             if command_line_object.createtargets is not None:
                 with open(command_line_object.createtargets, 'w') as target_file:
@@ -891,8 +897,10 @@ def target_creator(command_line_object):
                     vnc.append(line[6:])
                 else:
                     urls.append(line)
-                    rdp.append(line)
-                    vnc.append(line)
+                    if command_line_object.rdp:
+                        rdp.append(line)
+                    if command_line_object.vnc:
+                        vnc.append(line)
                 num_urls += 1
 
             return urls, rdp, vnc
@@ -1138,7 +1146,7 @@ if __name__ == "__main__":
         page_length = "None"
         page_counter = 1
 
-        if cli_parsed.single is not None:
+        if cli_parsed.single is not "None":
 
             # Create the request object that will be passed around
             web_request_object = request_object.RequestObject()
@@ -1363,6 +1371,15 @@ if __name__ == "__main__":
                 os.system('rm ' + log_file_path)
             print "\n[*] Done! Check out the report in the " +\
                 ew_output_object.report_folder + " folder!"
+
+        # This hits when not using a single site, but likely providing
+        # a file for input
+        else:
+            url_list, rdp_list, vnc_list = target_creator(cli_parsed)
+
+            print url_list
+            print rdp_list
+            print vnc_list
 
     elif cli_parsed.web.lower() == "selenium":
 
