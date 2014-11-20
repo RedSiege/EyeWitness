@@ -1377,9 +1377,13 @@ if __name__ == "__main__":
         else:
             url_list, rdp_list, vnc_list = target_creator(cli_parsed)
 
-            print url_list
-            print rdp_list
-            print vnc_list
+            # Check if user wants random URLs, if so, randomize URLs here
+            if cli_parsed.jitter is not "None":
+                random.shuffle(url_list)
+
+            # Add the web "header" to our web page
+            web_index = web_header(report_date, report_time)
+            print "Trying to screenshot " + str(number_urls) + " websites...\n"
 
     elif cli_parsed.web.lower() == "selenium":
 
