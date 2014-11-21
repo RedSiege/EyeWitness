@@ -204,7 +204,7 @@ def cli_parser(output_obj):
 
     urls_in = parser.add_argument_group('Input Options')
     urls_in.add_argument(
-        "-f", metavar="Filename",
+        "-f", metavar="Filename", default="None",
         help="File containing URLs to screenshot, each on a new line,\
         NMap XML output, or a .nessus file")
     urls_in.add_argument(
@@ -582,6 +582,140 @@ def single_report_page(
     return
 
 
+def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
+                       content_empty, log_path, extra_notes, browser_out,
+                       ua_out, source_code_table, screenshot_table,
+                       length_difference, iwitness_path, local_system):
+    html = u""
+    html += """<tr>
+    <td><div style=\"display: inline-block; width: 300px; word-wrap:\
+     break-word\">
+    <a href=\"{web_url_addy}\" target=\"_blank\">{web_url_addy}</a><br>
+    """.format(web_url_addy=website_url).replace('    ', '')
+
+    if (browser_out is not "None" and ua_out is not "None" and
+       length_difference is not "Baseline" and
+       length_difference is not "None"):
+        html += """
+        <br>This request was different from the baseline.<br>
+        The browser type is: <b>{browser_report}</b><br><br>
+        The user agent is: <b>{useragent_report}</b><br><br>
+        Difference in length of the two webpage sources is\
+        : <b>{page_source_hash}</b><br>
+        """.format(browser_report=browser_out, useragent_report=ua_out,
+                   page_source_hash=length_difference).replace('    ', '')
+
+    if length_difference == "Baseline":
+        html += """
+        <br>This is the baseline request.<br>
+        The browser type is: <b>{browser_report}</b><br><br>
+        The user agent is: <b>{useragent_report}</b><br><br>
+        <b>This is the baseline request.</b><br>
+        """.format(browser_report=browser_out, useragent_report=ua_out)\
+            .replace('    ', '')
+
+    # Check if log file is empty, if so, good, otherwise, Check for SSL errors
+    # If there is a SSL error, be sure to add a note about it in the table
+    # Once done, delete the file
+    if os.stat(log_path)[6] == 0:
+        pass
+    else:
+        with open(log_path, 'r') as log_file:
+            log_contents = log_file.readlines()
+        for line in log_contents:
+            if "SSL certificate error" in line:
+                html += "<br><b>SSL Certificate error present on\
+                 <a href=\"" + website_url + "\" target=\"_blank\">" +\
+                    website_url + "</a></b><br>"
+                break
+        with open(log_path, 'w'):
+            pass
+
+    # If there are some default creds, escape them, and add them to the report
+    if possible_creds is not None:
+        html += "<br><b>Default credentials:</b> " +\
+            html_encode(possible_creds) + "<br>"
+
+    # Hacky regex. The first group takes care of anything inside the title
+    # tag, while the second group gives us our actual title
+    title_regex = re.compile(
+        "<title(.*)>(.*)</title>", re.IGNORECASE+re.DOTALL
+        )
+    # Ghost saves unicode strings as some crazy format, so reopen the source
+    # files and read title tags from there
+    filepath = ""
+
+    if report_folder.startswith('/'):
+        filepath = join(report_folder, "source", source_code_table)
+    else:
+        filepath = join(iwitness_path, report_folder, "source", source_code_table)
+
+    if (os.path.isfile(filepath)):
+        with open(filepath) as source:
+            pagesource = source.read()
+            titletag = title_regex.search(pagesource)
+            if titletag:
+                pagetitle = titletag.groups()[1]
+            else:
+                pagetitle = "Unknown"
+    else:
+        pagetitle = "Unknown"
+
+    # Implement a fallback in case of errors, but add the page
+    # title to the table
+    try:
+        html += "\n<br><b> " + html_encode("Page Title") +\
+            ":</b> " + html_encode(pagetitle) + "\n"
+    except UnicodeDecodeError:
+        html += "\n<br><b> " + html_encode("Page Title") +\
+            ":</b> Unable to Display \n"
+
+    # Loop through all server header responses, and add them to table
+    # Handle exception if there is a SSL error and no headers were received.
+    try:
+        for key, value in web_page.headers.items():
+            html += "<br><b> " + html_encode(key.decode('utf-8')) +\
+                ":</b> " + html_encode(value) + "\n"
+
+    except AttributeError:
+        html += "\n<br><br>Potential blank page or SSL issue with\
+            <a href=\"" + website_url + "\" target=\"_blank\">" +\
+            website_url + "</a>."
+
+    # If page is empty, or SSL errors, add it to report
+    if content_empty == 1:
+        html += """<br></td>
+        <td><div style=\"display: inline-block; width: 850px;\">Page Blank,\
+        Connection error, or SSL Issues</div></td>
+        </tr>
+        """.replace('    ', '')
+
+    # If eyewitness could get the source code and take a screenshot,
+    # add them to report. First line adds source code to header column of the
+    # table, and then closes out that <td> Second line creates new <td> for
+    # the screenshot column, adds screenshot in to report, and closes the <td>
+    # Final line closes out the row
+    else:
+        html += """<br><br><a href=\"source/{page_source_name}\"\
+        target=\"_blank\">Source Code</a></div></td>
+        <td><div id=\"screenshot\" style=\"display: inline-block; width:\
+        850px; height 400px; overflow: scroll;\"><a href=\"screens/\
+        {screen_picture_name}\" target=\"_blank\"><img src=\"screens/\
+        {screen_picture_name}\" height=\"400\"></a></div></td>
+        </tr>
+        """.format(page_source_name=source_code_table,
+                   screen_picture_name=screenshot_table).replace('    ', '')
+
+    if (website_url in htmldictionary):
+        htmldictionary[website_url] = (
+            htmldictionary[website_url][0], htmldictionary[website_url][1] +
+            html)
+    else:
+        htmldictionary[website_url] = (pagetitle, html)
+
+    return htmldictionary
+
+
 def table_maker(request_object, web_table_index,
                 content_empty, log_path, browser_out, ua_out,
                 source_code_table, screenshot_table, length_difference,
@@ -716,10 +850,6 @@ def table_maker(request_object, web_table_index,
 
 
 def target_creator(command_line_object):
-
-    print command_line_object.web
-    print command_line_object.rdp
-    print command_line_object.vnc
 
     if command_line_object.createtargets is not None:
         print "Creating text file containing all web servers..."
@@ -1146,6 +1276,8 @@ if __name__ == "__main__":
         page_length = "None"
         page_counter = 1
 
+        url_list, rdp_list, vnc_list = target_creator(cli_parsed)
+
         if cli_parsed.single is not "None":
 
             # Create the request object that will be passed around
@@ -1374,8 +1506,7 @@ if __name__ == "__main__":
 
         # This hits when not using a single site, but likely providing
         # a file for input
-        else:
-            url_list, rdp_list, vnc_list = target_creator(cli_parsed)
+        if cli_parsed.f is not "None":
 
             # Check if user wants random URLs, if so, randomize URLs here
             if cli_parsed.jitter is not "None":
@@ -1383,7 +1514,46 @@ if __name__ == "__main__":
 
             # Add the web "header" to our web page
             web_index = web_header(report_date, report_time)
-            print "Trying to screenshot " + str(number_urls) + " websites...\n"
+            print "Trying to screenshot " + str(len(url_list)) + " websites...\n"
+
+            # Create a URL counter to know when to go to a new page
+            # Create a page counter to track pages
+            page_counter = 0
+            htmldictionary = {}
+            url_counter = 0
+
+            # Loop through all URLs and create a screenshot
+            for url in url_list:
+
+                url_counter += 1
+
+                # Check for http or https protocol, if not present, assume http
+                url = url.strip()
+                if not url.startswith('http://') and not url.startswith('https://'):
+                    url = "http://" + url
+
+                # Used for monitoring for blank pages or SSL errors
+                content_blank = 0
+
+                # Create file names
+                source_name, picture_name = file_names(url)
+
+                # This is the code which opens the specified URL and captures
+                # it to a screenshot
+                print "Attempting to capture: " + url + "  (" + str(url_counter) + "/" + str(len(url_list)) + ")"
+                # If not trying to cycle through different user agents, make
+                # the web requests as it was originall done
+                if cli_parsed.cycle == "None":
+
+                    # Capture the web site
+                    web_request_object = ghost_capture(
+                        ghost_object, web_request_object,
+                        picture_name, ew_output_object)
+
+                    # Determine, and make, a backup request if needed
+                    content_blank = backup_request(
+                        web_request_object, source_name,
+                        content_blank, ew_output_object)
 
     elif cli_parsed.web.lower() == "selenium":
 
