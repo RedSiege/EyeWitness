@@ -1506,7 +1506,7 @@ if __name__ == "__main__":
 
         # This hits when not using a single site, but likely providing
         # a file for input
-        if cli_parsed.f is not "None":
+        elif cli_parsed.f is not "None":
 
             # Check if user wants random URLs, if so, randomize URLs here
             if cli_parsed.jitter is not "None":
@@ -1554,6 +1554,10 @@ if __name__ == "__main__":
                     content_blank = backup_request(
                         web_request_object, source_name,
                         content_blank, ew_output_object)
+
+        # This should only be hit if not doing any web scans
+        else:
+            pass
 
     elif cli_parsed.web.lower() == "selenium":
 
