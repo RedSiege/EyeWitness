@@ -343,7 +343,7 @@ def cli_parser(output_obj):
     return output_obj, args
 
 
-def default_creds(page_content, full_file_path, local_system_os):
+def default_creds(page_content, full_file_path):
     try:
         # Read in the file containing the web "signatures"
         file_path = join(os.path.normcase(full_file_path), 'signatures.txt')
@@ -493,6 +493,22 @@ def html_encode(dangerous_data):
     return encoded
 
 
+def jitter_wit_it(command_line_object):
+    # Add Random sleep based off of user provided jitter value
+    #  if requested
+    if command_line_object.jitter is not "None":
+        sleep_value = random.randint(0, 30)
+        sleep_value = sleep_value * .01
+        sleep_value = 1 - sleep_value
+        sleep_value = sleep_value * int(command_line_object.jitter)
+        print "[*] Sleeping for " + str(sleep_value) + " seconds.."
+        try:
+            time.sleep(sleep_value)
+        except KeyboardInterrupt:
+            print "[*] User cancelled sleep for this URL!"
+    return
+
+
 def request_comparison(original_content, new_content, max_difference):
     # Function which compares the original baseline request with the new
     # request with the modified user agent
@@ -582,16 +598,16 @@ def single_report_page(
     return
 
 
-def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
+def create_table_entry(htmldictionary, request_object,
                        content_empty, log_path, extra_notes, browser_out,
                        ua_out, source_code_table, screenshot_table,
-                       length_difference, iwitness_path, local_system):
+                       length_difference, output_obj):
     html = u""
     html += """<tr>
     <td><div style=\"display: inline-block; width: 300px; word-wrap:\
      break-word\">
     <a href=\"{web_url_addy}\" target=\"_blank\">{web_url_addy}</a><br>
-    """.format(web_url_addy=website_url).replace('    ', '')
+    """.format(web_url_addy=request_object.remote_system).replace('    ', '')
 
     if (browser_out is not "None" and ua_out is not "None" and
        length_difference is not "Baseline" and
@@ -625,16 +641,16 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
         for line in log_contents:
             if "SSL certificate error" in line:
                 html += "<br><b>SSL Certificate error present on\
-                 <a href=\"" + website_url + "\" target=\"_blank\">" +\
-                    website_url + "</a></b><br>"
+                 <a href=\"" + request_object.remote_system + "\" target=\"_blank\">" +\
+                    request_object.remote_system + "</a></b><br>"
                 break
         with open(log_path, 'w'):
             pass
 
     # If there are some default creds, escape them, and add them to the report
-    if possible_creds is not None:
+    if request_object.web_default_credentials is not None:
         html += "<br><b>Default credentials:</b> " +\
-            html_encode(possible_creds) + "<br>"
+            html_encode(request_object.web_default_credentials) + "<br>"
 
     # Hacky regex. The first group takes care of anything inside the title
     # tag, while the second group gives us our actual title
@@ -648,7 +664,7 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
     if report_folder.startswith('/'):
         filepath = join(report_folder, "source", source_code_table)
     else:
-        filepath = join(iwitness_path, report_folder, "source", source_code_table)
+        filepath = join(output_obj.eyewitness_path, report_folder, "source", source_code_table)
 
     if (os.path.isfile(filepath)):
         with open(filepath) as source:
@@ -673,14 +689,14 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
     # Loop through all server header responses, and add them to table
     # Handle exception if there is a SSL error and no headers were received.
     try:
-        for key, value in web_page.headers.items():
+        for key, value in request_object.web_server_headers.items():
             html += "<br><b> " + html_encode(key.decode('utf-8')) +\
                 ":</b> " + html_encode(value) + "\n"
 
     except AttributeError:
         html += "\n<br><br>Potential blank page or SSL issue with\
-            <a href=\"" + website_url + "\" target=\"_blank\">" +\
-            website_url + "</a>."
+            <a href=\"" + request_object.remote_system + "\" target=\"_blank\">" +\
+            request_object.remote_system + "</a>."
 
     # If page is empty, or SSL errors, add it to report
     if content_empty == 1:
@@ -706,12 +722,12 @@ def create_table_entry(htmldictionary, website_url, possible_creds, web_page,
         """.format(page_source_name=source_code_table,
                    screen_picture_name=screenshot_table).replace('    ', '')
 
-    if (website_url in htmldictionary):
-        htmldictionary[website_url] = (
-            htmldictionary[website_url][0], htmldictionary[website_url][1] +
+    if (request_object.remote_system in htmldictionary):
+        htmldictionary[request_object.remote_system] = (
+            htmldictionary[request_object.remote_system][0], htmldictionary[request_object.remote_system][1] +
             html)
     else:
-        htmldictionary[website_url] = (pagetitle, html)
+        htmldictionary[request_object.remote_system] = (pagetitle, html)
 
     return htmldictionary
 
@@ -1475,18 +1491,8 @@ if __name__ == "__main__":
                         </tr>
                         """.format(single_timeout_url=cli_parsed.single)
 
-                    # Add Random sleep based off of user provided jitter value
-                    #  if requested
-                    if cli_parsed.jitter is not "None":
-                        sleep_value = random.randint(0, 30)
-                        sleep_value = sleep_value * .01
-                        sleep_value = 1 - sleep_value
-                        sleep_value = sleep_value * int(cli_parsed.jitter)
-                        print "[*] Sleeping for " + str(sleep_value) + " seconds.."
-                        try:
-                            time.sleep(sleep_value)
-                        except KeyboardInterrupt:
-                            print "[*] User cancelled sleep for this URL!"
+                    # Set up sleep if requested
+                    jitter_wit_it()
 
             # Write out the report for the single URL
             create_link_structure(
@@ -1514,7 +1520,8 @@ if __name__ == "__main__":
 
             # Add the web "header" to our web page
             web_index = web_header(report_date, report_time)
-            print "Trying to screenshot " + str(len(url_list)) + " websites...\n"
+            print "Trying to screenshot " + str(len(url_list)) +\
+                " websites...\n"
 
             # Create a URL counter to know when to go to a new page
             # Create a page counter to track pages
@@ -1529,7 +1536,8 @@ if __name__ == "__main__":
 
                 # Check for http or https protocol, if not present, assume http
                 url = url.strip()
-                if not url.startswith('http://') and not url.startswith('https://'):
+                if not url.startswith('http://') and not url.startswith(
+                        'https://'):
                     url = "http://" + url
 
                 # Used for monitoring for blank pages or SSL errors
@@ -1540,20 +1548,46 @@ if __name__ == "__main__":
 
                 # This is the code which opens the specified URL and captures
                 # it to a screenshot
-                print "Attempting to capture: " + url + "  (" + str(url_counter) + "/" + str(len(url_list)) + ")"
+                print "Attempting to capture: " + url + "  (" +\
+                    str(url_counter) + "/" + str(len(url_list)) + ")"
                 # If not trying to cycle through different user agents, make
                 # the web requests as it was originall done
                 if cli_parsed.cycle == "None":
+                    try:
 
-                    # Capture the web site
-                    web_request_object = ghost_capture(
-                        ghost_object, web_request_object,
-                        picture_name, ew_output_object)
+                        # Capture the web site
+                        web_request_object = ghost_capture(
+                            ghost_object, web_request_object,
+                            picture_name, ew_output_object)
 
-                    # Determine, and make, a backup request if needed
-                    content_blank = backup_request(
-                        web_request_object, source_name,
-                        content_blank, ew_output_object)
+                        # Determine, and make, a backup request if needed
+                        content_blank = backup_request(
+                            web_request_object, source_name,
+                            content_blank, ew_output_object)
+
+                        web_index = create_table_entry(
+                            htmldictionary, web_request_object, web_index,
+                            content_blank, log_file_path, blank_value,
+                            blank_value, source_name, picture_name,
+                            page_length, ew_output_object)
+
+                    # Skip a url if Ctrl-C is hit
+                    except KeyboardInterrupt:
+                        print "[*] Skipping: " + url
+                        web_index += """<tr>
+                        <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                        <td>User Skipped this URL</td>
+                        </tr>
+                        """.format(single_given_url=url).replace('    ', '')
+                    # Catch timeout warning
+                    except screener.TimeoutError:
+                        print "[*] Hit timeout limit when connecting to: " + url
+                        web_index += """<tr>
+                        <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
+                        {single_timeout_url}</a></td>
+                        <td>Hit timeout limit while attempting screenshot</td>
+                        </tr>
+                        """.format(single_timeout_url=url)
 
         # This should only be hit if not doing any web scans
         else:
