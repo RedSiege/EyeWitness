@@ -488,6 +488,21 @@ def ghost_capture(incoming_ghost_object, requesting_object,
     return requesting_object
 
 
+def ghost_cleanup(ghost_obj, output_obj, the_log_path):
+    # Kill xvfb session if started
+    if hasattr(ghost_obj, 'xvfb'):
+        ghost_obj.xvfb.terminate()
+
+    if output_obj.operating_system == "Windows":
+        # Stupid windows won't let me delete the log file
+        pass
+    else:
+        os.system('rm ' + the_log_path)
+    print "\n[*] Done! Check out the report in the " +\
+        output_obj.report_folder + " folder!"
+    return
+
+
 def html_encode(dangerous_data):
     encoded = cgi.escape(dangerous_data, quote=True)
     return encoded
@@ -1498,17 +1513,7 @@ if __name__ == "__main__":
             create_link_structure(
                 page_counter, ew_output_object, web_index)
 
-            # Kill xvfb session if started
-            if hasattr(ghost_object, 'xvfb'):
-                ghost_object.xvfb.terminate()
-
-            if ew_output_object.operating_system == "Windows":
-                # Stupid windows won't let me delete the log file
-                pass
-            else:
-                os.system('rm ' + log_file_path)
-            print "\n[*] Done! Check out the report in the " +\
-                ew_output_object.report_folder + " folder!"
+            ghost_cleanup(ghost_object, ew_output_object, log_file_path)
 
         # This hits when not using a single site, but likely providing
         # a file for input
@@ -1588,6 +1593,10 @@ if __name__ == "__main__":
                         <td>Hit timeout limit while attempting screenshot</td>
                         </tr>
                         """.format(single_timeout_url=url)
+
+            create_link_structure(page_counter, ew_output_object, web_index)
+
+            ghost_cleanup(ghost_object, ew_output_object, log_file_path)
 
         # This should only be hit if not doing any web scans
         else:
