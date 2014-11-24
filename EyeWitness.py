@@ -1537,6 +1537,22 @@ if __name__ == "__main__":
             # Loop through all URLs and create a screenshot
             for url in url_list:
 
+                # Create the request object that will be passed around
+                web_request_object = request_object.RequestObject()
+
+                # Set the web request info for the request object
+                web_request_object.set_web_request_attributes(url)
+
+                # Used for monitoring for blank pages or SSL errors
+                content_blank = 0
+
+                web_index = web_header(report_date, report_time)
+                print "Trying to screenshot " + web_request_object.remote_system
+
+                # Create the filename to store each website's picture
+                source_name, picture_name = file_names(
+                    web_request_object.remote_system)
+
                 url_counter += 1
 
                 # Check for http or https protocol, if not present, assume http
@@ -1557,7 +1573,8 @@ if __name__ == "__main__":
                     str(url_counter) + "/" + str(len(url_list)) + ")"
                 # If not trying to cycle through different user agents, make
                 # the web requests as it was originall done
-                if cli_parsed.cycle == "None":
+
+                if cli_parsed.cycle is None:
                     try:
 
                         # Capture the web site
