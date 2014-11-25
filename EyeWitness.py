@@ -739,8 +739,8 @@ def create_table_entry(html_dictionary, request_object,
 
     if (request_object.remote_system in html_dictionary):
         html_dictionary[request_object.remote_system] = (
-            html_dictionary[request_object.remote_system][0], html_dictionary[request_object.remote_system][1] +
-            html)
+            html_dictionary[request_object.remote_system][0],
+            html_dictionary[request_object.remote_system][1] + html)
     else:
         html_dictionary[request_object.remote_system] = (pagetitle, html)
 
@@ -1586,7 +1586,7 @@ if __name__ == "__main__":
                             web_request_object, source_name,
                             content_blank, ew_output_object)
 
-                        web_index = create_table_entry(
+                        htmldictionary = create_table_entry(
                             htmldictionary, web_request_object,
                             content_blank, log_file_path, blank_value,
                             blank_value, source_name, picture_name,
