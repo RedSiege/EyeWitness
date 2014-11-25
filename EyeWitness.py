@@ -17,7 +17,7 @@ import re
 import logging
 import random
 import socket
-#import difflib
+import difflib
 from netaddr import IPNetwork
 import platform
 #import webbrowser
@@ -62,8 +62,7 @@ def backup_request(request_object, source_code_name, content_value,
             source.write(request_object.web_source_code)
 
         request_object.set_default_creds(default_creds(
-            request_object.web_source_code, output_obj.eyewitness_path,
-            output_obj.operating_system))
+            request_object.web_source_code, output_obj.eyewitness_path))
 
     except AttributeError:
         print "[*] ERROR: Web page possibly blank or SSL error!"
@@ -118,6 +117,7 @@ def createSeleniumDriver(cli_parsed):
 
 def create_link_structure(
         number_of_pages, output_obj, report_out_html):
+    print number_of_pages
     if number_of_pages == 1:
         single_report_page(
             report_out_html, output_obj.eyewitness_path,
@@ -613,8 +613,8 @@ def single_report_page(
     return
 
 
-def create_table_entry(htmldictionary, request_object,
-                       content_empty, log_path, extra_notes, browser_out,
+def create_table_entry(html_dictionary, request_object,
+                       content_empty, log_path, browser_out,
                        ua_out, source_code_table, screenshot_table,
                        length_difference, output_obj):
     html = u""
@@ -676,10 +676,10 @@ def create_table_entry(htmldictionary, request_object,
     # files and read title tags from there
     filepath = ""
 
-    if report_folder.startswith('/'):
-        filepath = join(report_folder, "source", source_code_table)
+    if output_obj.report_folder.startswith('/'):
+        filepath = join(output_obj.report_folder, "source", source_code_table)
     else:
-        filepath = join(output_obj.eyewitness_path, report_folder, "source", source_code_table)
+        filepath = join(output_obj.eyewitness_path, output_obj.report_folder, "source", source_code_table)
 
     if (os.path.isfile(filepath)):
         with open(filepath) as source:
@@ -737,14 +737,14 @@ def create_table_entry(htmldictionary, request_object,
         """.format(page_source_name=source_code_table,
                    screen_picture_name=screenshot_table).replace('    ', '')
 
-    if (request_object.remote_system in htmldictionary):
-        htmldictionary[request_object.remote_system] = (
-            htmldictionary[request_object.remote_system][0], htmldictionary[request_object.remote_system][1] +
+    if (request_object.remote_system in html_dictionary):
+        html_dictionary[request_object.remote_system] = (
+            html_dictionary[request_object.remote_system][0], html_dictionary[request_object.remote_system][1] +
             html)
     else:
-        htmldictionary[request_object.remote_system] = (pagetitle, html)
+        html_dictionary[request_object.remote_system] = (pagetitle, html)
 
-    return htmldictionary
+    return html_dictionary
 
 
 def table_maker(request_object, web_table_index,
@@ -1547,7 +1547,6 @@ if __name__ == "__main__":
                 content_blank = 0
 
                 web_index = web_header(report_date, report_time)
-                print "Trying to screenshot " + web_request_object.remote_system
 
                 # Create the filename to store each website's picture
                 source_name, picture_name = file_names(
@@ -1588,7 +1587,7 @@ if __name__ == "__main__":
                             content_blank, ew_output_object)
 
                         web_index = create_table_entry(
-                            htmldictionary, web_request_object, web_index,
+                            htmldictionary, web_request_object,
                             content_blank, log_file_path, blank_value,
                             blank_value, source_name, picture_name,
                             page_length, ew_output_object)
@@ -1610,6 +1609,56 @@ if __name__ == "__main__":
                         <td>Hit timeout limit while attempting screenshot</td>
                         </tr>
                         """.format(single_timeout_url=url)
+
+            tosort = htmldictionary.items()
+            groupedlist = []
+            # Work our way from the back of the list and find similar elements.
+            # Group them together.
+            while (len(tosort) > 0):
+                element = tosort.pop()
+                groupedlist.append(element)
+                for x in tosort:
+                    if (difflib.SequenceMatcher(
+                            None, element[1][0], x[1][0]).ratio() > .7):
+                        tosort.remove(x)
+                        groupedlist.append(x)
+
+            # Reverse the list to preserve original order (sort of)
+            groupedlist.reverse()
+
+            for i in range(1, len(groupedlist) + 1):
+                element = groupedlist[i - 1]
+                web_index += element[1][1]
+                if (i % cli_parsed.results == 0 or i == len(groupedlist)):
+                    if page_counter == 0:
+                        # Close out the html and write it to disk
+                        web_index += "</table>\n"
+                        with open(join(
+                            ew_output_object.eyewitness_path,
+                            ew_output_object.report_folder, "report.html"),
+                                'w') as f1:
+                            f1.write(web_index)
+
+                        # Revert URL counter back to 0, increment the page
+                        # count to 1 Clear web_index of all values by
+                        # giving web_index the "header" of the new html page
+                        page_counter = page_counter + 1
+                        if i < len(groupedlist):
+                            web_index = web_header(report_date, report_time)
+                    else:
+                        # Write out to the next page
+                        web_index += "</table>\n"
+                        with open(join(
+                            ew_output_object.eyewitness_path,
+                            ew_output_object.report_folder, "report_page" +
+                                str(page_counter+1) +
+                                ".html"), 'w') as page_out:
+                            page_out.write(web_index)
+
+                        # Reset the URL counter
+                        if i != len(groupedlist):
+                            page_counter = page_counter + 1
+                            web_index = web_header(report_date, report_time)
 
             create_link_structure(page_counter, ew_output_object, web_index)
 
