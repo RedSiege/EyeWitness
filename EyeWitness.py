@@ -1626,6 +1626,8 @@ if __name__ == "__main__":
             # Reverse the list to preserve original order (sort of)
             groupedlist.reverse()
 
+            print groupedlist
+
             for i in range(1, len(groupedlist) + 1):
                 element = groupedlist[i - 1]
                 web_index += element[1][1]
