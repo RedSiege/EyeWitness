@@ -334,6 +334,12 @@ def cli_parser(output_obj):
         parser.print_help()
         sys.exit()
 
+    if args.web is "None" and args.vnc is False and args.rdp is False:
+        print "[*] Error: You didn't give me an action to perform."
+        print "[*] Error: Please use --web, --rdp, or --vnc!\n"
+        parser.print_help()
+        sys.exit()
+
     if args.localscan:
         if not validate_cidr(args.localscan):
             print "[*] Error: Please provide valid CIDR notation!"
@@ -1697,21 +1703,21 @@ if __name__ == "__main__":
                                             new_web_request_object.web_source_code,
                                             cli_parsed.difference)
 
-                                    # If they are the same, then go on to the next
-                                    # user agent, if they are different, add it to
-                                    # the report
+                                    # If they are the same, then go on to the
+                                    # next user agent, if they are different,
+                                    # add it to the report
                                     if same_or_different:
                                         pass
                                     else:
-                                        # Create the table info for the single URL
-                                        # (screenshot, server headers, etc.)
-                                        web_index = table_maker(
-                                            new_web_request_object, web_index,
-                                            content_blank,
-                                            log_file_path, browser_key,
-                                            user_agent_value, source_name,
-                                            picture_name, total_length_difference,
-                                            ew_output_object)
+                                        # Create the table info for the single 
+                                        # URL (screenshot, server headers,
+                                        # etc.)
+                                        htmldictionary = create_table_entry(
+                                            htmldictionary, web_request_object,
+                                            content_blank, log_file_path,
+                                            browser_key, user_agent_value,
+                                            source_name, picture_name,
+                                            page_length, ew_output_object)
 
                                 except AttributeError:
                                     print "[*] Unable to request " + cli_parsed.single +\
