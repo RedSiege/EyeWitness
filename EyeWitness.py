@@ -1626,11 +1626,10 @@ if __name__ == "__main__":
             # Reverse the list to preserve original order (sort of)
             groupedlist.reverse()
 
-            print groupedlist
-
             for i in range(1, len(groupedlist) + 1):
                 element = groupedlist[i - 1]
                 web_index += element[1][1]
+                print web_index
                 if (i % cli_parsed.results == 0 or i == len(groupedlist)):
                     if page_counter == 0:
                         # Close out the html and write it to disk
