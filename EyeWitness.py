@@ -1600,20 +1600,22 @@ if __name__ == "__main__":
                     # Skip a url if Ctrl-C is hit
                     except KeyboardInterrupt:
                         print "[*] Skipping: " + url
-                        web_index += """<tr>
-                        <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                        htmldictionary[url] = ('Unknown', """<tr>
+                        <td><a href=\"{single_given_url}\">{single_given_url}\
+                        </a></td>
                         <td>User Skipped this URL</td>
                         </tr>
-                        """.format(single_given_url=url).replace('    ', '')
+                        """.format(single_given_url=url).replace('    ', ''))
                     # Catch timeout warning
                     except screener.TimeoutError:
-                        print "[*] Hit timeout limit when connecting to: " + url
-                        web_index += """<tr>
-                        <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
-                        {single_timeout_url}</a></td>
+                        print "[*] Hit timeout limit when connecting to: "\
+                            + url
+                        htmldictionary[url] = ('Unknown', """<tr>
+                        <td><a href=\"{single_timeout_url}\" target=\"_blank\"\
+                        >{single_timeout_url}</a></td>
                         <td>Hit timeout limit while attempting screenshot</td>
                         </tr>
-                        """.format(single_timeout_url=url)
+                        """.format(single_timeout_url=url))
 
                     # Set up sleep if requested
                     jitter_wit_it(cli_parsed)
@@ -1630,6 +1632,77 @@ if __name__ == "__main__":
                     picture_name = picture_name + "_baseline.png"
                     request_number = 0
 
+                    # Create the counter to ensure our file names are unique
+                    source_name = original_source + "_baseline.txt"
+                    picture_name = original_screenshot + "_baseline.png"
+
+                    # Making the request with the new user agent
+                    print "[*] Making the baseline request..."
+                    try:
+                        # Get baseline screenshot
+                        web_request_object = ghost_capture(
+                            ghost_object, web_request_object,
+                            picture_name, ew_output_object)
+
+                        baseline_content_blank = backup_request(
+                            web_request_object, source_name,
+                            content_blank, ew_output_object)
+                        extra_info = "This is the baseline request"
+
+                        # Create the table info for the single URL
+                        # (screenshot, server headers, etc.)
+                        htmldictionary = create_table_entry(
+                            htmldictionary, web_request_object,
+                            content_blank, log_file_path,
+                            "Baseline (n/a)", "Baseline (n/a)",
+                            source_name, picture_name,
+                            baseline_request, ew_output_object)
+
+                    except AttributeError:
+                        print "[*] Unable to request " + url +\
+                            " with " + browser_key
+                        if (url in htmldictionary):
+                            htmldictionary[url][1] = htmldictionary[url][1] + """<tr>
+                        <td><a href=\"{single_given_url}\">\
+                        {single_given_url}</a></td>
+                        <td>Unable to request {single_given_url} with \
+                        {browser_user}.</td>
+                        </tr>
+                        """.format(single_given_url=url,
+                                   browser_user=browser_key)\
+                                .replace('    ', '')
+                        else:
+                            htmldictionary[url] = ('Unknown', """<tr>
+                        <td><a href=\"{single_given_url}\">\
+                        {single_given_url}</a></td>
+                        <td>Unable to request {single_given_url} with \
+                        {browser_user}.</td>
+                        </tr>
+                        """.format(single_given_url=url,
+                                   browser_user=browser_key)
+                                .replace('    ', ''))
+
+                    # Skip a url if Ctrl-C is hit
+                    except KeyboardInterrupt:
+                        print "[*] Skipping: " + url
+                        htmldictionary[url] = ('Unknown', """<tr>
+                        <td><a href=\"{single_given_url}\">{single_given_url}\
+                        </a></td>
+                        <td>User Skipped this URL</td>
+                        </tr>
+                        """.format(single_given_url=url).replace('    ', ''))
+                    # Catch timeout warning
+                    except screener.TimeoutError:
+                        print "[*] Hit timeout limit when connecting to: "\
+                            + url
+                        htmldictionary[url] = ('Unknown', """<tr>
+                        <td><a href=\"{single_timeout_url}\" target=\"_blank\"\
+                        >{single_timeout_url}</a></td>
+                        <td>Hit timeout limit while attempting screenshot</td>
+                        </tr>
+                        """.format(single_timeout_url=url).replace('    ', ''))
+                        web_request_object.web_source_code = "blank code"
+
                     # Iterate through the user agents the user has selected to use,
                     # and set ghost to use them. Then perform a comparison of the
                     # baseline results to the new results.  If different, add to
@@ -1640,118 +1713,100 @@ if __name__ == "__main__":
                         source_name = original_source + "_" + browser_key + ".txt"
                         picture_name = original_screenshot + "_" + browser_key + ".png"
 
-                        # Setting the new user agent
-                        ghost_object.page.setUserAgent(user_agent_value)
-
-                        # Making the request with the new user agent
-                        print "[*] Now making web request with: " + browser_key
                         try:
-                            if request_number == 0:
-                                # Get baseline screenshot
-                                web_request_object = ghost_capture(
-                                    ghost_object, web_request_object,
-                                    picture_name, ew_output_object)
 
-                                # Hack for a bug in Ghost at the moment
-                                #baseline_page.content = "None"
+                            # Making the request with the new user agent
+                            print "[*] Now making web request with: " +\
+                                browser_key
 
-                                baseline_content_blank = backup_request(
-                                    web_request_object, source_name,
-                                    content_blank, ew_output_object)
-                                extra_info = "This is the baseline request"
+                            # Create the request object that will be passed
+                            new_web_request_object =\
+                                request_object.RequestObject()
 
-                                # Create the table info for the single URL
-                                # (screenshot, server headers, etc.)
-                                web_index = table_maker(
-                                    web_request_object, web_index,
-                                    baseline_content_blank,
-                                    log_file_path, browser_key, user_agent_value,
-                                    source_name, picture_name, baseline_request,
+                            # Set the web request info for the request object
+                            new_web_request_object.set_web_request_attributes(
+                                url)
+
+                            # Setting the new user agent
+                            ghost_object.page.setUserAgent(user_agent_value)
+
+                            new_web_request_object = ghost_capture(
+                                ghost_object, new_web_request_object,
+                                picture_name, ew_output_object)
+
+                            new_ua_content_blank = backup_request(
+                                new_web_request_object, source_name,
+                                content_blank, ew_output_object)
+
+                            # Function which hashes the original request
+                            # with the new request and checks to see if
+                            # they are identical
+                            same_or_different, total_length_difference = \
+                                request_comparison(
+                                    web_request_object.web_source_code,
+                                    new_web_request_object.web_source_code,
+                                    cli_parsed.difference)
+
+                            # If they are the same, then go on to the
+                            # next user agent, if they are different,
+                            # add it to the report
+                            if same_or_different:
+                                pass
+                            else:
+                                # Create the table info for the single
+                                # URL (screenshot, server headers,
+                                # etc.)
+                                htmldictionary = create_table_entry(
+                                    htmldictionary, web_request_object,
+                                    content_blank, log_file_path,
+                                    browser_key, user_agent_value,
+                                    source_name, picture_name,
+                                    total_length_difference,
                                     ew_output_object)
 
-                                # Move beyond the baseline
-                                request_number = 1
-
+                        except AttributeError:
+                            print "[*] Unable to request " + url +\
+                                " with " + browser_key
+                            if (url in htmldictionary):
+                                htmldictionary[url][1] = htmldictionary[url][1] + """<tr>
+                            <td><a href=\"{single_given_url}\">\
+                            {single_given_url}</a></td>
+                            <td>Unable to request {single_given_url} with \
+                            {browser_user}.</td>
+                            </tr>
+                            """.format(single_given_url=url,
+                                       browser_user=browser_key)\
+                                    .replace('    ', '')
                             else:
-
-                                # Create the request object that will be passed
-                                new_web_request_object =\
-                                    request_object.RequestObject()
-
-                                # Set the web request info for the request object
-                                new_web_request_object.set_web_request_attributes(
-                                    url)
-
-                                new_web_request_object = ghost_capture(
-                                    ghost_object, new_web_request_object,
-                                    picture_name, ew_output_object)
-
-                                try:
-                                    # Hack for a bug in Ghost at the moment
-                                    # new_ua_page.content = "None"
-
-                                    new_ua_content_blank = backup_request(
-                                        new_web_request_object, source_name,
-                                        content_blank, ew_output_object)
-
-                                    # Function which hashes the original request
-                                    # with the new request and checks to see if
-                                    # they are identical
-                                    same_or_different, total_length_difference = \
-                                        request_comparison(
-                                            web_request_object.web_source_code,
-                                            new_web_request_object.web_source_code,
-                                            cli_parsed.difference)
-
-                                    # If they are the same, then go on to the
-                                    # next user agent, if they are different,
-                                    # add it to the report
-                                    if same_or_different:
-                                        pass
-                                    else:
-                                        # Create the table info for the single 
-                                        # URL (screenshot, server headers,
-                                        # etc.)
-                                        htmldictionary = create_table_entry(
-                                            htmldictionary, web_request_object,
-                                            content_blank, log_file_path,
-                                            browser_key, user_agent_value,
-                                            source_name, picture_name,
-                                            page_length, ew_output_object)
-
-                                except AttributeError:
-                                    print "[*] Unable to request " + cli_parsed.single +\
-                                        " with " + browser_key
-                                    web_index += """<tr>
-                                    <td><a href=\"{single_given_url}\">\
-                                    {single_given_url}</a></td>
-                                    <td>Unable to request {single_given_url} with \
-                                    {browser_user}.</td>
-                                    </tr>
-                                    """.format(single_given_url=cli_parsed.single,
-                                               browser_user=browser_key).\
-                                        replace('    ', '')
-                                total_length_difference = "None"
+                                htmldictionary[url] = ('Unknown', """<tr>
+                            <td><a href=\"{single_given_url}\">\
+                            {single_given_url}</a></td>
+                            <td>Unable to request {single_given_url} with \
+                            {browser_user}.</td>
+                            </tr>
+                            """.format(single_given_url=url,
+                                       browser_user=browser_key)
+                                    .replace('    ', ''))
 
                         # Skip a url if Ctrl-C is hit
                         except KeyboardInterrupt:
-                            print "[*] Skipping: " + cli_parsed.single
-                            web_index += """<tr>
+                            print "[*] Skipping: " + url
+                            htmldictionary[url] = ('Unknown', """<tr>
                             <td><a href=\"{single_given_url}\">{single_given_url}\
                             </a></td>
                             <td>User Skipped this URL</td>
                             </tr>
-                            """.format(single_given_url=cli_parsed.single).replace('    ', '')
+                            """.format(single_given_url=url).replace('    ', ''))
                         # Catch timeout warning
                         except screener.TimeoutError:
                             print "[*] Hit timeout limit when connecting to: "\
-                                + cli_parsed.single
-                            web_index += """<tr>
-                            <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
-                            {single_timeout_url}</a></td>
+                                + url
+                            htmldictionary[url] = ('Unknown', """<tr>
+                            <td><a href=\"{single_timeout_url}\" target=\"_blank\"\
+                            >{single_timeout_url}</a></td>
                             <td>Hit timeout limit while attempting screenshot</td>
                             </tr>
-                            """.format(single_timeout_url=cli_parsed.single)
+                            """.format(single_timeout_url=url).replace('    ', ''))
 
                         # Set up sleep if requested
                         jitter_wit_it(cli_parsed)
