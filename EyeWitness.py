@@ -1282,6 +1282,9 @@ if __name__ == "__main__":
     report_date, report_time = folder_out(
         cli_parsed.d, ew_output_object)
 
+    if cli_parsed.f is not "None":
+            url_list, rdp_list, vnc_list = target_creator(cli_parsed)
+
     if cli_parsed.web.lower() == "ghost":
 
         # Change log path if full path is given for output directory
@@ -1311,8 +1314,6 @@ if __name__ == "__main__":
         baseline_request = "Baseline"
         page_length = "None"
         page_counter = 1
-
-        url_list, rdp_list, vnc_list = target_creator(cli_parsed)
 
         if cli_parsed.single is not "None":
 
@@ -1388,6 +1389,66 @@ if __name__ == "__main__":
                 picture_name = picture_name + "_baseline.png"
                 request_number = 0
 
+                try:
+
+                    print "Making baseline request..."
+
+                    # Get baseline screenshot
+                    web_request_object = ghost_capture(
+                        ghost_object, web_request_object,
+                        picture_name, ew_output_object)
+
+                    # Hack for a bug in Ghost at the moment
+                    #baseline_page.content = "None"
+
+                    baseline_content_blank = backup_request(
+                        web_request_object, source_name,
+                        content_blank, ew_output_object)
+                    extra_info = "This is the baseline request"
+
+                    # Create the table info for the single URL
+                    # (screenshot, server headers, etc.)
+                    web_index = table_maker(
+                        web_request_object, web_index,
+                        baseline_content_blank,
+                        log_file_path, "Baseline (n/a)", "Baseline (n/a)",
+                        source_name, picture_name, baseline_request,
+                        ew_output_object)
+
+                except AttributeError:
+                    print "[*] Unable to request " + cli_parsed.single
+                    web_index += """<tr>
+                    <td><a href=\"{single_given_url}\">\
+                    {single_given_url}</a></td>
+                    <td>Unable to request {single_given_url}</td>
+                    </tr>
+                    """.format(single_given_url=cli_parsed.single)\
+                        .replace('    ', '')
+                    total_length_difference = "None"
+
+                # Skip a url if Ctrl-C is hit
+                except KeyboardInterrupt:
+                    print "[*] Skipping: " + cli_parsed.single
+                    web_index += """<tr>
+                    <td><a href=\"{single_given_url}\">{single_given_url}\
+                    </a></td>
+                    <td>User Skipped this URL</td>
+                    </tr>
+                    """.format(single_given_url=cli_parsed.single).replace('    ', '')
+                # Catch timeout warning
+                except screener.TimeoutError:
+                    print "[*] Hit timeout limit when connecting to: "\
+                        + cli_parsed.single
+                    web_index += """<tr>
+                    <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
+                    {single_timeout_url}</a></td>
+                    <td>Hit timeout limit while attempting screenshot</td>
+                    </tr>
+                    """.format(single_timeout_url=cli_parsed.single)
+
+                # Set up sleep if requested
+                jitter_wit_it(cli_parsed)
+
                 # Iterate through the user agents the user has selected to use,
                 # and set ghost to use them. Then perform a comparison of the
                 # baseline results to the new results.  If different, add to
@@ -1403,93 +1464,66 @@ if __name__ == "__main__":
 
                     # Making the request with the new user agent
                     print "[*] Now making web request with: " + browser_key
+
                     try:
-                        if request_number == 0:
-                            # Get baseline screenshot
-                            web_request_object = ghost_capture(
-                                ghost_object, web_request_object,
-                                picture_name, ew_output_object)
 
-                            # Hack for a bug in Ghost at the moment
-                            #baseline_page.content = "None"
+                        # Create the request object that will be passed
+                        new_web_request_object =\
+                            request_object.RequestObject()
 
-                            baseline_content_blank = backup_request(
-                                web_request_object, source_name,
-                                content_blank, ew_output_object)
-                            extra_info = "This is the baseline request"
+                        # Set the web request info for the request object
+                        new_web_request_object.set_web_request_attributes(
+                            cli_parsed.single)
 
+                        new_web_request_object = ghost_capture(
+                            ghost_object, new_web_request_object,
+                            picture_name, ew_output_object)
+
+                        # Hack for a bug in Ghost at the moment
+                        # new_ua_page.content = "None"
+
+                        new_ua_content_blank = backup_request(
+                            new_web_request_object, source_name,
+                            content_blank, ew_output_object)
+
+                        # Function which hashes the original request
+                        # with the new request and checks to see if
+                        # they are identical
+                        same_or_different, total_length_difference = \
+                            request_comparison(
+                                web_request_object.web_source_code,
+                                new_web_request_object.web_source_code,
+                                cli_parsed.difference)
+
+                        # If they are the same, then go on to the next
+                        # user agent, if they are different, add it to
+                        # the report
+                        if same_or_different:
+                            pass
+                        else:
                             # Create the table info for the single URL
                             # (screenshot, server headers, etc.)
                             web_index = table_maker(
-                                web_request_object, web_index,
-                                baseline_content_blank,
-                                log_file_path, browser_key, user_agent_value,
-                                source_name, picture_name, baseline_request,
+                                new_web_request_object, web_index,
+                                content_blank,
+                                log_file_path, browser_key,
+                                user_agent_value, source_name,
+                                picture_name, total_length_difference,
                                 ew_output_object)
 
-                            # Move beyond the baseline
-                            request_number = 1
-
-                        else:
-
-                            # Create the request object that will be passed
-                            new_web_request_object =\
-                                request_object.RequestObject()
-
-                            # Set the web request info for the request object
-                            new_web_request_object.set_web_request_attributes(
-                                cli_parsed.single)
-
-                            new_web_request_object = ghost_capture(
-                                ghost_object, new_web_request_object,
-                                picture_name, ew_output_object)
-
-                            try:
-                                # Hack for a bug in Ghost at the moment
-                                # new_ua_page.content = "None"
-
-                                new_ua_content_blank = backup_request(
-                                    new_web_request_object, source_name,
-                                    content_blank, ew_output_object)
-
-                                # Function which hashes the original request
-                                # with the new request and checks to see if
-                                # they are identical
-                                same_or_different, total_length_difference = \
-                                    request_comparison(
-                                        web_request_object.web_source_code,
-                                        new_web_request_object.web_source_code,
-                                        cli_parsed.difference)
-
-                                # If they are the same, then go on to the next
-                                # user agent, if they are different, add it to
-                                # the report
-                                if same_or_different:
-                                    pass
-                                else:
-                                    # Create the table info for the single URL
-                                    # (screenshot, server headers, etc.)
-                                    web_index = table_maker(
-                                        new_web_request_object, web_index,
-                                        content_blank,
-                                        log_file_path, browser_key,
-                                        user_agent_value, source_name,
-                                        picture_name, total_length_difference,
-                                        ew_output_object)
-
-                            except AttributeError:
-                                print "[*] Unable to request " + cli_parsed.single +\
-                                    " with " + browser_key
-                                web_index += """<tr>
-                                <td><a href=\"{single_given_url}\">\
-                                {single_given_url}</a></td>
-                                <td>Unable to request {single_given_url} with \
-                                {browser_user}.</td>
-                                </tr>
-                                """.format(single_given_url=cli_parsed.single,
-                                           browser_user=browser_key).\
-                                    replace('    ', '')
-                            total_length_difference = "None"
+                    except AttributeError:
+                        print "[*] Unable to request " + cli_parsed.single +\
+                            " with " + browser_key
+                        web_index += """<tr>
+                        <td><a href=\"{single_given_url}\">\
+                        {single_given_url}</a></td>
+                        <td>Unable to request {single_given_url} with \
+                        {browser_user}.</td>
+                        </tr>
+                        """.format(single_given_url=cli_parsed.single,
+                                   browser_user=browser_key).\
+                            replace('    ', '')
+                        total_length_difference = "None"
 
                     # Skip a url if Ctrl-C is hit
                     except KeyboardInterrupt:
