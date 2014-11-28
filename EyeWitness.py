@@ -21,11 +21,11 @@ import ghost as screener
 import xml.etree.ElementTree as XMLParser
 from netaddr import IPNetwork
 from os.path import join
+from PyQt4 import QtCore, QtGui
 from selenium import webdriver
 from objects import output_object
 from objects import request_object
 from objects import rdp_screenshot
-from PyQt4 import QtCore, QtGui
 
 
 def backup_request(request_object, source_code_name, content_value,
@@ -531,6 +531,15 @@ def jitter_wit_it(command_line_object):
     return
 
 
+def parse_rdp(rdp_host):
+    if ":" in rdp_host:
+        ip, port = rdp_host.split(":")
+    else:
+        ip = rdp_host
+        port = 3389
+    return ip, port
+
+
 def request_comparison(original_content, new_content, max_difference):
     # Function which compares the original baseline request with the new
     # request with the modified user agent
@@ -602,11 +611,8 @@ def scanner(cidr_range, output_obj):
     sys.exit()
 
 
-def Screenshot_RDP(ip, port):
+def screenshot_rdp(rdp_ip, rdp_port, width, height, path):
     #default script argument
-    width = 1024
-    height = 800
-    path = "/tmp/rdpy-rdpscreenshot.jpg"
     timeout = 2.0
 
     #create application
@@ -617,9 +623,12 @@ def Screenshot_RDP(ip, port):
     qt4reactor.install()
 
     from twisted.internet import reactor
-    reactor.connectTCP(ip, int(port), RDPScreenShotFactory(width, height, path, timeout))
+    reactor.connectTCP(
+        rdp_ip, int(rdp_port), rdp_screenshot.RDPScreenShotFactory(
+            width, height, path, timeout, reactor, app))
     reactor.runReturn()
     app.exec_()
+    return
 
 
 def single_report_page(
@@ -1934,14 +1943,16 @@ if __name__ == "__main__":
 
     if cli_parsed.rdp:
 
+        # Required attributes for rdp screenshot
+        width = 1024
+        height = 800
+        path = "/tmp/rdpy-rdpscreenshot.jpg"
+        timeout = 2.0
+
         if cli_parsed.single is not "None":
 
-            if ":" in cli_parsed.single:
-                rdp_ip, rdp_port = cli_parsed.split(":")
-            else:
-                rdp_ip = cli_parsed.single
-                rdp_port = 3389
+            ip_rdp, port_rdp = parse_rdp(cli_parsed.single)
 
-            rdp_screenshot.Screenshot_RDP(rdp_ip, rdp_port)
+            screenshot_rdp(ip_rdp, port_rdp, width, height, path)
 
 print "Done with Test EyeWitness run!"

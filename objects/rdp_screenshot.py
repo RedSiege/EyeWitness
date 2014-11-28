@@ -19,7 +19,6 @@
 #
 
 import sys
-
 from PyQt4 import QtCore, QtGui
 from rdpy.protocol.rdp import rdp
 from rdpy.ui.qt4 import RDPBitmapToQtImage
@@ -34,7 +33,7 @@ class RDPScreenShotFactory(rdp.ClientFactory):
     """
     @summary: Factory for screenshot exemple
     """
-    def __init__(self, width, height, path, timeout):
+    def __init__(self, width, height, path, timeout, reactor, app):
         """
         @param width: width of screen
         @param height: height of screen
@@ -45,6 +44,8 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         self._height = height
         self._path = path
         self._timeout = timeout
+        self.reactor = reactor
+        self.app = app
 
     def clientConnectionLost(self, connector, reason):
         """
@@ -53,8 +54,8 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         @param reason: str use to advertise reason of lost connection
         """
         log.info("connection lost : %s"%reason)
-        reactor.stop()
-        app.exit()
+        self.reactor.stop()
+        self.app.exit()
 
     def clientConnectionFailed(self, connector, reason):
         """
@@ -63,8 +64,8 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         @param reason: str use to advertise reason of lost connection
         """
         log.info("connection failes : %s"%reason)
-        reactor.stop()
-        app.exit()
+        self._reactor.stop()
+        self.app.exit()
 
     def buildObserver(self, controller, addr):
         """
@@ -123,23 +124,3 @@ class RDPScreenShotFactory(rdp.ClientFactory):
                 self._hasUpdated = False
 
         return ScreenShotObserver(controller, self._width, self._height, self._path, self._timeout)
-
-
-def Screenshot_RDP(ip, port):
-    #default script argument
-    width = 1024
-    height = 800
-    path = "/tmp/rdpy-rdpscreenshot.jpg"
-    timeout = 2.0
-
-    #create application
-    app = QtGui.QApplication(sys.argv)
-
-    #add qt4 reactor
-    import qt4reactor
-    qt4reactor.install()
-
-    from twisted.internet import reactor
-    reactor.connectTCP(ip, int(port), RDPScreenShotFactory(width, height, path, timeout))
-    reactor.runReturn()
-    app.exec_()
