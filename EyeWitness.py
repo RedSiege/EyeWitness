@@ -4,26 +4,28 @@
 # by Christopher Truncer and Rohan Vazarkar.  We're adding in the ability to
 # use selenium for screenshot, as well as being able to screenshot RDP and VNC.
 
-import ghost as screener
+
 import argparse
-import os
-from os.path import join
-import time
-import sys
-import xml.etree.ElementTree as XMLParser
-import urllib2
 import cgi
-import re
-import logging
-import random
-import socket
 import difflib
-from netaddr import IPNetwork
+import logging
+import os
 import platform
-#import webbrowser
+import random
+import re
+import socket
+import sys
+import time
+import urllib2
+import ghost as screener
+import xml.etree.ElementTree as XMLParser
+from netaddr import IPNetwork
+from os.path import join
 from selenium import webdriver
-from objects import request_object
 from objects import output_object
+from objects import request_object
+from objects import rdp_screenshot
+from PyQt4 import QtCore, QtGui
 
 
 def backup_request(request_object, source_code_name, content_value,
@@ -598,6 +600,26 @@ def scanner(cidr_range, output_obj):
     frmt_str = "List of live machines written to: {0}"
     print frmt_str.format(scanner_output_path)
     sys.exit()
+
+
+def Screenshot_RDP(ip, port):
+    #default script argument
+    width = 1024
+    height = 800
+    path = "/tmp/rdpy-rdpscreenshot.jpg"
+    timeout = 2.0
+
+    #create application
+    app = QtGui.QApplication(sys.argv)
+
+    #add qt4 reactor
+    import qt4reactor
+    qt4reactor.install()
+
+    from twisted.internet import reactor
+    reactor.connectTCP(ip, int(port), RDPScreenShotFactory(width, height, path, timeout))
+    reactor.runReturn()
+    app.exec_()
 
 
 def single_report_page(
@@ -1282,9 +1304,11 @@ if __name__ == "__main__":
     report_date, report_time = folder_out(
         cli_parsed.d, ew_output_object)
 
+    # Don't parse files unless actually giving file input
     if cli_parsed.f is not "None":
             url_list, rdp_list, vnc_list = target_creator(cli_parsed)
 
+    # If screenshotting websites and using ghost to do it...
     if cli_parsed.web.lower() == "ghost":
 
         # Change log path if full path is given for output directory
@@ -1907,3 +1931,17 @@ if __name__ == "__main__":
 
         # Begin using selenium
         pass
+
+    if cli_parsed.rdp:
+
+        if cli_parsed.single is not "None":
+
+            if ":" in cli_parsed.single:
+                rdp_ip, rdp_port = cli_parsed.split(":")
+            else:
+                rdp_ip = cli_parsed.single
+                rdp_port = 3389
+
+            rdp_screenshot.Screenshot_RDP(rdp_ip, rdp_port)
+
+print "Done with Test EyeWitness run!"
