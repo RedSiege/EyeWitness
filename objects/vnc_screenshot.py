@@ -30,7 +30,7 @@ from rdpy.ui.qt4 import qtImageFormatFromRFBPixelFormat
 from twisted.internet import task
 
 #set log level
-log._LOG_LEVEL = log.Level.INFO
+log._LOG_LEVEL = log.Level.ERROR
 
 
 class RFBScreenShotFactory(rfb.ClientFactory):

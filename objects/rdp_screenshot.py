@@ -26,7 +26,7 @@ import rdpy.base.log as log
 from twisted.internet import task
 
 #set log level
-log._LOG_LEVEL = log.Level.INFO
+log._LOG_LEVEL = log.Level.ERROR
 
 
 class RDPScreenShotFactory(rdp.ClientFactory):

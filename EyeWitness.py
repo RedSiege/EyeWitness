@@ -549,14 +549,16 @@ def parse_ip_port(rdp_host, protocol_check):
 
 def screenshot_pathmaker(output_obj, rdp_screen_name):
     rdp_screen_name = rdp_screen_name.replace(":", ".")
-    if output_obj.report_folder.startswith("/") or\
-            output_obj.report_folder.startswith("C:\\"):
-        capture_path = join(
-            output_obj.eyewitness_path, output_obj.report_folder,
-            "screens", rdp_screen_name)
-    else:
+
+    if (output_obj.report_folder.startswith("/") or
+            output_obj.report_folder.startswith("C:\\")):
         capture_path = join(
             output_obj.report_folder, "screens", rdp_screen_name)
+    else:
+        capture_path = join(
+            output_obj.eyewitness_path, output_obj.report_folder, "screens",
+            rdp_screen_name)
+
     return capture_path + ".jpg"
 
 
@@ -654,7 +656,7 @@ def screenshot_rdp(rdp_ip, rdp_port, width, height, rdp_screen_path):
 def screenshot_vnc(vnc_ip, vnc_port, vnc_screen_path):
     #create application
     app = QtGui.QApplication(sys.argv)
-    vnc_screen_path = "/tmp/test.jpg"
+
     #add qt4 reactor
     import qt4reactor
     qt4reactor.install()
@@ -1989,7 +1991,6 @@ if __name__ == "__main__":
 
             rdp_screenshot_path = screenshot_pathmaker(
                 ew_output_object, cli_parsed.single)
-            print rdp_screenshot_path
 
             ip_rdp, port_rdp = parse_ip_port(cli_parsed.single, "rdp")
 
