@@ -50,13 +50,13 @@ class RequestObject:
         self.web_screenshot_path = web_screen_path
         return
 
-    def set_rdp_request_attributes(self):
+    def set_rdp_request_attributes(self, rdp_target):
         # Attributes for connecting to RDP services
         self.rdp_protocol = True
-        self.remote_system = "X"
+        self.remote_system = rdp_target
         return
 
-    def set_rdp_response_attributes(self):
+    def set_rdp_response_attributes(self, rdp_screen_path):
         # Attributes based on rdp connection
-        self.rdp_screenshot_path = "X"
+        self.rdp_screenshot_path = rdp_screen_path
         return

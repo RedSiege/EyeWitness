@@ -532,11 +532,11 @@ def jitter_wit_it(command_line_object):
     return
 
 
-def parse_ip_port(rdp_host, protocol_check):
-    if ":" in rdp_host:
-        ip, port = rdp_host.split(":")
+def parse_ip_port(rdp_object, protocol_check):
+    if ":" in rdp_object.remote_system:
+        ip, port = rdp_object.remote_system.split(":")
     else:
-        ip = rdp_host
+        ip = rdp_object.remote_system
         if protocol_check == "rdp":
             port = 3389
         elif protocol_check == "vnc":
@@ -547,8 +547,8 @@ def parse_ip_port(rdp_host, protocol_check):
     return ip, port
 
 
-def screenshot_pathmaker(output_obj, rdp_screen_name):
-    rdp_screen_name = rdp_screen_name.replace(":", ".")
+def screenshot_pathmaker(output_obj, rdp_object):
+    rdp_screen_name = rdp_object.remote_system.replace(":", ".")
 
     if (output_obj.report_folder.startswith("/") or
             output_obj.report_folder.startswith("C:\\")):
@@ -631,6 +631,10 @@ def scanner(cidr_range, output_obj):
     frmt_str = "List of live machines written to: {0}"
     print frmt_str.format(scanner_output_path)
     sys.exit()
+
+
+def screenshot_to_report(vnc_report_source_code):
+    return
 
 
 def screenshot_rdp(rdp_ip, rdp_port, width, height, rdp_screen_path):
@@ -1304,6 +1308,22 @@ def validate_ip(val_ip):
                 return False
         return True
     return False
+
+
+def vnc_rdp_header(the_report_date, the_report_time):
+    web_index_head = """<html>
+    <head>
+    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+    <title>EyeWitness Report</title>
+    </head>
+    <body>
+    <center>Report Generated on {report_day} at {reporthtml_time}</center>
+    <br><table border=\"1\">
+    <tr>
+    <th>IP / Screenshot</th>
+    </tr>""".format(report_day=the_report_date,
+                    reporthtml_time=the_report_time).replace('    ', '')
+    return web_index_head
 
 
 def web_header(real_report_date, real_report_time):
@@ -1986,16 +2006,31 @@ if __name__ == "__main__":
         width = 1024
         height = 800
         timeout = 2.0
+        page_counter = 1
+
+        vnc_report_html = vnc_rdp_header(report_date, report_time)
 
         if cli_parsed.single is not "None":
 
-            rdp_screenshot_path = screenshot_pathmaker(
-                ew_output_object, cli_parsed.single)
+            # Create the request object that will be passed around
+            rdp_request_object = request_object.RequestObject()
 
-            ip_rdp, port_rdp = parse_ip_port(cli_parsed.single, "rdp")
+            rdp_request_object.set_rdp_request_attributes(cli_parsed.single)
+
+            rdp_request_object.set_rdp_response_attributes(
+                screenshot_pathmaker(ew_output_object, rdp_request_object))
+
+            ip_rdp, port_rdp = parse_ip_port(rdp_request_object, "rdp")
 
             screenshot_rdp(
-                ip_rdp, port_rdp, width, height, rdp_screenshot_path)
+                ip_rdp, port_rdp, width, height,
+                rdp_request_object.rdp_screenshot_path)
+
+            vnc_report_html = screenshot_to_report(vnc_report_html)
+
+         # Write out the report for the single URL
+        create_link_structure(
+            page_counter, ew_output_object, vnc_report_html)
 
     if cli_parsed.vnc:
 
@@ -2006,7 +2041,7 @@ if __name__ == "__main__":
         if cli_parsed.single is not "None":
 
             vnc_screenshot_path = screenshot_pathmaker(
-                ew_output_object, cli_parsed.single)
+                ew_output_object, vnc_request_object)
 
             ip_vnc, port_vnc = parse_ip_port(cli_parsed.single, "vnc")
 
