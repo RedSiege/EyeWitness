@@ -633,8 +633,17 @@ def scanner(cidr_range, output_obj):
     sys.exit()
 
 
-def screenshot_to_report(vnc_report_source_code):
-    return
+def screenshot_to_report(final_report_source_code, vnc_rdp_request_object):
+    final_report_source_code += "<tr>" + vnc_rdp_request_object.remote_system + "<br><br>"
+    if vnc_rdp_request_object.rdp_protocol:
+        final_report_source_code += "<img src=\"" + vnc_rdp_request_object.rdp_screenshot_path + "\">"
+    elif vnc_rdp_request_object.vnc_protocol:
+        final_report_source_code += "<img src=\"" + vnc_rdp_request_object.vnc_screenshot_path + "\">"
+    else:
+        print "[*] Error: Odd error, please report this!"
+    final_report_source_code += "</tr>"
+
+    return final_report_source_code
 
 
 def screenshot_rdp(rdp_ip, rdp_port, width, height, rdp_screen_path):
@@ -2026,7 +2035,8 @@ if __name__ == "__main__":
                 ip_rdp, port_rdp, width, height,
                 rdp_request_object.rdp_screenshot_path)
 
-            vnc_report_html = screenshot_to_report(vnc_report_html)
+            vnc_report_html = screenshot_to_report(
+                vnc_report_html, rdp_request_object)
 
          # Write out the report for the single URL
         create_link_structure(
