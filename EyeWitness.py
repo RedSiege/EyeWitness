@@ -26,6 +26,7 @@ from selenium import webdriver
 from objects import output_object
 from objects import request_object
 from objects import rdp_screenshot
+from objects import vnc_screenshot
 
 
 def backup_request(request_object, source_code_name, content_value,
@@ -531,16 +532,22 @@ def jitter_wit_it(command_line_object):
     return
 
 
-def parse_rdp(rdp_host):
+def parse_ip_port(rdp_host, protocol_check):
     if ":" in rdp_host:
         ip, port = rdp_host.split(":")
     else:
         ip = rdp_host
-        port = 3389
+        if protocol_check == "rdp":
+            port = 3389
+        elif protocol_check == "vnc":
+            port = 5900
+        else:
+            print "[*] Error: Something went wrong.. what did you do?"
+            sys.exit()
     return ip, port
 
 
-def rdp_screenshot_pathmaker(output_obj, rdp_screen_name):
+def screenshot_pathmaker(output_obj, rdp_screen_name):
     rdp_screen_name = rdp_screen_name.replace(":", ".")
     if output_obj.report_folder.startswith("/") or\
             output_obj.report_folder.startswith("C:\\"):
@@ -624,7 +631,7 @@ def scanner(cidr_range, output_obj):
     sys.exit()
 
 
-def screenshot_rdp(rdp_ip, rdp_port, width, height, path):
+def screenshot_rdp(rdp_ip, rdp_port, width, height, rdp_screen_path):
     #default script argument
     timeout = 2.0
 
@@ -638,7 +645,24 @@ def screenshot_rdp(rdp_ip, rdp_port, width, height, path):
     from twisted.internet import reactor
     reactor.connectTCP(
         rdp_ip, int(rdp_port), rdp_screenshot.RDPScreenShotFactory(
-            width, height, path, timeout, reactor, app))
+            width, height, rdp_screen_path, timeout, reactor, app))
+    reactor.runReturn()
+    app.exec_()
+    return
+
+
+def screenshot_vnc(vnc_ip, vnc_port, vnc_screen_path):
+    #create application
+    app = QtGui.QApplication(sys.argv)
+    vnc_screen_path = "/tmp/test.jpg"
+    #add qt4 reactor
+    import qt4reactor
+    qt4reactor.install()
+
+    from twisted.internet import reactor
+    reactor.connectTCP(
+        vnc_ip, int(vnc_port), vnc_screenshot.RFBScreenShotFactory(
+            password, vnc_screen_path, reactor, app))
     reactor.runReturn()
     app.exec_()
     return
@@ -1963,13 +1987,28 @@ if __name__ == "__main__":
 
         if cli_parsed.single is not "None":
 
-            rdp_screenshot_path = rdp_screenshot_pathmaker(
+            rdp_screenshot_path = screenshot_pathmaker(
                 ew_output_object, cli_parsed.single)
             print rdp_screenshot_path
 
-            ip_rdp, port_rdp = parse_rdp(cli_parsed.single)
+            ip_rdp, port_rdp = parse_ip_port(cli_parsed.single, "rdp")
 
             screenshot_rdp(
                 ip_rdp, port_rdp, width, height, rdp_screenshot_path)
+
+    if cli_parsed.vnc:
+
+        # Required variables for vnc screenshot
+        path = "/tmp/rdpy-vncscreenshot.jpg"
+        password = ""
+
+        if cli_parsed.single is not "None":
+
+            vnc_screenshot_path = screenshot_pathmaker(
+                ew_output_object, cli_parsed.single)
+
+            ip_vnc, port_vnc = parse_ip_port(cli_parsed.single, "vnc")
+
+            screenshot_vnc(ip_vnc, port_vnc, vnc_screenshot_path)
 
 print "Done with Test EyeWitness run!"
