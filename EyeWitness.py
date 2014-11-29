@@ -540,6 +540,19 @@ def parse_rdp(rdp_host):
     return ip, port
 
 
+def rdp_screenshot_pathmaker(output_obj, rdp_screen_name):
+    rdp_screen_name = rdp_screen_name.replace(":", ".")
+    if output_obj.report_folder.startswith("/") or\
+            output_obj.report_folder.startswith("C:\\"):
+        capture_path = join(
+            output_obj.eyewitness_path, output_obj.report_folder,
+            "screens", rdp_screen_name)
+    else:
+        capture_path = join(
+            output_obj.report_folder, "screens", rdp_screen_name)
+    return capture_path + ".jpg"
+
+
 def request_comparison(original_content, new_content, max_difference):
     # Function which compares the original baseline request with the new
     # request with the modified user agent
@@ -1946,13 +1959,17 @@ if __name__ == "__main__":
         # Required attributes for rdp screenshot
         width = 1024
         height = 800
-        path = "/tmp/rdpy-rdpscreenshot.jpg"
         timeout = 2.0
 
         if cli_parsed.single is not "None":
 
+            rdp_screenshot_path = rdp_screenshot_pathmaker(
+                ew_output_object, cli_parsed.single)
+            print rdp_screenshot_path
+
             ip_rdp, port_rdp = parse_rdp(cli_parsed.single)
 
-            screenshot_rdp(ip_rdp, port_rdp, width, height, path)
+            screenshot_rdp(
+                ip_rdp, port_rdp, width, height, rdp_screenshot_path)
 
 print "Done with Test EyeWitness run!"
