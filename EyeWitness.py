@@ -119,65 +119,117 @@ def createSeleniumDriver(cli_parsed):
 
 
 def create_link_structure(
-        number_of_pages, output_obj, report_out_html):
+        number_of_pages, output_obj, report_out_html, proto):
     if number_of_pages == 1:
         single_report_page(
             report_out_html, output_obj.eyewitness_path,
-            output_obj.operating_system, output_obj.report_folder)
+            output_obj.operating_system, output_obj.report_folder, proto)
 
     else:
         # Write out our extra page
         report_out_html += "</table>\n"
-        with open(
-            join(output_obj.eyewitness_path, output_obj.report_folder,
-                 "report_page" + str(number_of_pages+1) + ".html"), 'w')\
-                as page_out:
-            page_out.write(report_out_html)
+        if proto is "web" or proto is "rdp":
+            with open(
+                join(output_obj.eyewitness_path, output_obj.report_folder,
+                     "report_page_" + proto + str(number_of_pages+1) + ".html"), 'w')\
+                    as page_out:
+                page_out.write(report_out_html)
 
-        # Create the link structure at the bottom
-        link_text = "\n<center><br>Links: <a href=\"report.html\">Page 1</a> "
-        for page in range(2, number_of_pages + 2):
-            link_text += "<a href=\"report_page" + str(page) + ".html\">\
-            Page " + str(page) + "</a> ".replace('    ', '')
-        top_links = link_text
-        link_text += "</center>\n</body>\n"
-        link_text += "</html>"
+            # Create the link structure at the bottom
+            link_text = "\n<center><br>Links: <a href=\"report_" + proto + ".html\">Page 1</a> "
+            for page in range(2, number_of_pages + 2):
+                link_text += "<a href=\"report_page_" + proto + str(page) + ".html\">\
+                Page " + str(page) + "</a> ".replace('    ', '')
+            top_links = link_text
+            link_text += "</center>\n</body>\n"
+            link_text += "</html>"
 
-        # Write out link structure to bottom of report
-        # and add it to the top as well
-        with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report.html"), 'a')\
-                as report_append:
-            report_append.write(link_text)
+            # Write out link structure to bottom of report
+            # and add it to the top as well
+            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_" + proto + ".html"), 'a')\
+                    as report_append:
+                report_append.write(link_text)
 
-        with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report.html"), 'r')\
-                as link_add:
-            content = link_add.readlines()
-
-        content.insert(6, "<center>" + top_links + "</center>\n")
-        content = "".join(content)
-
-        with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report.html"), 'w')\
-                as final_report_page:
-            final_report_page.write(content)
-
-        # Write out link structure to bottom of extra pages
-        # Also add links to the top of extra pages
-        for page_footer in range(2, number_of_pages + 2):
-            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page" +
-                      str(page_footer) + ".html"), 'a') as page_append:
-                page_append.write(link_text)
-
-        for page_footer in range(2, number_of_pages + 2):
-            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page" +
-                      str(page_footer) + ".html"), 'r') as link_add:
+            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_" + proto + ".html"), 'r')\
+                    as link_add:
                 content = link_add.readlines()
 
             content.insert(6, "<center>" + top_links + "</center>\n")
             content = "".join(content)
 
-            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page" +
-                      str(page_footer) + ".html"), 'w') as final_reports_page:
-                final_reports_page.write(content)
+            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_" + proto + ".html"), 'w')\
+                    as final_report_page:
+                final_report_page.write(content)
+
+            # Write out link structure to bottom of extra pages
+            # Also add links to the top of extra pages
+            for page_footer in range(2, number_of_pages + 2):
+                with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page_" + proto +
+                          str(page_footer) + ".html"), 'a') as page_append:
+                    page_append.write(link_text)
+
+            for page_footer in range(2, number_of_pages + 2):
+                with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page_" + proto +
+                          str(page_footer) + ".html"), 'r') as link_add:
+                    content = link_add.readlines()
+
+                content.insert(6, "<center>" + top_links + "</center>\n")
+                content = "".join(content)
+
+                with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page_" + proto +
+                          str(page_footer) + ".html"), 'w') as final_reports_page:
+                    final_reports_page.write(content)
+        else:
+            with open(
+                join(output_obj.eyewitness_path, output_obj.report_folder,
+                     "report_page" + str(number_of_pages+1) + ".html"), 'w')\
+                    as page_out:
+                page_out.write(report_out_html)
+
+            # Create the link structure at the bottom
+            link_text = "\n<center><br>Links: <a href=\"report.html\">Page 1</a> "
+            for page in range(2, number_of_pages + 2):
+                link_text += "<a href=\"report_page" + str(page) + ".html\">\
+                Page " + str(page) + "</a> ".replace('    ', '')
+            top_links = link_text
+            link_text += "</center>\n</body>\n"
+            link_text += "</html>"
+
+            # Write out link structure to bottom of report
+            # and add it to the top as well
+            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report.html"), 'a')\
+                    as report_append:
+                report_append.write(link_text)
+
+            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report.html"), 'r')\
+                    as link_add:
+                content = link_add.readlines()
+
+            content.insert(6, "<center>" + top_links + "</center>\n")
+            content = "".join(content)
+
+            with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report.html"), 'w')\
+                    as final_report_page:
+                final_report_page.write(content)
+
+            # Write out link structure to bottom of extra pages
+            # Also add links to the top of extra pages
+            for page_footer in range(2, number_of_pages + 2):
+                with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page" +
+                          str(page_footer) + ".html"), 'a') as page_append:
+                    page_append.write(link_text)
+
+            for page_footer in range(2, number_of_pages + 2):
+                with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page" +
+                          str(page_footer) + ".html"), 'r') as link_add:
+                    content = link_add.readlines()
+
+                content.insert(6, "<center>" + top_links + "</center>\n")
+                content = "".join(content)
+
+                with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page" +
+                          str(page_footer) + ".html"), 'w') as final_reports_page:
+                    final_reports_page.write(content)
     return
 
 
@@ -547,21 +599,6 @@ def parse_ip_port(rdp_object, protocol_check):
     return ip, port
 
 
-def screenshot_pathmaker(output_obj, rdp_object):
-    rdp_screen_name = rdp_object.remote_system.replace(":", ".")
-
-    if (output_obj.report_folder.startswith("/") or
-            output_obj.report_folder.startswith("C:\\")):
-        capture_path = join(
-            output_obj.report_folder, "screens", rdp_screen_name)
-    else:
-        capture_path = join(
-            output_obj.eyewitness_path, output_obj.report_folder, "screens",
-            rdp_screen_name)
-
-    return capture_path + ".jpg"
-
-
 def request_comparison(original_content, new_content, max_difference):
     # Function which compares the original baseline request with the new
     # request with the modified user agent
@@ -581,6 +618,21 @@ def request_comparison(original_content, new_content, max_difference):
             return False, total_difference
         else:
             return True, "None"
+
+
+def screenshot_pathmaker(output_obj, rdp_object):
+    rdp_screen_name = rdp_object.remote_system.replace(":", ".")
+
+    if (output_obj.report_folder.startswith("/") or
+            output_obj.report_folder.startswith("C:\\")):
+        capture_path = join(
+            output_obj.report_folder, "screens", rdp_screen_name)
+    else:
+        capture_path = join(
+            output_obj.eyewitness_path, output_obj.report_folder, "screens",
+            rdp_screen_name)
+
+    return capture_path + ".jpg"
 
 
 def scanner(cidr_range, output_obj):
@@ -634,14 +686,16 @@ def scanner(cidr_range, output_obj):
 
 
 def screenshot_to_report(final_report_source_code, vnc_rdp_request_object):
-    final_report_source_code += "<tr>" + vnc_rdp_request_object.remote_system + "<br><br>"
+    screen_name_array = vnc_rdp_request_object.rdp_screenshot_path.split("/")
+    final_report_source_code += "<tr><td><b><center>" + vnc_rdp_request_object.remote_system + "</center></b><br>"
+    final_report_source_code += "<div id=\"screenshot\" style=\"display: inline-block; width:850px; height 400px; overflow: scroll;\">"
     if vnc_rdp_request_object.rdp_protocol:
-        final_report_source_code += "<img src=\"" + vnc_rdp_request_object.rdp_screenshot_path + "\">"
+        final_report_source_code += "<img src=\"screens/" + screen_name_array[-1] + "\">"
     elif vnc_rdp_request_object.vnc_protocol:
-        final_report_source_code += "<img src=\"" + vnc_rdp_request_object.vnc_screenshot_path + "\">"
+        final_report_source_code += "<img src=\"screens/" + screen_name_array[-1] + "\">"
     else:
         print "[*] Error: Odd error, please report this!"
-    final_report_source_code += "</tr>"
+    final_report_source_code += "</div></td></tr>"
 
     return final_report_source_code
 
@@ -684,17 +738,23 @@ def screenshot_vnc(vnc_ip, vnc_port, vnc_screen_path):
 
 
 def single_report_page(
-        report_source, report_path, platform_os, report_out_path):
+        report_source, report_path, platform_os, report_out_path, proto):
     # Close out the html and write it to disk
     report_source += """</table>
     </body>
     </html>
     """.replace('    ', '')
 
-    if report_out_path.startswith('/') or report_out_path.startswith("C:\\"):
-        report_file = join(report_out_path, "report.html")
+    if proto is "rdp" or proto is "vnc":
+        if report_out_path.startswith('/') or report_out_path.startswith("C:\\"):
+            report_file = join(report_out_path, "report_" + proto + ".html")
+        else:
+            report_file = join(report_path, report_out_path, "report_" + proto + ".html")
     else:
-        report_file = join(report_path, report_out_path, "report.html")
+        if report_out_path.startswith('/') or report_out_path.startswith("C:\\"):
+            report_file = join(report_out_path, "report.html")
+        else:
+            report_file = join(report_path, report_out_path, "report.html")
 
     with open(report_file, 'w') as fo:
         fo.write(report_source)
@@ -1327,7 +1387,7 @@ def vnc_rdp_header(the_report_date, the_report_time):
     </head>
     <body>
     <center>Report Generated on {report_day} at {reporthtml_time}</center>
-    <br><table border=\"1\">
+    <br><table border=\"1\" align=\"center\">
     <tr>
     <th>IP / Screenshot</th>
     </tr>""".format(report_day=the_report_date,
@@ -1651,7 +1711,7 @@ if __name__ == "__main__":
 
             # Write out the report for the single URL
             create_link_structure(
-                page_counter, ew_output_object, web_index)
+                page_counter, ew_output_object, web_index, "web")
 
             ghost_cleanup(ghost_object, ew_output_object, log_file_path)
 
@@ -1996,7 +2056,7 @@ if __name__ == "__main__":
                             page_counter = page_counter + 1
                             web_index = web_header(report_date, report_time)
 
-            create_link_structure(page_counter, ew_output_object, web_index)
+            create_link_structure(page_counter, ew_output_object, web_index, "web")
 
             ghost_cleanup(ghost_object, ew_output_object, log_file_path)
 
@@ -2017,9 +2077,11 @@ if __name__ == "__main__":
         timeout = 2.0
         page_counter = 1
 
-        vnc_report_html = vnc_rdp_header(report_date, report_time)
+        vnc_rdp_report_html = vnc_rdp_header(report_date, report_time)
 
         if cli_parsed.single is not "None":
+
+            print "RDPing into " + cli_parsed.single + "..."
 
             # Create the request object that will be passed around
             rdp_request_object = request_object.RequestObject()
@@ -2035,12 +2097,15 @@ if __name__ == "__main__":
                 ip_rdp, port_rdp, width, height,
                 rdp_request_object.rdp_screenshot_path)
 
-            vnc_report_html = screenshot_to_report(
-                vnc_report_html, rdp_request_object)
+            vnc_rdp_report_html = screenshot_to_report(
+                vnc_rdp_report_html, rdp_request_object)
 
          # Write out the report for the single URL
         create_link_structure(
-            page_counter, ew_output_object, vnc_report_html)
+            page_counter, ew_output_object, vnc_rdp_report_html, "rdp")
+
+        print "\n[*] Done! Check out the report in the " +\
+            ew_output_object.report_folder + " folder!"
 
     if cli_parsed.vnc:
 
@@ -2056,5 +2121,6 @@ if __name__ == "__main__":
             ip_vnc, port_vnc = parse_ip_port(cli_parsed.single, "vnc")
 
             screenshot_vnc(ip_vnc, port_vnc, vnc_screenshot_path)
+
 
 print "Done with Test EyeWitness run!"
