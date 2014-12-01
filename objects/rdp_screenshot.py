@@ -24,9 +24,10 @@ from rdpy.protocol.rdp import rdp
 from rdpy.ui.qt4 import RDPBitmapToQtImage
 import rdpy.base.log as log
 from twisted.internet import task
+from twisted.internet import error
 
 #set log level
-log._LOG_LEVEL = log.Level.ERROR
+log._LOG_LEVEL = log.Level.INFO
 
 
 class RDPScreenShotFactory(rdp.ClientFactory):
@@ -54,7 +55,10 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         @param reason: str use to advertise reason of lost connection
         """
         log.info("connection lost : %s"%reason)
-        self.reactor.stop()
+        try:
+            self.reactor.stop()
+        except error.ReactorNotRunning:
+            pass
         self.app.exit()
 
     def clientConnectionFailed(self, connector, reason):
@@ -64,7 +68,10 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         @param reason: str use to advertise reason of lost connection
         """
         log.info("connection failes : %s"%reason)
-        self.reactor.stop()
+        try:
+            self.reactor.stop()
+        except error.ReactorNotRunning:
+            pass
         self.app.exit()
 
     def buildObserver(self, controller, addr):

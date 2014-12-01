@@ -700,27 +700,72 @@ def screenshot_to_report(final_report_source_code, vnc_rdp_request_object):
     return final_report_source_code
 
 
-def screenshot_rdp(rdp_ip, rdp_port, width, height, rdp_screen_path, previous_request):
+def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report, single_rdp):
+
     #default script argument
     timeout = 2.0
 
     #create application
     app = QtGui.QApplication(sys.argv)
 
-    if previous_request == 0:
-        #add qt4 reactor
-        import qt4reactor
-        qt4reactor.install()
-
+    #add qt4 reactor
+    import qt4reactor
+    qt4reactor.install()
     from twisted.internet import reactor
-    test = reactor.connectTCP(
-        rdp_ip, int(rdp_port), rdp_screenshot.RDPScreenShotFactory(
-            width, height, rdp_screen_path, timeout, reactor, app))
+
+    if single_rdp is not None:
+        print "RDPing into " + single_rdp + "..."
+
+        # Create the request object that will be passed around
+        rdp_object = request_object.RequestObject()
+
+        rdp_object.set_rdp_request_attributes(single_rdp)
+
+        rdp_object.set_rdp_response_attributes(
+            screenshot_pathmaker(output_obj, rdp_object))
+
+        ip_rdp, port_rdp = parse_ip_port(rdp_object, "rdp")
+
+        reactor.connectTCP(
+            ip_rdp, int(port_rdp), rdp_screenshot.RDPScreenShotFactory(
+                width, height, rdp_object.rdp_screenshot_path, timeout,
+                reactor, app))
+
+        rdp_report = screenshot_to_report(
+            rdp_report, rdp_object)
+
+    elif rdp_hosts is not None:
+
+        # Loop over the list containing all the RDP targets
+        for rdp_host in rdp_hosts:
+
+            rdp_host = rdp_host.strip()
+            print "RDPing into " + rdp_host + "..."
+
+            # Create the request object that will be passed around
+            rdp_object = request_object.RequestObject()
+
+            rdp_object.set_rdp_request_attributes(rdp_host)
+
+            rdp_object.set_rdp_response_attributes(
+                screenshot_pathmaker(output_obj, rdp_object))
+
+            ip_rdp, port_rdp = parse_ip_port(rdp_object, "rdp")
+
+            reactor.connectTCP(
+                ip_rdp, int(port_rdp), rdp_screenshot.RDPScreenShotFactory(
+                    width, height, rdp_object.rdp_screenshot_path, timeout,
+                    reactor, app))
+
+            rdp_report = screenshot_to_report(
+                rdp_report, rdp_object)
+
+    else:
+        print "[*] Error: Something is off.. please report this error!"
+
     reactor.runReturn()
     app.exec_()
-    app.exit()
-    test.disconnect()
-    return
+    return rdp_object, rdp_report
 
 
 def screenshot_vnc(vnc_ip, vnc_port, vnc_screen_path):
@@ -1447,6 +1492,10 @@ if __name__ == "__main__":
     # Don't parse files unless actually giving file input
     if cli_parsed.f is not "None":
             url_list, rdp_list, vnc_list = target_creator(cli_parsed)
+    else:
+        url_list = None
+        rdp_list = None
+        vnc_list = None
 
     # If screenshotting websites and using ghost to do it...
     if cli_parsed.web.lower() == "ghost":
@@ -2085,51 +2134,15 @@ if __name__ == "__main__":
 
         if cli_parsed.single is not "None":
 
-            print "RDPing into " + cli_parsed.single + "..."
-
-            # Create the request object that will be passed around
-            rdp_request_object = request_object.RequestObject()
-
-            rdp_request_object.set_rdp_request_attributes(cli_parsed.single)
-
-            rdp_request_object.set_rdp_response_attributes(
-                screenshot_pathmaker(ew_output_object, rdp_request_object))
-
-            ip_rdp, port_rdp = parse_ip_port(rdp_request_object, "rdp")
-
-            screenshot_rdp(
-                ip_rdp, port_rdp, width, height,
-                rdp_request_object.rdp_screenshot_path, 0)
-
-            rdp_report_html = screenshot_to_report(
-                rdp_report_html, rdp_request_object)
+            rdp_request_object, rdp_report_html = screenshot_rdp(
+                width, height, rdp_list, ew_output_object, rdp_report_html,
+                cli_parsed.single)
 
         elif cli_parsed.f is not "None":
 
-            # Loop over the list containing all the RDP targets
-            for rdp_host in rdp_list:
-
-                rdp_host = rdp_host.strip()
-                print "RDPing into " + rdp_host + "..."
-
-                # Create the request object that will be passed around
-                rdp_request_object = request_object.RequestObject()
-
-                rdp_request_object.set_rdp_request_attributes(rdp_host)
-
-                rdp_request_object.set_rdp_response_attributes(
-                    screenshot_pathmaker(ew_output_object, rdp_request_object))
-
-                ip_rdp, port_rdp = parse_ip_port(rdp_request_object, "rdp")
-
-                screenshot_rdp(
-                    ip_rdp, port_rdp, width, height,
-                    rdp_request_object.rdp_screenshot_path, request_num)
-
-                rdp_report_html = screenshot_to_report(
-                    rdp_report_html, rdp_request_object)
-
-                request_num += 1
+                rdp_request_object, rdp_report_html = screenshot_rdp(
+                    width, height, rdp_list, ew_output_object, rdp_report_html,
+                    None)
 
          # Write out the report for the single URL
         create_link_structure(
