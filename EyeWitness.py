@@ -769,6 +769,7 @@ def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report, single_rdp)
 
 
 def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc):
+
     #create application
     app = QtGui.QApplication(sys.argv)
 
@@ -784,18 +785,21 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc)
         # Create the request object that will be passed around
         vnc_object = request_object.RequestObject()
 
-        vnc_object.set_rdp_request_attributes(single_vnc)
+        vnc_object.set_vnc_request_attributes(single_vnc)
 
-        vnc_object.set_rdp_response_attributes(
+        vnc_object.set_vnc_response_attributes(
             screenshot_pathmaker(output_obj, vnc_object))
 
         ip_vnc, port_vnc = parse_ip_port(vnc_object, "rdp")
 
         reactor.connectTCP(
             ip_vnc, int(port_vnc), vnc_screenshot.RFBScreenShotFactory(
-                password, vnc_screen_path, reactor, app))
+                password, vnc_object.vnc_screenshot_path, reactor, app))
 
-    elif vnc_hosts is not None:
+        vnc_report = screenshot_to_report(
+            vnc_report, vnc_object)
+
+    elif vnc_hosts is not "None":
 
         # Loop over the list containing all the RDP targets
         for vnc_host in vnc_hosts:
@@ -2197,17 +2201,16 @@ if __name__ == "__main__":
     if cli_parsed.vnc:
 
         # Required variables for vnc screenshot
-        path = "/tmp/rdpy-vncscreenshot.jpg"
+        width = 1024
+        height = 800
         password = ""
+        vnc_report_html = vnc_rdp_header(report_date, report_time)
 
         if cli_parsed.single is not "None":
 
-            vnc_screenshot_path = screenshot_pathmaker(
-                ew_output_object, vnc_request_object)
-
-            ip_vnc, port_vnc = parse_ip_port(cli_parsed.single, "vnc")
-
-            screenshot_vnc(ip_vnc, port_vnc, vnc_screenshot_path)
+            vnc_request_object, vnc_report_html = screenshot_vnc(
+                width, height, "None", ew_output_object,
+                vnc_report_html, cli_parsed.single)
 
 
 print "Done with Test EyeWitness run!"
