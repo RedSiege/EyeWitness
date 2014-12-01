@@ -64,7 +64,7 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         @param reason: str use to advertise reason of lost connection
         """
         log.info("connection failes : %s"%reason)
-        self._reactor.stop()
+        self.reactor.stop()
         self.app.exit()
 
     def buildObserver(self, controller, addr):

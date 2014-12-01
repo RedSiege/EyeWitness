@@ -700,23 +700,26 @@ def screenshot_to_report(final_report_source_code, vnc_rdp_request_object):
     return final_report_source_code
 
 
-def screenshot_rdp(rdp_ip, rdp_port, width, height, rdp_screen_path):
+def screenshot_rdp(rdp_ip, rdp_port, width, height, rdp_screen_path, previous_request):
     #default script argument
     timeout = 2.0
 
     #create application
     app = QtGui.QApplication(sys.argv)
 
-    #add qt4 reactor
-    import qt4reactor
-    qt4reactor.install()
+    if previous_request == 0:
+        #add qt4 reactor
+        import qt4reactor
+        qt4reactor.install()
 
     from twisted.internet import reactor
-    reactor.connectTCP(
+    test = reactor.connectTCP(
         rdp_ip, int(rdp_port), rdp_screenshot.RDPScreenShotFactory(
             width, height, rdp_screen_path, timeout, reactor, app))
     reactor.runReturn()
     app.exec_()
+    app.exit()
+    test.disconnect()
     return
 
 
@@ -2076,8 +2079,9 @@ if __name__ == "__main__":
         height = 800
         timeout = 2.0
         page_counter = 1
+        request_num = 0
 
-        vnc_rdp_report_html = vnc_rdp_header(report_date, report_time)
+        rdp_report_html = vnc_rdp_header(report_date, report_time)
 
         if cli_parsed.single is not "None":
 
@@ -2095,14 +2099,41 @@ if __name__ == "__main__":
 
             screenshot_rdp(
                 ip_rdp, port_rdp, width, height,
-                rdp_request_object.rdp_screenshot_path)
+                rdp_request_object.rdp_screenshot_path, 0)
 
-            vnc_rdp_report_html = screenshot_to_report(
-                vnc_rdp_report_html, rdp_request_object)
+            rdp_report_html = screenshot_to_report(
+                rdp_report_html, rdp_request_object)
+
+        elif cli_parsed.f is not "None":
+
+            # Loop over the list containing all the RDP targets
+            for rdp_host in rdp_list:
+
+                rdp_host = rdp_host.strip()
+                print "RDPing into " + rdp_host + "..."
+
+                # Create the request object that will be passed around
+                rdp_request_object = request_object.RequestObject()
+
+                rdp_request_object.set_rdp_request_attributes(rdp_host)
+
+                rdp_request_object.set_rdp_response_attributes(
+                    screenshot_pathmaker(ew_output_object, rdp_request_object))
+
+                ip_rdp, port_rdp = parse_ip_port(rdp_request_object, "rdp")
+
+                screenshot_rdp(
+                    ip_rdp, port_rdp, width, height,
+                    rdp_request_object.rdp_screenshot_path, request_num)
+
+                rdp_report_html = screenshot_to_report(
+                    rdp_report_html, rdp_request_object)
+
+                request_num += 1
 
          # Write out the report for the single URL
         create_link_structure(
-            page_counter, ew_output_object, vnc_rdp_report_html, "rdp")
+            page_counter, ew_output_object, rdp_report_html, "rdp")
 
         print "\n[*] Done! Check out the report in the " +\
             ew_output_object.report_folder + " folder!"
