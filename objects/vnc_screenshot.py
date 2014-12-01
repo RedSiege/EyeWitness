@@ -28,6 +28,7 @@ from rdpy.protocol.rfb import rfb
 import rdpy.base.log as log
 from rdpy.ui.qt4 import qtImageFormatFromRFBPixelFormat
 from twisted.internet import task
+from twisted.internet import error
 
 #set log level
 log._LOG_LEVEL = log.Level.ERROR
@@ -54,7 +55,10 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         @param reason: str use to advertise reason of lost connection
         """
         log.info("connection lost : %s"%reason)
-        self.reactor.stop()
+        try:
+            self.reactor.stop()
+        except error.ReactorNotRunning:
+            pass
         self.app.exit()
 
     def clientConnectionFailed(self, connector, reason):
@@ -64,7 +68,10 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         @param reason: str use to advertise reason of lost connection
         """
         log.info("connection failed : %s"%reason)
-        self.reactor.stop()
+        try:
+            self.reactor.stop()
+        except error.ReactorNotRunning:
+            pass
         self.app.exit()
 
     def buildObserver(self, controller, addr):

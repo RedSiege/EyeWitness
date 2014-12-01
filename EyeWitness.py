@@ -768,18 +768,61 @@ def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report, single_rdp)
     return rdp_object, rdp_report
 
 
-def screenshot_vnc(vnc_ip, vnc_port, vnc_screen_path):
+def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc):
     #create application
     app = QtGui.QApplication(sys.argv)
 
     #add qt4 reactor
     import qt4reactor
     qt4reactor.install()
-
     from twisted.internet import reactor
-    reactor.connectTCP(
-        vnc_ip, int(vnc_port), vnc_screenshot.RFBScreenShotFactory(
-            password, vnc_screen_path, reactor, app))
+
+    if single_vnc is not None:
+
+        print "VNCing into " + single_vnc + "..."
+
+        # Create the request object that will be passed around
+        vnc_object = request_object.RequestObject()
+
+        vnc_object.set_rdp_request_attributes(single_vnc)
+
+        vnc_object.set_rdp_response_attributes(
+            screenshot_pathmaker(output_obj, vnc_object))
+
+        ip_vnc, port_vnc = parse_ip_port(vnc_object, "rdp")
+
+        reactor.connectTCP(
+            ip_vnc, int(port_vnc), vnc_screenshot.RFBScreenShotFactory(
+                password, vnc_screen_path, reactor, app))
+
+    elif vnc_hosts is not None:
+
+        # Loop over the list containing all the RDP targets
+        for vnc_host in vnc_hosts:
+
+            rdp_host = vnc_host.strip()
+            print "RDPing into " + rdp_host + "..."
+
+            # Create the request object that will be passed around
+            vnc_object = request_object.RequestObject()
+
+            vnc_object.set_rdp_request_attributes(rdp_host)
+
+            vnc_object.set_rdp_response_attributes(
+                screenshot_pathmaker(output_obj, vnc_object))
+
+            ip_rdp, port_rdp = parse_ip_port(vnc_object, "rdp")
+
+            reactor.connectTCP(
+                vnc_ip, int(vnc_port), vnc_screenshot.RFBScreenShotFactory(
+                password, vnc_screen_path, reactor, app))
+
+            rdp_report = screenshot_to_report(
+                rdp_report, rdp_object)
+
+    else:
+        print "[*] Error: Something is off.. please report this error!"
+
     reactor.runReturn()
     app.exec_()
     return
