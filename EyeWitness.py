@@ -620,21 +620,6 @@ def request_comparison(original_content, new_content, max_difference):
             return True, "None"
 
 
-def screenshot_pathmaker(output_obj, rdp_object):
-    rdp_screen_name = rdp_object.remote_system.replace(":", ".")
-
-    if (output_obj.report_folder.startswith("/") or
-            output_obj.report_folder.startswith("C:\\")):
-        capture_path = join(
-            output_obj.report_folder, "screens", rdp_screen_name)
-    else:
-        capture_path = join(
-            output_obj.eyewitness_path, output_obj.report_folder, "screens",
-            rdp_screen_name)
-
-    return capture_path + ".jpg"
-
-
 def scanner(cidr_range, output_obj):
     # This function was developed by Rohan Vazarkar, and then I slightly
     # modified it to fit.  Thanks for writing this man.
@@ -685,8 +670,27 @@ def scanner(cidr_range, output_obj):
     sys.exit()
 
 
+def screenshot_pathmaker(output_obj, rdp_object):
+    rdp_screen_name = rdp_object.remote_system.replace(":", ".")
+
+    if (output_obj.report_folder.startswith("/") or
+            output_obj.report_folder.startswith("C:\\")):
+        capture_path = join(
+            output_obj.report_folder, "screens", rdp_screen_name)
+    else:
+        capture_path = join(
+            output_obj.eyewitness_path, output_obj.report_folder, "screens",
+            rdp_screen_name)
+
+    return capture_path + ".jpg"
+
+
 def screenshot_to_report(final_report_source_code, vnc_rdp_request_object):
-    screen_name_array = vnc_rdp_request_object.rdp_screenshot_path.split("/")
+
+    if vnc_rdp_request_object.rdp_protocol:
+        screen_name_array = vnc_rdp_request_object.rdp_screenshot_path.split("/")
+    elif vnc_rdp_request_object.vnc_protocol:
+        screen_name_array = vnc_rdp_request_object.vnc_screenshot_path.split("/")
     final_report_source_code += "<tr><td><b><center>" + vnc_rdp_request_object.remote_system + "</center></b><br>"
     final_report_source_code += "<div id=\"screenshot\" style=\"display: inline-block; width:850px; height 400px; overflow: scroll;\">"
     if vnc_rdp_request_object.rdp_protocol:
@@ -777,6 +781,7 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc)
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
+    password = ""
 
     if single_vnc is not None:
 
@@ -787,10 +792,11 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc)
 
         vnc_object.set_vnc_request_attributes(single_vnc)
 
-        vnc_object.set_vnc_response_attributes(
-            screenshot_pathmaker(output_obj, vnc_object))
+        vnc_path_screen = screenshot_pathmaker(output_obj, vnc_object)
 
-        ip_vnc, port_vnc = parse_ip_port(vnc_object, "rdp")
+        vnc_object.set_vnc_response_attributes(vnc_path_screen)
+
+        ip_vnc, port_vnc = parse_ip_port(vnc_object, "vnc")
 
         reactor.connectTCP(
             ip_vnc, int(port_vnc), vnc_screenshot.RFBScreenShotFactory(
@@ -799,7 +805,7 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc)
         vnc_report = screenshot_to_report(
             vnc_report, vnc_object)
 
-    elif vnc_hosts is not "None":
+    elif vnc_hosts is not None:
 
         # Loop over the list containing all the RDP targets
         for vnc_host in vnc_hosts:
@@ -821,7 +827,7 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc)
                 vnc_ip, int(vnc_port), vnc_screenshot.RFBScreenShotFactory(
                 password, vnc_screen_path, reactor, app))
 
-            rdp_report = screenshot_to_report(
+            vnc_report = screenshot_to_report(
                 rdp_report, rdp_object)
 
     else:
@@ -829,7 +835,7 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc)
 
     reactor.runReturn()
     app.exec_()
-    return
+    return vnc_object, vnc_report
 
 
 def single_report_page(
@@ -2175,7 +2181,6 @@ if __name__ == "__main__":
         height = 800
         timeout = 2.0
         page_counter = 1
-        request_num = 0
 
         rdp_report_html = vnc_rdp_header(report_date, report_time)
 
@@ -2204,13 +2209,24 @@ if __name__ == "__main__":
         width = 1024
         height = 800
         password = ""
+        page_counter = 1
         vnc_report_html = vnc_rdp_header(report_date, report_time)
 
         if cli_parsed.single is not "None":
 
             vnc_request_object, vnc_report_html = screenshot_vnc(
-                width, height, "None", ew_output_object,
+                width, height, None, ew_output_object,
                 vnc_report_html, cli_parsed.single)
+
+        elif cli_parsed.f is not "None":
+            pass
+
+        # Write out the report for the single URL
+        create_link_structure(
+            page_counter, ew_output_object, vnc_report_html, "rdp")
+
+        print "\n[*] Done! Check out the report in the " +\
+            ew_output_object.report_folder + " folder!"
 
 
 print "Done with Test EyeWitness run!"

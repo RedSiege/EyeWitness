@@ -62,12 +62,12 @@ class RequestObject:
         return
 
     def set_vnc_request_attributes(self, vnc_target):
-        # Attributes for connecting to RDP services
-        self.rdp_protocol = True
+        # Attributes for connecting to vnc services
+        self.vnc_protocol = True
         self.remote_system = vnc_target
         return
 
     def set_vnc_response_attributes(self, vnc_screen_path):
-        # Attributes based on rdp connection
-        self.rdp_screenshot_path = vnc_screen_path
+        # Attributes based on vnc connection
+        self.vnc_screenshot_path = vnc_screen_path
         return
