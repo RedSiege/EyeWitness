@@ -781,7 +781,7 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc)
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    password = ""
+    password = "password"
 
     if single_vnc is not None:
 
@@ -810,25 +810,25 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc)
         # Loop over the list containing all the RDP targets
         for vnc_host in vnc_hosts:
 
-            rdp_host = vnc_host.strip()
-            print "RDPing into " + rdp_host + "..."
+            vnc_host = vnc_host.strip()
+            print "VNCing into " + vnc_host + "..."
 
             # Create the request object that will be passed around
             vnc_object = request_object.RequestObject()
 
-            vnc_object.set_rdp_request_attributes(rdp_host)
+            vnc_object.set_vnc_request_attributes(vnc_host)
 
-            vnc_object.set_rdp_response_attributes(
+            vnc_object.set_vnc_response_attributes(
                 screenshot_pathmaker(output_obj, vnc_object))
 
-            ip_rdp, port_rdp = parse_ip_port(vnc_object, "rdp")
+            ip_vnc, port_vnc = parse_ip_port(vnc_object, "vnc")
 
             reactor.connectTCP(
-                vnc_ip, int(vnc_port), vnc_screenshot.RFBScreenShotFactory(
-                password, vnc_screen_path, reactor, app))
+                ip_vnc, int(port_vnc), vnc_screenshot.RFBScreenShotFactory(
+                    password, vnc_object.vnc_screenshot_path, reactor, app))
 
             vnc_report = screenshot_to_report(
-                rdp_report, rdp_object)
+                vnc_report, vnc_object)
 
     else:
         print "[*] Error: Something is off.. please report this error!"
@@ -2219,7 +2219,10 @@ if __name__ == "__main__":
                 vnc_report_html, cli_parsed.single)
 
         elif cli_parsed.f is not "None":
-            pass
+
+            vnc_request_object, vnc_report_html = screenshot_vnc(
+                width, height, vnc_list, ew_output_object,
+                vnc_report_html, None)
 
         # Write out the report for the single URL
         create_link_structure(
