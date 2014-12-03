@@ -26,11 +26,13 @@ from selenium import webdriver
 from objects import output_object
 from objects import request_object
 from objects import vnc_screenshot
-
 from PyQt4 import QtCore, QtGui
 from rdpy.protocol.rdp import rdp
 from rdpy.ui.qt4 import RDPBitmapToQtImage
-#from twisted.internet import task
+from rdpy.protocol.rfb import rfb
+import rdpy.base.log as log
+from rdpy.ui.qt4 import qtImageFormatFromRFBPixelFormat
+
 
 
 class RDPScreenShotFactory(rdp.ClientFactory):
@@ -130,6 +132,105 @@ class RDPScreenShotFactory(rdp.ClientFactory):
                 self._controller.close();
 
         return ScreenShotObserver(controller, self._width, self._height, self._path, self._timeout)
+
+
+class RFBScreenShotFactory(rfb.ClientFactory):
+    """
+    @summary: Factory for screenshot exemple
+    """
+    __INSTANCE__ = 0
+    def __init__(self, password, path, reactor, app):
+        """
+        @param password: password for VNC authentication
+        @param path: path of output screenshot
+        """
+        RFBScreenShotFactory.__INSTANCE__ += 1
+        self._path = path
+        self._password = password
+        
+    def clientConnectionLost(self, connector, reason):
+        """
+        @summary: Connection lost event
+        @param connector: twisted connector use for rfb connection (use reconnect to restart connection)
+        @param reason: str use to advertise reason of lost connection
+        """
+        log.info("connection lost : %s"%reason)
+        RFBScreenShotFactory.__INSTANCE__ -= 1
+        if(RFBScreenShotFactory.__INSTANCE__ == 0):
+            reactor.stop()
+            app.exit()
+        
+    def clientConnectionFailed(self, connector, reason):
+        """
+        @summary: Connection failed event
+        @param connector: twisted connector use for rfb connection (use reconnect to restart connection)
+        @param reason: str use to advertise reason of lost connection
+        """
+        log.info("connection failed : %s"%reason)
+        RFBScreenShotFactory.__INSTANCE__ -= 1
+        if(RFBScreenShotFactory.__INSTANCE__ == 0):
+            reactor.stop()
+            app.exit()
+        
+        
+    def buildObserver(self, controller, addr):
+        """
+        @summary: build ScreenShot observer
+        @param controller: RFBClientController
+        @param addr: address of target
+        """
+        class ScreenShotObserver(rfb.RFBClientObserver):
+            """
+            @summary: observer that connect, cache every image received and save at deconnection
+            """
+            def __init__(self, controller, path):
+                """
+                @param controller: RFBClientController
+                @param path: path of output screenshot
+                """
+                rfb.RFBClientObserver.__init__(self, controller)
+                self._path = path
+                self._buffer = None
+                
+            def onUpdate(self, width, height, x, y, pixelFormat, encoding, data):
+                """
+                Implement RFBClientObserver interface
+                @param width: width of new image
+                @param height: height of new image
+                @param x: x position of new image
+                @param y: y position of new image
+                @param pixelFormat: pixefFormat structure in rfb.message.PixelFormat
+                @param encoding: encoding type rfb.message.Encoding
+                @param data: image data in accordance with pixel format and encoding
+                """
+                imageFormat = qtImageFormatFromRFBPixelFormat(pixelFormat)
+                if imageFormat is None:
+                    log.error("Receive image in bad format")
+                    return
+                image = QtGui.QImage(data, width, height, imageFormat)
+                with QtGui.QPainter(self._buffer) as qp:
+                #draw image
+                    qp.drawImage(x, y, image, 0, 0, width, height)
+                
+                self._controller.close()
+                
+            def onReady(self):
+                """
+                @summary: callback use when RDP stack is connected (just before received bitmap)
+                """
+                log.info("connected %s"%addr)
+                width, height = self._controller.getScreen()
+                self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format_RGB32)
+            
+            def onClose(self):
+                """
+                @summary: callback use when RDP stack is closed
+                """
+                log.info("save screenshot into %s"%self._path)
+                self._buffer.save(self._path)
+        
+        controller.setPassword(self._password)
+        return ScreenShotObserver(controller, self._path)
 
 
 def backup_request(request_object, source_code_name, content_value,
