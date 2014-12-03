@@ -25,8 +25,111 @@ from PyQt4 import QtCore, QtGui
 from selenium import webdriver
 from objects import output_object
 from objects import request_object
-from objects import rdp_screenshot
 from objects import vnc_screenshot
+
+from PyQt4 import QtCore, QtGui
+from rdpy.protocol.rdp import rdp
+from rdpy.ui.qt4 import RDPBitmapToQtImage
+#from twisted.internet import task
+
+
+class RDPScreenShotFactory(rdp.ClientFactory):
+    """
+    @summary: Factory for screenshot exemple
+    """
+    __INSTANCE__ = 0
+    def __init__(self, width, height, path, timeout, reactor, app):
+        """
+        @param width: width of screen
+        @param height: height of screen
+        @param path: path of output screenshot
+        @param timeout: close connection after timeout s without any updating
+        """
+        RDPScreenShotFactory.__INSTANCE__ += 1
+        self._width = width
+        self._height = height
+        self._path = path
+        self._timeout = timeout
+        self.reactor = reactor
+        self.app = app
+
+    def clientConnectionLost(self, connector, reason):
+        """
+        @summary: Connection lost event
+        @param connector: twisted connector use for rdp connection (use reconnect to restart connection)
+        @param reason: str use to advertise reason of lost connection
+        """
+        RDPScreenShotFactory.__INSTANCE__ -= 1
+        if(RDPScreenShotFactory.__INSTANCE__ == 0):
+            self.reactor.stop()
+            self.app.exit()
+
+    def clientConnectionFailed(self, connector, reason):
+        """
+        @summary: Connection failed event
+        @param connector: twisted connector use for rdp connection (use reconnect to restart connection)
+        @param reason: str use to advertise reason of lost connection
+        """
+        RDPScreenShotFactory.__INSTANCE__ -= 1
+        if(RDPScreenShotFactory.__INSTANCE__ == 0):
+            self.reactor.stop()
+            self.app.exit()
+
+    def buildObserver(self, controller, addr):
+        """
+        @summary: build ScreenShot observer
+        @param controller: RDPClientController
+        @param addr: address of target
+        """
+        class ScreenShotObserver(rdp.RDPClientObserver):
+            """
+            @summary: observer that connect, cache every image received and save at deconnection
+            """
+            def __init__(self, controller, width, height, path, timeout):
+                """
+                @param controller: RDPClientController
+                @param width: width of screen
+                @param height: height of screen
+                @param path: path of output screenshot
+                @param timeout: close connection after timeout s without any updating
+                """
+                rdp.RDPClientObserver.__init__(self, controller)
+                controller.setScreen(width, height);
+                self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format_RGB32)
+                self._path = path
+                self._timeout = timeout
+                self._startTimeout = False
+
+            def onUpdate(self, destLeft, destTop, destRight, destBottom, width, height, bitsPerPixel, isCompress, data):
+                """
+                @summary: callback use when bitmap is received 
+                """
+                image = RDPBitmapToQtImage(destLeft, width, height, bitsPerPixel, isCompress, data);
+                with QtGui.QPainter(self._buffer) as qp:
+                #draw image
+                    qp.drawImage(destLeft, destTop, image, 0, 0, destRight - destLeft + 1, destBottom - destTop + 1)
+                if not self._startTimeout:
+                    self._startTimeout = False
+                    try:
+                        reactor.callLater(self._timeout, self.checkUpdate)
+                    except:
+                        pass
+
+            def onReady(self):
+                """
+                @summary: callback use when RDP stack is connected (just before received bitmap)
+                """
+
+            def onClose(self):
+                """
+                @summary: callback use when RDP stack is closed
+                """
+                self._buffer.save(self._path)
+
+            def checkUpdate(self):
+                self._controller.close();
+
+        return ScreenShotObserver(controller, self._width, self._height, self._path, self._timeout)
 
 
 def backup_request(request_object, source_code_name, content_value,
@@ -707,7 +810,9 @@ def screenshot_to_report(final_report_source_code, vnc_rdp_request_object):
 def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report, single_rdp):
 
     #default script argument
-    timeout = 2.0
+    width = 1024
+    height = 800
+    timeout = 5.0
 
     #create application
     app = QtGui.QApplication(sys.argv)
@@ -731,7 +836,7 @@ def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report, single_rdp)
         ip_rdp, port_rdp = parse_ip_port(rdp_object, "rdp")
 
         reactor.connectTCP(
-            ip_rdp, int(port_rdp), rdp_screenshot.RDPScreenShotFactory(
+            ip_rdp, int(port_rdp), RDPScreenShotFactory(
                 width, height, rdp_object.rdp_screenshot_path, timeout,
                 reactor, app))
 
@@ -757,7 +862,7 @@ def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report, single_rdp)
             ip_rdp, port_rdp = parse_ip_port(rdp_object, "rdp")
 
             reactor.connectTCP(
-                ip_rdp, int(port_rdp), rdp_screenshot.RDPScreenShotFactory(
+                ip_rdp, int(port_rdp), RDPScreenShotFactory(
                     width, height, rdp_object.rdp_screenshot_path, timeout,
                     reactor, app))
 
@@ -1516,6 +1621,9 @@ def web_header(real_report_date, real_report_time):
 
 if __name__ == "__main__":
 
+    #set log level
+    #log._LOG_LEVEL = log.Level.ERROR
+
     # Print the title header
     title_screen()
 
@@ -2179,7 +2287,7 @@ if __name__ == "__main__":
         # Required attributes for rdp screenshot
         width = 1024
         height = 800
-        timeout = 2.0
+        timeout = 5.0
         page_counter = 1
 
         rdp_report_html = vnc_rdp_header(report_date, report_time)

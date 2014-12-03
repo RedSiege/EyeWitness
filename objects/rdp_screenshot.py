@@ -27,13 +27,14 @@ from twisted.internet import task
 from twisted.internet import error
 
 #set log level
-log._LOG_LEVEL = log.Level.INFO
+log._LOG_LEVEL = log.Level.ERROR
 
 
 class RDPScreenShotFactory(rdp.ClientFactory):
     """
     @summary: Factory for screenshot exemple
     """
+    __INSTANCE__ = 0
     def __init__(self, width, height, path, timeout, reactor, app):
         """
         @param width: width of screen
@@ -41,13 +42,14 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         @param path: path of output screenshot
         @param timeout: close connection after timeout s without any updating
         """
+        RDPScreenShotFactory.__INSTANCE__ += 1
         self._width = width
         self._height = height
         self._path = path
         self._timeout = timeout
         self.reactor = reactor
         self.app = app
-
+        
     def clientConnectionLost(self, connector, reason):
         """
         @summary: Connection lost event
@@ -60,20 +62,21 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         except error.ReactorNotRunning:
             pass
         self.app.exit()
-
+        
     def clientConnectionFailed(self, connector, reason):
         """
         @summary: Connection failed event
         @param connector: twisted connector use for rdp connection (use reconnect to restart connection)
         @param reason: str use to advertise reason of lost connection
         """
-        log.info("connection failes : %s"%reason)
+        log.info("connection failed : %s"%reason)
         try:
             self.reactor.stop()
         except error.ReactorNotRunning:
             pass
         self.app.exit()
-
+        
+        
     def buildObserver(self, controller, addr):
         """
         @summary: build ScreenShot observer
@@ -96,38 +99,35 @@ class RDPScreenShotFactory(rdp.ClientFactory):
                 controller.setScreen(width, height);
                 self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format_RGB32)
                 self._path = path
-                self._hasUpdated = True
-                self._brandWidthTask = task.LoopingCall(self.checkUpdate)
-                self._brandWidthTask.start(timeout)  # call every second
-
+                self._timeout = timeout
+                self._startTimeout = False
+                
             def onUpdate(self, destLeft, destTop, destRight, destBottom, width, height, bitsPerPixel, isCompress, data):
                 """
                 @summary: callback use when bitmap is received 
                 """
-                self._hasUpdated = True
                 image = RDPBitmapToQtImage(destLeft, width, height, bitsPerPixel, isCompress, data);
                 with QtGui.QPainter(self._buffer) as qp:
                 #draw image
                     qp.drawImage(destLeft, destTop, image, 0, 0, destRight - destLeft + 1, destBottom - destTop + 1)
-
+                if not self._startTimeout:
+                    self._startTimeout = False
+                    self.reactor.callLater(self._timeout, self.checkUpdate)
+                   
             def onReady(self):
                 """
                 @summary: callback use when RDP stack is connected (just before received bitmap)
                 """
                 log.info("connected %s"%addr)
-
+            
             def onClose(self):
                 """
                 @summary: callback use when RDP stack is closed
                 """
                 log.info("save screenshot into %s"%self._path)
                 self._buffer.save(self._path)
-
+                
             def checkUpdate(self):
-                if not self._hasUpdated:
-                    log.info("close connection on timeout without updating orders")
-                    self._controller.close();
-                    return
-                self._hasUpdated = False
-
+                self._controller.close();
+        
         return ScreenShotObserver(controller, self._width, self._height, self._path, self._timeout)
