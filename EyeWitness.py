@@ -1700,8 +1700,6 @@ if __name__ == "__main__":
                         page_counter = page_counter + 1
                         web_index = web_header(report_date, report_time)
 
-        print page_counter
-
         if page_counter == 1:
             single_report_page(web_index, script_path, operating_system)
         else:
