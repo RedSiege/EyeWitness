@@ -336,13 +336,13 @@ def create_link_structure(
         if proto is "vnc" or proto is "rdp":
             with open(
                 join(output_obj.eyewitness_path, output_obj.report_folder,
-                     "report_page_" + proto + str(number_of_pages+1) + ".html"), 'w')\
+                     "report_page_" + proto + str(number_of_pages) + ".html"), 'w')\
                     as page_out:
                 page_out.write(report_out_html)
 
             # Create the link structure at the bottom
             link_text = "\n<center><br>Links: <a href=\"report_" + proto + ".html\">Page 1</a> "
-            for page in range(2, number_of_pages + 2):
+            for page in range(2, number_of_pages + 1):
                 link_text += "<a href=\"report_page_" + proto + str(page) + ".html\">\
                 Page " + str(page) + "</a> ".replace('    ', '')
             top_links = link_text
@@ -368,12 +368,12 @@ def create_link_structure(
 
             # Write out link structure to bottom of extra pages
             # Also add links to the top of extra pages
-            for page_footer in range(2, number_of_pages + 2):
+            for page_footer in range(2, number_of_pages + 1):
                 with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page_" + proto +
                           str(page_footer) + ".html"), 'a') as page_append:
                     page_append.write(link_text)
 
-            for page_footer in range(2, number_of_pages + 2):
+            for page_footer in range(2, number_of_pages + 1):
                 with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page_" + proto +
                           str(page_footer) + ".html"), 'r') as link_add:
                     content = link_add.readlines()
@@ -387,13 +387,13 @@ def create_link_structure(
         else:
             with open(
                 join(output_obj.eyewitness_path, output_obj.report_folder,
-                     "report_page" + str(number_of_pages+1) + ".html"), 'w')\
+                     "report_page" + str(number_of_pages) + ".html"), 'w')\
                     as page_out:
                 page_out.write(report_out_html)
 
             # Create the link structure at the bottom
             link_text = "\n<center><br>Links: <a href=\"report.html\">Page 1</a> "
-            for page in range(2, number_of_pages + 2):
+            for page in range(2, number_of_pages + 1):
                 link_text += "<a href=\"report_page" + str(page) + ".html\">\
                 Page " + str(page) + "</a> ".replace('    ', '')
             top_links = link_text
@@ -419,12 +419,12 @@ def create_link_structure(
 
             # Write out link structure to bottom of extra pages
             # Also add links to the top of extra pages
-            for page_footer in range(2, number_of_pages + 2):
+            for page_footer in range(2, number_of_pages + 1):
                 with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page" +
                           str(page_footer) + ".html"), 'a') as page_append:
                     page_append.write(link_text)
 
-            for page_footer in range(2, number_of_pages + 2):
+            for page_footer in range(2, number_of_pages + 1):
                 with open(join(output_obj.eyewitness_path, output_obj.report_folder, "report_page" +
                           str(page_footer) + ".html"), 'r') as link_add:
                     content = link_add.readlines()
@@ -979,7 +979,7 @@ def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report,
 
             # This code block determines when to split each group of hosts
             # off into a new page
-            if (rdp_counter % cli_parsed.results == 0 or
+            if (rdp_counter % command_line_object.results == 0 or
                     rdp_counter == len(rdp_hosts)):
                 if total_pages == 0:
                     # Close out the html and write it to disk
@@ -1005,6 +1005,7 @@ def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report,
                             str(total_pages + 1) +
                             ".html"), 'w') as page_out:
                         page_out.write(rdp_report)
+                    total_pages += 1
 
                     # Reset the URL counter
                     if rdp_counter != len(rdp_hosts):
@@ -1021,6 +1022,10 @@ def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report,
 
 def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report,
                    single_vnc, command_line_object):
+
+    # counter for hosts
+    vnc_counter = 0
+    total_pages_vnc = 0
 
     #create application
     app = QtGui.QApplication(sys.argv)
@@ -1060,6 +1065,7 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report,
 
             vnc_host = vnc_host.strip()
             print "VNCing into " + vnc_host + "..."
+            vnc_counter += 1
 
             # Create the request object that will be passed around
             vnc_object = request_object.RequestObject()
@@ -1078,12 +1084,50 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report,
             vnc_report = screenshot_to_report(
                 vnc_report, vnc_object)
 
+            # This code block determines when to split each group of hosts
+            # off into a new page
+            if (vnc_counter % command_line_object.results == 0 or
+                    vnc_counter == len(vnc_hosts)):
+                if total_pages_vnc == 0:
+
+                    # Close out the html and write it to disk
+                    vnc_report += "</table>\n"
+                    with open(join(
+                        output_obj.eyewitness_path,
+                        output_obj.report_folder, "report_vnc.html"),
+                            'w') as f1:
+                        f1.write(vnc_report)
+
+                    # Revert URL counter back to 0, increment the page
+                    # count to 1 Clear web_index of all values by
+                    # giving web_index the "header" of the new html page
+                    total_pages_vnc += 1
+                    if vnc_counter < len(vnc_hosts):
+                        vnc_report = vnc_rdp_header(report_date, report_time)
+
+                else:
+                    # Write out to the next page
+                    vnc_report += "</table>\n"
+                    with open(join(
+                        output_obj.eyewitness_path,
+                        output_obj.report_folder, "report_page_vnc" +
+                            str(total_pages_vnc + 1) +
+                            ".html"), 'w') as page_out:
+                        page_out.write(vnc_report)
+                    total_pages_vnc += 1
+
+                    # Reset the URL counter
+                    if vnc_counter != len(vnc_hosts):
+                        total_pages_vnc += 1
+                        vnc_report = vnc_rdp_header(report_date, report_time)
+                    pass
+
     else:
         print "[*] Error: Something is off.. please report this error!"
 
     reactor.runReturn()
     app.exec_()
-    return vnc_object, vnc_report
+    return vnc_object, vnc_report, total_pages_vnc
 
 
 def single_report_page(
@@ -2406,6 +2450,7 @@ if __name__ == "__main__":
                                 str(page_counter+1) +
                                 ".html"), 'w') as page_out:
                             page_out.write(web_index)
+                        page_counter += 1
 
                         # Reset the URL counter
                         if i != len(groupedlist):
@@ -2446,6 +2491,8 @@ if __name__ == "__main__":
                     width, height, rdp_list, ew_output_object, rdp_report_html,
                     None, cli_parsed)
 
+        print page_counter
+
         # Write out the report for the single URL
         create_link_structure(
             page_counter, ew_output_object, rdp_report_html, "rdp")
@@ -2464,15 +2511,15 @@ if __name__ == "__main__":
 
         if cli_parsed.single is not "None":
 
-            vnc_request_object, vnc_report_html = screenshot_vnc(
+            vnc_request_object, vnc_report_html, page_counter = screenshot_vnc(
                 width, height, None, ew_output_object,
-                vnc_report_html, cli_parsed.single)
+                vnc_report_html, cli_parsed.single, cli_parsed)
 
         elif cli_parsed.f is not "None":
 
-            vnc_request_object, vnc_report_html = screenshot_vnc(
+            vnc_request_object, vnc_report_html, page_counter = screenshot_vnc(
                 width, height, vnc_list, ew_output_object,
-                vnc_report_html, None)
+                vnc_report_html, None, cli_parsed)
 
         # Write out the report for the single URL
         create_link_structure(
@@ -2480,6 +2527,3 @@ if __name__ == "__main__":
 
         print "\n[*] Done! Check out the report in the " +\
             ew_output_object.report_folder + " folder!"
-
-
-print "Done with Test EyeWitness run!"
