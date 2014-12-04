@@ -25,7 +25,6 @@ from PyQt4 import QtCore, QtGui
 from selenium import webdriver
 from objects import output_object
 from objects import request_object
-from objects import vnc_screenshot
 from PyQt4 import QtCore, QtGui
 from rdpy.protocol.rdp import rdp
 from rdpy.ui.qt4 import RDPBitmapToQtImage
@@ -147,32 +146,37 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         RFBScreenShotFactory.__INSTANCE__ += 1
         self._path = path
         self._password = password
-        
+        self.reactor = reactor
+        self.app = app
+
     def clientConnectionLost(self, connector, reason):
         """
         @summary: Connection lost event
         @param connector: twisted connector use for rfb connection (use reconnect to restart connection)
         @param reason: str use to advertise reason of lost connection
         """
-        log.info("connection lost : %s"%reason)
         RFBScreenShotFactory.__INSTANCE__ -= 1
         if(RFBScreenShotFactory.__INSTANCE__ == 0):
-            reactor.stop()
-            app.exit()
-        
+            try:
+                self.reactor.stop()
+            except:
+                pass
+            self.app.exit()
+
     def clientConnectionFailed(self, connector, reason):
         """
         @summary: Connection failed event
         @param connector: twisted connector use for rfb connection (use reconnect to restart connection)
         @param reason: str use to advertise reason of lost connection
         """
-        log.info("connection failed : %s"%reason)
         RFBScreenShotFactory.__INSTANCE__ -= 1
         if(RFBScreenShotFactory.__INSTANCE__ == 0):
-            reactor.stop()
-            app.exit()
-        
-        
+            try:
+                self.reactor.stop()
+            except:
+                pass
+            self.app.exit()
+
     def buildObserver(self, controller, addr):
         """
         @summary: build ScreenShot observer
@@ -191,7 +195,7 @@ class RFBScreenShotFactory(rfb.ClientFactory):
                 rfb.RFBClientObserver.__init__(self, controller)
                 self._path = path
                 self._buffer = None
-                
+
             def onUpdate(self, width, height, x, y, pixelFormat, encoding, data):
                 """
                 Implement RFBClientObserver interface
@@ -205,30 +209,27 @@ class RFBScreenShotFactory(rfb.ClientFactory):
                 """
                 imageFormat = qtImageFormatFromRFBPixelFormat(pixelFormat)
                 if imageFormat is None:
-                    log.error("Receive image in bad format")
                     return
                 image = QtGui.QImage(data, width, height, imageFormat)
                 with QtGui.QPainter(self._buffer) as qp:
                 #draw image
                     qp.drawImage(x, y, image, 0, 0, width, height)
-                
+
                 self._controller.close()
-                
+
             def onReady(self):
                 """
                 @summary: callback use when RDP stack is connected (just before received bitmap)
                 """
-                log.info("connected %s"%addr)
                 width, height = self._controller.getScreen()
                 self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format_RGB32)
-            
+
             def onClose(self):
                 """
                 @summary: callback use when RDP stack is closed
                 """
-                log.info("save screenshot into %s"%self._path)
                 self._buffer.save(self._path)
-        
+
         controller.setPassword(self._password)
         return ScreenShotObserver(controller, self._path)
 
@@ -332,7 +333,7 @@ def create_link_structure(
     else:
         # Write out our extra page
         report_out_html += "</table>\n"
-        if proto is "web" or proto is "rdp":
+        if proto is "vnc" or proto is "rdp":
             with open(
                 join(output_obj.eyewitness_path, output_obj.report_folder,
                      "report_page_" + proto + str(number_of_pages+1) + ".html"), 'w')\
@@ -490,7 +491,7 @@ def cli_parser(output_obj):
         "-d", metavar="Directory Name", default="None",
         help="Directory name for report output")
     report_options.add_argument(
-        "--results", metavar="URLs Per Page", default="25", type=int,
+        "--results", metavar="URLs Per Page", default=25, type=int,
         help="Number of URLs per page of the report")
 
     ua_options = parser.add_argument_group('Web Options')
@@ -908,7 +909,12 @@ def screenshot_to_report(final_report_source_code, vnc_rdp_request_object):
     return final_report_source_code
 
 
-def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report, single_rdp):
+def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report,
+                   single_rdp, command_line_object):
+
+    # counter for hosts
+    rdp_counter = 0
+    total_pages = 0
 
     #default script argument
     width = 1024
@@ -951,6 +957,7 @@ def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report, single_rdp)
 
             rdp_host = rdp_host.strip()
             print "RDPing into " + rdp_host + "..."
+            rdp_counter += 1
 
             # Create the request object that will be passed around
             rdp_object = request_object.RequestObject()
@@ -970,15 +977,50 @@ def screenshot_rdp(width, height, rdp_hosts, output_obj, rdp_report, single_rdp)
             rdp_report = screenshot_to_report(
                 rdp_report, rdp_object)
 
+            # This code block determines when to split each group of hosts
+            # off into a new page
+            if (rdp_counter % cli_parsed.results == 0 or
+                    rdp_counter == len(rdp_hosts)):
+                if total_pages == 0:
+                    # Close out the html and write it to disk
+                    rdp_report += "</table>\n"
+                    with open(join(
+                        output_obj.eyewitness_path,
+                        output_obj.report_folder, "report_rdp.html"),
+                            'w') as f1:
+                        f1.write(rdp_report)
+
+                    # Revert URL counter back to 0, increment the page
+                    # count to 1 Clear web_index of all values by
+                    # giving web_index the "header" of the new html page
+                    total_pages += 1
+                    if rdp_counter < len(rdp_hosts):
+                        rdp_report = vnc_rdp_header(report_date, report_time)
+                else:
+                    # Write out to the next page
+                    rdp_report += "</table>\n"
+                    with open(join(
+                        output_obj.eyewitness_path,
+                        output_obj.report_folder, "report_page_rdp" +
+                            str(total_pages + 1) +
+                            ".html"), 'w') as page_out:
+                        page_out.write(rdp_report)
+
+                    # Reset the URL counter
+                    if rdp_counter != len(rdp_hosts):
+                        total_pages = total_pages + 1
+                        rdp_report = vnc_rdp_header(report_date, report_time)
+
     else:
         print "[*] Error: Something is off.. please report this error!"
 
     reactor.runReturn()
     app.exec_()
-    return rdp_object, rdp_report
+    return rdp_object, rdp_report, total_pages
 
 
-def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc):
+def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report,
+                   single_vnc, command_line_object):
 
     #create application
     app = QtGui.QApplication(sys.argv)
@@ -1005,7 +1047,7 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc)
         ip_vnc, port_vnc = parse_ip_port(vnc_object, "vnc")
 
         reactor.connectTCP(
-            ip_vnc, int(port_vnc), vnc_screenshot.RFBScreenShotFactory(
+            ip_vnc, int(port_vnc), RFBScreenShotFactory(
                 password, vnc_object.vnc_screenshot_path, reactor, app))
 
         vnc_report = screenshot_to_report(
@@ -1030,7 +1072,7 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report, single_vnc)
             ip_vnc, port_vnc = parse_ip_port(vnc_object, "vnc")
 
             reactor.connectTCP(
-                ip_vnc, int(port_vnc), vnc_screenshot.RFBScreenShotFactory(
+                ip_vnc, int(port_vnc), RFBScreenShotFactory(
                     password, vnc_object.vnc_screenshot_path, reactor, app))
 
             vnc_report = screenshot_to_report(
@@ -2389,23 +2431,22 @@ if __name__ == "__main__":
         width = 1024
         height = 800
         timeout = 5.0
-        page_counter = 1
 
         rdp_report_html = vnc_rdp_header(report_date, report_time)
 
         if cli_parsed.single is not "None":
 
-            rdp_request_object, rdp_report_html = screenshot_rdp(
+            rdp_request_object, rdp_report_html, page_counter = screenshot_rdp(
                 width, height, rdp_list, ew_output_object, rdp_report_html,
-                cli_parsed.single)
+                cli_parsed.single, cli_parsed)
 
         elif cli_parsed.f is not "None":
 
-                rdp_request_object, rdp_report_html = screenshot_rdp(
+                rdp_request_object, rdp_report_html, page_counter = screenshot_rdp(
                     width, height, rdp_list, ew_output_object, rdp_report_html,
-                    None)
+                    None, cli_parsed)
 
-         # Write out the report for the single URL
+        # Write out the report for the single URL
         create_link_structure(
             page_counter, ew_output_object, rdp_report_html, "rdp")
 
@@ -2435,7 +2476,7 @@ if __name__ == "__main__":
 
         # Write out the report for the single URL
         create_link_structure(
-            page_counter, ew_output_object, vnc_report_html, "rdp")
+            page_counter, ew_output_object, vnc_report_html, "vnc")
 
         print "\n[*] Done! Check out the report in the " +\
             ew_output_object.report_folder + " folder!"
