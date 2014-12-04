@@ -1208,6 +1208,11 @@ if __name__ == "__main__":
                                                       script_path,
                                                       operating_system)
 
+                print dir(page)
+                print "\n"
+                print page.content
+                print "\n"
+
                 content_blank, single_default_credentials = backup_request(
                     page, cli_parsed.single, source_name, content_blank, script_path,
                     cli_parsed.skipcreds, operating_system)
@@ -1689,23 +1694,27 @@ if __name__ == "__main__":
                             ".html"), 'w') as page_out:
                         page_out.write(web_index)
 
+                    page_counter += 1
                     # Reset the URL counter
                     if i != len(groupedlist):
                         page_counter = page_counter + 1
                         web_index = web_header(report_date, report_time)
 
+        print page_counter
+
         if page_counter == 1:
             single_report_page(web_index, script_path, operating_system)
         else:
+
             # Write out our extra page
             web_index += "</table>\n"
             with open(join(script_path, report_folder, "report_page" +
-                      str(page_counter+1) + ".html"), 'w') as page_out:
+                      str(page_counter) + ".html"), 'w') as page_out:
                 page_out.write(web_index)
 
             # Create the link structure at the bottom
             link_text = "\n<center><br>Links: <a href=\"report.html\">Page 1</a> "
-            for page in range(2, page_counter + 2):
+            for page in range(2, page_counter + 1):
                 link_text += "<a href=\"report_page" + str(page) + ".html\">\
                 Page " + str(page) + "</a> ".replace('    ', '')
             top_links = link_text
@@ -1731,12 +1740,12 @@ if __name__ == "__main__":
 
             # Write out link structure to bottom of extra pages
             # Also add links to the top of extra pages
-            for page_footer in range(2, page_counter + 2):
+            for page_footer in range(2, page_counter + 1):
                 with open(join(script_path, report_folder, "report_page" +
                           str(page_footer) + ".html"), 'a') as page_append:
                     page_append.write(link_text)
 
-            for page_footer in range(2, page_counter + 2):
+            for page_footer in range(2, page_counter + 1):
                 with open(join(script_path, report_folder, "report_page" +
                           str(page_footer) + ".html"), 'r') as link_add:
                     content = link_add.readlines()
