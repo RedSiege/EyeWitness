@@ -1208,11 +1208,6 @@ if __name__ == "__main__":
                                                       script_path,
                                                       operating_system)
 
-                print dir(page)
-                print "\n"
-                print page.content
-                print "\n"
-
                 content_blank, single_default_credentials = backup_request(
                     page, cli_parsed.single, source_name, content_blank, script_path,
                     cli_parsed.skipcreds, operating_system)
