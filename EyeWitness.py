@@ -23,6 +23,7 @@ from netaddr import IPNetwork
 from os.path import join
 from PyQt4 import QtCore, QtGui
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from objects import output_object
 from objects import request_object
 from PyQt4 import QtCore, QtGui
@@ -308,8 +309,8 @@ def checkHostPort(ip_to_check, port_to_check):
 def createSeleniumDriver(cli_parsed):
     profile = webdriver.FirefoxProfile()
 
-    if cli_parsed.user_agent is not None:
-        profile.set_preference('general.useragent.override', cli_parsed.user_agent)
+    if cli_parsed.useragent is not None:
+        profile.set_preference('general.useragent.override', cli_parsed.useragent)
 
     if cli_parsed.proxy_ip is not None and cli_parsed.proxy_port is not None:
         profile.set_preference('network.proxy.type', 1)
@@ -459,7 +460,7 @@ def cli_parser(output_obj):
                            help="Screenshot open VNC services!")
     protocols.add_argument("--all-protocols", default=False,
                            action='store_true', help="Screenshot all\
-                           supported protocols!")
+                           supported protocols! (Uses selenium for web)")
 
     urls_in = parser.add_argument_group('Input Options')
     urls_in.add_argument(
@@ -594,11 +595,17 @@ def cli_parser(output_obj):
         parser.print_help()
         sys.exit()
 
-    if args.web is "None" and args.vnc is False and args.rdp is False:
+    if args.web is "None" and args.vnc is False and args.rdp is False and\
+            args.all_protocols is False:
         print "[*] Error: You didn't give me an action to perform."
         print "[*] Error: Please use --web, --rdp, or --vnc!\n"
         parser.print_help()
         sys.exit()
+
+    if args.all_protocols:
+        args.web = "selenium"
+        args.vnc = True
+        args.vnc = True
 
     if args.localscan:
         if not validate_cidr(args.localscan):
@@ -1128,6 +1135,24 @@ def screenshot_vnc(width, height, vnc_hosts, output_obj, vnc_report,
     reactor.runReturn()
     app.exec_()
     return vnc_object, vnc_report, total_pages_vnc
+
+
+def selenium_capture(selenium_object, requesting_object, screen_name, output_obj):
+    selenium_object.get(requesting_object.return_remote_system_address())
+
+    if output_obj.report_folder.startswith("/") or re.match('[A-Za-z]:',output_obj.report_folder):
+        capture_path = join(
+            output_obj.eyewitness_path, output_obj.report_folder,
+            "screens", screen_name)
+    else:
+        capture_path = join(output_obj.report_folder, "screens", screen_name)
+
+    headers = dict(urllib2.urlopen(requesting_object.return_remote_system_address()).info())
+
+    selenium_object.save_screenshot(capture_path)
+    requesting_object.set_web_response_attributes(selenium_object.page_source, headers, capture_path)
+    
+    return requesting_object
 
 
 def single_report_page(
@@ -2467,8 +2492,266 @@ if __name__ == "__main__":
 
     elif cli_parsed.web.lower() == "selenium":
 
-        # Begin using selenium
-        pass
+        # Change log path if full path is given for output directory
+        if cli_parsed.d.startswith('/') or re.match('[A-Za-z]:', cli_parsed.d):
+            # Location of the log file Ghost logs to (to catch SSL errors)
+            log_file_path = join(ew_output_object.eyewitness_path,
+                                 ew_output_object.report_folder, "logfile.log")
+        else:
+            # Location of the log file Ghost logs to (to catch SSL errors)
+            log_file_path = join(ew_output_object.report_folder, "logfile.log")
+
+        # If the user wants to cycle through user agents, return the
+        # disctionary of applicable user agents
+        if cli_parsed.cycle is None:
+            selenium_object = createSeleniumDriver(cli_parsed)
+        else:
+            ua_dict = user_agent_definition(cli_parsed.cycle)
+            selenium_object = createSeleniumDriver(cli_parsed)
+
+        # Logging setup
+        logging.basicConfig(filename=log_file_path, level=logging.WARNING)
+        logger = logging.getLogger('selenium')
+
+        # Define a couple default variables
+        extra_info = "None"
+        blank_value = "None"
+        baseline_request = "Baseline"
+        page_length = "None"
+        page_counter = 1
+
+        if cli_parsed.single is not "None":
+
+            # Create the request object that will be passed around
+            web_request_object = request_object.RequestObject()
+
+            # Set the web request info for the request object
+            web_request_object.set_web_request_attributes(cli_parsed.single)
+
+            # Used for monitoring for blank pages or SSL errors
+            content_blank = 0
+
+            web_index = web_header(report_date, report_time)
+            print "Trying to screenshot " + web_request_object.remote_system
+
+            # Create the filename to store each website's picture
+            source_name, picture_name = file_names(
+                web_request_object.remote_system)
+
+            # If a normal single request, then perform the request
+            if cli_parsed.cycle is None:
+
+                try:
+                    web_request_object = selenium_capture(selenium_object, web_request_object, picture_name, ew_output_object)
+                    selenium_object.close()
+                    # Create the table info for the single URL (screenshot,
+                    # server headers, etc.)
+                    web_index = table_maker(
+                        web_request_object, web_index,
+                        content_blank,
+                        log_file_path, blank_value, blank_value,
+                        source_name, picture_name, page_length,
+                        ew_output_object)
+
+                # Skip a url if Ctrl-C is hit
+                except KeyboardInterrupt:
+                    print "[*] Skipping: " + cli_parsed.single
+                    web_index += """<tr>
+                    <td><a href=\"{single_given_url}\">{single_given_url}</a></td>
+                    <td>User Skipped this URL</td>
+                    </tr>
+                    """.format(single_given_url=cli_parsed.single).replace('    ', '')
+                # Catch timeout warning
+                except TimeoutException:
+                    print "[*] Hit timeout limit when connecting to: " + cli_parsed.single
+                    web_index += """<tr>
+                    <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
+                    {single_timeout_url}</a></td>
+                    <td>Hit timeout limit while attempting screenshot</td>
+                    </tr>
+                    """.format(single_timeout_url=cli_parsed.single)
+
+            # If cycling through user agents, start that process here
+            # Create a baseline requst, then loop through the dictionary of
+            # user agents, and make requests w/those UAs
+            # Then use comparison function.  If UA request content matches
+            # baseline content, do nothing. If UA request content is different
+            # from baseline add it to report
+            else:
+
+                # Setup variables to set file names properly
+                original_source = source_name
+                original_screenshot = picture_name
+
+                # Create baseline file names
+                source_name = source_name + "_baseline.txt"
+                picture_name = picture_name + "_baseline.png"
+                request_number = 0
+
+                # Iterate through the user agents the user has selected to use,
+                # and set ghost to use them. Then perform a comparison of the
+                # baseline results to the new results.  If different, add to
+                # the report
+                for browser_key, user_agent_value in ua_dict.iteritems():
+
+                    # Create the counter to ensure our file names are unique
+                    source_name = original_source + "_" + browser_key + ".txt"
+                    picture_name = original_screenshot + "_" + browser_key + ".png"
+
+                    # Setting the new user agent
+                    ghost_object.page.setUserAgent(user_agent_value)
+
+                    # Making the request with the new user agent
+                    print "[*] Now making web request with: " + browser_key
+                    try:
+                        if request_number == 0:
+                            # Get baseline screenshot
+                            web_request_object = ghost_capture(
+                                ghost_object, web_request_object,
+                                picture_name, ew_output_object)
+
+                            # Hack for a bug in Ghost at the moment
+                            #baseline_page.content = "None"
+
+                            baseline_content_blank = backup_request(
+                                web_request_object, source_name,
+                                content_blank, ew_output_object)
+                            extra_info = "This is the baseline request"
+
+                            # Create the table info for the single URL
+                            # (screenshot, server headers, etc.)
+                            web_index = table_maker(
+                                web_request_object, web_index,
+                                baseline_content_blank,
+                                log_file_path, browser_key, user_agent_value,
+                                source_name, picture_name, baseline_request,
+                                ew_output_object)
+
+                            # Move beyond the baseline
+                            request_number = 1
+
+                        else:
+
+                            # Create the request object that will be passed
+                            new_web_request_object =\
+                                request_object.RequestObject()
+
+                            # Set the web request info for the request object
+                            new_web_request_object.set_web_request_attributes(
+                                cli_parsed.single)
+
+                            new_web_request_object = ghost_capture(
+                                ghost_object, new_web_request_object,
+                                picture_name, ew_output_object)
+
+                            try:
+                                # Hack for a bug in Ghost at the moment
+                                # new_ua_page.content = "None"
+
+                                new_ua_content_blank = backup_request(
+                                    new_web_request_object, source_name,
+                                    content_blank, ew_output_object)
+
+                                # Function which hashes the original request
+                                # with the new request and checks to see if
+                                # they are identical
+                                same_or_different, total_length_difference = \
+                                    request_comparison(
+                                        web_request_object.web_source_code,
+                                        new_web_request_object.web_source_code,
+                                        cli_parsed.difference)
+
+                                # If they are the same, then go on to the next
+                                # user agent, if they are different, add it to
+                                # the report
+                                if same_or_different:
+                                    pass
+                                else:
+                                    # Create the table info for the single URL
+                                    # (screenshot, server headers, etc.)
+                                    web_index = table_maker(
+                                        new_web_request_object, web_index,
+                                        content_blank,
+                                        log_file_path, browser_key,
+                                        user_agent_value, source_name,
+                                        picture_name, total_length_difference,
+                                        ew_output_object)
+
+                            except AttributeError:
+                                print "[*] Unable to request " + cli_parsed.single +\
+                                    " with " + browser_key
+                                web_index += """<tr>
+                                <td><a href=\"{single_given_url}\">\
+                                {single_given_url}</a></td>
+                                <td>Unable to request {single_given_url} with \
+                                {browser_user}.</td>
+                                </tr>
+                                """.format(single_given_url=cli_parsed.single,
+                                           browser_user=browser_key).\
+                                    replace('    ', '')
+                            total_length_difference = "None"
+
+                    # Skip a url if Ctrl-C is hit
+                    except KeyboardInterrupt:
+                        print "[*] Skipping: " + cli_parsed.single
+                        web_index += """<tr>
+                        <td><a href=\"{single_given_url}\">{single_given_url}\
+                        </a></td>
+                        <td>User Skipped this URL</td>
+                        </tr>
+                        """.format(single_given_url=cli_parsed.single).replace('    ', '')
+                    # Catch timeout warning
+                    except screener.TimeoutError:
+                        print "[*] Hit timeout limit when connecting to: "\
+                            + cli_parsed.single
+                        web_index += """<tr>
+                        <td><a href=\"{single_timeout_url}\" target=\"_blank\">\
+                        {single_timeout_url}</a></td>
+                        <td>Hit timeout limit while attempting screenshot</td>
+                        </tr>
+                        """.format(single_timeout_url=cli_parsed.single)
+
+                    # Add Random sleep based off of user provided jitter value
+                    #  if requested
+                    if cli_parsed.jitter is not "None":
+                        sleep_value = random.randint(0, 30)
+                        sleep_value = sleep_value * .01
+                        sleep_value = 1 - sleep_value
+                        sleep_value = sleep_value * int(cli_parsed.jitter)
+                        print "[*] Sleeping for " + str(sleep_value) + " seconds.."
+                        try:
+                            time.sleep(sleep_value)
+                        except KeyboardInterrupt:
+                            print "[*] User cancelled sleep for this URL!"
+
+            # Write out the report for the single URL
+            create_link_structure(
+                page_counter, ew_output_object, web_index)
+
+            # Kill xvfb session if started
+            #if hasattr(ghost_object, 'xvfb'):
+            #    ghost_object.xvfb.terminate()
+
+            if ew_output_object.operating_system == "Windows":
+                # Stupid windows won't let me delete the log file
+                pass
+            else:
+                os.system('rm ' + log_file_path)
+            print "\n[*] Done! Check out the report in the " +\
+                ew_output_object.report_folder + " folder!"
+
+        # This hits when not using a single site, but likely providing
+        # a file for input
+        else:
+            url_list, rdp_list, vnc_list = target_creator(cli_parsed)
+
+            # Check if user wants random URLs, if so, randomize URLs here
+            if cli_parsed.jitter is not "None":
+                random.shuffle(url_list)
+
+            # Add the web "header" to our web page
+            web_index = web_header(report_date, report_time)
+            print "Trying to screenshot " + str(number_urls) + " websites...\n"
 
     if cli_parsed.rdp:
 
