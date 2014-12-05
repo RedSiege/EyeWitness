@@ -2726,7 +2726,7 @@ if __name__ == "__main__":
 
             # Write out the report for the single URL
             create_link_structure(
-                page_counter, ew_output_object, web_index)
+                page_counter, ew_output_object, web_index, "web")
 
             # Kill xvfb session if started
             #if hasattr(ghost_object, 'xvfb'):
