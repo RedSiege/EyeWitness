@@ -2479,7 +2479,6 @@ if __name__ == "__main__":
 
                         # Reset the URL counter
                         if i != len(groupedlist):
-                            page_counter = page_counter + 1
                             web_index = web_header(report_date, report_time)
 
             create_link_structure(page_counter, ew_output_object, web_index, "web")
