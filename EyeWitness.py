@@ -1692,7 +1692,6 @@ if __name__ == "__main__":
                     page_counter += 1
                     # Reset the URL counter
                     if i != len(groupedlist):
-                        page_counter = page_counter + 1
                         web_index = web_header(report_date, report_time)
 
         if page_counter == 1:
