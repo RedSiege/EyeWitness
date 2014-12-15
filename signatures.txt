@@ -78,3 +78,4 @@ function initFavoriteDevices(;function javaPluginExists();Dominion;function addD
 EasyCoder PM4i;navframe;FRAME src;FRAMESET;noresize scrolling| EasyCoder PM4i admin/pass
 Symmetricom SyncServer S100;var serverName;function usernameKey;function answerKey;loginPasswordTable;passedit|Symmetricom SyncServer S100 admin/symmetricom
 KYOCERA;idxlang;opt_msg1_;startwlm|Kyocera Printer (General) Admin/Admin
+Top Page - MX-M465N;class="modelName">MX-M465N</div>;delta_close.gif;name="updatebtn" type="button"|SHARP MX-M456N Printer admin/admin
