@@ -1,3 +1,6 @@
+[12.24.2014]
+    Modified..: File names try to catch odd special characters and changes them to ".". - Github Issue #103
+
 [10.10.2014]
     Modified..: Eyewitness is now split between two repos, one for python, one for Ruby.  This will allow for easier issue/feature request tracking.
 

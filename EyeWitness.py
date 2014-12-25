@@ -305,9 +305,8 @@ def default_creds(page_content, full_file_path, local_system_os):
 def file_names(url_given):
     url_given = url_given.strip()
     pic_name = url_given
-    pic_name = pic_name.replace("://", ".")
-    pic_name = pic_name.replace(":", ".")
-    pic_name = pic_name.replace("/", "")
+    for char in ['://', ':', '/', '?', '=', '%', '+']:
+        pic_name = pic_name.replace(char, '.')
     src_name = pic_name + ".txt"
     pic_name = pic_name + ".png"
     return url_given, src_name, pic_name
