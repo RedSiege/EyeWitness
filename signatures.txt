@@ -84,3 +84,4 @@ airos_logo.png;form enctype="multipart/form-data" id="loginform" method="post";a
 Any time &amp; Any where;IP Surveillance for Your Life;form name="myForm" method="POST" target="_top" onSubmit="return check();function createHttpRequestObj()|DVR (AV760 DVR) admin/admin or admin,/admin
 Grandstream Device Configuration;action="dologin" method="post" name="loginForm";All Rights Reserved Grandstream Networks|GrandStream Device Admin User: <nouser>/admin  End User: <nouser>/123
 DSL-2640U;input type="checkbox" class="remb"> <span class="remember">Remember me</span>;id="A2" name="A2" type="password" maxlength="30"|D-Link DSL-2640U admin/admin
+a href="http://mikrotik.com"><img src="mikrotik_logo.png";You have connected to a router. Administrative access only. If this device is not in your possession, please contact your local network administrator;<td colspan="3"><h2>WebFig Login:</h2>|Mikrotik Router admin/<nopassword>
