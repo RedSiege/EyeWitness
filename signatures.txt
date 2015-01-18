@@ -86,3 +86,4 @@ Grandstream Device Configuration;action="dologin" method="post" name="loginForm"
 DSL-2640U;input type="checkbox" class="remb"> <span class="remember">Remember me</span>;id="A2" name="A2" type="password" maxlength="30"|D-Link DSL-2640U admin/admin
 a href="http://mikrotik.com"><img src="mikrotik_logo.png";You have connected to a router. Administrative access only. If this device is not in your possession, please contact your local network administrator;<td colspan="3"><h2>WebFig Login:</h2>|Mikrotik Router admin/<nopassword>
 loginPassword.value = "ZyXEL ZyWALL Series";P-660RU-T1 v2;function passwordMD5(str);function LoginClick(hiddenPassword, loginPassword)|P-660RU-T1 v2 Ethernet/USB Router <nousername>/1234
+function hex_md5(s) { return binl2hex(core_md5(str2binl(s), s.length * chrsz));bit_rol(;Welcome to the  Web Configurator;OX253P|OX253P Router admin/admin admin/1234
