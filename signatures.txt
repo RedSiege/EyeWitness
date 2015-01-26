@@ -90,3 +90,4 @@ function hex_md5(s) { return binl2hex(core_md5(str2binl(s), s.length * chrsz));b
 var kerio = {lib:{};kerio.engine.acceptedLanguages;upper-message-container;action="/server/login" method="post" id="container"|Kerio Control Device admin/<passwordofadminuseronbox>
 meta name="SonicWALL Administrator" content;<title>SonicWALL - Authentication</title>;window.onunload=onPageUnload;"auth1.html" name="authFrm"|SonicWall Device admin/password
 D-Link VoIP Router;frameset framespacing="0" frameborder="0" rows="0,*";fxdriver-screenshot-canvas" style="display: none;script src="util.js" language="JavaScript"></script>|DVG-5402SP admin/<nopassword>
+mikrotik routeros > administration;form name="loginForm" action="/cfg" method="post" onsubmit="doLogin();mikrotik routeros;configuration page|Mikrotik Routeros admin/<nopassword>
