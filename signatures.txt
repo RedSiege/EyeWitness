@@ -91,3 +91,4 @@ var kerio = {lib:{};kerio.engine.acceptedLanguages;upper-message-container;actio
 meta name="SonicWALL Administrator" content;<title>SonicWALL - Authentication</title>;window.onunload=onPageUnload;"auth1.html" name="authFrm"|SonicWall Device admin/password
 D-Link VoIP Router;frameset framespacing="0" frameborder="0" rows="0,*";fxdriver-screenshot-canvas" style="display: none;script src="util.js" language="JavaScript"></script>|DVG-5402SP admin/<nopassword>
 mikrotik routeros > administration;form name="loginForm" action="/cfg" method="post" onsubmit="doLogin();mikrotik routeros;configuration page|Mikrotik Routeros admin/<nopassword>
+Grandstream Device Configuration;form action="/cgi-bin/dologin" method="post" name="loginForm";All Rights Reserved Grandstream Networks;input name="P2" type=password size=30 maxlength=30|Grandstream Networks: <nouser>/admin or <nouser>/123
