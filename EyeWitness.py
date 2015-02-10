@@ -355,19 +355,22 @@ def folder_out(dir_name, full_path, local_os):
         if not os.path.isdir(output_folder_name):
             os.makedirs(join(output_folder_name, "screens"))
             os.makedirs(join(output_folder_name, "source"))
+        with open(join(output_folder_name, "style.css"), 'w') as css_file:
+            css_file.write(css_page)
 
     # If it doesn't start with a "/" or "C:\", then assume it should be in the
     # same directory as EyeWitness.
     else:
+        eyewitness_directory = os.path.dirname(os.path.abspath(__file__))
         # Create a folder which stores all snapshots
         # note- os.makedirs
-        full_path = join(full_path, output_folder_name)
+        full_path = join(eyewitness_directory, output_folder_name)
         if not os.path.isdir(full_path):
             os.makedirs(join(full_path, "screens"))
             os.makedirs(join(full_path, "source"))
 
-    with open(join(output_folder_name, "style.css"), 'w') as css_file:
-        css_file.write(css_page)
+        with open(join(full_path, "style.css"), 'w') as css_file:
+            css_file.write(css_page)
 
     return output_folder_name, current_date, current_time
 
@@ -382,9 +385,10 @@ def ghost_capture(incoming_ghost_object, screen_url, rep_fold, screen_name,
 
     if rep_fold.startswith("/") or rep_fold.startswith("C:\\"):
         capture_path = join(ewitness_dir_path, rep_fold, "screens",
-                                    screen_name)
+                            screen_name)
     else:
-        capture_path = join(rep_fold, "screens", screen_name)
+        full_ew_path = os.path.dirname(os.path.abspath(__file__))
+        capture_path = join(full_ew_path, rep_fold, "screens", screen_name)
 
     incoming_ghost_object.capture_to(capture_path)
 
@@ -1159,7 +1163,8 @@ if __name__ == "__main__":
             log_file_path = join(script_path, report_folder, "logfile.log")
         else:
             # Location of the log file Ghost logs to (to catch SSL errors)
-            log_file_path = join(report_folder, "logfile.log")
+            current_eye_dir = os.path.dirname(os.path.abspath(__file__))
+            log_file_path = join(current_eye_dir, report_folder, "logfile.log")
 
         # If the user wants to cycle through user agents, return the dictionary
         # of applicable user agents

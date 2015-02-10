@@ -1,3 +1,6 @@
+[2.9.2015]
+    Modified..: Eyewitness now should work when called from outside the EyeWitness folder.  Unless given a location, EyeWitness will still place its output within the EyeWitness folder.
+
 [12.24.2014]
     Modified..: File names try to catch odd special characters and changes them to ".". - Github Issue #103
 
