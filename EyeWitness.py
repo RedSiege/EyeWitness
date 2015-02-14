@@ -413,8 +413,8 @@ def logistics(url_file, target_maker, no_dns):
         # Setup variables
         # The nmap xml parsing code was sent to me and worked on by Jason Hill
         # (@jasonhillva)
-        http_ports = [80, 8000, 8080, 8081, 8082]
-        https_ports = [443, 8443]
+        http_ports = [80, 8000, 8080, 8081, 8082, 8888]
+        https_ports = [443, 8443, 9443]
 
         try:
             xml_tree = XMLParser.parse(url_file)
@@ -423,7 +423,8 @@ def logistics(url_file, target_maker, no_dns):
             sys.exit()
         root = xml_tree.getroot()
 
-        if root.tag.lower() == "nmaprun":
+        if root.tag.lower() == "nmaprun" and root.attrib.get('scanner') == 'nmap':
+            print "Detected nmap xml file\n";
             for item in root.iter('host'):
                 check_ip_address = False
                 # We only want hosts that are alive
@@ -498,6 +499,42 @@ def logistics(url_file, target_maker, no_dns):
                 sys.exit()
             return urls, num_urls
 
+        # Added section for parsing masscan xml output which is "inspired by"
+        # but not identical to the nmap format. Based on existing code above
+        # for nmap xml files. Also added check for "scanner" attribute to
+        # differentiate between a file from nmap and a file from masscan.
+        
+        if root.tag.lower() == "nmaprun" and root.attrib.get('scanner') == 'masscan':
+            print "Detected masscan xml file\n";
+            for item in root.iter('host'):
+                check_ip_address = False
+                # Masscan only includes hosts that are alive, so less checking needed.
+                web_ip_address = None
+                target = item.find('address').get('addr')
+                # find open ports that match the http/https port list or
+                # have http/https as a service
+                for ports in item.iter('port'):
+                    if ports.find('state').get('state') == 'open':
+                        port = ports.attrib.get('portid')
+                        if int(port) in http_ports:
+                            protocol = 'http'
+                        if int(port) in https_ports:
+                            protocol = 'https'
+                        urlBuild = '%s://%s:%s' % (protocol, target,
+                                                   port)
+                        if urlBuild not in urls:
+                            urls.append(urlBuild)
+                            num_urls += 1
+
+            if target_maker is not None:
+                with open(target_maker, 'w') as target_file:
+                    for item in urls:
+                        target_file.write(item + '\n')
+                print "Target file created (" + target_maker + ").\n"
+                sys.exit()
+            return urls, num_urls
+
+
         # Find root level if it is nessus output
         # This took a little bit to do, to learn to parse the nessus output.
         # There are a variety of scripts that do it, but also being able to
@@ -544,7 +581,7 @@ def logistics(url_file, target_maker, no_dns):
             return urls, num_urls
 
         else:
-            print "ERROR: EyeWitness only accepts NMap XML files!"
+            print "ERROR: EyeWitness only accepts NMap, Nessus, or masscan XML files!"
 
     except XMLParser.ParseError:
 
@@ -1741,7 +1778,6 @@ if __name__ == "__main__":
                           str(page_footer) + ".html"), 'a') as page_append:
                     page_append.write(link_text)
 
-            for page_footer in range(2, page_counter + 1):
                 with open(join(script_path, report_folder, "report_page" +
                           str(page_footer) + ".html"), 'r') as link_add:
                     content = link_add.readlines()
