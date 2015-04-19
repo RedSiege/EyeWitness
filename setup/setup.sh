@@ -27,7 +27,7 @@ case ${osinfo} in
   # Kali Dependency Installation
   Kali)
     echo '[*] Installing Kali Dependencies'
-    apt-get install python-qt4 python-pip xvfb
+    apt-get install python-qt4 python-pip xvfb python-netaddr
     echo '[*] Cloning and installing Ghost'
     git clone https://github.com/ChrisTruncer/Ghost.py.git
     cd Ghost.py
