@@ -95,7 +95,7 @@ case ${osinfo} in
   ;;
   # Notify Manual Installation Requirement And Exit
   *)
-    echo "[Error]: ${OS} is not supported by this setup script."
+    echo "[Error]: ${osinfo} is not supported by this setup script."
     echo '[Error]: To use EyeWitness, manually install python, PyQt4, and Ghost.py.'
     echo
     exit 1
