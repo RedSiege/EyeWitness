@@ -4,6 +4,7 @@ import re
 import time
 import sys
 import netaddr
+import xml.etree.ElementTree as XMLParser
 from modules import selenium_module
 from modules import objects
 
@@ -149,17 +150,287 @@ def create_cli_parser():
     return args
 
 
-def target_creator(cli_parsed):
-    http_ports = [80, 8000, 8080, 8081, 8082, 8888]
-    https_ports = [443, 8443, 9443]
-    rdp_ports = [3389]
-    vnc_ports = [5900, 5901]
+def target_creator(command_line_object):
 
+    if command_line_object.createtargets is not None:
+        print "Creating text file containing all web servers..."
+
+    urls = []
+    rdp = []
+    vnc = []
+    num_urls = 0
+    try:
+        # Setup variables
+        # The nmap xml parsing code was sent to me and worked on by Jason Hill
+        # (@jasonhillva)
+        http_ports = [80, 8000, 8080, 8081, 8082, 8888]
+        https_ports = [443, 8443, 9443]
+        rdp_ports = [3389]
+        vnc_ports = [5900, 5901]
+
+        try:
+            xml_tree = XMLParser.parse(command_line_object.f)
+        except IOError:
+            print "Error: EyeWitness needs a text or XML file to parse URLs!"
+            sys.exit()
+        root = xml_tree.getroot()
+
+        if root.tag.lower() == "nmaprun" and root.attrib.get('scanner') == 'nmap':
+            print "Detected nmap xml file\n"
+            for item in root.iter('host'):
+                check_ip_address = False
+                # We only want hosts that are alive
+                if item.find('status').get('state') == "up":
+                    web_ip_address = None
+                    # If there is no hostname then we'll set the IP as the
+                    # target 'hostname'
+                    if item.find('hostnames/hostname') is not None and command_line_object.no_dns is False:
+                        target = item.find('hostnames/hostname').get('name')
+                        web_ip_address = item.find('address').get('addr')
+                    else:
+                        target = item.find('address').get('addr')
+                    # find open ports that match the http/https port list or
+                    # have http/https as a service
+                    for ports in item.iter('port'):
+                        if ports.find('state').get('state') == 'open':
+                            port = ports.attrib.get('portid')
+                            try:
+                                service = ports.find('service').get('name')\
+                                    .lower()
+                            except AttributeError:
+                                # This hits when it finds an open port, but
+                                # isn't able to Determine the name of the
+                                # service running on it, so we'll just
+                                # pass in this instance
+                                pass
+                            try:
+                                tunnel = ports.find('service').get('tunnel')\
+                                    .lower()
+                            except AttributeError:
+                                # This hits when it finds an open port, but
+                                # isn't able to Determine the name of the
+                                # service running on it, so we'll just pass
+                                # in this instance
+                                tunnel = "fakeportservicedoesntexist"
+                            if int(port) in http_ports or 'http' in service:
+                                protocol = 'http'
+                                if int(port) in https_ports or 'https' in\
+                                        service or ('http' in service and
+                                                    'ssl' in tunnel):
+                                    protocol = 'https'
+                                urlBuild = '%s://%s:%s' % (protocol, target,
+                                                           port)
+                                if urlBuild not in urls:
+                                    urls.append(urlBuild)
+                                    num_urls += 1
+                                else:
+                                    check_ip_address = True
+
+                            if command_line_object.rdp:
+                                if int(port) in rdp_ports or 'ms-wbt' in service:
+                                    rdp.append(target)
+
+                            if command_line_object.vnc:
+                                if int(port) in vnc_ports or 'vnc' in services:
+                                    vnc.append((target, port))
+
+                        if check_ip_address:
+                            if int(port) in http_ports or 'http' in service:
+                                protocol = 'http'
+                                if int(port) in https_ports or 'https' in\
+                                        service or ('http' in service and
+                                                    'ssl' in tunnel):
+                                    protocol = 'https'
+                                if web_ip_address is not None:
+                                    urlBuild = '%s://%s:%s' % (
+                                        protocol, web_ip_address, port)
+                                else:
+                                    urlBuild = '%s://%s:%s' % (
+                                        protocol, target, port)
+                                if urlBuild not in urls:
+                                        urls.append(urlBuild)
+                                        num_urls += 1
+
+            if command_line_object.createtargets is not None:
+                with open(command_line_object.createtargets, 'w') as target_file:
+                    for item in urls:
+                        target_file.write(item + '\n')
+                print "Target file created (" + command_line_object.createtargets + ").\n"
+                sys.exit()
+            return urls, rdp, vnc
+
+        # Added section for parsing masscan xml output which is "inspired by"
+        # but not identical to the nmap format. Based on existing code above
+        # for nmap xml files. Also added check for "scanner" attribute to
+        # differentiate between a file from nmap and a file from masscan.
+
+        if root.tag.lower() == "nmaprun" and root.attrib.get('scanner') == 'masscan':
+            print "Detected masscan xml file\n"
+            for item in root.iter('host'):
+                check_ip_address = False
+                # Masscan only includes hosts that are alive, so less checking needed.
+                web_ip_address = None
+                target = item.find('address').get('addr')
+                # find open ports that match the http/https port list or
+                # have http/https as a service
+                for ports in item.iter('port'):
+                    if ports.find('state').get('state') == 'open':
+                        port = ports.attrib.get('portid')
+
+                        # Check for http ports
+                        if int(port) in http_ports:
+                            protocol = 'http'
+                            urlBuild = '%s://%s:%s' % (
+                                protocol, target, port)
+                            if urlBuild not in urls:
+                                urls.append(urlBuild)
+
+                        # Check for https ports
+                        if int(port) in https_ports:
+                            protocol = 'https'
+                            urlBuild = '%s://%s:%s' % (
+                                protocol, target, port)
+                            if urlBuild not in urls:
+                                urls.append(urlBuild)
+
+                        # Check for RDP
+                        if int(port) in rdp_port:
+                            protocol = 'rdp'
+                            if target not in rdp:
+                                rdp.append(target)
+
+                        # Check for VNC
+                        if int(port) in vnc_ports:
+                            protocol = 'vnc'
+                            if target not in vnc:
+                                vnc.append(target)
+
+            if command_line_object.createtargets is not None:
+                with open(command_line_object.createtargets, 'w') as target_file:
+                    for item in urls:
+                        target_file.write(item + '\n')
+                print "Target file created (" + command_line_object.createtargets + ").\n"
+                sys.exit()
+
+            return urls, rdp, vnc
+
+        # Find root level if it is nessus output
+        # This took a little bit to do, to learn to parse the nessus output.
+        # There are a variety of scripts that do it, but also being able to
+        # reference PeepingTom really helped.  Tim did a great job figuring
+        # out how to parse this file format
+        elif root.tag.lower() == "nessusclientdata_v2":
+            print "Detected .Nessus file\n"
+            # Find each host in the nessus report
+            for host in root.iter("ReportHost"):
+                name = host.get('name')
+                for item in host.iter('ReportItem'):
+                    service_name = item.get('svc_name')
+                    plugin_name = item.get('pluginName')
+                    # I had www, but later checked out PeepingTom and Tim had
+                    # http? and https? for here.  Small tests of mine haven't
+                    # shown those, but as he's smarter than I am, I'll add them
+                    if (service_name in ['www', 'http?', 'https?'] and
+                            plugin_name.lower()
+                            .startswith('service detection')):
+                        port_number = item.get('port')
+                        # Convert essentially to a text string and then strip
+                        # newlines
+                        plugin_output = item.find('plugin_output').text.strip()
+                        # Look to see if web page is over SSL or TLS.
+                        # If so assume it is over https and prepend https,
+                        # otherwise, http
+                        http_output = re.search('TLS', plugin_output) or\
+                            re.search('SSL', plugin_output)
+                        if http_output:
+                            url = "https://" + name + ":" + port_number
+                        else:
+                            url = "http://" + name + ":" + port_number
+                        # Just do a quick check to make sure the url we are
+                        # adding doesn't already exist
+                        if url not in urls:
+                            urls.append(url)
+                            num_urls = num_urls + 1
+                    elif 'vnc' in service_name and plugin_name.lower().startswith('service detection') and command_line_object.vnc:
+                        port_number = item.get('port')
+                        vnc.append((name, port))
+                    elif 'msrdp' in service_name and plugin_name.lower().startswith('windows terminal services') and command_line_object.rdp:
+                        rdp.append(name)
+            if command_line_object.createtargets is not None:
+                with open(command_line_object.createtargets, 'w') as target_file:
+                    for item in urls:
+                        target_file.write(item + '\n')
+                print "Target file created (" + command_line_object.createtargets + ").\n"
+                sys.exit()
+            return urls, rdp, vnc
+
+        else:
+            print "ERROR: EyeWitness only accepts NMap XML files!"
+
+    except XMLParser.ParseError:
+
+        try:
+            # Open the URL file and read all URLs, and reading again to catch
+            # total number of websites
+            with open(command_line_object.f) as f:
+                all_urls = [url for url in f if url.strip()]
+
+            # else:
+            for line in all_urls:
+                if line.startswith('http://') or line.startswith('https://'):
+                    urls.append(line)
+                elif line.startswith('rdp://'):
+                    rdp.append(line[6:])
+                elif line.startswith('vnc://'):
+                    vnc.append(line[6:])
+                else:
+                    urls.append(line)
+                    if command_line_object.rdp:
+                        rdp.append(line)
+                    if command_line_object.vnc:
+                        vnc.append(line)
+                num_urls += 1
+
+            return urls, rdp, vnc
+
+        except IOError:
+            print "ERROR: You didn't give me a valid file name! I need a valid\
+            file containing URLs!"
+            sys.exit()
+
+
+def create_folders_css(cli_parsed):
+    css_page = """img {
+    max-width: 100%;
+    height: auto;
+    }
+    #screenshot{
+    max-width: 850px;
+    max-height: 550px;
+    display: inline-block;
+    width: 850px;
+    height: 550px;
+    overflow:scroll;
+    }"
+    """
+
+    os.makedirs(cli_parsed.d)
+    os.makedirs(os.path.join(cli_parsed.d, 'screens'))
+    os.makedirs(os.path.join(cli_parsed.d, 'source'))
+
+    with open(os.path.join(cli_parsed.d, 'style.css'), 'w') as f:
+        f.write(css_page)
 
 if __name__ == "__main__":
     cli_parsed = create_cli_parser()
-    a = objects.HTTPTableObject()
-    a.remote_system = cli_parsed.single
-    a.set_paths(cli_parsed.d)
-    driver = selenium_module.initialize_module(cli_parsed)
-    selenium_module.capture_host(cli_parsed.single, a, driver)
+    if cli_parsed.localscan:
+        raise NotImplementedError
+
+    if cli_parsed.createtargets:
+        target_creator(cli_parsed)
+        sys.exit()
+
+    create_folders_css(cli_parsed)
+
+    if cli_parsed.single and cli_parsed.web:
+        selenium_module.single_mode(cli_parsed)

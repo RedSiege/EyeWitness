@@ -3,12 +3,14 @@ from objects import HTTPTableObject
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import UnexpectedAlertPresentException
+from selenium.common.exceptions import TimeoutException
 import os
 import urllib2
 import socket
 import httplib
 import re
 import sys
+from objects import HTTPTableObject
 
 title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 
@@ -40,18 +42,44 @@ def create_driver(cli_parsed, user_agent=None):
             print 'Firefox not found!'
             print 'You can fix this by installing Firefox/Iceweasel\
              or using phantomjs/ghost'
-            sys.exit()
+        else:
+            print 'Unknown Error when creating selenium driver. Exiting'
+        sys.exit()
 
 
 def capture_host(cli_parsed, http_object, driver):
     global title_regex
+    print 'Attempting to screenshot {0}'.format(http_object.remote_system)
 
     try:
         alert = driver.switch_to.alert
         alert.dismiss()
     except NoAlertPresentException:
         pass
-    driver.get(http_object.remote_system)
+
+    try:
+        driver.get(http_object.remote_system)
+    except KeyboardInterrupt:
+        print '[*] Skipping: {0}'.format(http_object.remote_system)
+        http_object.error_state = 'Skipped'
+        http_object.page_title = 'Page Skipped by User'
+    except TimeoutException:
+        print '[*] Hit timeout limit when conecting to {0}, retrying'.format(http_object.remote_system)
+        http_object.error_state = 'Timeout'
+
+    if http_object.error_state == 'Timeout':
+        http_object.error_state = None
+        try:
+            driver.get(http_object.remote_system)
+        except TimeoutException:
+            print '[*] Hit timeout limit when conecting to {0}'.format(http_object.remote_system)
+            http_object.error_state = 'Timeout'
+            http_object.page_title = 'Timeout Limit Reached'
+            http_object.headers = {}
+        except KeyboardInterrupt:
+            print '[*] Skipping: {0}'.format(http_object.remote_system)
+            http_object.error_state = 'Skipped'
+            http_object.page_title = 'Page Skipped by User'
 
     try:
         headers = dict(urllib2.urlopen(http_object.remote_system).info())
@@ -70,7 +98,7 @@ def capture_host(cli_parsed, http_object, driver):
     try:
         tag = title_regex.search(driver.page_source.encode('utf-8'))
         if tag is not None:
-            http_object.page_title = tag.group(1).strip()
+            http_object.page_title = tag.group(2).strip()
         else:
             http_object.page_title = 'Unknown'
 
@@ -86,9 +114,31 @@ def capture_host(cli_parsed, http_object, driver):
     return http_object
 
 
-def initialize_module(cli_parsed):
+def single_mode(cli_parsed):
+    http_object = HTTPTableObject()
+    http_object.remote_system = cli_parsed.single
+    http_object.set_paths(cli_parsed.d)
+
+    web_index_head = ("""<html>
+    <head>
+    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+    <title>EyeWitness Report</title>
+    </head>
+    <body>
+    <center>Report Generated on {0} at {1}</center>
+    <br><table border=\"1\">
+    <tr>
+    <th>Web Request Info</th>
+    <th>Web Screenshot</th>
+    </tr>""").format(cli_parsed.date, cli_parsed.time)
+
     driver = create_driver(cli_parsed)
-    os.makedirs(cli_parsed.d)
-    os.makedirs(os.path.join(cli_parsed.d, 'screens'))
-    os.makedirs(os.path.join(cli_parsed.d, 'source'))
-    return driver
+
+    result = capture_host(cli_parsed, http_object, driver)
+
+    html = result.create_table_html()
+    with open('test.html', 'w') as f:
+        f.write(web_index_head)
+        f.write(html)
+
+    driver.quit()
