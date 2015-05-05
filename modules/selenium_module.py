@@ -6,9 +6,8 @@ import sys
 import threading
 import urllib2
 
+from helpers import create_web_index_head
 from helpers import target_creator
-from helpers import target_creator
-from objects import HTTPTableObject
 from objects import HTTPTableObject
 from selenium import webdriver
 from selenium.common.exceptions import NoAlertPresentException
@@ -132,18 +131,7 @@ def single_mode(cli_parsed):
     http_object.set_paths(
         cli_parsed.d, 'baseline' if cli_parsed.cycle else None)
 
-    web_index_head = ("""<html>
-    <head>
-    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
-    <title>EyeWitness Report</title>
-    </head>
-    <body>
-    <center>Report Generated on {0} at {1}</center>
-    <br><table border=\"1\">
-    <tr>
-    <th>Web Request Info</th>
-    <th>Web Screenshot</th>
-    </tr>""").format(cli_parsed.date, cli_parsed.time)
+    web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
     driver = create_driver(cli_parsed)
 
@@ -185,18 +173,7 @@ def multi_mode(cli_parsed):
             counter = 0
         data[url] = result
 
-    web_index_head = ("""<html>
-    <head>
-    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
-    <title>EyeWitness Report</title>
-    </head>
-    <body>
-    <center>Report Generated on {0} at {1}</center>
-    <br><table border=\"1\">
-    <tr>
-    <th>Web Request Info</th>
-    <th>Web Screenshot</th>
-    </tr>""").format(cli_parsed.date, cli_parsed.time)
+    web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
     html = u""
     for key, value in data.items():

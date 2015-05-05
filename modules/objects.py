@@ -1,6 +1,7 @@
 import cgi
 import os
 import re
+from helpers import strip_nonalphanum
 
 
 class HTTPTableObject(object):
@@ -164,9 +165,15 @@ class HTTPTableObject(object):
                 height=\"400\"></a></div></td></tr>""").format(
                 self.source_path, self.screenshot_path)
 
+        if len(self._uadata) > 0:
+            divid = strip_nonalphanum(self.remote_system)
+            html += ("""<tr><td class="uabold" align="center" colspan="2" onclick="toggleUA('{0}', this);"> 
+                Click to show User Agents</td></tr>""").format(divid)
         for ua_obj in sorted(self._uadata, key=lambda x: x.difference):
-            html += ua_obj.create_table_html()
+            html += ua_obj.create_table_html(divid)
 
+        html += ("""</div>
+        </div>""")
         return html
 
     def sanitize(self, html):
@@ -219,12 +226,12 @@ class UAObject(HTTPTableObject):
         self.screenshot_path = self.root_path + '_{0}.png'.format(self.browser)
         self.source_path = self.root_path + '_{0}.txt'.format(self.browser)
 
-    def create_table_html(self):
+    def create_table_html(self, divid):
         html = u""
-        html += ("""<tr>
+        html += ("""<tr class="hide {0}">
         <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
-        <a href=\"{address}\" target=\"_blank\">{address}</a><br>
-        """).format(address=self.remote_system)
+        <a href=\"{1}\" target=\"_blank\">{1}</a><br>
+        """).format(divid, self.remote_system)
 
         html += ("""
         <br>This request was different from the baseline.<br>

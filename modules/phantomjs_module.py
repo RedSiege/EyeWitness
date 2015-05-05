@@ -2,8 +2,11 @@ import os
 import re
 import urllib2
 
-from helpers import target_creator, get_ua_values
-from objects import HTTPTableObject, UAObject
+from helpers import create_web_index_head
+from helpers import get_ua_values
+from helpers import target_creator
+from objects import HTTPTableObject
+from objects import UAObject
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
@@ -93,18 +96,7 @@ def single_mode(cli_parsed):
     http_object.set_paths(
         cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
 
-    web_index_head = ("""<html>
-    <head>
-    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
-    <title>EyeWitness Report</title>
-    </head>
-    <body>
-    <center>Report Generated on {0} at {1}</center>
-    <br><table border=\"1\">
-    <tr>
-    <th>Web Request Info</th>
-    <th>Web Screenshot</th>
-    </tr>""").format(cli_parsed.date, cli_parsed.time)
+    web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
     if cli_parsed.cycle is not None:
         print 'Making baseline request for {0}'.format(http_object.remote_system)
@@ -151,18 +143,7 @@ def multi_mode(cli_parsed):
             cli_parsed, http_object, driver)
         data[url] = result
 
-    web_index_head = ("""<html>
-    <head>
-    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
-    <title>EyeWitness Report</title>
-    </head>
-    <body>
-    <center>Report Generated on {0} at {1}</center>
-    <br><table border=\"1\">
-    <tr>
-    <th>Web Request Info</th>
-    <th>Web Screenshot</th>
-    </tr>""").format(cli_parsed.date, cli_parsed.time)
+    web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
     html = u""
     for key, value in data.items():

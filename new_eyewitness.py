@@ -4,9 +4,11 @@ import os
 import re
 import sys
 import time
+import shutil
 
 from helpers import get_ua_values
 from helpers import target_creator
+from helpers import title_screen
 from modules import objects
 from modules import phantomjs_module
 from modules import selenium_module
@@ -165,17 +167,26 @@ def create_folders_css(cli_parsed):
     width: 850px;
     height: 550px;
     overflow:scroll;
-    }"
+    }
+    .hide{
+        display:none;
+    }
+    .uabold{
+        font-weight:bold;
+        cursor:pointer;
+    }
     """
 
     os.makedirs(cli_parsed.d)
     os.makedirs(os.path.join(cli_parsed.d, 'screens'))
     os.makedirs(os.path.join(cli_parsed.d, 'source'))
+    shutil.copy2('bin/jquery-1.11.3.min.js', cli_parsed.d)
 
     with open(os.path.join(cli_parsed.d, 'style.css'), 'w') as f:
         f.write(css_page)
 
 if __name__ == "__main__":
+    title_screen()
     cli_parsed = create_cli_parser()
     if cli_parsed.localscan:
         raise NotImplementedError
@@ -197,3 +208,6 @@ if __name__ == "__main__":
             selenium_module.multi_mode(cli_parsed)
         elif cli_parsed.headless:
             phantomjs_module.multi_mode(cli_parsed)
+
+    print('\n[*] Done! Check out the report in the {0} folder!').format(
+        cli_parsed.d)

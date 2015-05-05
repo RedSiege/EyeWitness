@@ -1,4 +1,7 @@
 import xml.etree.ElementTree as XMLParser
+import platform
+import os
+import sys
 
 
 def target_creator(command_line_object):
@@ -359,3 +362,54 @@ def get_ua_values(cycle_value):
          to cycle through!".replace('    ', '')
         print "[*] Error: Defaulting to desktop browser user agents."
         return desktop_uagents
+
+
+def create_web_index_head(date, time):
+    return ("""<html>
+        <head>
+        <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+        <title>EyeWitness Report</title>
+        <script src="jquery-1.11.3.min.js"></script>
+        <script type="text/javascript">
+        function toggleUA(id, change){{
+        id = "." + id;
+        $(id).toggle();
+        if (change.innerHTML.indexOf("show") > -1){{
+            change.innerHTML = "Click to hide User Agents";
+        }}else{{
+            change.innerHTML = "Click to show User Agents";
+        }}
+        }}
+        </script>
+        </head>
+        <body>
+        <center>Report Generated on {0} at {1}</center>
+        <br><table border=\"1\">
+        <tr>
+        <th>Web Request Info</th>
+        <th>Web Screenshot</th>
+        </tr>""").format(date, time)
+
+
+def title_screen():
+    if platform.system() == "Windows":
+        os.system('cls')
+    else:
+        os.system('clear')
+    print "#" * 80
+    print "#" + " " * 34 + "EyeWitness" + " " * 34 + "#"
+    print "#" * 80 + "\n"
+
+    python_info = sys.version_info
+    if python_info[0] is not 2 or python_info[1] < 7:
+        print "[*] Error: Your version of python is not supported!"
+        print "[*] Error: Please install Python 2.7.X"
+        sys.exit()
+    else:
+        pass
+    return
+
+
+def strip_nonalphanum(string):
+    todel = ''.join(c for c in map(chr, range(256)) if not c.isalnum())
+    return string.translate(None, todel)
