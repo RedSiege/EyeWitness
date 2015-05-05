@@ -1,6 +1,6 @@
-import re
-import os
 import cgi
+import os
+import re
 
 
 class HTTPTableObject(object):
@@ -16,17 +16,30 @@ class HTTPTableObject(object):
         self._source_path = None
         self._error_state = None
         self._blank = False
+        self._uadata = []
+        self._source_code = None
+        self._max_difference = None
+        self._root_path = None
 
-    def set_paths(self, outdir, web_address=None):
-        if web_address is None:
-            web_address = self.remote_system
-
-        file_name = web_address.replace('://', '.')
+    def set_paths(self, outdir, suffix=None):
+        file_name = self.remote_system.replace('://', '.')
         for char in [':', '/', '?', '=', '%', '+']:
             file_name = file_name.replace(char, '.')
+        self.root_path = os.path.join(
+            outdir, 'screens', file_name)
+        if suffix is not None:
+            file_name += '_' + suffix
         self.screenshot_path = os.path.join(
             outdir, 'screens', file_name + '.png')
         self.source_path = os.path.join(outdir, 'source', file_name + '.txt')
+
+    @property
+    def root_path(self):
+        return self._root_path
+
+    @root_path.setter
+    def root_path(self, root_path):
+        self._root_path = root_path
 
     @property
     def screenshot_path(self):
@@ -97,12 +110,129 @@ class HTTPTableObject(object):
     def blank(self, blank):
         self._blank = blank
 
+    @property
+    def source_code(self):
+        return self._source_code
+
+    @source_code.setter
+    def source_code(self, source_code):
+        self._source_code = source_code
+
+    @property
+    def max_difference(self):
+        return self._max_difference
+
+    @max_difference.setter
+    def max_difference(self, max_difference):
+        self._max_difference = max_difference
+
     def create_table_html(self):
         html = u""
         html += ("""<tr>
         <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
         <a href=\"{address}\" target=\"_blank\">{address}</a><br>
         """).format(address=self.remote_system)
+
+        if len(self._uadata) > 0:
+            html += ("""
+                <br><b>This is the baseline request.</b><br>
+                The browser type is: <b>Baseline</b><br><br>
+                The user agent is: <b>Baseline</b><br><br>""")
+
+        try:
+            html += "\n<br><b> Page Title: </b>{0}\n".format(
+                self.sanitize(self.page_title))
+        except UnicodeDecodeError:
+            html += "\n<br><b> Page Title:</b>{0}\n".format(
+                'Unable to Display')
+
+        for key, value in self.headers.items():
+            html += '<br><b> {0}:</b> {1}\n'.format(
+                self.sanitize(key), self.sanitize(value))
+
+        if self.blank:
+            html += ("""<br></td>
+            <td><div style=\"display: inline-block; width: 850px;\">Page Blank,\
+            Connection error, or SSL Issues</div></td>
+            </tr>
+            """)
+        else:
+            html += ("""<br><br><a href=\"{0}\"
+                target=\"_blank\">Source Code</a></div></td>
+                <td><div id=\"screenshot\"><a href=\"{1}\"
+                target=\"_blank\"><img src=\"{1}\"
+                height=\"400\"></a></div></td></tr>""").format(
+                self.source_path, self.screenshot_path)
+
+        for ua_obj in sorted(self._uadata, key=lambda x: x.difference):
+            html += ua_obj.create_table_html()
+
+        return html
+
+    def sanitize(self, html):
+        return cgi.escape(html, quote=True)
+
+    def add_ua_data(self, uaobject):
+        difference = abs(len(self.source_code) - len(uaobject.source_code))
+        if difference > self.max_difference:
+            uaobject.difference = difference
+            self._uadata.append(uaobject)
+
+
+class UAObject(HTTPTableObject):
+
+    """docstring for UAObject"""
+
+    def __init__(self, browser, ua):
+        super(UAObject, self).__init__()
+        self._browser = browser
+        self._ua = ua
+        self._difference = None
+
+    @property
+    def browser(self):
+        return self._browser
+
+    @browser.setter
+    def browser(self, browser):
+        self._browser = browser
+
+    @property
+    def difference(self):
+        return self._difference
+
+    @difference.setter
+    def difference(self, difference):
+        self._difference = difference
+
+    @property
+    def ua(self):
+        return self._ua
+
+    @ua.setter
+    def ua(self, ua):
+        self._ua = ua
+
+    def copy_data(self, http_object):
+        self.remote_system = http_object.remote_system
+        self.root_path = http_object.root_path
+        self.screenshot_path = self.root_path + '_{0}.png'.format(self.browser)
+        self.source_path = self.root_path + '_{0}.txt'.format(self.browser)
+
+    def create_table_html(self):
+        html = u""
+        html += ("""<tr>
+        <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
+        <a href=\"{address}\" target=\"_blank\">{address}</a><br>
+        """).format(address=self.remote_system)
+
+        html += ("""
+        <br>This request was different from the baseline.<br>
+        The browser type is: <b>{0}</b><br><br>
+        The user agent is: <b>{1}</b><br><br>
+        Difference in length of the two webpage sources is\
+        : <b>{2}</b><br>
+        """).format(self.browser, self.ua, self.difference)
 
         try:
             html += "\n<br><b> Page Title: </b>{0}\n".format(
@@ -129,9 +259,6 @@ class HTTPTableObject(object):
                 height=\"400\"></a></div></td></tr>""").format(
                 self.source_path, self.screenshot_path)
         return html
-
-    def sanitize(self, html):
-        return cgi.escape(html, quote=True)
 
 
 class RDPTableObject(object):
