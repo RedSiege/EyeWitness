@@ -105,7 +105,7 @@ def single_mode(cli_parsed):
     driver = create_driver(cli_parsed)
     result = capture_host(cli_parsed, http_object, driver)
     driver.quit()
-    if cli_parsed.cycle is not None:
+    if cli_parsed.cycle is not None and result.error_state is None:
         ua_dict = get_ua_values(cli_parsed.cycle)
         for browser_key, user_agent_value in ua_dict.iteritems():
             print 'Now making web request with: {0}'.format(browser_key)
@@ -138,10 +138,27 @@ def multi_mode(cli_parsed):
         http_object = HTTPTableObject()
         http_object.remote_system = url
         http_object.set_paths(cli_parsed.d)
-
+        if cli_parsed.cycle is not None:
+            print 'Making baseline request for {0}'.format(http_object.remote_system)
+        else:
+            print 'Attempting to screenshot {0}'.format(http_object.remote_system)
         result = capture_host(
             cli_parsed, http_object, driver)
         data[url] = result
+
+    if cli_parsed.cycle is not None:
+        ua_dict = get_ua_values(cli_parsed.cycle)
+        for browser_key, user_agent_value in ua_dict.iteritems():
+            driver = create_driver(cli_parsed, user_agent_value)
+            for url in url_list:
+                result = data[url]
+                print 'Now making web request with: {0} for {1}'.format(
+                    browser_key, result.remote_system)
+                ua_object = UAObject(browser_key, user_agent_value)
+                ua_object.copy_data(result)
+                ua_object = capture_host(cli_parsed, ua_object, driver)
+                result.add_ua_data(ua_object)
+            driver.quit()
 
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
