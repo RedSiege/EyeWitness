@@ -371,13 +371,14 @@ def create_web_index_head(date, time):
         <title>EyeWitness Report</title>
         <script src="jquery-1.11.3.min.js"></script>
         <script type="text/javascript">
-        function toggleUA(id, change){{
-        id = "." + id;
-        $(id).toggle();
-        if (change.innerHTML.indexOf("show") > -1){{
-            change.innerHTML = "Click to hide User Agents";
+        function toggleUA(id, url){{
+        idi = "." + id;
+        $(idi).toggle();
+        change = document.getElementById(id);
+        if (change.innerHTML.indexOf("expand") > -1){{
+            change.innerHTML = "Click to collapse User Agents for " + url;
         }}else{{
-            change.innerHTML = "Click to show User Agents";
+            change.innerHTML = "Click to expand User Agents for " + url;
         }}
         }}
         </script>

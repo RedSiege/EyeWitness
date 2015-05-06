@@ -168,10 +168,12 @@ class HTTPTableObject(object):
 
         if len(self._uadata) > 0:
             divid = strip_nonalphanum(self.remote_system)
-            html += ("""<tr><td class="uabold" align="center" colspan="2" onclick="toggleUA('{0}', this);"> 
-                Click to show User Agents</td></tr>""").format(divid)
-        for ua_obj in sorted(self._uadata, key=lambda x: x.difference):
-            html += ua_obj.create_table_html(divid)
+            html += ("""<tr><td id={0} class="uabold" align="center" colspan="2" onclick="toggleUA('{0}', '{1}');"> 
+                Click to expand User Agents for {1}</td></tr>""").format(divid, self.remote_system)
+            for ua_obj in sorted(self._uadata, key=lambda x: x.difference):
+                html += ua_obj.create_table_html(divid)
+            html += ("""<tr class="hide {0}"><td class="uabold" align="center" colspan="2" onclick="toggleUA('{0}', '{1}');"> 
+            Click to collapse User Agents for {1}</td></tr>""").format(divid, self.remote_system)
 
         html += ("""</div>
         </div>""")

@@ -51,7 +51,7 @@ def create_driver(cli_parsed, user_agent=None):
         sys.exit()
 
 
-def capture_host(cli_parsed, http_object, driver):
+def capture_host(cli_parsed, http_object, driver, ua=None):
     global title_regex
     new_driver = False
     try:
@@ -69,7 +69,7 @@ def capture_host(cli_parsed, http_object, driver):
     except TimeoutException:
         print '[*] Hit timeout limit when conecting to {0}, retrying'.format(http_object.remote_system)
         driver.quit()
-        driver = create_driver(cli_parsed)
+        driver = create_driver(cli_parsed, ua)
         new_driver = True
         http_object.error_state = 'Timeout'
 
@@ -83,7 +83,7 @@ def capture_host(cli_parsed, http_object, driver):
             http_object.page_title = 'Timeout Limit Reached'
             http_object.headers = {}
             driver.quit()
-            driver = create_driver(cli_parsed)
+            driver = create_driver(cli_parsed, ua)
         except KeyboardInterrupt:
             print '[*] Skipping: {0}'.format(http_object.remote_system)
             http_object.error_state = 'Skipped'
@@ -147,7 +147,8 @@ def single_mode(cli_parsed):
             ua_object = UAObject(browser_key, user_agent_value)
             ua_object.copy_data(result)
             driver = create_driver(cli_parsed, user_agent_value)
-            ua_object, driver, new_driver = capture_host(cli_parsed, ua_object, driver)
+            ua_object, driver, new_driver = capture_host(
+                cli_parsed, ua_object, driver)
             result.add_ua_data(ua_object)
             driver.quit()
 
@@ -179,11 +180,43 @@ def multi_mode(cli_parsed):
         http_object.remote_system = url
         http_object.set_paths(cli_parsed.d)
 
+        if cli_parsed.cycle is not None:
+            print 'Making baseline request for {0}'.format(http_object.remote_system)
+        else:
+            print 'Attempting to screenshot {0}'.format(http_object.remote_system)
         result, driver, new_driver = capture_host(
             cli_parsed, http_object, driver)
         if new_driver:
             counter = 0
         data[url] = result
+    driver.quit()
+
+    if cli_parsed.cycle is not None:
+        ua_dict = get_ua_values(cli_parsed.cycle)
+        for browser_key, user_agent_value in ua_dict.iteritems():
+            counter = 0
+            driver = create_driver(cli_parsed, user_agent_value)
+            for url in url_list:
+                result = data[url]
+                if result.error_state is None:
+                    print 'Now making web request with: {0} for {1}'.format(
+                        browser_key, result.remote_system)
+                    ua_object = UAObject(browser_key, user_agent_value)
+                    ua_object.copy_data(result)
+                    counter += 1
+                    if counter == 250:
+                        driver.quit()
+                        driver = create_driver(cli_parsed, user_agent_value)
+                        counter = 0
+                    ua_object, driver, new_driver = capture_host(
+                        cli_parsed, ua_object, driver)
+                    if new_driver:
+                        counter = 0
+                    result.add_ua_data(ua_object)
+                else:
+                    print ('[*] Skipping UA Cycling for {0} \
+                        due to error in baseline').format(result.remote_system)
+            driver.quit()
 
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
@@ -194,5 +227,3 @@ def multi_mode(cli_parsed):
     with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
         f.write(web_index_head)
         f.write(html)
-
-    driver.quit()

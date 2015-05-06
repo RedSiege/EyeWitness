@@ -152,12 +152,13 @@ def multi_mode(cli_parsed):
             driver = create_driver(cli_parsed, user_agent_value)
             for url in url_list:
                 result = data[url]
-                print 'Now making web request with: {0} for {1}'.format(
-                    browser_key, result.remote_system)
-                ua_object = UAObject(browser_key, user_agent_value)
-                ua_object.copy_data(result)
-                ua_object = capture_host(cli_parsed, ua_object, driver)
-                result.add_ua_data(ua_object)
+                if result.error_state is None:
+                    print 'Now making web request with: {0} for {1}'.format(
+                        browser_key, result.remote_system)
+                    ua_object = UAObject(browser_key, user_agent_value)
+                    ua_object.copy_data(result)
+                    ua_object = capture_host(cli_parsed, ua_object, driver)
+                    result.add_ua_data(ua_object)
             driver.quit()
 
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
