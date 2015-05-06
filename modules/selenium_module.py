@@ -8,7 +8,8 @@ import urllib2
 
 from helpers import create_web_index_head
 from helpers import target_creator
-from objects import HTTPTableObject
+from helpers import get_ua_values
+from objects import HTTPTableObject, UAObject
 from selenium import webdriver
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.common.exceptions import TimeoutException
@@ -39,7 +40,6 @@ def create_driver(cli_parsed, user_agent=None):
     try:
         driver = webdriver.Firefox(profile)
         driver.set_page_load_timeout(cli_parsed.t)
-        print driver.get_window_size()
         return driver
     except Exception as e:
         if 'Failed to find firefox binary' in str(e):
@@ -53,7 +53,6 @@ def create_driver(cli_parsed, user_agent=None):
 
 def capture_host(cli_parsed, http_object, driver):
     global title_regex
-    print 'Attempting to screenshot {0}'.format(http_object.remote_system)
     new_driver = False
     try:
         alert = driver.switch_to_alert()
@@ -132,17 +131,30 @@ def single_mode(cli_parsed):
         cli_parsed.d, 'baseline' if cli_parsed.cycle else None)
 
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
-
+    if cli_parsed.cycle is not None:
+        print 'Making baseline request for {0}'.format(http_object.remote_system)
+    else:
+        print 'Attempting to screenshot {0}'.format(http_object.remote_system)
     driver = create_driver(cli_parsed)
 
     result, driver, new_driver = capture_host(cli_parsed, http_object, driver)
+    driver.quit()
+
+    if cli_parsed.cycle is not None:
+        ua_dict = get_ua_values(cli_parsed.cycle)
+        for browser_key, user_agent_value in ua_dict.iteritems():
+            print 'Now making web request with: {0}'.format(browser_key)
+            ua_object = UAObject(browser_key, user_agent_value)
+            ua_object.copy_data(result)
+            driver = create_driver(cli_parsed, user_agent_value)
+            ua_object, driver, new_driver = capture_host(cli_parsed, ua_object, driver)
+            result.add_ua_data(ua_object)
+            driver.quit()
 
     html = result.create_table_html()
     with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
         f.write(web_index_head)
         f.write(html)
-
-    driver.quit()
 
 
 def multi_mode(cli_parsed):

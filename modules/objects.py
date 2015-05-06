@@ -26,8 +26,7 @@ class HTTPTableObject(object):
         file_name = self.remote_system.replace('://', '.')
         for char in [':', '/', '?', '=', '%', '+']:
             file_name = file_name.replace(char, '.')
-        self.root_path = os.path.join(
-            outdir, 'screens', file_name)
+        self.root_path = outdir
         if suffix is not None:
             file_name += '_' + suffix
         self.screenshot_path = os.path.join(
@@ -128,6 +127,8 @@ class HTTPTableObject(object):
         self._max_difference = max_difference
 
     def create_table_html(self):
+        scr_path = os.path.relpath(self.screenshot_path, self.root_path)
+        src_path = os.path.relpath(self.source_path, self.root_path)
         html = u""
         html += ("""<tr>
         <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
@@ -163,7 +164,7 @@ class HTTPTableObject(object):
                 <td><div id=\"screenshot\"><a href=\"{1}\"
                 target=\"_blank\"><img src=\"{1}\"
                 height=\"400\"></a></div></td></tr>""").format(
-                self.source_path, self.screenshot_path)
+                src_path, scr_path)
 
         if len(self._uadata) > 0:
             divid = strip_nonalphanum(self.remote_system)
@@ -223,10 +224,11 @@ class UAObject(HTTPTableObject):
     def copy_data(self, http_object):
         self.remote_system = http_object.remote_system
         self.root_path = http_object.root_path
-        self.screenshot_path = self.root_path + '_{0}.png'.format(self.browser)
-        self.source_path = self.root_path + '_{0}.txt'.format(self.browser)
+        super(UAObject, self).set_paths(self.root_path, self.browser)
 
     def create_table_html(self, divid):
+        scr_path = os.path.relpath(self.screenshot_path, self.root_path)
+        src_path = os.path.relpath(self.source_path, self.root_path)
         html = u""
         html += ("""<tr class="hide {0}">
         <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
@@ -264,7 +266,7 @@ class UAObject(HTTPTableObject):
                 <td><div id=\"screenshot\"><a href=\"{1}\"
                 target=\"_blank\"><img src=\"{1}\"
                 height=\"400\"></a></div></td></tr>""").format(
-                self.source_path, self.screenshot_path)
+                src_path, scr_path)
         return html
 
 
