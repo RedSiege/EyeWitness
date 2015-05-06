@@ -1,10 +1,12 @@
+#!/usr/bin/env python
+
 import argparse
 import netaddr
 import os
 import re
+import shutil
 import sys
 import time
-import shutil
 
 from helpers import get_ua_values
 from helpers import target_creator

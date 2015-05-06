@@ -1,7 +1,7 @@
-import xml.etree.ElementTree as XMLParser
-import platform
 import os
+import platform
 import sys
+import xml.etree.ElementTree as XMLParser
 
 
 def target_creator(command_line_object):

@@ -9,7 +9,7 @@ from objects import HTTPTableObject
 from objects import UAObject
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
+from multiprocessing import Queue, Process, Pool, Manager
 
 title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 
@@ -70,29 +70,25 @@ def capture_host(cli_parsed, http_object, driver):
     except Exception as e:
         print str(e)
 
-    try:
-        tag = title_regex.search(driver.page_source.encode('utf-8'))
-        if tag is not None:
-            http_object.page_title = tag.group(2).strip()
-        else:
-            http_object.page_title = 'Unknown'
 
-        http_object.headers = headers
-        http_object.source_code = driver.page_source.encode('utf-8')
+    tag = title_regex.search(driver.page_source.encode('utf-8'))
+    if tag is not None:
+        http_object.page_title = tag.group(2).strip()
+    else:
+        http_object.page_title = 'Unknown'
 
-        with open(http_object.source_path, 'w') as f:
-            f.write(driver.page_source.encode('utf-8'))
-    except UnexpectedAlertPresentException:
-        with open(http_object.source_path, 'w') as f:
-            f.write('Cannot render webpage')
-        http_object.headers = {'Cannot Render Web Page': 'n/a'}
+    http_object.headers = headers
+    http_object.source_code = driver.page_source.encode('utf-8')
+
+    with open(http_object.source_path, 'w') as f:
+        f.write(driver.page_source.encode('utf-8'))
 
     return http_object
 
 
-def single_mode(cli_parsed):
+def single_mode(cli_parsed, url, q=None):
     http_object = HTTPTableObject()
-    http_object.remote_system = cli_parsed.single
+    http_object.remote_system = url
     http_object.set_paths(
         cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
 
@@ -108,7 +104,8 @@ def single_mode(cli_parsed):
     if cli_parsed.cycle is not None and result.error_state is None:
         ua_dict = get_ua_values(cli_parsed.cycle)
         for browser_key, user_agent_value in ua_dict.iteritems():
-            print 'Now making web request with: {0}'.format(browser_key)
+            print 'Now making web request with: {0} for {1}'.format(
+                browser_key, result.remote_system)
             ua_object = UAObject(browser_key, user_agent_value)
             ua_object.copy_data(result)
             driver = create_driver(cli_parsed, user_agent_value)
@@ -116,59 +113,38 @@ def single_mode(cli_parsed):
             result.add_ua_data(ua_object)
             driver.quit()
 
-    html = result.create_table_html()
-    with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
-        f.write(web_index_head)
-        f.write(html)
+    if q is None:
+        html = result.create_table_html()
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
+            f.write(web_index_head)
+            f.write(html)
+    else:
+        q.put(result)
 
 
 def multi_mode(cli_parsed):
-    page_counter = 0
-    url_counter = 0
-    counter = 0
-    data = {}
-
-    driver = create_driver(cli_parsed)
+    p = Pool(10)
+    m = Manager()
+    data = m.Queue()
+    threads = []
 
     url_list, rdp_list, vnc_List = target_creator(cli_parsed)
 
     for url in url_list:
-        counter += 1
+        threads.append(p.apply_async(single_mode, [cli_parsed, url, data]))
 
-        http_object = HTTPTableObject()
-        http_object.remote_system = url
-        http_object.set_paths(cli_parsed.d)
-        if cli_parsed.cycle is not None:
-            print 'Making baseline request for {0}'.format(http_object.remote_system)
-        else:
-            print 'Attempting to screenshot {0}'.format(http_object.remote_system)
-        result = capture_host(
-            cli_parsed, http_object, driver)
-        data[url] = result
-
-    if cli_parsed.cycle is not None:
-        ua_dict = get_ua_values(cli_parsed.cycle)
-        for browser_key, user_agent_value in ua_dict.iteritems():
-            driver = create_driver(cli_parsed, user_agent_value)
-            for url in url_list:
-                result = data[url]
-                if result.error_state is None:
-                    print 'Now making web request with: {0} for {1}'.format(
-                        browser_key, result.remote_system)
-                    ua_object = UAObject(browser_key, user_agent_value)
-                    ua_object.copy_data(result)
-                    ua_object = capture_host(cli_parsed, ua_object, driver)
-                    result.add_ua_data(ua_object)
-            driver.quit()
+    output = [p.get() for p in threads]
 
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
     html = u""
-    for key, value in data.items():
-        html += value.create_table_html()
+    results = []
+    while not data.empty():
+        results.append(data.get())
+
+    for obj in results:
+        html += obj.create_table_html()
 
     with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
         f.write(web_index_head)
         f.write(html)
-
-    driver.quit()

@@ -7,9 +7,10 @@ import threading
 import urllib2
 
 from helpers import create_web_index_head
-from helpers import target_creator
 from helpers import get_ua_values
-from objects import HTTPTableObject, UAObject
+from helpers import target_creator
+from objects import HTTPTableObject
+from objects import UAObject
 from selenium import webdriver
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.common.exceptions import TimeoutException
