@@ -81,8 +81,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.error_state = 'Timeout'
             http_object.page_title = 'Timeout Limit Reached'
             http_object.headers = {}
-            driver.quit()
-            return http_object
+            return http_object, driver
         except KeyboardInterrupt:
             print '[*] Skipping: {0}'.format(http_object.remote_system)
             http_object.error_state = 'Skipped'
@@ -114,7 +113,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     with open(http_object.source_path, 'w') as f:
         f.write(driver.page_source.encode('utf-8'))
 
-    return http_object
+    return http_object, driver
 
 
 def single_mode(cli_parsed, url=None, q=None):
@@ -132,7 +131,7 @@ def single_mode(cli_parsed, url=None, q=None):
     else:
         print 'Attempting to screenshot {0}'.format(http_object.remote_system)
     driver = create_driver(cli_parsed)
-    result = capture_host(cli_parsed, http_object, driver)
+    result, driver = capture_host(cli_parsed, http_object, driver)
     driver.quit()
     if cli_parsed.cycle is not None and result.error_state is None:
         ua_dict = get_ua_values(cli_parsed.cycle)
@@ -142,7 +141,7 @@ def single_mode(cli_parsed, url=None, q=None):
             ua_object = UAObject(browser_key, user_agent_value)
             ua_object.copy_data(result)
             driver = create_driver(cli_parsed, user_agent_value)
-            ua_object = capture_host(cli_parsed, ua_object, driver)
+            ua_object, driver = capture_host(cli_parsed, ua_object, driver)
             result.add_ua_data(ua_object)
             driver.quit()
 
@@ -168,7 +167,8 @@ def multi_mode(cli_parsed):
 
     p.close()
     try:
-        output = [p.get(9999999) for p in threads]
+        while not all([r.ready() for r in threads]):
+            time.sleep(1)
     except KeyboardInterrupt:
         p.terminate()
         p.join()
