@@ -142,16 +142,17 @@ class HTTPTableObject(object):
                 The browser type is: <b>Baseline</b><br><br>
                 The user agent is: <b>Baseline</b><br><br>""")
 
-        try:
-            html += "\n<br><b> Page Title: </b>{0}\n".format(
-                self.sanitize(self.page_title))
-        except UnicodeDecodeError:
-            html += "\n<br><b> Page Title:</b>{0}\n".format(
-                'Unable to Display')
+        if self.error_state is None:
+            try:
+                html += "\n<br><b> Page Title: </b>{0}\n".format(
+                    self.sanitize(self.page_title))
+            except UnicodeDecodeError:
+                html += "\n<br><b> Page Title:</b>{0}\n".format(
+                    'Unable to Display')
 
-        for key, value in self.headers.items():
-            html += '<br><b> {0}:</b> {1}\n'.format(
-                self.sanitize(key), self.sanitize(value))
+            for key, value in self.headers.items():
+                html += '<br><b> {0}:</b> {1}\n'.format(
+                    self.sanitize(key), self.sanitize(value))
 
         if self.blank:
             html += ("""<br></td>
@@ -159,6 +160,9 @@ class HTTPTableObject(object):
             Connection error, or SSL Issues</div></td>
             </tr>
             """)
+        elif self.error_state == 'Timeout':
+            html += ("""</td><td>Hit timeout limit while attempting to 
+            screenshot</td></tr>""")
         else:
             html += ("""<br><br><a href=\"{0}\"
                 target=\"_blank\">Source Code</a></div></td>
@@ -173,7 +177,7 @@ class HTTPTableObject(object):
                 Click to expand User Agents for {1}</td></tr>""").format(divid, self.remote_system)
             for ua_obj in sorted(self._uadata, key=lambda x: x.difference):
                 html += ua_obj.create_table_html(divid)
-            html += ("""<tr class="hide {0}"><td class="uabold" align="center" colspan="2" onclick="toggleUA('{0}', '{1}');"> 
+            html += ("""<tr class="hide {0}"><td class="uared" align="center" colspan="2" onclick="toggleUA('{0}', '{1}');"> 
             Click to collapse User Agents for {1}</td></tr>""").format(divid, self.remote_system)
 
         html += ("""</div>

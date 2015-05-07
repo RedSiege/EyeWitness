@@ -5,11 +5,18 @@ import urllib2
 from helpers import create_web_index_head
 from helpers import get_ua_values
 from helpers import target_creator
+from multiprocessing import Manager
+from multiprocessing import Pool
+from multiprocessing import Process
+from multiprocessing import Queue
 from objects import HTTPTableObject
 from objects import UAObject
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from multiprocessing import Queue, Process, Pool, Manager
+from fuzzywuzzy import fuzz
+import signal
+import time
 
 title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 
@@ -41,20 +48,45 @@ def create_driver(cli_parsed, user_agent=None):
             service_log_path=log_path)
         # This is the default width from the firefox driver
         driver.set_window_size(1200, 675)
+        driver.set_page_load_timeout(cli_parsed.t)
         return driver
     except Exception as e:
         print str(e)
 
 
-def capture_host(cli_parsed, http_object, driver):
+def capture_host(cli_parsed, http_object, driver, ua=None):
     global title_regex
 
     try:
         driver.get(http_object.remote_system)
     except KeyboardInterrupt:
-        print '[*] Skipping: {0}'.format(http_object.remote_system)
+        if cli_parsed.single is not None:
+            print '[*] Skipping: {0}'.format(http_object.remote_system)
         http_object.error_state = 'Skipped'
         http_object.page_title = 'Page Skipped by User'
+        return http_object
+    except TimeoutException:
+        print '[*] Hit timeout limit when conecting to {0}, retrying'.format(http_object.remote_system)
+        http_object.error_state = 'Timeout'
+        driver.quit()
+        driver = create_driver(cli_parsed, ua)
+
+    if http_object.error_state == 'Timeout':
+        http_object.error_state = None
+        try:
+            driver.get(http_object.remote_system)
+        except TimeoutException:
+            print '[*] Hit timeout limit when conecting to {0}'.format(http_object.remote_system)
+            http_object.error_state = 'Timeout'
+            http_object.page_title = 'Timeout Limit Reached'
+            http_object.headers = {}
+            driver.quit()
+            driver = create_driver(cli_parsed, ua)
+            return http_object
+        except KeyboardInterrupt:
+            print '[*] Skipping: {0}'.format(http_object.remote_system)
+            http_object.error_state = 'Skipped'
+            http_object.page_title = 'Page Skipped by User'
 
     try:
         headers = dict(urllib2.urlopen(http_object.remote_system).info())
@@ -69,7 +101,6 @@ def capture_host(cli_parsed, http_object, driver):
         driver.save_screenshot(http_object.screenshot_path)
     except Exception as e:
         print str(e)
-
 
     tag = title_regex.search(driver.page_source.encode('utf-8'))
     if tag is not None:
@@ -86,7 +117,9 @@ def capture_host(cli_parsed, http_object, driver):
     return http_object
 
 
-def single_mode(cli_parsed, url, q=None):
+def single_mode(cli_parsed, url=None, q=None):
+    if url is None:
+        url = cli_parsed.single
     http_object = HTTPTableObject()
     http_object.remote_system = url
     http_object.set_paths(
@@ -113,17 +146,17 @@ def single_mode(cli_parsed, url, q=None):
             result.add_ua_data(ua_object)
             driver.quit()
 
-    if q is None:
-        html = result.create_table_html()
-        with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
-            f.write(web_index_head)
-            f.write(html)
-    else:
-        q.put(result)
+        if q is None:
+            html = result.create_table_html()
+            with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
+                f.write(web_index_head)
+                f.write(html)
+        else:
+            q.put(result)
 
 
 def multi_mode(cli_parsed):
-    p = Pool(10)
+    p = Pool(cli_parsed.threads, mgr_init())
     m = Manager()
     data = m.Queue()
     threads = []
@@ -133,18 +166,45 @@ def multi_mode(cli_parsed):
     for url in url_list:
         threads.append(p.apply_async(single_mode, [cli_parsed, url, data]))
 
-    output = [p.get() for p in threads]
+    p.close()
+    try:
+        while True:
+            if all(r.ready() for r in threads):
+                break
+            time.sleep(1)
+    except KeyboardInterrupt:
+        p.terminate()
+        p.join()
 
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
     html = u""
     results = []
-    while not data.empty():
-        results.append(data.get())
+    if not data.empty():
+        while not data.empty():
+            results.append(data.get())
 
-    for obj in results:
+    grouped = []
+    errors = [x for x in results if x.error_state is not None]
+    results[:] = [x for x in results if x.error_state is None]
+    while len(results) > 0:
+        test = results.pop(0)
+        temp = [x for x in results if fuzz.token_sort_ratio(
+            test.page_title, x.page_title) >= 70]
+        temp.append(test)
+        temp = sorted(temp, key=lambda (k): k.page_title)
+        grouped.extend(temp)
+        results[:] = [x for x in results if fuzz.token_sort_ratio(
+            test.page_title, x.page_title) < 70]
+    grouped.extend(errors)
+
+    for obj in grouped:
         html += obj.create_table_html()
 
     with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
         f.write(web_index_head)
         f.write(html)
+
+
+def mgr_init():
+    signal.signal(signal.SIGINT, signal.SIG_IGN)

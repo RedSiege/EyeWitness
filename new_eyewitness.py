@@ -57,6 +57,9 @@ def create_cli_parser():
     timing_options.add_argument('--jitter', metavar='# of Seconds', default=0,
                                 type=int, help='Randomize URLs and add a random\
                                  delay between requests')
+    timing_options.add_argument('--threads', metavar='# of Threads', default=10,
+                                      type=int, help='Number of threads to use while using\
+                                file based input')
 
     report_options = parser.add_argument_group('Report Output Options')
     report_options.add_argument('-d', metavar='Directory Name',
@@ -167,7 +170,6 @@ def create_folders_css(cli_parsed):
     max-height: 550px;
     display: inline-block;
     width: 850px;
-    height: 550px;
     overflow:scroll;
     }
     .hide{
@@ -176,6 +178,12 @@ def create_folders_css(cli_parsed):
     .uabold{
         font-weight:bold;
         cursor:pointer;
+        background-color:green;
+    }
+    .uared{
+        font-weight:bold;
+        cursor:pointer;
+        background-color:red;
     }
     """
 
