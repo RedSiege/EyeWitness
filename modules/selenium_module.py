@@ -9,6 +9,12 @@ import urllib2
 from helpers import create_web_index_head
 from helpers import get_ua_values
 from helpers import target_creator
+from helpers import write_report
+from fuzzywuzzy import fuzz
+from multiprocessing import Manager
+from multiprocessing import Pool
+from multiprocessing import Process
+from multiprocessing import Queue
 from objects import HTTPTableObject
 from objects import UAObject
 from selenium import webdriver
@@ -16,6 +22,7 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import UnexpectedAlertPresentException
 from selenium.common.exceptions import WebDriverException
+import time
 
 title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 
@@ -71,7 +78,6 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         print '[*] Hit timeout limit when conecting to {0}, retrying'.format(http_object.remote_system)
         driver.quit()
         driver = create_driver(cli_parsed, ua)
-        new_driver = True
         http_object.error_state = 'Timeout'
 
     if http_object.error_state == 'Timeout':
@@ -84,7 +90,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.page_title = 'Timeout Limit Reached'
             http_object.headers = {}
             driver.quit()
-            driver = create_driver(cli_parsed, ua)
+            return http_object, driver
         except KeyboardInterrupt:
             print '[*] Skipping: {0}'.format(http_object.remote_system)
             http_object.error_state = 'Skipped'
@@ -121,12 +127,14 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             f.write('Cannot render webpage')
         http_object.headers = {'Cannot Render Web Page': 'n/a'}
 
-    return http_object, driver, new_driver
+    return http_object, driver
 
 
-def single_mode(cli_parsed):
+def single_mode(cli_parsed, url=None, q=None):
+    if url is None:
+        url = cli_parsed.single
     http_object = HTTPTableObject()
-    http_object.remote_system = cli_parsed.single
+    http_object.remote_system = url
     suffix = 'baseline' if cli_parsed.cycle else None
     http_object.set_paths(
         cli_parsed.d, 'baseline' if cli_parsed.cycle else None)
@@ -138,7 +146,7 @@ def single_mode(cli_parsed):
         print 'Attempting to screenshot {0}'.format(http_object.remote_system)
     driver = create_driver(cli_parsed)
 
-    result, driver, new_driver = capture_host(cli_parsed, http_object, driver)
+    result, driver = capture_host(cli_parsed, http_object, driver)
     driver.quit()
 
     if cli_parsed.cycle is not None:
@@ -148,83 +156,54 @@ def single_mode(cli_parsed):
             ua_object = UAObject(browser_key, user_agent_value)
             ua_object.copy_data(result)
             driver = create_driver(cli_parsed, user_agent_value)
-            ua_object, driver, new_driver = capture_host(
+            ua_object, driver = capture_host(
                 cli_parsed, ua_object, driver)
             result.add_ua_data(ua_object)
             driver.quit()
 
-    html = result.create_table_html()
-    with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
-        f.write(web_index_head)
-        f.write(html)
+    if q is None:
+        html = result.create_table_html()
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
+            f.write(web_index_head)
+            f.write(html)
+    else:
+        q.put(result)
 
 
 def multi_mode(cli_parsed):
-    page_counter = 0
-    url_counter = 0
-    counter = 0
-    data = {}
-
-    driver = create_driver(cli_parsed)
+    p = Pool(cli_parsed.threads)
+    m = Manager()
+    data = m.Queue()
+    threads = []
 
     url_list, rdp_list, vnc_List = target_creator(cli_parsed)
-
     for url in url_list:
-        counter += 1
+        threads.append(p.apply_async(single_mode, [cli_parsed, url, data]))
 
-        if counter == 250:
-            driver.quit()
-            driver = create_driver(cli_parsed)
-            counter = 0
+    p.close()
+    try:
+        while not all([r.ready() for r in threads]):
+            time.sleep(1)
+    except KeyboardInterrupt:
+        p.terminate()
+        p.join()
 
-        http_object = HTTPTableObject()
-        http_object.remote_system = url
-        http_object.set_paths(cli_parsed.d)
+    results = []
+    while not data.empty():
+        results.append(data.get())
 
-        if cli_parsed.cycle is not None:
-            print 'Making baseline request for {0}'.format(http_object.remote_system)
-        else:
-            print 'Attempting to screenshot {0}'.format(http_object.remote_system)
-        result, driver, new_driver = capture_host(
-            cli_parsed, http_object, driver)
-        if new_driver:
-            counter = 0
-        data[url] = result
-    driver.quit()
-
-    if cli_parsed.cycle is not None:
-        ua_dict = get_ua_values(cli_parsed.cycle)
-        for browser_key, user_agent_value in ua_dict.iteritems():
-            counter = 0
-            driver = create_driver(cli_parsed, user_agent_value)
-            for url in url_list:
-                result = data[url]
-                if result.error_state is None:
-                    print 'Now making web request with: {0} for {1}'.format(
-                        browser_key, result.remote_system)
-                    ua_object = UAObject(browser_key, user_agent_value)
-                    ua_object.copy_data(result)
-                    counter += 1
-                    if counter == 250:
-                        driver.quit()
-                        driver = create_driver(cli_parsed, user_agent_value)
-                        counter = 0
-                    ua_object, driver, new_driver = capture_host(
-                        cli_parsed, ua_object, driver)
-                    if new_driver:
-                        counter = 0
-                    result.add_ua_data(ua_object)
-                else:
-                    print ('[*] Skipping UA Cycling for {0} \
-                        due to error in baseline').format(result.remote_system)
-            driver.quit()
-
-    web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
-
-    html = u""
-    for key, value in data.items():
-        html += value.create_table_html()
-
-    with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
-        f.write(web_index_head)
-        f.write(html)
+    grouped = []
+    errors = [x for x in results if x.error_state is not None]
+    results[:] = [x for x in results if x.error_state is None]
+    while len(results) > 0:
+        test = results.pop(0)
+        temp = [x for x in results if fuzz.token_sort_ratio(
+            test.page_title, x.page_title) >= 70]
+        temp.append(test)
+        temp = sorted(temp, key=lambda (k): k.page_title)
+        grouped.extend(temp)
+        results[:] = [x for x in results if fuzz.token_sort_ratio(
+            test.page_title, x.page_title) < 70]
+    grouped.extend(errors)
+    errors = sorted(errors, key=lambda (k): k.error_state)
+    write_report(grouped, cli_parsed)

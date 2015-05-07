@@ -192,7 +192,3 @@ def multi_mode(cli_parsed):
     grouped.extend(errors)
     errors = sorted(errors, key=lambda (k): k.error_state)
     write_report(grouped, cli_parsed)
-
-
-def mgr_init():
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
