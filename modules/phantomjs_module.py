@@ -5,6 +5,7 @@ import urllib2
 from helpers import create_web_index_head
 from helpers import get_ua_values
 from helpers import target_creator
+from helpers import write_report
 from multiprocessing import Manager
 from multiprocessing import Pool
 from multiprocessing import Process
@@ -81,7 +82,6 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.page_title = 'Timeout Limit Reached'
             http_object.headers = {}
             driver.quit()
-            driver = create_driver(cli_parsed, ua)
             return http_object
         except KeyboardInterrupt:
             print '[*] Skipping: {0}'.format(http_object.remote_system)
@@ -146,17 +146,17 @@ def single_mode(cli_parsed, url=None, q=None):
             result.add_ua_data(ua_object)
             driver.quit()
 
-        if q is None:
-            html = result.create_table_html()
-            with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
-                f.write(web_index_head)
-                f.write(html)
-        else:
-            q.put(result)
+    if q is None:
+        html = result.create_table_html()
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
+            f.write(web_index_head)
+            f.write(html)
+    else:
+        q.put(result)
 
 
 def multi_mode(cli_parsed):
-    p = Pool(cli_parsed.threads, mgr_init())
+    p = Pool(cli_parsed.threads)
     m = Manager()
     data = m.Queue()
     threads = []
@@ -168,21 +168,14 @@ def multi_mode(cli_parsed):
 
     p.close()
     try:
-        while True:
-            if all(r.ready() for r in threads):
-                break
-            time.sleep(1)
+        output = [p.get(9999999) for p in threads]
     except KeyboardInterrupt:
         p.terminate()
         p.join()
 
-    web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
-
-    html = u""
     results = []
-    if not data.empty():
-        while not data.empty():
-            results.append(data.get())
+    while not data.empty():
+        results.append(data.get())
 
     grouped = []
     errors = [x for x in results if x.error_state is not None]
@@ -197,13 +190,8 @@ def multi_mode(cli_parsed):
         results[:] = [x for x in results if fuzz.token_sort_ratio(
             test.page_title, x.page_title) < 70]
     grouped.extend(errors)
-
-    for obj in grouped:
-        html += obj.create_table_html()
-
-    with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
-        f.write(web_index_head)
-        f.write(html)
+    errors = sorted(errors, key=lambda (k): k.error_state)
+    write_report(grouped, cli_parsed)
 
 
 def mgr_init():

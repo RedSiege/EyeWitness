@@ -414,3 +414,40 @@ def title_screen():
 def strip_nonalphanum(string):
     todel = ''.join(c for c in map(chr, range(256)) if not c.isalnum())
     return string.translate(None, todel)
+
+
+def write_report(data, cli_parsed):
+    web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
+    pages = []
+    counter = 0
+    html = u""
+    for i in range(1, len(data) + 1):
+        towrite = data[i - 1]
+        html += towrite.create_table_html()
+        if i % cli_parsed.results == 0 or i == len(data):
+            html = web_index_head + "EW_REPLACEME" + html
+            html += "</table><br>"
+            pages.append(html)
+            html = u""
+
+    if len(pages) == 1:
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
+            f.write(pages[0].replace('EW_REPLACEME', ''))
+            f.write("</body>\n</html>")
+    else:
+        num_pages = len(pages) + 1
+        bottom_text = "\n<center><br>Links: <a href=\"report.html\"> Page 1</a> "
+        for i in range(2, num_pages):
+            bottom_text += ("<a href=\"report_page{0}.html\"> Page {0}</a>").format(
+                str(i))
+        bottom_text += "</center>\n"
+        top_text = bottom_text
+        bottom_text += "</body>\n</html>"
+        pages = [
+            x.replace('EW_REPLACEME', top_text) + bottom_text for x in pages]
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
+            f.write(pages[0])
+
+        for i in range(2, len(pages) + 1):
+            with open(os.path.join(cli_parsed.d, 'report_page{0}.html'.format(str(i))), 'w') as f:
+                f.write(pages[i - 1])
