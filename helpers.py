@@ -2,6 +2,57 @@ import os
 import platform
 import sys
 import xml.etree.ElementTree as XMLParser
+import shutil
+
+
+def scanner(cli_parsed):
+    # This function was developed by Rohan Vazarkar, and then I slightly
+    # modified it to fit.  Thanks for writing this man.
+    ports = [80, 443, 8080, 8443]
+
+    # Create a list of all identified web servers
+    live_webservers = []
+
+    # Define the timeout limit
+    timeout = 5
+
+    scanner_output_path = join(output_obj.eyewitness_path, "scanneroutput.txt")
+
+    # Write out the live machine to same path as EyeWitness
+    try:
+        ip_range = IPNetwork(cidr_range)
+        socket.setdefaulttimeout(timeout)
+
+        for ip_to_scan in ip_range:
+            ip_to_scan = str(ip_to_scan)
+            for port in ports:
+                print "[*] Scanning " + ip_to_scan + " on port " + str(port)
+                result = checkHostPort(ip_to_scan, port)
+                if (result == 0):
+                    # port is open, add to the list
+                    if port is 443:
+                        add_to_list = "https://" + ip_to_scan + ":" + str(port)
+                    else:
+                        add_to_list = "http://" + ip_to_scan + ":" + str(port)
+                    print "[*] Potential live webserver at " + add_to_list
+                    live_webservers.append(add_to_list)
+                else:
+                    if (result == 10035 or result == 10060):
+                        # Host is unreachable
+                        pass
+
+    except KeyboardInterrupt:
+        print "[*] Scan interrupted by you rage quitting!"
+        print "[*] Writing out live web servers found so far..."
+
+    # Write out the live machines which were found so far
+    for live_computer in live_webservers:
+        with open(scanner_output_path, 'a') as scanout:
+            scanout.write("{0}{1}".format(live_computer, os.linesep))
+
+    frmt_str = "List of live machines written to: {0}"
+    print frmt_str.format(scanner_output_path)
+    sys.exit()
 
 
 def target_creator(command_line_object):
@@ -451,3 +502,39 @@ def write_report(data, cli_parsed):
         for i in range(2, len(pages) + 1):
             with open(os.path.join(cli_parsed.d, 'report_page{0}.html'.format(str(i))), 'w') as f:
                 f.write(pages[i - 1])
+
+
+def create_folders_css(cli_parsed):
+    css_page = """img {
+    max-width: 100%;
+    height: auto;
+    }
+    #screenshot{
+    max-width: 850px;
+    max-height: 550px;
+    display: inline-block;
+    width: 850px;
+    overflow:scroll;
+    }
+    .hide{
+        display:none;
+    }
+    .uabold{
+        font-weight:bold;
+        cursor:pointer;
+        background-color:green;
+    }
+    .uared{
+        font-weight:bold;
+        cursor:pointer;
+        background-color:red;
+    }
+    """
+
+    os.makedirs(cli_parsed.d)
+    os.makedirs(os.path.join(cli_parsed.d, 'screens'))
+    os.makedirs(os.path.join(cli_parsed.d, 'source'))
+    shutil.copy2('bin/jquery-1.11.3.min.js', cli_parsed.d)
+
+    with open(os.path.join(cli_parsed.d, 'style.css'), 'w') as f:
+        f.write(css_page)

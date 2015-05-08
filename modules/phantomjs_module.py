@@ -2,18 +2,9 @@ import os
 import re
 import urllib2
 
-from helpers import create_web_index_head
-from helpers import get_ua_values
-from helpers import target_creator
-from helpers import write_report
-from objects import HTTPTableObject
-from objects import UAObject
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from fuzzywuzzy import fuzz
-import signal
-import time
 
 title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 

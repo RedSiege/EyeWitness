@@ -6,23 +6,11 @@ import sys
 import threading
 import urllib2
 
-from helpers import create_web_index_head
-from helpers import get_ua_values
-from helpers import target_creator
-from helpers import write_report
-from fuzzywuzzy import fuzz
-from multiprocessing import Manager
-from multiprocessing import Pool
-from multiprocessing import Process
-from multiprocessing import Queue
-from objects import HTTPTableObject
-from objects import UAObject
 from selenium import webdriver
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import UnexpectedAlertPresentException
 from selenium.common.exceptions import WebDriverException
-import time
 
 title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 
@@ -61,7 +49,6 @@ def create_driver(cli_parsed, user_agent=None):
 
 def capture_host(cli_parsed, http_object, driver, ua=None):
     global title_regex
-    new_driver = False
     try:
         alert = driver.switch_to_alert()
         alert.dismiss()

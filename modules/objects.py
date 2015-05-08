@@ -156,8 +156,8 @@ class HTTPTableObject(object):
 
         if self.blank:
             html += ("""<br></td>
-            <td><div style=\"display: inline-block; width: 850px;\">Page Blank,\
-            Connection error, or SSL Issues</div></td>
+            <td><div style=\"display: inline-block; width: 850px;\">Page Blank\
+            ,Connection error, or SSL Issues</div></td>
             </tr>
             """)
         elif self.error_state == 'Timeout':
@@ -173,12 +173,16 @@ class HTTPTableObject(object):
 
         if len(self._uadata) > 0:
             divid = strip_nonalphanum(self.remote_system)
-            html += ("""<tr><td id={0} class="uabold" align="center" colspan="2" onclick="toggleUA('{0}', '{1}');"> 
-                Click to expand User Agents for {1}</td></tr>""").format(divid, self.remote_system)
+            html += ("""<tr><td id={0} class="uabold" align="center" \
+                colspan="2" onclick="toggleUA('{0}', '{1}');">
+                Click to expand User Agents for {1}</td></tr>""").format(
+                divid, self.remote_system)
             for ua_obj in sorted(self._uadata, key=lambda x: x.difference):
                 html += ua_obj.create_table_html(divid)
-            html += ("""<tr class="hide {0}"><td class="uared" align="center" colspan="2" onclick="toggleUA('{0}', '{1}');"> 
-            Click to collapse User Agents for {1}</td></tr>""").format(divid, self.remote_system)
+            html += ("""<tr class="hide {0}"><td class="uared" align="center"\
+             colspan="2" onclick="toggleUA('{0}', '{1}');">
+            Click to collapse User Agents for {1}</td></tr>""").format(
+                divid, self.remote_system)
 
         html += ("""</div>
         </div>""")

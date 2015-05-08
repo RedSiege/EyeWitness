@@ -4,18 +4,20 @@ import argparse
 import netaddr
 import os
 import re
-import shutil
 import sys
 import time
+import logging
 
 from helpers import get_ua_values
 from helpers import target_creator
 from helpers import title_screen
 from helpers import write_report
 from helpers import create_web_index_head
+from helpers import create_folders_css
 from modules import objects
 from modules import phantomjs_module
 from modules import selenium_module
+from modules import ghost_module
 from fuzzywuzzy import fuzz
 from multiprocessing import Manager
 from multiprocessing import Pool
@@ -43,6 +45,10 @@ def create_cli_parser():
                            action='store_true',
                            help='Screenshot all supported protocols, \
                            using Selenium for HTTP')
+    protocols.add_argument('--engine', default=None,
+                           metavar='Screenshot Engine to use',
+                           help=('Which engine to use for screenshotting \
+                            (selenium, phantomjs, ghost'))
 
     input_options = parser.add_argument_group('Input Options')
     input_options.add_argument('-f', metavar='Filename', default=None,
@@ -65,7 +71,7 @@ def create_cli_parser():
                                 type=int, help='Randomize URLs and add a random\
                                  delay between requests')
     timing_options.add_argument('--threads', metavar='# of Threads', default=10,
-                                      type=int, help='Number of threads to use while using\
+                                type=int, help='Number of threads to use while using\
                                 file based input')
 
     report_options = parser.add_argument_group('Report Output Options')
@@ -139,13 +145,15 @@ def create_cli_parser():
             '/', '') + '_' + args.time.replace(':', '')
         args.d = os.path.join(local_path, output_folder)
 
+    args.log_file_path = os.path.join(args.d, 'logfile.log')
+
     if args.f is None and args.single is None and args.localscan is None:
         print "[*] Error: You didn't specify a file! I need a file containing\
          URLs!"
         parser.print_help()
         sys.exit()
 
-    if not any((args.web, args.vnc, args.rdp, args.all_protocols, args.headless)):
+    if not any((args.engine, args.web, args.vnc, args.rdp, args.all_protocols, args.headless)):
         print "[*] Error: You didn't give me an action to perform."
         print "[*] Error: Please use --web, --rdp, or --vnc!\n"
         parser.print_help()
@@ -167,49 +175,19 @@ def create_cli_parser():
     return args
 
 
-def create_folders_css(cli_parsed):
-    css_page = """img {
-    max-width: 100%;
-    height: auto;
-    }
-    #screenshot{
-    max-width: 850px;
-    max-height: 550px;
-    display: inline-block;
-    width: 850px;
-    overflow:scroll;
-    }
-    .hide{
-        display:none;
-    }
-    .uabold{
-        font-weight:bold;
-        cursor:pointer;
-        background-color:green;
-    }
-    .uared{
-        font-weight:bold;
-        cursor:pointer;
-        background-color:red;
-    }
-    """
-
-    os.makedirs(cli_parsed.d)
-    os.makedirs(os.path.join(cli_parsed.d, 'screens'))
-    os.makedirs(os.path.join(cli_parsed.d, 'source'))
-    shutil.copy2('bin/jquery-1.11.3.min.js', cli_parsed.d)
-
-    with open(os.path.join(cli_parsed.d, 'style.css'), 'w') as f:
-        f.write(css_page)
-
-
 def single_mode(cli_parsed, url=None, q=None):
-    if cli_parsed.web:
+    if cli_parsed.engine == 'selenium':
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
-    elif cli_parsed.headless:
+    elif cli_parsed.engine == 'phantomjs':
         create_driver = phantomjs_module.create_driver
         capture_host = phantomjs_module.capture_host
+    # elif cli_parsed.engine == 'ghost':
+    #     create_driver = ghost_module.create_driver
+    #     capture_host = ghost_module.capture_host
+    else:
+        print '[*] No valid engine provided! Choose phantojs or selenium!'
+        sys.exit(0)
 
     if url is None:
         url = cli_parsed.single
@@ -226,7 +204,12 @@ def single_mode(cli_parsed, url=None, q=None):
         print 'Attempting to screenshot {0}'.format(http_object.remote_system)
     driver = create_driver(cli_parsed)
     result, driver = capture_host(cli_parsed, http_object, driver)
-    driver.quit()
+    if cli_parsed.engine == 'ghost':
+        if hasattr(driver, 'xvfb'):
+            driver.xvfb.terminate()
+        driver.exit()
+    else:
+        driver.quit()
     if cli_parsed.cycle is not None and result.error_state is None:
         ua_dict = get_ua_values(cli_parsed.cycle)
         for browser_key, user_agent_value in ua_dict.iteritems():
@@ -237,7 +220,12 @@ def single_mode(cli_parsed, url=None, q=None):
             driver = create_driver(cli_parsed, user_agent_value)
             ua_object, driver = capture_host(cli_parsed, ua_object, driver)
             result.add_ua_data(ua_object)
-            driver.quit()
+            if cli_parsed.engine == 'ghost':
+                if hasattr(driver, 'xvfb'):
+                    driver.xvfb.terminate()
+                driver.exit()
+            else:
+                driver.quit()
 
     if q is None:
         html = result.create_table_html()
@@ -298,6 +286,11 @@ if __name__ == "__main__":
         sys.exit()
 
     create_folders_css(cli_parsed)
+
+    if cli_parsed.engine == 'ghost':
+        logging.basicConfig(filename=cli_parsed.log_file_path,
+                            level=logging.WARNING)
+        logger = logging.getLogger('ghost')
 
     if cli_parsed.single:
         single_mode(cli_parsed)
