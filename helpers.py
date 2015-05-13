@@ -4,6 +4,7 @@ import sys
 import xml.etree.ElementTree as XMLParser
 import shutil
 from fuzzywuzzy import fuzz
+import re
 
 
 def scanner(cli_parsed):
@@ -510,6 +511,7 @@ def sort_data_and_write(cli_parsed, data):
     nas = get_group('nas', data)
     idrac = get_group('idrac', data)
     data[:] = [x for x in data if x.category is None]
+    data = sorted(data, key=lambda (k): k.page_title)
     while len(data) > 0:
         test = data.pop(0)
         temp = [x for x in data if fuzz.token_sort_ratio(
@@ -519,8 +521,8 @@ def sort_data_and_write(cli_parsed, data):
         grouped.extend(temp)
         data[:] = [x for x in data if fuzz.token_sort_ratio(
             test.page_title, x.page_title) < 70]
-    grouped.extend(errors)
     errors = sorted(errors, key=lambda (k): k.error_state)
+    grouped.extend(errors)
 
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
     table_head = create_table_head()

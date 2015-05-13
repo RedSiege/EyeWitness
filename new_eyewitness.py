@@ -1,29 +1,34 @@
 #!/usr/bin/env python
 
 import argparse
+import logging
 import netaddr
 import os
 import re
 import sys
 import time
-import logging
 
+from fuzzywuzzy import fuzz
+from helpers import create_folders_css
+from helpers import create_table_head
+from helpers import create_web_index_head
+from helpers import default_creds_category
 from helpers import get_ua_values
+from helpers import sort_data_and_write
 from helpers import target_creator
 from helpers import title_screen
-from helpers import sort_data_and_write
-from helpers import create_web_index_head, create_table_head
-from helpers import create_folders_css
-from helpers import default_creds_category
+from modules import ghost_module
 from modules import objects
 from modules import phantomjs_module
 from modules import selenium_module
-from modules import ghost_module
-from fuzzywuzzy import fuzz
 from multiprocessing import Manager
 from multiprocessing import Pool
 from multiprocessing import Process
 from multiprocessing import Queue
+
+
+multi_counter = 0
+multi_total = 0
 
 
 def create_cli_parser():
@@ -231,15 +236,16 @@ def single_mode(cli_parsed, url=None, q=None):
 
 
 def multi_mode(cli_parsed):
+    global multi_total
     p = Pool(cli_parsed.threads)
     m = Manager()
     data = m.Queue()
     threads = []
 
     url_list, rdp_list, vnc_List = target_creator(cli_parsed)
-
+    multi_total = len(url_list)
     for url in url_list:
-        threads.append(p.apply_async(single_mode, [cli_parsed, url, data]))
+        threads.append(p.apply_async(single_mode, [cli_parsed, url, data], callback=multi_callback))
 
     p.close()
     try:
@@ -254,6 +260,16 @@ def multi_mode(cli_parsed):
         results.append(data.get())
 
     sort_data_and_write(cli_parsed, results)
+
+
+def multi_callback(x):
+    global multi_counter
+    global multi_total
+    multi_counter += 1
+
+    if multi_counter % 15 == 0:
+        print '\x1b[32m32\x1b[0m[*] Completed {0} out of {1} hosts'.format(multi_counter, multi_total)
+
 
 if __name__ == "__main__":
     title_screen()

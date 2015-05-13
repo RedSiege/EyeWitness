@@ -52,11 +52,8 @@ def create_driver(cli_parsed, user_agent=None):
 def capture_host(cli_parsed, http_object, driver, ua=None):
     global title_regex
 
-    url = http_object.remote_system.replace('://', '://admin:admin@')
-    url += '/'
-    print url
     try:
-        driver.get(http_object.remote_system.replace('://', '://admin:admin@'))
+        driver.get(http_object.remote_system)
     except KeyboardInterrupt:
         print '[*] Skipping: {0}'.format(http_object.remote_system)
         http_object.error_state = 'Skipped'

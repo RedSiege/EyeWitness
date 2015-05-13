@@ -4,9 +4,11 @@ import urllib2
 import httplib
 import socket
 import ssl
+import time
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
@@ -32,13 +34,21 @@ def create_driver(cli_parsed, user_agent=None):
         'phantomjs.page.settings.resourceTimeout'] = cli_parsed.t * 1000
     capabilities['phantomjs.page.settings.userName'] = 'none'
     capabilities['phantomjs.page.settings.password'] = 'none'
-    capabilities['acceptSslCerts'] = 'true'
-    service_args.append('--ignore-ssl-errors=yes')
+    service_args.append('--ignore-ssl-errors=true')
     service_args.append('--web-security=no')
 
     log_path = os.path.join(cli_parsed.d, 'ghostdriver.log')
 
     try:
+        driver = webdriver.PhantomJS(
+            desired_capabilities=capabilities, service_args=service_args,
+            service_log_path=log_path)
+        # This is the default width from the firefox driver
+        driver.set_window_size(1200, 675)
+        driver.set_page_load_timeout(cli_parsed.t)
+        return driver
+    except WebDriverException:
+        time.sleep(200)
         driver = webdriver.PhantomJS(
             desired_capabilities=capabilities, service_args=service_args,
             service_log_path=log_path)
