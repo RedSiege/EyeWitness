@@ -5,6 +5,7 @@ import socket
 import sys
 import threading
 import urllib2
+import ssl
 
 from selenium import webdriver
 from selenium.common.exceptions import NoAlertPresentException
@@ -17,6 +18,7 @@ title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 
 def create_driver(cli_parsed, user_agent=None):
     profile = webdriver.FirefoxProfile()
+    profile.set_preference('network.http.phishy-userpass-length', 255)
 
     if cli_parsed.user_agent is not None:
         profile.set_preference(
@@ -49,14 +51,12 @@ def create_driver(cli_parsed, user_agent=None):
 
 def capture_host(cli_parsed, http_object, driver, ua=None):
     global title_regex
-    try:
-        alert = driver.switch_to_alert()
-        alert.dismiss()
-    except NoAlertPresentException:
-        pass
 
+    url = http_object.remote_system.replace('://', '://admin:admin@')
+    url += '/'
+    print url
     try:
-        driver.get(http_object.remote_system)
+        driver.get(http_object.remote_system.replace('://', '://admin:admin@'))
     except KeyboardInterrupt:
         print '[*] Skipping: {0}'.format(http_object.remote_system)
         http_object.error_state = 'Skipped'
@@ -66,6 +66,13 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         driver.quit()
         driver = create_driver(cli_parsed, ua)
         http_object.error_state = 'Timeout'
+
+    try:
+        alert = driver.switch_to_alert()
+        alert.dismiss()
+        alert.accept()
+    except NoAlertPresentException:
+        pass
 
     if http_object.error_state == 'Timeout':
         http_object.error_state = None
@@ -77,11 +84,18 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.page_title = 'Timeout Limit Reached'
             http_object.headers = {}
             driver.quit()
-            return http_object, driver
+            return http_object
         except KeyboardInterrupt:
             print '[*] Skipping: {0}'.format(http_object.remote_system)
             http_object.error_state = 'Skipped'
             http_object.page_title = 'Page Skipped by User'
+
+    try:
+        alert = driver.switch_to_alert()
+        alert.dismiss()
+        alert.accept()
+    except NoAlertPresentException:
+        pass
 
     try:
         headers = dict(urllib2.urlopen(http_object.remote_system).info())
@@ -91,6 +105,9 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         headers = {'Error': 'SSL Handshake Error...'}
     except (socket.error, httplib.BadStatusLine):
         headers = {'Error': 'Potential timeout connecting to server'}
+    except ssl.CertificateError:
+        headers = {'Error': 'Invalid SSL Certificate'}
+        http_object.ssl_error = True
 
     try:
         driver.save_screenshot(http_object.screenshot_path)
@@ -114,4 +131,5 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             f.write('Cannot render webpage')
         http_object.headers = {'Cannot Render Web Page': 'n/a'}
 
-    return http_object, driver
+    driver.quit()
+    return http_object

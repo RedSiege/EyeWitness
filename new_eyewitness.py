@@ -11,9 +11,10 @@ import logging
 from helpers import get_ua_values
 from helpers import target_creator
 from helpers import title_screen
-from helpers import write_report
-from helpers import create_web_index_head
+from helpers import sort_data_and_write
+from helpers import create_web_index_head, create_table_head
 from helpers import create_folders_css
+from helpers import default_creds_category
 from modules import objects
 from modules import phantomjs_module
 from modules import selenium_module
@@ -203,13 +204,9 @@ def single_mode(cli_parsed, url=None, q=None):
     else:
         print 'Attempting to screenshot {0}'.format(http_object.remote_system)
     driver = create_driver(cli_parsed)
-    result, driver = capture_host(cli_parsed, http_object, driver)
-    if cli_parsed.engine == 'ghost':
-        if hasattr(driver, 'xvfb'):
-            driver.xvfb.terminate()
-        driver.exit()
-    else:
-        driver.quit()
+    result = capture_host(cli_parsed, http_object, driver)
+
+    result = default_creds_category(cli_parsed, result)
     if cli_parsed.cycle is not None and result.error_state is None:
         ua_dict = get_ua_values(cli_parsed.cycle)
         for browser_key, user_agent_value in ua_dict.iteritems():
@@ -218,20 +215,17 @@ def single_mode(cli_parsed, url=None, q=None):
             ua_object = objects.UAObject(browser_key, user_agent_value)
             ua_object.copy_data(result)
             driver = create_driver(cli_parsed, user_agent_value)
-            ua_object, driver = capture_host(cli_parsed, ua_object, driver)
+            ua_object = capture_host(cli_parsed, ua_object, driver)
+            ua_object = default_creds_category(cli_parsed, ua_object)
             result.add_ua_data(ua_object)
-            if cli_parsed.engine == 'ghost':
-                if hasattr(driver, 'xvfb'):
-                    driver.xvfb.terminate()
-                driver.exit()
-            else:
-                driver.quit()
 
     if q is None:
         html = result.create_table_html()
         with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
             f.write(web_index_head)
+            f.write(create_table_head())
             f.write(html)
+            f.write("</table><br>")
     else:
         q.put(result)
 
@@ -259,21 +253,7 @@ def multi_mode(cli_parsed):
     while not data.empty():
         results.append(data.get())
 
-    grouped = []
-    errors = [x for x in results if x.error_state is not None]
-    results[:] = [x for x in results if x.error_state is None]
-    while len(results) > 0:
-        test = results.pop(0)
-        temp = [x for x in results if fuzz.token_sort_ratio(
-            test.page_title, x.page_title) >= 70]
-        temp.append(test)
-        temp = sorted(temp, key=lambda (k): k.page_title)
-        grouped.extend(temp)
-        results[:] = [x for x in results if fuzz.token_sort_ratio(
-            test.page_title, x.page_title) < 70]
-    grouped.extend(errors)
-    errors = sorted(errors, key=lambda (k): k.error_state)
-    write_report(grouped, cli_parsed)
+    sort_data_and_write(cli_parsed, results)
 
 if __name__ == "__main__":
     title_screen()

@@ -22,6 +22,9 @@ class HTTPTableObject(object):
         self._source_code = None
         self._max_difference = None
         self._root_path = None
+        self._default_creds = None
+        self._category = None
+        self._ssl_error = False
 
     def set_paths(self, outdir, suffix=None):
         file_name = self.remote_system.replace('://', '.')
@@ -75,7 +78,18 @@ class HTTPTableObject(object):
         if remote_system.startswith('http://') or remote_system.startswith('https://'):
             pass
         else:
-            remote_system = 'http://' + remote_system
+            if ':8443' in remote_system or ':443' in remote_system:
+                remote_system = 'https://' + remote_system
+            else:
+                remote_system = 'http://' + remote_system
+
+        remote_system = remote_system.strip()
+        if 'http://' in remote_system and re.search(':80$', remote_system) is not None:
+            remote_system = remote_system.replace(':80', '')
+
+        if 'https://' in remote_system and re.search(':443$', remote_system) is not None:
+            remote_system = remote_system.replace(':443', '')
+
         self._remote_system = remote_system.strip()
 
     @property
@@ -127,6 +141,30 @@ class HTTPTableObject(object):
     def max_difference(self, max_difference):
         self._max_difference = max_difference
 
+    @property
+    def default_creds(self):
+        return self._default_creds
+
+    @default_creds.setter
+    def default_creds(self, default_creds):
+        self._default_creds = default_creds
+
+    @property
+    def category(self):
+        return self._category
+
+    @category.setter
+    def category(self, category):
+        self._category = category
+
+    @property
+    def ssl_error(self):
+        return self._ssl_error
+
+    @ssl_error.setter
+    def ssl_error(self, ssl_error):
+        self._ssl_error = ssl_error
+
     def create_table_html(self):
         scr_path = os.path.relpath(self.screenshot_path, self.root_path)
         src_path = os.path.relpath(self.source_path, self.root_path)
@@ -141,6 +179,15 @@ class HTTPTableObject(object):
                 <br><b>This is the baseline request.</b><br>
                 The browser type is: <b>Baseline</b><br><br>
                 The user agent is: <b>Baseline</b><br><br>""")
+
+        if self.ssl_error:
+            html += "<br><b>SSL Certificate error present on\
+                     <a href=\"{0}\" target=\"_blank\">{0}</a></b><br>".format(
+                self.remote_system)
+
+        if self.default_creds is not None:
+            html += "<br><b>Default credentials:</b> {0}<br>".format(
+                self.sanitize(self.default_creds))
 
         if self.error_state is None:
             try:
@@ -253,6 +300,15 @@ class UAObject(HTTPTableObject):
         Difference in length of the two webpage sources is\
         : <b>{2}</b><br>
         """).format(self.browser, self.ua, self.difference)
+
+        if self.ssl_error:
+            html += "<br><b>SSL Certificate error present on\
+                     <a href=\"{0}\" target=\"_blank\">{0}</a></b><br>".format(
+                self.remote_system)
+
+        if self.default_creds is not None:
+            html += "<br><b>Default credentials:</b> {0}<br>".format(
+                self.sanitize(self.default_creds))
 
         try:
             html += "\n<br><b> Page Title: </b>{0}\n".format(

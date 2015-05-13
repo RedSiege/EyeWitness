@@ -1,6 +1,9 @@
 import os
 import re
 import urllib2
+import httplib
+import socket
+import ssl
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -27,6 +30,11 @@ def create_driver(cli_parsed, user_agent=None):
 
     capabilities[
         'phantomjs.page.settings.resourceTimeout'] = cli_parsed.t * 1000
+    capabilities['phantomjs.page.settings.userName'] = 'none'
+    capabilities['phantomjs.page.settings.password'] = 'none'
+    capabilities['acceptSslCerts'] = 'true'
+    service_args.append('--ignore-ssl-errors=yes')
+    service_args.append('--web-security=no')
 
     log_path = os.path.join(cli_parsed.d, 'ghostdriver.log')
 
@@ -52,12 +60,11 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             print '[*] Skipping: {0}'.format(http_object.remote_system)
         http_object.error_state = 'Skipped'
         http_object.page_title = 'Page Skipped by User'
+        driver.quit()
         return http_object
     except TimeoutException:
         print '[*] Hit timeout limit when conecting to {0}, retrying'.format(http_object.remote_system)
         http_object.error_state = 'Timeout'
-        driver.quit()
-        driver = create_driver(cli_parsed, ua)
 
     if http_object.error_state == 'Timeout':
         http_object.error_state = None
@@ -68,11 +75,14 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.error_state = 'Timeout'
             http_object.page_title = 'Timeout Limit Reached'
             http_object.headers = {}
-            return http_object, driver
+            driver.quit()
+            return http_object
         except KeyboardInterrupt:
             print '[*] Skipping: {0}'.format(http_object.remote_system)
             http_object.error_state = 'Skipped'
             http_object.page_title = 'Page Skipped by User'
+            driver.quit()
+            return http_object
 
     try:
         headers = dict(urllib2.urlopen(http_object.remote_system).info())
@@ -82,6 +92,9 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         headers = {'Error': 'SSL Handshake Error...'}
     except (socket.error, httplib.BadStatusLine):
         headers = {'Error': 'Potential timeout connecting to server'}
+    except ssl.CertificateError:
+        headers = {'Error': 'Invalid SSL Certificate'}
+        http_object.ssl_error = True
 
     try:
         driver.save_screenshot(http_object.screenshot_path)
@@ -99,8 +112,5 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
 
     with open(http_object.source_path, 'w') as f:
         f.write(driver.page_source.encode('utf-8'))
-
-    return http_object, driver
-
-
-
+    driver.quit()
+    return http_object
