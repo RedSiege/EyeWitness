@@ -1,10 +1,11 @@
 import os
 import platform
+import re
+import shutil
 import sys
 import xml.etree.ElementTree as XMLParser
-import shutil
+
 from fuzzywuzzy import fuzz
-import re
 
 
 def scanner(cli_parsed):
@@ -454,8 +455,7 @@ def create_report_toc_head(date, time):
         <head>
         <title>EyeWitness Report Table of Contents</title>
         </head>
-        <center>Report Generated on {0} at {1}</center>
-        <h2>Table of Contents</h2>""").format(date, time)
+        <h2>Table of Contents</h2>""")
 
 
 def title_screen():
@@ -482,172 +482,105 @@ def strip_nonalphanum(string):
     return string.translate(None, todel)
 
 
-def get_group(group, data):
-    return sorted([x for x in data if x.category == group],
-                  key=lambda (k): k.page_title)
+def process_group(data, group, toc, toc_table, page_num, section, sectionid, html):
+    group_data = sorted([x for x in data if x.category == group],
+                        key=lambda (k): k.page_title)
 
+    grouped_elements = []
+    if len(group_data) == 0:
+        return grouped_elements, toc, toc_table, html
+    if page_num == 0:
+        toc += ("<li><a href=\"report.html#{0}\">{1}</a></li>").format(
+            sectionid, section)
+    else:
+        toc += ("<li><a href=\"report_page{0}.html#{1}\">{2}</a></li>").format(
+            str(page_num), sectionid, section)
 
-def generate_toc_section(toc, toc_table, page_num, section, sectionid, item_num):
-    toc += ("<li><a href=\"report_page{0}.html#{1}\">{2}</a></li>").format(
-        str(page_num), sectionid, section)
+    html += "<h2 id=\"{0}\">{1}</h2>".format(sectionid, section)
+    while len(group_data) > 0:
+        test_element = group_data.pop(0)
+        temp = [x for x in group_data if fuzz.token_sort_ratio(
+            test_element.page_title, x.page_title) >= 70]
+        temp.append(test_element)
+        temp = sorted(temp, key=lambda (k): k.page_title)
+        grouped_elements.extend(temp)
+        group_data = [x for x in group_data if fuzz.token_sort_ratio(
+            test_element.page_title, x.page_title) < 70]
+
     toc_table += ("<tr><td>{0}</td><td>{1}</td>").format(section,
-                                                         str(item_num))
-    return toc, toc_table
+                                                          str(len(grouped_elements)))
+    return grouped_elements, toc, toc_table, html
 
 
 def sort_data_and_write(cli_parsed, data):
-    grouped = []
     total_results = len(data)
+    categories = [(None, 'Uncategorized', 'uncat'),
+                  ('cms', 'Content Management System (CMS)', 'cms'),
+                  ('idrac', 'IDRAC/ILo', 'idrac'),
+                  ('nas', 'Network Attached Storage (NAS)', 'nas'),
+                  ('netdev', 'Network Devices', 'netdev'),
+                  ('voip', 'Voice/Video over IP (VoIP)', 'voip'),
+                  ('printer', 'Printers', 'printer')]
     if total_results == 0:
         print '[*] No URLS specified or no screenshots taken! Exiting'
         sys.exit()
-    errors = sorted([x for x in data if x.error_state is not None],
-                    key=lambda (k): k.page_title)
-    data[:] = [x for x in data if x.error_state is None]
-    printers = get_group('printer', data)
-    netdev = get_group('netdev', data)
-    cms = get_group('cms', data)
-    voip = get_group('voip', data)
-    nas = get_group('nas', data)
-    idrac = get_group('idrac', data)
-    data[:] = [x for x in data if x.category is None]
-    data = sorted(data, key=lambda (k): k.page_title)
-    while len(data) > 0:
-        test = data.pop(0)
-        temp = [x for x in data if fuzz.token_sort_ratio(
-            test.page_title, x.page_title) >= 70]
-        temp.append(test)
-        temp = sorted(temp, key=lambda (k): k.page_title)
-        grouped.extend(temp)
-        data[:] = [x for x in data if fuzz.token_sort_ratio(
-            test.page_title, x.page_title) < 70]
-    errors = sorted(errors, key=lambda (k): k.error_state)
-    grouped.extend(errors)
 
+    # Initialize stuff we need
+    pages = []
+    toc = create_report_toc_head(cli_parsed.date, cli_parsed.time)
+    toc_table = "<table border=0.5>"
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
     table_head = create_table_head()
-    toc = create_report_toc_head(cli_parsed.date, cli_parsed.time)
-    toc += "<li><a href=\"report_page1.html#uncat\">Uncategorized</a></li>"
-    toc_table = "<table border=0.5><tr>"
-    pages = []
-    html = u"<h2 id=\"uncat\">Uncategorized</h2>"
-    i = 1
-    toc_table += "<td>Uncategorized</td><td>{0}/{1}</td></tr>".format(
-        str(len(grouped)), str(total_results))
-    for obj in grouped:
+    counter = 1
+
+    # Pre-filter error entries
+    errors = sorted([x for x in data if x.error_state is not None],
+                    key=lambda (k): (k.error_state, k.page_title))
+    data[:] = [x for x in data if x.error_state is None]
+    data = sorted(data, key=lambda (k): k.page_title)
+    html = u""
+    for cat in categories:
+        grouped, toc, toc_table, html = process_group(
+            data, cat[0], toc, toc_table, len(pages), cat[1], cat[2], html)
+
+        for obj in grouped:
+            html += obj.create_table_html()
+            if counter % cli_parsed.results == 0:
+                html = (web_index_head + "EW_REPLACEME" + table_head + html +
+                        "</table><br>")
+                pages.append(html)
+                html = u""
+            counter += 1
+
+    for obj in errors:
         html += obj.create_table_html()
-        if i % cli_parsed.results == 0:
+        if counter % cli_parsed.results == 0:
             html = (web_index_head + "EW_REPLACEME" + table_head + html +
                     "</table><br>")
             pages.append(html)
             html = u""
-        i += 1
-
-    if len(cms) > 0:
-        html += "<h2 id=\"cms\">Content Management Systems (CMS)</h2>"
-        html += table_head
-        toc, toc_table = generate_toc_section(toc, toc_table, len(
-            pages) + 1, 'Content Management Systems (CMS)', 'cms', len(cms))
-        for obj in cms:
-            html += obj.create_table_html()
-            if i % cli_parsed.results == 0:
-                html = (web_index_head + "EW_REPLACEME" + html +
-                        "</table><br>")
-                pages.append(html)
-                html = u""
-            i += 1
-
-    if len(idrac) > 0:
-        html += "<h2 id=\"idrac\">iDRAC/iLO</h2>"
-        html += table_head
-        toc, toc_table = generate_toc_section(
-            toc, toc_table, len(pages) + 1, 'iDRAC/iLO', 'idrac', len(idrac))
-        for obj in idrac:
-            html += obj.create_table_html()
-            if i % cli_parsed.results == 0:
-                html = (web_index_head + "EW_REPLACEME" + table_head + html +
-                        "</table><br>")
-                pages.append(html)
-                html = u""
-            i += 1
-
-    if len(nas) > 0:
-        html += "<h2 id=\"nas\">Network Attached Storage (NAS)</h2>"
-        html += table_head
-        toc, toc_table = generate_toc_section(toc, toc_table, len(
-            pages) + 1, 'Network Attached Storage (NAS)', 'nas', len(idrac))
-        for obj in nas:
-            html += obj.create_table_html()
-            if i % cli_parsed.results == 0:
-                html = (web_index_head + "EW_REPLACEME" + table_head + html +
-                        "</table><br>")
-                pages.append(html)
-                html = u""
-            i += 1
-
-    if len(netdev) > 0:
-        html += "<h2 id=\"netdev\">Network Devices</h2>"
-        html += table_head
-        toc, toc_table = generate_toc_section(
-            toc, toc_table, len(pages) + 1, 'Network Devices', 'netdev', len(idrac))
-        for obj in netdev:
-            html += obj.create_table_html()
-            if i % cli_parsed.results == 0:
-                html = (web_index_head + "EW_REPLACEME" + table_head + html +
-                        "</table><br>")
-                pages.append(html)
-                html = u""
-            i += 1
-
-    if len(voip) > 0:
-        html += "<h2 id=\"voip\">Voice/Video over IP (VoIP)</h2>"
-        html += table_head
-        toc, toc_table = generate_toc_section(
-            toc, toc_table, len(pages) + 1, 'Voice/Video over IP', 'VoIP', len(idrac))
-        for obj in voip:
-            html += obj.create_table_html()
-            if i % cli_parsed.results == 0:
-                html = (web_index_head + "EW_REPLACEME" + table_head + html +
-                        "</table><br>")
-                pages.append(html)
-                html = u""
-            i += 1
-
-    if len(printers) > 0:
-        html += "<h2 id=\"printer\">Printers</h2>"
-        html += table_head
-        toc, toc_table = generate_toc_section(
-            toc, toc_table, len(pages) + 1, 'Printers', 'printers', len(idrac))
-        for obj in printers:
-            html += obj.create_table_html()
-            if i % cli_parsed.results == 0:
-                html = (web_index_head + "EW_REPLACEME" + table_head + html +
-                        "</table><br>")
-                pages.append(html)
-                html = u""
-            i += 1
-
+        counter += 1
     toc += "</ul>"
+    toc_table += "<tr><td>Errors</td><td>{0}</td></tr>".format(str(len(errors)))
+    toc_table += "<tr><td>Total</td><td>{0}</td></tr>".format(total_results)
     toc_table += "</table>"
 
     if html != u"":
         html = (web_index_head + "EW_REPLACEME" + table_head + html +
-                            "</table><br>")
+                "</table><br>")
         pages.append(html)
 
-    toc = toc + "<br><br>" + toc_table + "</html>"
-
-    with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as table_of_contents:
-        table_of_contents.write(toc)
+    toc = toc + "<br><br>" + toc_table
 
     if len(pages) == 1:
-        with open(os.path.join(cli_parsed.d, 'report_page1.html'), 'w') as f:
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
             f.write(pages[0].replace('EW_REPLACEME', ''))
             f.write("</body>\n</html>")
     else:
         num_pages = len(pages) + 1
         bottom_text = "\n<center><br>Links: "
-        for i in range(1, num_pages):
+        bottom_text += ("<a href=\"report.html\"> Page 1</a>")
+        for i in range(2, num_pages):
             bottom_text += ("<a href=\"report_page{0}.html\"> Page {0}</a>").format(
                 str(i))
         bottom_text += "</center>\n"
@@ -656,7 +589,11 @@ def sort_data_and_write(cli_parsed, data):
         pages = [
             x.replace('EW_REPLACEME', top_text) + bottom_text for x in pages]
 
-        for i in range(1, len(pages) + 1):
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
+            f.write(toc)
+            f.write(pages[0])
+            f.write("</body>\n</html>")
+        for i in range(2, len(pages) + 1):
             with open(os.path.join(cli_parsed.d, 'report_page{0}.html'.format(str(i))), 'w') as f:
                 f.write(pages[i - 1])
 
