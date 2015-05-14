@@ -268,7 +268,7 @@ def multi_callback(x):
     multi_counter += 1
 
     if multi_counter % 15 == 0:
-        print '\x1b[32m[*] Completed {0} out of {1} hosts'.format(multi_counter, multi_total)
+        print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(multi_counter, multi_total)
 
 
 if __name__ == "__main__":
