@@ -650,6 +650,8 @@ def default_creds_category(cli_parsed, http_object):
             page_sig = sig_cred[0].split(";")
             cred_info = sig_cred[1]
             category = sig_cred[2]
+            if cred_info == '':
+                cred_info = None
             if category == 'none':
                 category = None
 
