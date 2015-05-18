@@ -97,3 +97,7 @@ ATEN International Co Ltd;body onload='PageInit();form name="form1" action="/cgi
 Welcome to the Web-Based Configurator;function str2blks_MD5(str);loginPassword.value = "ZyXEL ZyWALL Series";Prestige_Login" value="Login"|Zyxel P-660HW-T1 <nousername>/1234|netdev
 <meta http-equiv="refresh" content="0;url=/designs/imm/noscript/noscript_en.php";meta http-equiv="Content-Type" content="text/html;@import "/designs/ibmdojo/dojo/resources/dojo.css";@import "/designs/imm/login.css"|IBM Integrated Management Module USERID\PASSW0RD|none
 var slControl = new ActiveXObject('AgControl.AgControl');form name="Form1" method="post" action="Default.aspx" id="Form1";<title>AxisTV</title>|AxisTV Login administrator/tech|voip
+IP Phone CP-7960G||voip
+IP Phone CP-7962G||voip
+IP Phone CP-7975G||voip
+Cisco Unified Communications Manager||voip

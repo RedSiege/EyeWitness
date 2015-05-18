@@ -497,6 +497,8 @@ def process_group(data, group, toc, toc_table, page_num, section, sectionid, htm
             str(page_num), sectionid, section)
 
     html += "<h2 id=\"{0}\">{1}</h2>".format(sectionid, section)
+    unknowns = [x for x in group_data if x.page_title == 'Unknown']
+    group_data = [x for x in group_data if x.page_title != 'Unknown']
     while len(group_data) > 0:
         test_element = group_data.pop(0)
         temp = [x for x in group_data if fuzz.token_sort_ratio(
@@ -507,6 +509,7 @@ def process_group(data, group, toc, toc_table, page_num, section, sectionid, htm
         group_data = [x for x in group_data if fuzz.token_sort_ratio(
             test_element.page_title, x.page_title) < 70]
 
+    group_data.extend(unknowns)
     toc_table += ("<tr><td>{0}</td><td>{1}</td>").format(section,
                                                           str(len(grouped_elements)))
     return grouped_elements, toc, toc_table, html
