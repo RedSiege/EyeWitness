@@ -28,12 +28,13 @@ case ${osinfo} in
   Kali)
     echo '[*] Installing Kali Dependencies'
     apt-get install python-qt4 python-pip xvfb python-netaddr
-    echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/ChrisTruncer/Ghost.py.git
-    cd Ghost.py
-    python setup.py install
+    echo '[*] Installing Python Modules'
+    pip install fuzzywuzzy
+    pip install selenium
+    pip install pyvirtualdisplay
+    cd ../bin/
+    wget http://www.christophertruncer.com/InstallMe/phantomjs
     cd ..
-    rm -rf Ghost.py
   ;;
   # Debian 7+ Dependency Installation
   Debian)

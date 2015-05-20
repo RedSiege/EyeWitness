@@ -490,10 +490,10 @@ def process_group(data, group, toc, toc_table, page_num, section, sectionid, htm
     if len(group_data) == 0:
         return grouped_elements, toc, toc_table, html
     if page_num == 0:
-        toc += ("<li><a href=\"report.html#{0}\">{1}</a></li>").format(
+        toc += ("<li><a href=\"report.html#{0}\">{1} (Page 1)</a></li>").format(
             sectionid, section)
     else:
-        toc += ("<li><a href=\"report_page{0}.html#{1}\">{2}</a></li>").format(
+        toc += ("<li><a href=\"report_page{0}.html#{1}\">{2} (Page {0})</a></li>").format(
             str(page_num), sectionid, section)
 
     html += "<h2 id=\"{0}\">{1}</h2>".format(sectionid, section)
@@ -523,7 +523,9 @@ def sort_data_and_write(cli_parsed, data):
                   ('nas', 'Network Attached Storage (NAS)', 'nas'),
                   ('netdev', 'Network Devices', 'netdev'),
                   ('voip', 'Voice/Video over IP (VoIP)', 'voip'),
-                  ('printer', 'Printers', 'printer')]
+                  ('printer', 'Printers', 'printer'),
+                  ('highval', 'High Value Targets', 'highval'),
+                  ('crap', 'Splash Pages', 'crap')]
     if total_results == 0:
         print '[*] No URLS specified or no screenshots taken! Exiting'
         sys.exit()
@@ -531,7 +533,7 @@ def sort_data_and_write(cli_parsed, data):
     # Initialize stuff we need
     pages = []
     toc = create_report_toc_head(cli_parsed.date, cli_parsed.time)
-    toc_table = "<table border=0.5>"
+    toc_table = "<table class=\"toc_table\">"
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
     table_head = create_table_head()
     counter = 1
@@ -565,7 +567,7 @@ def sort_data_and_write(cli_parsed, data):
         counter += 1
     toc += "</ul>"
     toc_table += "<tr><td>Errors</td><td>{0}</td></tr>".format(str(len(errors)))
-    toc_table += "<tr><td>Total</td><td>{0}</td></tr>".format(total_results)
+    toc_table += "<tr><th>Total</th><td>{0}</td></tr>".format(total_results)
     toc_table += "</table>"
 
     if html != u"":
@@ -573,10 +575,11 @@ def sort_data_and_write(cli_parsed, data):
                 "</table><br>")
         pages.append(html)
 
-    toc = "<center>{0}<br><br>{1}</center>".format(toc,toc_table)
+    toc = "<center>{0}<br><br>{1}<br><br></center>".format(toc,toc_table)
 
     if len(pages) == 1:
         with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
+            f.write(toc)
             f.write(pages[0].replace('EW_REPLACEME', ''))
             f.write("</body>\n</html>")
     else:
@@ -599,6 +602,15 @@ def sort_data_and_write(cli_parsed, data):
         for i in range(2, len(pages) + 1):
             with open(os.path.join(cli_parsed.d, 'report_page{0}.html'.format(str(i))), 'w') as f:
                 f.write(pages[i - 1])
+
+
+def do_jitter(cli_parsed):
+    if cli_parsed.jitter is not "None":
+        sleep_value = random.randint(0, 30)
+        sleep_value = sleep_value * .01
+        sleep_value = 1 - sleep_value
+        sleep_value = sleep_value * int(cli_parsed.jitter)
+        print "[*] Sleeping for " + str(sleep_value) + " seconds.."
 
 
 def create_folders_css(cli_parsed):
@@ -625,6 +637,19 @@ def create_folders_css(cli_parsed):
     font-weight:bold;
     cursor:pointer;
     background-color:red;
+    }
+    table.toc_table{
+    border-collapse: collapse;
+    border: 1px solid black;
+    }
+    table.toc_table td{
+    border: 1px solid black;
+    padding: 3px 8px 3px 8px;
+    }
+    table.toc_table th{
+    border: 1px solid black;
+    text-align: left;
+    padding: 3px 8px 3px 8px;
     }
     """
 

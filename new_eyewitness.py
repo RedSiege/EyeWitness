@@ -9,6 +9,7 @@ import sys
 import time
 
 from fuzzywuzzy import fuzz
+from pyvirtualdisplay import Display
 from helpers import create_folders_css
 from helpers import create_table_head
 from helpers import create_web_index_head
@@ -17,6 +18,7 @@ from helpers import get_ua_values
 from helpers import sort_data_and_write
 from helpers import target_creator
 from helpers import title_screen
+from helpers import do_jitter
 from modules import ghost_module
 from modules import objects
 from modules import phantomjs_module
@@ -29,6 +31,7 @@ from multiprocessing import Queue
 
 multi_counter = 0
 multi_total = 0
+display = None
 
 
 def create_cli_parser():
@@ -169,15 +172,15 @@ def create_cli_parser():
 
 
 def single_mode(cli_parsed, url=None, q=None):
+    display = None
     if cli_parsed.engine == 'selenium':
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
+        display = Display(visible=0, size=(1920, 1080))
+        display.start()
     elif cli_parsed.engine == 'phantomjs':
         create_driver = phantomjs_module.create_driver
         capture_host = phantomjs_module.capture_host
-    # elif cli_parsed.engine == 'ghost':
-    #     create_driver = ghost_module.create_driver
-    #     capture_host = ghost_module.capture_host
     else:
         print '[*] No valid engine provided! Choose phantomjs or selenium!'
         sys.exit(0)
@@ -210,9 +213,12 @@ def single_mode(cli_parsed, url=None, q=None):
             ua_object = capture_host(cli_parsed, ua_object, driver)
             ua_object = default_creds_category(cli_parsed, ua_object)
             result.add_ua_data(ua_object)
-
+    if display is not None:
+        display.stop()
     if q is None:
         html = result.create_table_html()
+        print(
+            '\n[*] Done! Check out the report in the {0} folder!').format(cli_parsed.d)
         with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
             f.write(web_index_head)
             f.write(create_table_head())
@@ -220,6 +226,7 @@ def single_mode(cli_parsed, url=None, q=None):
             f.write("</table><br>")
     else:
         q.put(result)
+        do_jitter(cli_parsed)
 
 
 def multi_mode(cli_parsed):
@@ -232,7 +239,8 @@ def multi_mode(cli_parsed):
     url_list, rdp_list, vnc_List = target_creator(cli_parsed)
     multi_total = len(url_list)
     for url in url_list:
-        threads.append(p.apply_async(single_mode, [cli_parsed, url, data], callback=multi_callback))
+        threads.append(
+            p.apply_async(single_mode, [cli_parsed, url, data], callback=multi_callback))
 
     p.close()
     try:

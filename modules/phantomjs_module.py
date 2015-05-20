@@ -17,6 +17,7 @@ title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 def create_driver(cli_parsed, user_agent=None):
     capabilities = DesiredCapabilities.PHANTOMJS
     service_args = []
+    phantomjs_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin', 'phantomjs')
 
     if cli_parsed.user_agent is not None:
         capabilities[
@@ -28,7 +29,6 @@ def create_driver(cli_parsed, user_agent=None):
     if cli_parsed.proxy_ip is not None and cli_parsed.proxy_port is not None:
         service_args.append(
             '--proxy={0}:{1}'.format(cli_parsed.proxy_ip, cli_parsed.proxy_port))
-        service_args.append('--proxy-type=socks5')
 
     capabilities[
         'phantomjs.page.settings.resourceTimeout'] = cli_parsed.t * 1000
@@ -36,13 +36,14 @@ def create_driver(cli_parsed, user_agent=None):
     capabilities['phantomjs.page.settings.password'] = 'none'
     service_args.append('--ignore-ssl-errors=true')
     service_args.append('--web-security=no')
+    service_args.append('--ssl-protocol=any')
 
     log_path = os.path.join(cli_parsed.d, 'ghostdriver.log')
 
     try:
         driver = webdriver.PhantomJS(
             desired_capabilities=capabilities, service_args=service_args,
-            service_log_path=log_path)
+            service_log_path=log_path, executable_path=phantomjs_path)
         # This is the default width from the firefox driver
         driver.set_window_size(1200, 675)
         driver.set_page_load_timeout(cli_parsed.t)
@@ -73,7 +74,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         driver.quit()
         return http_object
     except TimeoutException:
-        print '[*] Hit timeout limit when conecting to {0}, retrying'.format(http_object.remote_system)
+        print '[*] Hit timeout limit when connecting to {0}, retrying'.format(http_object.remote_system)
         http_object.error_state = 'Timeout'
 
     if http_object.error_state == 'Timeout':
@@ -81,7 +82,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         try:
             driver.get(http_object.remote_system)
         except TimeoutException:
-            print '[*] Hit timeout limit when conecting to {0}'.format(http_object.remote_system)
+            print '[*] Hit timeout limit when connecting to {0}'.format(http_object.remote_system)
             http_object.error_state = 'Timeout'
             http_object.page_title = 'Timeout Limit Reached'
             http_object.headers = {}

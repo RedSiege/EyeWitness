@@ -59,7 +59,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         http_object.error_state = 'Skipped'
         http_object.page_title = 'Page Skipped by User'
     except TimeoutException:
-        print '[*] Hit timeout limit when conecting to {0}, retrying'.format(http_object.remote_system)
+        print '[*] Hit timeout limit when connecting to {0}, retrying'.format(http_object.remote_system)
         driver.quit()
         driver = create_driver(cli_parsed, ua)
         http_object.error_state = 'Timeout'
@@ -76,7 +76,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         try:
             driver.get(http_object.remote_system)
         except TimeoutException:
-            print '[*] Hit timeout limit when conecting to {0}'.format(http_object.remote_system)
+            print '[*] Hit timeout limit when connecting to {0}'.format(http_object.remote_system)
             http_object.error_state = 'Timeout'
             http_object.page_title = 'Timeout Limit Reached'
             http_object.headers = {}

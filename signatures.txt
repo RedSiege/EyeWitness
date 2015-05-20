@@ -97,7 +97,50 @@ ATEN International Co Ltd;body onload='PageInit();form name="form1" action="/cgi
 Welcome to the Web-Based Configurator;function str2blks_MD5(str);loginPassword.value = "ZyXEL ZyWALL Series";Prestige_Login" value="Login"|Zyxel P-660HW-T1 <nousername>/1234|netdev
 <meta http-equiv="refresh" content="0;url=/designs/imm/noscript/noscript_en.php";meta http-equiv="Content-Type" content="text/html;@import "/designs/ibmdojo/dojo/resources/dojo.css";@import "/designs/imm/login.css"|IBM Integrated Management Module USERID\PASSW0RD|none
 var slControl = new ActiveXObject('AgControl.AgControl');form name="Form1" method="post" action="Default.aspx" id="Form1";<title>AxisTV</title>|AxisTV Login administrator/tech|voip
-IP Phone CP-7960G||voip
-IP Phone CP-7962G||voip
-IP Phone CP-7975G||voip
-Cisco Unified Communications Manager||voip
+If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;<a href="mailto:users@tomcat.apache.org">users@tomcat.apache.org||highval
+<h2>If you're seeing this, you've successfully installed Tomcat. Congratulations!</h2>;<p>In Tomcat 7.0 access to the manager application is split between;<li id="list-announce"><strong><a href="mailto:announce-subscribe@tomcat.apache.org">||highval
+ilo.ico;SetCookie('hp-iLO-Login';<title>HP Integrated Lights-Out 2 Login</title>||idrac
+<span class="login_server_type" id="login_server_type_id">M1000e;img.src='/cmc/images/login_progress.14824.gif';<img src="/cmc/images/cmc_title.14824.png"|(Dell CMC) root/calvin|idrac
+<span class="loginTitle">Integrated Lights-Out 2 <span class="advanced">Advanced</span></span>;<!-- Masterhead Start -->||idrac
+<span class="loginTitle">Integrated Lights-Out 3 <span class="advanced">Advanced</span></span>;;<!-- Masterhead Start -->;src="public/images/telescopeLg.jpg"||idrac
+Cisco Systems, Inc. IP Phone CP-7960G;<title>Cisco Systems, Inc.</title>;<img a="" <="" src="/Images/Logo"||voip
+<strong>Cisco IP Conference Station CP-7937G</strong>;<img border="0" align="bottom" hspace="0" alt="Cisco Systems, Inc." src="/Logo" />;<a href="localmenus.cgi?func=604">||voip
+<p align="center"><b><font color="#FFFFFF" size="4">Cisco Unified IP Phone CP-7962G;<a href="/CGI/Java/Serviceability?||voip
+<p align="center"><b><font size="4" color="#FFFFFF">Cisco Unified IP Phone CP-7975G;/CGI/Java/Serviceability?adapter||voip
+<div id="product"><span>Xirrus XN8 WiFi Array;<div onclick="window.open('http://www.xirrus.com/feedback')";if ( key_code &lt; 0x20 || key_code &gt; 0x7E)||netdev
+<meta content="Splunk Inc." name="author" />;MRSPARKLE;<p><span>First time logging in?</span> Splunk's default credentials are|Splunk admin/changeme|highval
+<p>If you've forgotten your username or password, please contact your Splunk administrator.<br /><br />username <span>admin</span><br />password <span>changeme</span></p><p></p>;MRSPARKLE;<meta content="Splunk Inc." name="author" />|Splunk admin/changeme|highval
+<meta content="Infoblox WebUI Login Page ID" />;<title>Infoblox Grid Manager</title>;Wicket.Event.add(window, "domready", function(event) { document.getElementById('timezone').value = IB.getBrowserTimezone()|InfoBlox admin/infoblox|none
+dummyActiveXObject = new ActiveXObject('Msxml2.XMLHTTP');<td class="mastheadTitle">HP Designjet T1200</td>||printer
+<strong class="product">HP LaserJet 600 M602</strong>;<link href="/hp/device/theme/onevoice/;action="/hp/device/DeviceStatus/Save">||printer
+<strong class="product">HP Color LaserJet M651</strong>;<link href="/hp/device/theme/onevoice/basic.css;action="/hp/device/DeviceStatus/Save">||printer
+Cisco Codec:;<p style="display: none;" class="alert alert-info recommended-browsers">;if (vega.global.isOlderBrowser())|admin/<nopassword>|voip
+var thisIDRACText = EntityDecode(;// Dell's limit on the maximum # of char in a username;/images/Ttl_2_iDRAC7_Base_ML.png|iDRAC root/calvin|idrac
+alt="Oracle(R) Integrated Lights Out Manager";<input type="submit" tabindex="3" title="Log In to Oracle(R) Integrated Lights Out Manager "|Oracle ILO root/changeme|idrac
+var thisIDRACText = " This iDRAC";// Return true if value contains only printable ASCII chars;Integrated Remote Access Controller 6|Dell iDRAC root/calvin|idrac
+Teradata Viewpoint V14.10.00.05-b47;if (new Date().getTime() - loginRenderMillis|TeraData NAS admin/teradata|nas
+Cisco Unified IP Phone Cisco Communicator;<img src="/FS/Logo.png";/CGI/Java/Serviceability||voip
+<title>IIS7</title>;<img width="571" height="411" alt="IIS7" src="welcome.png"||crap
+<p>In Tomcat 8.0 access to the manager application is split between;<title>Apache Tomcat/;<pre>$CATALINA_HOME/RUNNING.txt</pre>||highval
+<title>Test Page for the Apache HTTP Server on Red Hat Enterprise Linux</title>;<h1>Red Hat Enterprise Linux <strong>Test Page||crap
+<title>Welcome to VMware vSphere</title>;<meta content="VMware VirtualCenter is virtual infrastructure software for partitioning, consolidating and managing systems in mission-critical environments.||crap
+<a title="VMware vFabric, Cloud Application Platform";<p>This is the default vFabric tc Server Runtime home page||crap
+<meta content="VMware ESXi is virtual infrastructure software for partitioning, consolidating, and managing systems in mission-critical environments.||crap
+src="./cgi-bin/dynamic/topbar.html" target="Main" name="Printer Information" />;<!-- Title in case of ENA's is not a single variable so it is a function -->||printer
+<strong>Cisco IP Conference Station CP-7937G</strong>;src="/Logo";<title>Cisco Systems, Inc.||voip
+<img src="/FS/Logo.png";size="4">Cisco IP Phone CP-7961G-GE;/CGI/Java/Serviceability?||voip
+<font color="#FFFFFF" size="4">Cisco Unified IP Phone;<img src="/FS/Logo.png";/CGI/Java/Serviceability?||voip
+<font size="4" color="#FFFFFF">Cisco IP Phone;/CGI/Java/Serviceability?||voip
+HP Color LaserJet 4700 Printers</title>;class="hpLogo" src="images/hp_invent_logo.gif"||printer
+<title>HP Designjet T610 44in;function launchLicenceAgreement() {var fw = document.fw_upd_form.System||printer
+<title>HP Color LaserJet CP4525 Printers</title>;<form action="this.LCDispatcher?nav=hp.DeviceStatus||printer
+hp LaserJet 9050</title>;div.hpGasGaugeBlock||printer
+div.hpGasGaugeBlock;div.hpPageText;HP 9250C Digital Sender||printer
+<title>HP Designjet T1100 44in;getElementById('printerStatusId').innerHTML||printer
+Wired PrintServer<h3>Status;<h1>Zebra Technologies<br />||printer
+<div id="headertitle">;Phaser 7760;<div id="stattableWithoutBkGif">||printer
+document.write("&lt;title&gt;XEROX WORKCENTRE");Function Name:	SyncTreeToThisUrl||printer
+div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;Printers</title>||printer
+div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;MFP Series</title>||printer
+<frame target="_self" noresize="noresize" marginheight="10" marginwidth="15" scrolling="auto" src="/cgi-bin/dynamic/PrinterStatus.html" name="rbottom" />||printer
+<frame scrolling="no" noresize="noresize" src="/cgi-bin/dynamic/left_bar.html" target="Printer Information" name="Directory" />;<!-- Title in case of ENA's is not a single variable so it is a function -->||printer
