@@ -104,11 +104,6 @@ def create_cli_parser():
     http_options.add_argument('--proxy-port', metavar='8080', default=None,
                               type=int, help='Port of web proxy to go through')
 
-    localscan_options = parser.add_argument_group('Local Scan Options')
-    localscan_options.add_argument('--localscan', metavar='192.168.1.0/24',
-                                   default=None, help='CIDR\
-                               Notation of network to scan')
-
     args = parser.parse_args()
     args.date = time.strftime('%m/%d/%Y')
     args.time = time.strftime('%H:%M:%S')
@@ -153,7 +148,7 @@ def create_cli_parser():
 
     args.log_file_path = os.path.join(args.d, 'logfile.log')
 
-    if args.f is None and args.single is None and args.localscan is None:
+    if args.f is None and args.single is None:
         print "[*] Error: You didn't specify a file! I need a file containing\
          URLs!"
         parser.print_help()
@@ -170,14 +165,6 @@ def create_cli_parser():
         args.vnc = True
         args.rdp = True
 
-    if args.localscan:
-        try:
-            netaddr.IPAddress(args.localscan)
-        except netaddr.core.AddrFormatError:
-            print "[*] Error: Please provide valid CIDR notation!"
-            print "[*] Example: 192.168.1.0/24"
-            sys.exit()
-
     return args
 
 
@@ -192,7 +179,7 @@ def single_mode(cli_parsed, url=None, q=None):
     #     create_driver = ghost_module.create_driver
     #     capture_host = ghost_module.capture_host
     else:
-        print '[*] No valid engine provided! Choose phantojs or selenium!'
+        print '[*] No valid engine provided! Choose phantomjs or selenium!'
         sys.exit(0)
 
     if url is None:
@@ -274,8 +261,6 @@ def multi_callback(x):
 if __name__ == "__main__":
     title_screen()
     cli_parsed = create_cli_parser()
-    if cli_parsed.localscan:
-        raise NotImplementedError
 
     if cli_parsed.createtargets:
         target_creator(cli_parsed)

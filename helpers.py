@@ -573,7 +573,7 @@ def sort_data_and_write(cli_parsed, data):
                 "</table><br>")
         pages.append(html)
 
-    toc = toc + "<br><br>" + toc_table
+    toc = "<center>{0}<br><br>{1}</center>".format(toc,toc_table)
 
     if len(pages) == 1:
         with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
@@ -581,7 +581,7 @@ def sort_data_and_write(cli_parsed, data):
             f.write("</body>\n</html>")
     else:
         num_pages = len(pages) + 1
-        bottom_text = "\n<center><br>Links: "
+        bottom_text = "\n<center style=\"width:1000px\"><br>"
         bottom_text += ("<a href=\"report.html\"> Page 1</a>")
         for i in range(2, num_pages):
             bottom_text += ("<a href=\"report_page{0}.html\"> Page {0}</a>").format(

@@ -116,7 +116,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     #     http_object.page_title = tag.group(2).strip()
     # else:
     #     http_object.page_title = 'Unknown'
-    http_object.page_title = 'Unknown' if driver.title == '' else driver.title
+    http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode('utf-8')
 
     http_object.headers = headers
     http_object.source_code = driver.page_source.encode('utf-8')
