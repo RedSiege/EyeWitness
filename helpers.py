@@ -511,7 +511,7 @@ def process_group(data, group, toc, toc_table, page_num, section, sectionid, htm
 
     group_data.extend(unknowns)
     toc_table += ("<tr><td>{0}</td><td>{1}</td>").format(section,
-                                                          str(len(grouped_elements)))
+                                                         str(len(grouped_elements)))
     return grouped_elements, toc, toc_table, html
 
 
@@ -566,7 +566,8 @@ def sort_data_and_write(cli_parsed, data):
             html = u""
         counter += 1
     toc += "</ul>"
-    toc_table += "<tr><td>Errors</td><td>{0}</td></tr>".format(str(len(errors)))
+    toc_table += "<tr><td>Errors</td><td>{0}</td></tr>".format(
+        str(len(errors)))
     toc_table += "<tr><th>Total</th><td>{0}</td></tr>".format(total_results)
     toc_table += "</table>"
 
@@ -575,7 +576,7 @@ def sort_data_and_write(cli_parsed, data):
                 "</table><br>")
         pages.append(html)
 
-    toc = "<center>{0}<br><br>{1}<br><br></center>".format(toc,toc_table)
+    toc = "<center>{0}<br><br>{1}<br><br></center>".format(toc, toc_table)
 
     if len(pages) == 1:
         with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
@@ -591,14 +592,28 @@ def sort_data_and_write(cli_parsed, data):
                 str(i))
         bottom_text += "</center>\n"
         top_text = bottom_text
-        bottom_text += "</body>\n</html>"
-        pages = [
-            x.replace('EW_REPLACEME', top_text) + bottom_text for x in pages]
+        for i in range(0, len(pages)):
+            headfoot = "<center>"
+            if i == 0:
+                headfoot += ("<a href=\"report_page2.html\"> Next Page "
+                             "</a></center>")
+            elif i == len(pages) - 1:
+                headfoot += ("<a href=\"report_page{0}.html\"> Previous Page "
+                             "</a></center>").format(str(i))
+            elif i == 1:
+                headfoot += ("<a href=\"report.html\">Previous Page</a>&nbsp"
+                             "<a href=\"report_page{0}.html\"> Next Page"
+                             "</a></center>").format(str(i+2))
+            else:
+                headfoot += ("<a href=\"report_page{0}.html\">Previous Page</a>"
+                             "&nbsp<a href=\"report_page{1}.html\"> Next Page"
+                             "</a></center>").format(str(i), str(i+2))
+            pages[i] = pages[i].replace(
+                'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
 
         with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
             f.write(toc)
             f.write(pages[0])
-            f.write("</body>\n</html>")
         for i in range(2, len(pages) + 1):
             with open(os.path.join(cli_parsed.d, 'report_page{0}.html'.format(str(i))), 'w') as f:
                 f.write(pages[i - 1])

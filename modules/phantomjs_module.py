@@ -1,10 +1,10 @@
+import httplib
 import os
 import re
-import urllib2
-import httplib
 import socket
 import ssl
 import time
+import urllib2
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException

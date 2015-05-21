@@ -2,10 +2,10 @@ import httplib
 import os
 import re
 import socket
+import ssl
 import sys
 import threading
 import urllib2
-import ssl
 
 from selenium import webdriver
 from selenium.common.exceptions import NoAlertPresentException

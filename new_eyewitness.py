@@ -7,31 +7,32 @@ import os
 import re
 import sys
 import time
+import webbrowser
 
 from fuzzywuzzy import fuzz
-from pyvirtualdisplay import Display
 from helpers import create_folders_css
 from helpers import create_table_head
 from helpers import create_web_index_head
 from helpers import default_creds_category
+from helpers import do_jitter
 from helpers import get_ua_values
 from helpers import sort_data_and_write
 from helpers import target_creator
 from helpers import title_screen
-from helpers import do_jitter
 from modules import ghost_module
 from modules import objects
 from modules import phantomjs_module
 from modules import selenium_module
+from distutils.util import strtobool
 from multiprocessing import Manager
 from multiprocessing import Pool
 from multiprocessing import Process
 from multiprocessing import Queue
+from pyvirtualdisplay import Display
 
 
 multi_counter = 0
 multi_total = 0
-display = None
 
 
 def create_cli_parser():
@@ -54,10 +55,6 @@ def create_cli_parser():
                            action='store_true',
                            help='Screenshot all supported protocols, \
                            using Selenium for HTTP')
-    protocols.add_argument('--engine', default=None,
-                           metavar='Screenshot Engine to use',
-                           help=('Which engine to use for screenshotting \
-                            (selenium, phantomjs, ghost'))
 
     input_options = parser.add_argument_group('Input Options')
     input_options.add_argument('-f', metavar='Filename', default=None,
@@ -90,6 +87,9 @@ def create_cli_parser():
     report_options.add_argument('--results', metavar='Hosts Per Page',
                                 default=25, type=int, help='Number of Hosts per\
                                  page of the report')
+    report_options.add_argument('--no-prompt', default=False,
+                                action='store_true',
+                                help='Don\'t prompt to open the report')
 
     http_options = parser.add_argument_group('Web Options')
     http_options.add_argument('--user-agent', metavar='User Agent',
@@ -120,7 +120,8 @@ def create_cli_parser():
     if args.d is not None:
         if args.d.startswith('/') or re.match(
                 '^[A-Za-z]:\\\\', args.d) is not None:
-            args.d = args.d.rstrip('/', '\\')
+            args.d = args.d.rstrip('/')
+            args.d = args.d.rstrip('\\')
         else:
             args.d = os.path.join(local_path, args.d)
 
@@ -130,18 +131,18 @@ def create_cli_parser():
             sys.exit()
         else:
             if os.path.isdir(args.d):
-                overwrite_dir = raw_input('Directory Exists! Do you want to\
-                 overwrite? [y/n]')
+                overwrite_dir = raw_input(('Directory Exists! Do you want to '
+                                           'overwrite? [y/n]'))
                 overwrite_dir = overwrite_dir.lower().strip()
                 if overwrite_dir == 'n':
-                    print 'Quitting...Restart and provide the proper\
-                     directory to write to!'
+                    print('Quitting...Restart and provide the proper '
+                          'directory to write to!')
                     sys.exit()
                 elif overwrite_dir == 'y':
                     pass
                 else:
-                    print 'Quitting since you didn\'t provide \
-                    a valid response...'
+                    print('Quitting since you didn\'t provide '
+                          'a valid response...')
                     sys.exit()
 
     else:
@@ -152,12 +153,12 @@ def create_cli_parser():
     args.log_file_path = os.path.join(args.d, 'logfile.log')
 
     if args.f is None and args.single is None:
-        print "[*] Error: You didn't specify a file! I need a file containing\
-         URLs!"
+        print("[*] Error: You didn't specify a file! I need a file containing "
+              "URLs!")
         parser.print_help()
         sys.exit()
 
-    if not any((args.engine, args.web, args.vnc, args.rdp, args.all_protocols, args.headless)):
+    if not any((args.web, args.vnc, args.rdp, args.all_protocols, args.headless)):
         print "[*] Error: You didn't give me an action to perform."
         print "[*] Error: Please use --web, --rdp, or --vnc!\n"
         parser.print_help()
@@ -173,12 +174,12 @@ def create_cli_parser():
 
 def single_mode(cli_parsed, url=None, q=None):
     display = None
-    if cli_parsed.engine == 'selenium':
+    if cli_parsed.web:
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
         display = Display(visible=0, size=(1920, 1080))
         display.start()
-    elif cli_parsed.engine == 'phantomjs':
+    elif cli_parsed.headless:
         create_driver = phantomjs_module.create_driver
         capture_host = phantomjs_module.capture_host
     else:
@@ -266,6 +267,15 @@ def multi_callback(x):
         print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(multi_counter, multi_total)
 
 
+def open_file_input():
+    print 'Would you like to open the report now? [y/n]',
+    while True:
+        try:
+            return strtobool(raw_input().lower())
+        except ValueError:
+            print "Please respond with y or n",
+
+
 if __name__ == "__main__":
     title_screen()
     cli_parsed = create_cli_parser()
@@ -276,16 +286,16 @@ if __name__ == "__main__":
 
     create_folders_css(cli_parsed)
 
-    if cli_parsed.engine == 'ghost':
-        logging.basicConfig(filename=cli_parsed.log_file_path,
-                            level=logging.WARNING)
-        logger = logging.getLogger('ghost')
-
     if cli_parsed.single:
         single_mode(cli_parsed)
 
     if cli_parsed.f is not None:
         multi_mode(cli_parsed)
 
-    print('\n[*] Done! Check out the report in the {0} folder!').format(
+    print('\n[*] Done! Report written in the {0} folder!').format(
         cli_parsed.d)
+
+    if not cli_parsed.no_prompt:
+        open_file = open_file_input()
+        if open_file:
+            webbrowser.open(os.path.join(cli_parsed.d, "report.html"))
