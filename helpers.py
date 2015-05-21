@@ -8,56 +8,6 @@ import xml.etree.ElementTree as XMLParser
 from fuzzywuzzy import fuzz
 
 
-def scanner(cli_parsed):
-    # This function was developed by Rohan Vazarkar, and then I slightly
-    # modified it to fit.  Thanks for writing this man.
-    ports = [80, 443, 8080, 8443]
-
-    # Create a list of all identified web servers
-    live_webservers = []
-
-    # Define the timeout limit
-    timeout = 5
-
-    scanner_output_path = join(output_obj.eyewitness_path, "scanneroutput.txt")
-
-    # Write out the live machine to same path as EyeWitness
-    try:
-        ip_range = IPNetwork(cidr_range)
-        socket.setdefaulttimeout(timeout)
-
-        for ip_to_scan in ip_range:
-            ip_to_scan = str(ip_to_scan)
-            for port in ports:
-                print "[*] Scanning " + ip_to_scan + " on port " + str(port)
-                result = checkHostPort(ip_to_scan, port)
-                if (result == 0):
-                    # port is open, add to the list
-                    if port is 443:
-                        add_to_list = "https://" + ip_to_scan + ":" + str(port)
-                    else:
-                        add_to_list = "http://" + ip_to_scan + ":" + str(port)
-                    print "[*] Potential live webserver at " + add_to_list
-                    live_webservers.append(add_to_list)
-                else:
-                    if (result == 10035 or result == 10060):
-                        # Host is unreachable
-                        pass
-
-    except KeyboardInterrupt:
-        print "[*] Scan interrupted by you rage quitting!"
-        print "[*] Writing out live web servers found so far..."
-
-    # Write out the live machines which were found so far
-    for live_computer in live_webservers:
-        with open(scanner_output_path, 'a') as scanout:
-            scanout.write("{0}{1}".format(live_computer, os.linesep))
-
-    frmt_str = "List of live machines written to: {0}"
-    print frmt_str.format(scanner_output_path)
-    sys.exit()
-
-
 def target_creator(command_line_object):
 
     if command_line_object.createtargets is not None:
@@ -458,6 +408,25 @@ def create_report_toc_head(date, time):
         <h2>Table of Contents</h2>""")
 
 
+def vnc_rdp_table_head():
+    return ("""<table border=\"1\" align=\"center\">
+    <tr>
+    <th>IP / Screenshot</th>
+    </tr>""")
+
+
+def vnc_rdp_header(date, time):
+    web_index_head = ("""<html>
+    <head>
+    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+    <title>EyeWitness Report</title>
+    </head>
+    <body>
+    <center>Report Generated on {0} at {1}</center>
+    <br>""").format(date, time)
+    return web_index_head
+
+
 def title_screen():
     if platform.system() == "Windows":
         os.system('cls')
@@ -515,8 +484,84 @@ def process_group(data, group, toc, toc_table, page_num, section, sectionid, htm
     return grouped_elements, toc, toc_table, html
 
 
+def write_vnc_rdp_data(cli_parsed, data):
+    vncstuff = [x for x in data if x.proto == 'vnc']
+    rdpstuff = [x for x in data if x.proto == 'rdp']
+
+    for x in [x for x in [vncstuff, rdpstuff] if len(x) > 0]:
+        if len(x) == 0:
+            return
+        pages = []
+        html = u""
+        counter = 1
+        proto = x[0].proto
+        header = vnc_rdp_header(cli_parsed.date, cli_parsed.time)
+        table_head = vnc_rdp_table_head()
+        for y in x:
+            html += y.create_table_html()
+            if counter % cli_parsed.results == 0:
+                html = (header + "EW_REPLACEME" + table_head + html +
+                        "</table><br>")
+                pages.append(html)
+                html = u""
+            counter += 1
+
+        if html != u"":
+            html = (header + "EW_REPLACEME" + table_head + html +
+                    "</table><br>")
+            pages.append(html)
+
+        if len(pages) == 1:
+            with open(os.path.join(cli_parsed.d, proto + '_report.html'), 'a') as f:
+                f.write(pages[0].replace('EW_REPLACEME', ''))
+                f.write("</body>\n</html>")
+        else:
+            num_pages = len(pages) + 1
+            bottom_text = "\n<center><br>"
+            bottom_text += (
+                "<a href=\"{0}_report.html\"> Page 1</a>").format(proto)
+            for i in range(2, num_pages):
+                bottom_text += ("<a href=\"{0}_report_page{1}.html\"> Page {1}</a>").format(proto,
+                                                                                            str(i))
+            bottom_text += "</center>\n"
+            top_text = bottom_text
+            for i in range(0, len(pages)):
+                headfoot = "<center>"
+                if i == 0:
+                    headfoot += ("<a href=\"{0}_report_page2.html\"> Next Page "
+                                 "</a></center>").format(proto)
+                elif i == len(pages) - 1:
+                    if i == 1:
+                        headfoot += ("<a href=\"{0}_report.html\">Previous Page"
+                                     "</a>&nbsp</center>").format(proto)
+                    else:
+                        headfoot += ("<a href=\"{0}_report_page{1}.html\"> Previous Page "
+                                     "</a></center>").format(proto, str(i))
+                elif i == 1:
+                    headfoot += ("<a href=\"{0}_report.html\">Previous Page</a>&nbsp"
+                                 "<a href=\"{0}_report_page{1}.html\"> Next Page"
+                                 "</a></center>").format(proto, str(i+2))
+                else:
+                    headfoot += ("<a href=\"{0}_report_page{1}.html\">Previous Page</a>"
+                                 "&nbsp<a href=\"{0}_report_page{2}.html\"> Next Page"
+                                 "</a></center>").format(proto, str(i), str(i+2))
+                pages[i] = pages[i].replace(
+                    'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
+
+            with open(os.path.join(cli_parsed.d, proto + '_report.html'), 'a') as f:
+                f.write(pages[0])
+            for i in range(2, len(pages) + 1):
+                with open(os.path.join(cli_parsed.d, proto + '_report_page{0}.html'.format(str(i))), 'w') as f:
+                    f.write(pages[i - 1])
+
+
 def sort_data_and_write(cli_parsed, data):
     total_results = len(data)
+    from modules.objects import VNCRDPTableObject
+    vncrdpdata = [x for x in data if isinstance(x, VNCRDPTableObject)]
+    data[:] = [x for x in data if not isinstance(x, VNCRDPTableObject)]
+    write_vnc_rdp_data(cli_parsed, vncrdpdata)
+    web_results = len(data)
     categories = [(None, 'Uncategorized', 'uncat'),
                   ('cms', 'Content Management System (CMS)', 'cms'),
                   ('idrac', 'IDRAC/ILo', 'idrac'),
@@ -568,7 +613,7 @@ def sort_data_and_write(cli_parsed, data):
     toc += "</ul>"
     toc_table += "<tr><td>Errors</td><td>{0}</td></tr>".format(
         str(len(errors)))
-    toc_table += "<tr><th>Total</th><td>{0}</td></tr>".format(total_results)
+    toc_table += "<tr><th>Total</th><td>{0}</td></tr>".format(web_results)
     toc_table += "</table>"
 
     if html != u"":
@@ -585,7 +630,7 @@ def sort_data_and_write(cli_parsed, data):
             f.write("</body>\n</html>")
     else:
         num_pages = len(pages) + 1
-        bottom_text = "\n<center style=\"width:1000px\"><br>"
+        bottom_text = "\n<center><br>"
         bottom_text += ("<a href=\"report.html\"> Page 1</a>")
         for i in range(2, num_pages):
             bottom_text += ("<a href=\"report_page{0}.html\"> Page {0}</a>").format(
@@ -598,8 +643,12 @@ def sort_data_and_write(cli_parsed, data):
                 headfoot += ("<a href=\"report_page2.html\"> Next Page "
                              "</a></center>")
             elif i == len(pages) - 1:
-                headfoot += ("<a href=\"report_page{0}.html\"> Previous Page "
-                             "</a></center>").format(str(i))
+                if i == 1:
+                    headfoot += ("<a href=\"report.html\"> Previous Page "
+                                 "</a></center>")
+                else:
+                    headfoot += ("<a href=\"report_page{0}.html\"> Previous Page "
+                                 "</a></center>").format(str(i))
             elif i == 1:
                 headfoot += ("<a href=\"report.html\">Previous Page</a>&nbsp"
                              "<a href=\"report_page{0}.html\"> Next Page"
@@ -611,6 +660,8 @@ def sort_data_and_write(cli_parsed, data):
             pages[i] = pages[i].replace(
                 'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
 
+        if len(pages) == 0:
+            return
         with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
             f.write(toc)
             f.write(pages[0])

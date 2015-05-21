@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 
 import argparse
+import glob
 import logging
 import netaddr
 import os
+import qt4reactor
 import re
 import sys
 import time
 import webbrowser
 
+from distutils.util import strtobool
 from fuzzywuzzy import fuzz
 from helpers import create_folders_css
 from helpers import create_table_head
@@ -19,11 +22,11 @@ from helpers import get_ua_values
 from helpers import sort_data_and_write
 from helpers import target_creator
 from helpers import title_screen
-from modules import ghost_module
+from helpers import vnc_rdp_header
 from modules import objects
 from modules import phantomjs_module
 from modules import selenium_module
-from distutils.util import strtobool
+from modules import vnc_module
 from multiprocessing import Manager
 from multiprocessing import Pool
 from multiprocessing import Process
@@ -218,8 +221,6 @@ def single_mode(cli_parsed, url=None, q=None):
         display.stop()
     if q is None:
         html = result.create_table_html()
-        print(
-            '\n[*] Done! Check out the report in the {0} folder!').format(cli_parsed.d)
         with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
             f.write(web_index_head)
             f.write(create_table_head())
@@ -230,6 +231,36 @@ def single_mode(cli_parsed, url=None, q=None):
         do_jitter(cli_parsed)
 
 
+def single_vnc_rdp(cli_parsed, engine, url=None, q=None):
+    if url is None:
+        url = cli_parsed.single
+    if engine == 'vnc':
+        capture_host = vnc_module.capture_host
+
+        if ':' in url:
+            ip, port = url.split(':')
+            port = int(port)
+        else:
+            ip, port = url, 5900
+
+        obj = objects.VNCRDPTableObject('vnc')
+
+    obj.remote_system = ip
+    obj.port = port
+    obj.set_paths(cli_parsed.d)
+
+    capture_host(obj)
+
+    if q is None:
+        html = obj.create_table_html()
+        with open(os.path.join(cli_parsed.d, engine + '_report.html'), 'w') as f:
+            f.write(vnc_rdp_header(cli_parsed.date, cli_parsed.time))
+            f.write(html)
+            f.write("</table><br>")
+    else:
+        q.put(obj)
+
+
 def multi_mode(cli_parsed):
     global multi_total
     p = Pool(cli_parsed.threads)
@@ -237,11 +268,17 @@ def multi_mode(cli_parsed):
     data = m.Queue()
     threads = []
 
-    url_list, rdp_list, vnc_List = target_creator(cli_parsed)
+    url_list, rdp_list, vnc_list = target_creator(cli_parsed)
     multi_total = len(url_list)
-    for url in url_list:
-        threads.append(
-            p.apply_async(single_mode, [cli_parsed, url, data], callback=multi_callback))
+    if any((cli_parsed.web, cli_parsed.headless)):
+        for url in url_list:
+            threads.append(
+                p.apply_async(single_mode, [cli_parsed, url, data], callback=multi_callback))
+
+    if cli_parsed.vnc:
+        for vnc in vnc_list:
+            threads.append(
+                p.apply_async(single_vnc_rdp, [cli_parsed, 'vnc', vnc, data], callback=multi_callback))
 
     p.close()
     try:
@@ -287,7 +324,15 @@ if __name__ == "__main__":
     create_folders_css(cli_parsed)
 
     if cli_parsed.single:
-        single_mode(cli_parsed)
+        if any((cli_parsed.web, cli_parsed.headless)):
+            single_mode(cli_parsed)
+        elif cli_parsed.rdp:
+            single_vnc_rdp(cli_parsed, 'rdp')
+        elif cli_parsed.vnc:
+            single_vnc_rdp(cli_parsed, 'vnc')
+        print(
+            '\n[*] Done! Check out the report in the {0} folder!').format(cli_parsed.d)
+        sys.exit()
 
     if cli_parsed.f is not None:
         multi_mode(cli_parsed)
@@ -298,4 +343,6 @@ if __name__ == "__main__":
     if not cli_parsed.no_prompt:
         open_file = open_file_input()
         if open_file:
-            webbrowser.open(os.path.join(cli_parsed.d, "report.html"))
+            files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
+            for f in files:
+                webbrowser.open(f)

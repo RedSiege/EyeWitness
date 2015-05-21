@@ -208,7 +208,7 @@ class HTTPTableObject(object):
             </tr>
             """)
         elif self.error_state == 'Timeout':
-            html += ("""</td><td>Hit timeout limit while attempting to 
+            html += ("""</td><td>Hit timeout limit while attempting to
             screenshot</td></tr>""")
         else:
             html += ("""<br><br><a href=\"{0}\"
@@ -337,15 +337,16 @@ class UAObject(HTTPTableObject):
         return html
 
 
-class RDPTableObject(object):
+class VNCRDPTableObject(object):
 
     """docstring for RDPTableObject"""
 
-    def __init__(self):
-        super(RDPTableObject, self).__init__()
+    def __init__(self, proto):
+        super(VNCRDPTableObject, self).__init__()
         self._screenshot_path = None
         self._port = None
         self._remote_system = None
+        self._proto = proto
 
     @property
     def screenshot_path(self):
@@ -369,39 +370,27 @@ class RDPTableObject(object):
 
     @remote_system.setter
     def remote_system(self, remote_system):
-        self._remote_system = remote_system
-
-
-class VNCTableObject(object):
-
-    """docstring for VNCTableObject"""
-
-    def __init__(self):
-        super(VNCTableObject, self).__init__()
-        self._screenshot_path = None
-        self._port = None
-        self._remote_system = None
+        self._remote_system = remote_system.strip()
 
     @property
-    def screenshot_path(self):
-        return self._screenshot_path
+    def proto(self):
+        return self._proto
 
-    @screenshot_path.setter
-    def screenshot_path(self, screenshot_path):
-        self._screenshot_path = screenshot_path
+    @proto.setter
+    def proto(self, proto):
+        self._proto = proto
 
-    @property
-    def port(self):
-        return self._port
+    def create_table_html(self):
+        html = "<tr><td><b><center>{0}:{1}</center></b><br>".format(
+            self.remote_system, str(self.port))
+        html += ("<div id=\"screenshot\"><img src=\"{0}\">"
+                 "</div></td></tr>").format(self._screenshot_path)
 
-    @port.setter
-    def port(self, port):
-        self._port = port
+        return html
 
-    @property
-    def remote_system(self):
-        return self._remote_system
-
-    @remote_system.setter
-    def remote_system(self, remote_system):
-        self._remote_system = remote_system
+    def set_paths(self, outdir):
+        file_name = self.remote_system + ':' + str(self.port)
+        for char in [':', '/', '?', '=', '%', '+']:
+            file_name = file_name.replace(char, '.')
+        self.screenshot_path = os.path.join(
+            outdir, 'screens', file_name + '.jpg')
