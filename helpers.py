@@ -4,6 +4,8 @@ import re
 import shutil
 import sys
 import xml.etree.ElementTree as XMLParser
+import time
+import random
 
 from fuzzywuzzy import fuzz
 
@@ -671,12 +673,16 @@ def sort_data_and_write(cli_parsed, data):
 
 
 def do_jitter(cli_parsed):
-    if cli_parsed.jitter is not "None":
+    if cli_parsed.jitter is not 0:
         sleep_value = random.randint(0, 30)
         sleep_value = sleep_value * .01
         sleep_value = 1 - sleep_value
-        sleep_value = sleep_value * int(cli_parsed.jitter)
+        sleep_value = sleep_value * cli_parsed.jitter
         print "[*] Sleeping for " + str(sleep_value) + " seconds.."
+        try:
+            time.sleep(sleep_value)
+        except KeyboardInterrupt:
+            pass
 
 
 def create_folders_css(cli_parsed):

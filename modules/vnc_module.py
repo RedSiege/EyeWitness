@@ -106,7 +106,7 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         return ScreenShotObserver(controller, self._path)
 
 
-def capture_host(vnc_object):
+def capture_host(cli_parsed, vnc_object):
     log._LOG_LEVEL = log.Level.ERROR
     app = QtGui.QApplication(sys.argv)
 

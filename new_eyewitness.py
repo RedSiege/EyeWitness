@@ -23,10 +23,12 @@ from helpers import sort_data_and_write
 from helpers import target_creator
 from helpers import title_screen
 from helpers import vnc_rdp_header
+from helpers import vnc_rdp_table_head
 from modules import objects
 from modules import phantomjs_module
 from modules import selenium_module
 from modules import vnc_module
+from modules import rdp_module
 from multiprocessing import Manager
 from multiprocessing import Pool
 from multiprocessing import Process
@@ -244,21 +246,41 @@ def single_vnc_rdp(cli_parsed, engine, url=None, q=None):
             ip, port = url, 5900
 
         obj = objects.VNCRDPTableObject('vnc')
+    else:
+        capture_host = rdp_module.capture_host
+
+        if ':' in url:
+            ip, port = url.split(':')
+            port = int(port)
+        else:
+            ip, port = url, 3389
+
+        obj = objects.VNCRDPTableObject('rdp')
 
     obj.remote_system = ip
     obj.port = port
     obj.set_paths(cli_parsed.d)
 
-    capture_host(obj)
+    capture_host(cli_parsed, obj)
 
     if q is None:
         html = obj.create_table_html()
         with open(os.path.join(cli_parsed.d, engine + '_report.html'), 'w') as f:
             f.write(vnc_rdp_header(cli_parsed.date, cli_parsed.time))
+            f.write(vnc_rdp_table_head())
             f.write(html)
             f.write("</table><br>")
     else:
         q.put(obj)
+
+
+def multi_callback(x):
+    global multi_counter
+    global multi_total
+    multi_counter += 1
+
+    if multi_counter % 15 == 0:
+        print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(multi_counter, multi_total)
 
 
 def multi_mode(cli_parsed):
@@ -269,16 +291,22 @@ def multi_mode(cli_parsed):
     threads = []
 
     url_list, rdp_list, vnc_list = target_creator(cli_parsed)
-    multi_total = len(url_list)
+    multi_total = len(url_list) + len(rdp_list) + len(vnc_list)
     if any((cli_parsed.web, cli_parsed.headless)):
         for url in url_list:
             threads.append(
-                p.apply_async(single_mode, [cli_parsed, url, data], callback=multi_callback))
+                p.apply_async(single_mode, [cli_parsed, url, data],
+                              callback=multi_callback))
 
     if cli_parsed.vnc:
         for vnc in vnc_list:
             threads.append(
                 p.apply_async(single_vnc_rdp, [cli_parsed, 'vnc', vnc, data], callback=multi_callback))
+
+    if cli_parsed.rdp:
+        for rdp in rdp_list:
+            threads.append(
+                p.apply_async(single_vnc_rdp, [cli_parsed, 'rdp', rdp, data], callback=multi_callback))
 
     p.close()
     try:
@@ -293,15 +321,6 @@ def multi_mode(cli_parsed):
         results.append(data.get())
 
     sort_data_and_write(cli_parsed, results)
-
-
-def multi_callback(x):
-    global multi_counter
-    global multi_total
-    multi_counter += 1
-
-    if multi_counter % 15 == 0:
-        print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(multi_counter, multi_total)
 
 
 def open_file_input():
@@ -332,6 +351,12 @@ if __name__ == "__main__":
             single_vnc_rdp(cli_parsed, 'vnc')
         print(
             '\n[*] Done! Check out the report in the {0} folder!').format(cli_parsed.d)
+        if not cli_parsed.no_prompt:
+            open_file = open_file_input()
+            if open_file:
+                files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
+                for f in files:
+                    webbrowser.open(f)
         sys.exit()
 
     if cli_parsed.f is not None:
