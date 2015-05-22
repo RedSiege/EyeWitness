@@ -6,11 +6,16 @@ import ssl
 import sys
 import urllib2
 
-from selenium import webdriver
-from selenium.common.exceptions import NoAlertPresentException
-from selenium.common.exceptions import TimeoutException
-from selenium.common.exceptions import UnexpectedAlertPresentException
-from selenium.common.exceptions import WebDriverException
+try:
+    from selenium import webdriver
+    from selenium.common.exceptions import NoAlertPresentException
+    from selenium.common.exceptions import TimeoutException
+    from selenium.common.exceptions import UnexpectedAlertPresentException
+    from selenium.common.exceptions import WebDriverException
+except ImportError:
+    print '[*] Selenium not found.'
+    print '[*] Please run the script in the setup directory!'
+    sys.exit()
 
 title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 
@@ -18,7 +23,9 @@ title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 def create_driver(cli_parsed, user_agent=None):
     profile = webdriver.FirefoxProfile()
     profile.set_preference('network.http.phishy-userpass-length', 255)
-    extension_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin', 'dismissauth.xpi')
+    extension_path = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        '..', 'bin', 'dismissauth.xpi')
     profile.add_extension(extension_path)
 
     if cli_parsed.user_agent is not None:
