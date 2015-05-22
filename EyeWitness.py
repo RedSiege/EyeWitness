@@ -2,10 +2,7 @@
 
 import argparse
 import glob
-import logging
-import netaddr
 import os
-import qt4reactor
 import re
 import sys
 import time
@@ -13,18 +10,17 @@ import webbrowser
 import shutil
 
 from distutils.util import strtobool
-from fuzzywuzzy import fuzz
-from helpers import create_folders_css
-from helpers import create_table_head
-from helpers import create_web_index_head
-from helpers import default_creds_category
-from helpers import do_jitter
-from helpers import get_ua_values
-from helpers import sort_data_and_write
-from helpers import target_creator
-from helpers import title_screen
-from helpers import vnc_rdp_header
-from helpers import vnc_rdp_table_head
+from modules.helpers import create_folders_css
+from modules.helpers import create_table_head
+from modules.helpers import create_web_index_head
+from modules.helpers import default_creds_category
+from modules.helpers import do_jitter
+from modules.helpers import get_ua_values
+from modules.helpers import sort_data_and_write
+from modules.helpers import target_creator
+from modules.helpers import title_screen
+from modules.helpers import vnc_rdp_header
+from modules.helpers import vnc_rdp_table_head
 from modules import objects
 from modules import phantomjs_module
 from modules import selenium_module
@@ -32,8 +28,6 @@ from modules import vnc_module
 from modules import rdp_module
 from multiprocessing import Manager
 from multiprocessing import Pool
-from multiprocessing import Process
-from multiprocessing import Queue
 from pyvirtualdisplay import Display
 
 
