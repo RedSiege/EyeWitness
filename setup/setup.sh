@@ -41,6 +41,7 @@ case ${osinfo} in
     pip install python-Levenshtein
     cd ../bin/
     wget http://www.christophertruncer.com/InstallMe/phantomjs
+    chmod +x phantomjs
     cd ..
   ;;
   # Debian 7+ Dependency Installation

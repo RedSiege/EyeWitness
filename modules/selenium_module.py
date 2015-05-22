@@ -19,6 +19,8 @@ title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 def create_driver(cli_parsed, user_agent=None):
     profile = webdriver.FirefoxProfile()
     profile.set_preference('network.http.phishy-userpass-length', 255)
+    extension_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin', 'dismissauth.xpi')
+    profile.add_extension(extension_path)
 
     if cli_parsed.user_agent is not None:
         profile.set_preference(
@@ -109,15 +111,11 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     try:
         driver.save_screenshot(http_object.screenshot_path)
     except WebDriverException:
-        print '[*] Error saving web page screenshot \
-            for ' + http_object.remote_system
+        print('[*] Error saving web page screenshot'
+              ' for ' + http_object.remote_system)
     try:
-        # tag = title_regex.search(driver.page_source.encode('utf-8'))
-        # if tag is not None:
-        #     http_object.page_title = tag.group(2).strip()
-        # else:
-        #     http_object.page_title = 'Unknown'
-        http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode('utf-8')
+        http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode(
+            'utf-8')
         http_object.headers = headers
         http_object.source_code = driver.page_source.encode('utf-8')
 
