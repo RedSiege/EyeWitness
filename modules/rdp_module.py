@@ -1,12 +1,15 @@
 import rdpy.core.log as log
 import sys
 
-from PyQt4 import QtCore
-from PyQt4 import QtGui
-from rdpy.core.error import RDPSecurityNegoFail
-from rdpy.protocol.rdp import rdp
-from rdpy.ui.qt4 import RDPBitmapToQtImage
-from twisted.internet import task
+try:
+    from PyQt4 import QtGui
+    from rdpy.core.error import RDPSecurityNegoFail
+    from rdpy.protocol.rdp import rdp
+    from rdpy.ui.qt4 import RDPBitmapToQtImage
+except ImportError:
+    print '[*] RDP libraries not found.'
+    print '[*] Please run the script in the setup directory!'
+    sys.exit()
 
 
 class RDPScreenShotFactory(rdp.ClientFactory):

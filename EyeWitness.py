@@ -28,7 +28,12 @@ from modules import vnc_module
 from modules import rdp_module
 from multiprocessing import Manager
 from multiprocessing import Pool
-from pyvirtualdisplay import Display
+try:
+    from pyvirtualdisplay import Display
+except ImportError:
+    print '[*] pyvirtualdisplay not found.'
+    print '[*] Please run the script in the setup directory!'
+    sys.exit()
 
 
 multi_counter = 0

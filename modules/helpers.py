@@ -7,7 +7,12 @@ import xml.etree.ElementTree as XMLParser
 import time
 import random
 
-from fuzzywuzzy import fuzz
+try:
+    from fuzzywuzzy import fuzz
+except ImportError:
+    print '[*] fuzzywuzzy not found.'
+    print '[*] Please run the script in the setup directory!'
+    sys.exit()
 
 
 def target_creator(command_line_object):

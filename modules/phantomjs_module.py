@@ -5,11 +5,17 @@ import socket
 import ssl
 import time
 import urllib2
+import sys
 
-from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+try:
+    from selenium import webdriver
+    from selenium.common.exceptions import TimeoutException
+    from selenium.common.exceptions import WebDriverException
+    from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+except ImportError:
+    print '[*] selenium not found.'
+    print '[*] Please run the script in the setup directory!'
+    sys.exit()
 
 title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
 

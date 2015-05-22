@@ -4,7 +4,6 @@ import re
 import socket
 import ssl
 import sys
-import threading
 import urllib2
 
 from selenium import webdriver
