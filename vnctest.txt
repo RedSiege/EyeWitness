@@ -1,2 +1,0 @@
-localhost:5900
-localhost:5901

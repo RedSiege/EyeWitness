@@ -728,7 +728,8 @@ def create_folders_css(cli_parsed):
     os.makedirs(cli_parsed.d)
     os.makedirs(os.path.join(cli_parsed.d, 'screens'))
     os.makedirs(os.path.join(cli_parsed.d, 'source'))
-    shutil.copy2('bin/jquery-1.11.3.min.js', cli_parsed.d)
+    local_path = os.path.dirname(os.path.realpath(__file__))
+    shutil.copy2(os.path.join(local_path, 'bin', 'jquery-1.11.3.min.js'), cli_parsed.d)
 
     with open(os.path.join(cli_parsed.d, 'style.css'), 'w') as f:
         f.write(css_page)

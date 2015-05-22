@@ -32,6 +32,7 @@ case ${osinfo} in
     pip install fuzzywuzzy
     pip install selenium
     pip install pyvirtualdisplay
+    pip install python-Levenshtein
     cd ../bin/
     wget http://www.christophertruncer.com/InstallMe/phantomjs
     cd ..
