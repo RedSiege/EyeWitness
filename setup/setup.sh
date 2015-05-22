@@ -28,6 +28,12 @@ case ${osinfo} in
   Kali)
     echo '[*] Installing Kali Dependencies'
     apt-get install python-qt4 python-pip xvfb python-netaddr
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
+    python setup.py install
+    cd ..
+    rm -rf rdpy
     echo '[*] Installing Python Modules'
     pip install fuzzywuzzy
     pip install selenium
