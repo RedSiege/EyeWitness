@@ -28,6 +28,7 @@ from modules import vnc_module
 from modules import rdp_module
 from multiprocessing import Manager
 from multiprocessing import Pool
+from multiprocessing import active_children
 try:
     from pyvirtualdisplay import Display
 except ImportError:
@@ -312,6 +313,7 @@ def multi_mode(cli_parsed):
     p.close()
     try:
         while not all([r.ready() for r in threads]):
+            active_children()
             time.sleep(1)
     except KeyboardInterrupt:
         p.terminate()
