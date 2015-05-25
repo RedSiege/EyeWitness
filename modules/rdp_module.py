@@ -1,15 +1,19 @@
-import rdpy.core.log as log
-import sys
+import sys, os, getopt
 
 try:
-    from PyQt4 import QtGui
-    from rdpy.core.error import RDPSecurityNegoFail
+    from PyQt4 import QtCore, QtGui
     from rdpy.protocol.rdp import rdp
     from rdpy.ui.qt4 import RDPBitmapToQtImage
+    import rdpy.core.log as log
+    from rdpy.core.error import RDPSecurityNegoFail
+    from twisted.internet import task
 except ImportError:
     print '[*] RDP libraries not found.'
     print '[*] Please run the script in the setup directory!'
     sys.exit()
+
+#set log level
+log._LOG_LEVEL = log.Level.INFO
 
 
 class RDPScreenShotFactory(rdp.ClientFactory):
@@ -34,7 +38,8 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         self._height = height
         self._path = path
         self._timeout = timeout
-        self._security = "ssl"
+        #NLA server can't be screenshooting
+        self._security = rdp.SecurityLevel.RDP_LEVEL_SSL
 
     def clientConnectionLost(self, connector, reason):
         """
@@ -44,10 +49,11 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         """
         if reason.type == RDPSecurityNegoFail and self._security != "rdp":
             log.info("due to RDPSecurityNegoFail try standard security layer")
-            self._security = "rdp"
+            self._security = rdp.SecurityLevel.RDP_LEVEL_RDP
             connector.connect()
             return
 
+        log.info("connection lost : %s " % reason)
         RDPScreenShotFactory.__STATE__.append((connector.host, connector.port, reason))
         RDPScreenShotFactory.__INSTANCE__ -= 1
         if(RDPScreenShotFactory.__INSTANCE__ == 0):
@@ -60,6 +66,7 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         @param connector: twisted connector use for rdp connection (use reconnect to restart connection)
         @param reason: str use to advertise reason of lost connection
         """
+        log.info("connection failed : %s"%reason)
         RDPScreenShotFactory.__STATE__.append((connector.host, connector.port, reason))
         RDPScreenShotFactory.__INSTANCE__ -= 1
         if(RDPScreenShotFactory.__INSTANCE__ == 0):
@@ -94,13 +101,12 @@ class RDPScreenShotFactory(rdp.ClientFactory):
 
             def onUpdate(self, destLeft, destTop, destRight, destBottom, width, height, bitsPerPixel, isCompress, data):
                 """
-                @summary: callback use when bitmap is received
+                @summary: callback use when bitmap is received 
                 """
                 image = RDPBitmapToQtImage(width, height, bitsPerPixel, isCompress, data);
-
                 with QtGui.QPainter(self._buffer) as qp:
+                #draw image
                     qp.drawImage(destLeft, destTop, image, 0, 0, destRight - destLeft + 1, destBottom - destTop + 1)
-
                 if not self._startTimeout:
                     self._startTimeout = False
                     self._reactor.callLater(self._timeout, self.checkUpdate)
@@ -109,17 +115,25 @@ class RDPScreenShotFactory(rdp.ClientFactory):
                 """
                 @summary: callback use when RDP stack is connected (just before received bitmap)
                 """
+                log.info("connected %s"%addr)
+
+            def onSessionReady(self):
+                """
+                @summary: Windows session is ready
+                @see: rdp.RDPClientObserver.onSessionReady
+                """
                 pass
 
             def onClose(self):
                 """
                 @summary: callback use when RDP stack is closed
                 """
+                log.info("save screenshot into %s"%self._path)
                 self._buffer.save(self._path)
-
+                
             def checkUpdate(self):
                 self._controller.close();
-
+                
         controller.setScreen(self._width, self._height);
         controller.setSecurityLevel(self._security)
         return ScreenShotObserver(controller, self._width, self._height, self._path, self._timeout, self._reactor)
