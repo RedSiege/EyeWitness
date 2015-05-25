@@ -39,6 +39,7 @@ case ${osinfo} in
     pip install selenium
     pip install pyvirtualdisplay
     pip install python-Levenshtein
+    pip install pyasn1 --upgrade
     cd ../bin/
     wget http://www.christophertruncer.com/InstallMe/phantomjs
     chmod +x phantomjs
