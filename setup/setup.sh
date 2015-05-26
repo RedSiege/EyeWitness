@@ -49,31 +49,49 @@ case ${osinfo} in
   Debian)
     echo '[*] Installing Debian Dependencies'
     apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
+    python setup.py install
+    cd ..
+    rm -rf rdpy
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
+    pip install fuzzywuzzy
+    pip install selenium
+    pip install pyvirtualdisplay
+    pip install python-Levenshtein
+    pip install pyasn1
     echo
-    echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/ChrisTruncer/Ghost.py.git
-    cd Ghost.py
-    python setup.py install
+    cd ../bin/
+    wget http://www.christophertruncer.com/InstallMe/phantomjs
+    chmod +x phantomjs
     cd ..
-    rm -rf Ghost.py
   ;;
   # Ubuntu (tested in 13.10) Dependency Installation
   Ubuntu)
     echo '[*] Installing Ubuntu Dependencies'
     apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
+    python setup.py install
+    cd ..
+    rm -rf rdpy
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
+    pip install fuzzywuzzy
+    pip install selenium
+    pip install pyvirtualdisplay
+    pip install python-Levenshtein
+    pip install pyasn1
     echo
-    echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/ChrisTruncer/Ghost.py.git
-    cd Ghost.py
-    python setup.py install
+    cd ../bin/
+    wget http://www.christophertruncer.com/InstallMe/phantomjs
+    chmod +x phantomjs
     cd ..
-    rm -rf Ghost.py
   ;;
   # CentOS 6.5+ Dependency Installation
   CentOS)
@@ -89,21 +107,28 @@ case ${osinfo} in
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
                 python-argparse xvfb python-netaddr
     echo
-    echo '[*] Installing Python Modules'
-    pip install python_qt_binding
-    echo
-    echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/ChrisTruncer/Ghost.py.git
-    cd Ghost.py
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
     python setup.py install
     cd ..
-    rm -rf Ghost.py
+    rm -rf rdpy
+    echo '[*] Installing Python Modules'
+    pip install python_qt_binding
+    pip install fuzzywuzzy
+    pip install selenium
+    pip install pyvirtualdisplay
+    pip install python-Levenshtein
+    pip install pyasn1
+    echo
+    cd ../bin/
+    wget http://www.christophertruncer.com/InstallMe/phantomjs
+    chmod +x phantomjs
+    cd ..
   ;;
   # Notify Manual Installation Requirement And Exit
   *)
     echo "[Error]: ${OS} is not supported by this setup script."
-    echo '[Error]: To use EyeWitness, manually install python, PyQt4.'
-    echo '[Error]: Install ghost.py from https://github.com/ChrisTruncer/Ghost.py.git'
     echo
     exit 1
 esac
