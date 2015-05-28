@@ -27,7 +27,7 @@ case ${osinfo} in
   # Kali Dependency Installation
   Kali)
     echo '[*] Installing Kali Dependencies'
-    apt-get install python-qt4 python-pip xvfb python-netaddr
+    apt-get install python-qt4 python-pip xvfb python-netaddr python-dev
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -48,7 +48,7 @@ case ${osinfo} in
   # Debian 7+ Dependency Installation
   Debian)
     echo '[*] Installing Debian Dependencies'
-    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr
+    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -72,7 +72,7 @@ case ${osinfo} in
   # Ubuntu (tested in 13.10) Dependency Installation
   Ubuntu)
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr
+    apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -105,7 +105,7 @@ case ${osinfo} in
     fi
     echo '[*] Installing CentOS Dependencies'
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse xvfb python-netaddr
+                python-argparse xvfb python-netaddr python-dev
     echo
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
