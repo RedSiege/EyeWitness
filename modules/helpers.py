@@ -16,7 +16,16 @@ except ImportError:
 
 
 def target_creator(command_line_object):
+    """Parses input files to create target lists
 
+    Args:
+        command_line_object (ArgumentParser): Command Line Arguments
+
+    Returns:
+        List: URLs detected for http
+        List: Hosts detected for RDP
+        List: Hosts detected for VNC
+    """
     if command_line_object.createtargets is not None:
         print "Creating text file containing all web servers..."
 
@@ -266,12 +275,19 @@ def target_creator(command_line_object):
 
 
 def get_ua_values(cycle_value):
-    # Create the dicts which hold different user agents.
-    # Thanks to Chris John Riley for having an awesome tool which I could
-    # get this info from.  His tool - UAtester.py -
-    # http://blog.c22.cc/toolsscripts/ua-tester/
-    # Additional user agent strings came from -
-    # http://www.useragentstring.com/pages/useragentstring.php
+    """Create the dicts which hold different user agents.
+    Thanks to Chris John Riley for having an awesome tool which I
+    could get this info from. His tool - UAtester.py -
+    http://blog.c22.cc/toolsscripts/ua-tester/
+    Additional user agent strings came from -
+    http://www.useragentstring.com/pages/useragentstring.php
+
+    Args:
+        cycle_value (String): Which UA dict to retrieve
+
+    Returns:
+        Dict: Dictionary of user agents
+    """
 
     # "Normal" desktop user agents
     desktop_uagents = {
@@ -376,6 +392,15 @@ def get_ua_values(cycle_value):
 
 
 def create_web_index_head(date, time):
+    """Creates the header for a http report
+
+    Args:
+        date (String): Date of report start
+        time (String): Time of report start
+
+    Returns:
+        String: HTTP Report Start html
+    """
     return ("""<html>
         <head>
         <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
@@ -435,6 +460,8 @@ def vnc_rdp_header(date, time):
 
 
 def title_screen():
+    """Prints the title screen for EyeWitness
+    """
     if platform.system() == "Windows":
         os.system('cls')
     else:
@@ -454,11 +481,37 @@ def title_screen():
 
 
 def strip_nonalphanum(string):
+    """Strips any non-alphanumeric characters in the ascii range from a string
+
+    Args:
+        string (String): String to strip
+
+    Returns:
+        String: String stripped of all non-alphanumeric characters
+    """
     todel = ''.join(c for c in map(chr, range(256)) if not c.isalnum())
     return string.translate(None, todel)
 
 
 def process_group(data, group, toc, toc_table, page_num, section, sectionid, html):
+    """Retreives a group from the full data, and creates toc stuff
+
+    Args:
+        data (List): Full set of data containing all hosts
+        group (String): String representing group to process
+        toc (String): HTML for Table of Contents
+        toc_table (String): HTML for Table in ToC
+        page_num (int): Page number we're on in the report
+        section (String): Display name of the group
+        sectionid (String): Unique ID for ToC navigation
+        html (String): HTML for current page of report
+
+    Returns:
+        List: Elements for category sorted and grouped
+        String: HTML representing ToC
+        String: HTML representing ToC Table
+        String: HTML representing current report page
+    """
     group_data = sorted([x for x in data if x.category == group],
                         key=lambda (k): k.page_title)
 
@@ -492,6 +545,12 @@ def process_group(data, group, toc, toc_table, page_num, section, sectionid, htm
 
 
 def write_vnc_rdp_data(cli_parsed, data):
+    """Writes the reports for VNC and RDP hosts
+
+    Args:
+        cli_parsed (ArgumentParser): CLI Options
+        data (TYPE): Full set of VNC/RDP data
+    """
     vncstuff = [x for x in data if x.proto == 'vnc']
     rdpstuff = [x for x in data if x.proto == 'rdp']
 
@@ -563,21 +622,30 @@ def write_vnc_rdp_data(cli_parsed, data):
 
 
 def sort_data_and_write(cli_parsed, data):
+    """Writes out reports for HTTP objects
+
+    Args:
+        cli_parsed (TYPE): CLI Options
+        data (TYPE): Full set of data
+    """
+    # We'll be using this number for our table of contents
     total_results = len(data)
     from modules.objects import VNCRDPTableObject
+    # We want to seperate out VNC?RDP results and handle them seperately
     vncrdpdata = [x for x in data if isinstance(x, VNCRDPTableObject)]
     data[:] = [x for x in data if not isinstance(x, VNCRDPTableObject)]
     write_vnc_rdp_data(cli_parsed, vncrdpdata)
     web_results = len(data)
     categories = [(None, 'Uncategorized', 'uncat'),
+                  ('highval', 'High Value Targets', 'highval'),
                   ('cms', 'Content Management System (CMS)', 'cms'),
                   ('idrac', 'IDRAC/ILo', 'idrac'),
                   ('nas', 'Network Attached Storage (NAS)', 'nas'),
                   ('netdev', 'Network Devices', 'netdev'),
                   ('voip', 'Voice/Video over IP (VoIP)', 'voip'),
+                  ('crap', 'Splash Pages', 'crap'),
                   ('printer', 'Printers', 'printer'),
-                  ('highval', 'High Value Targets', 'highval'),
-                  ('crap', 'Splash Pages', 'crap')]
+                  ]
     if total_results == 0:
         print '[*] No URLS specified or no screenshots taken! Exiting'
         sys.exit()
@@ -596,6 +664,7 @@ def sort_data_and_write(cli_parsed, data):
     data[:] = [x for x in data if x.error_state is None]
     data = sorted(data, key=lambda (k): k.page_title)
     html = u""
+    # Loop over our categories and populate HTML
     for cat in categories:
         grouped, toc, toc_table, html = process_group(
             data, cat[0], toc, toc_table, len(pages), cat[1], cat[2], html)
@@ -608,7 +677,7 @@ def sort_data_and_write(cli_parsed, data):
                 pages.append(html)
                 html = u""
             counter += 1
-
+    # Add our errors here (at the very very end)
     for obj in errors:
         html += obj.create_table_html()
         if counter % cli_parsed.results == 0:
@@ -617,6 +686,8 @@ def sort_data_and_write(cli_parsed, data):
             pages.append(html)
             html = u""
         counter += 1
+
+    # Close out any stuff thats hanging
     toc += "</ul>"
     toc_table += "<tr><td>Errors</td><td>{0}</td></tr>".format(
         str(len(errors)))
@@ -639,11 +710,13 @@ def sort_data_and_write(cli_parsed, data):
         num_pages = len(pages) + 1
         bottom_text = "\n<center><br>"
         bottom_text += ("<a href=\"report.html\"> Page 1</a>")
+        # Generate our header/footer data here
         for i in range(2, num_pages):
             bottom_text += ("<a href=\"report_page{0}.html\"> Page {0}</a>").format(
                 str(i))
         bottom_text += "</center>\n"
         top_text = bottom_text
+        # Generate our next/previous page buttons
         for i in range(0, len(pages)):
             headfoot = "<center>"
             if i == 0:
@@ -664,9 +737,11 @@ def sort_data_and_write(cli_parsed, data):
                 headfoot += ("<a href=\"report_page{0}.html\">Previous Page</a>"
                              "&nbsp<a href=\"report_page{1}.html\"> Next Page"
                              "</a></center>").format(str(i), str(i+2))
+            # Finalize our pages by replacing placeholder stuff and writing out the headers/footers
             pages[i] = pages[i].replace(
                 'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
 
+        # Write out our report to disk!
         if len(pages) == 0:
             return
         with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
@@ -678,6 +753,14 @@ def sort_data_and_write(cli_parsed, data):
 
 
 def do_jitter(cli_parsed):
+    """Jitters between URLs to add delay/randomness
+
+    Args:
+        cli_parsed (ArgumentParser): CLI Object
+
+    Returns:
+        TYPE: Description
+    """
     if cli_parsed.jitter is not 0:
         sleep_value = random.randint(0, 30)
         sleep_value = sleep_value * .01
@@ -691,6 +774,11 @@ def do_jitter(cli_parsed):
 
 
 def create_folders_css(cli_parsed):
+    """Writes out the CSS file and generates folders for output
+
+    Args:
+        cli_parsed (ArgumentParser): CLI Object
+    """
     css_page = """img {
     max-width:100%;
     height:auto;
@@ -730,17 +818,28 @@ def create_folders_css(cli_parsed):
     }
     """
 
+    # Create output directories
     os.makedirs(cli_parsed.d)
     os.makedirs(os.path.join(cli_parsed.d, 'screens'))
     os.makedirs(os.path.join(cli_parsed.d, 'source'))
     local_path = os.path.dirname(os.path.realpath(__file__))
+    # Move our jquery file to the local directory
     shutil.copy2(os.path.join(local_path, '..', 'bin', 'jquery-1.11.3.min.js'), cli_parsed.d)
 
+    # Write our stylesheet to disk
     with open(os.path.join(cli_parsed.d, 'style.css'), 'w') as f:
         f.write(css_page)
 
 
-def default_creds_category(cli_parsed, http_object):
+def default_creds_category(http_object):
+    """Adds default credentials or categories to a http_object if either exist
+
+    Args:
+        http_object (HTTPTableObject): Object representing a URL
+
+    Returns:
+        HTTPTableObject: Object with creds/category added
+    """
     try:
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             '..', 'signatures.txt')
@@ -787,7 +886,7 @@ def default_creds_category(cli_parsed, http_object):
         http_object.category = None
         return http_object
     except IOError:
-        print ("[*] WARNING: Credentials file not in the same directory"
-            " as EyeWitness")
+        print("[*] WARNING: Credentials file not in the same directory"
+              " as EyeWitness")
         print '[*] Skipping credential check'
         return http_object

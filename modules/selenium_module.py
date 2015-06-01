@@ -17,24 +17,34 @@ except ImportError:
     print '[*] Please run the script in the setup directory!'
     sys.exit()
 
-title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
-
 
 def create_driver(cli_parsed, user_agent=None):
+    """Creates a selenium FirefoxDriver
+
+    Args:
+        cli_parsed (ArgumentParser): Command Line Object
+        user_agent (String, optional): Optional user-agent string
+
+    Returns:
+        FirefoxDriver: Selenium Firefox Webdriver
+    """
     profile = webdriver.FirefoxProfile()
-    profile.set_preference('network.http.phishy-userpass-length', 255)
+    # Load our custom firefox addon to handle basic auth.
     extension_path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         '..', 'bin', 'dismissauth.xpi')
     profile.add_extension(extension_path)
 
+    # This user agent case covers a user provided one
     if cli_parsed.user_agent is not None:
         profile.set_preference(
             'general.useragent.override', cli_parsed.user_agent)
 
+    # This user agent case should only be hit when cycling
     if user_agent is not None:
         profile.set_preference('general.useragent.override', user_agent)
 
+    # Set up our proxy information directly in the firefox profile
     if cli_parsed.proxy_ip is not None and cli_parsed.proxy_port is not None:
         profile.set_preference('network.proxy.type', 1)
         profile.set_preference('network.proxy.http', cli_parsed.proxy_ip)
@@ -58,8 +68,20 @@ def create_driver(cli_parsed, user_agent=None):
 
 
 def capture_host(cli_parsed, http_object, driver, ua=None):
-    global title_regex
+    """Screenshots a single host, saves information, and returns
+    a complete HTTP Object
 
+    Args:
+        cli_parsed (ArgumentParser): Command Line Object
+        http_object (HTTPTableObject): Object containing data relating to current URL
+        driver (FirefoxDriver): webdriver instance
+        ua (String, optional): Optional user agent string
+
+    Returns:
+        HTTPTableObject: Complete http_object
+    """
+
+    # Attempt to take the screenshot
     try:
         driver.get(http_object.remote_system)
     except KeyboardInterrupt:
@@ -72,6 +94,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         driver = create_driver(cli_parsed, ua)
         http_object.error_state = 'Timeout'
 
+    # Dismiss any alerts present on the page
+    # Will not work for basic auth dialogs!
     try:
         alert = driver.switch_to_alert()
         alert.dismiss()
@@ -79,17 +103,18 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     except NoAlertPresentException:
         pass
 
+    # If we hit a timeout earlier, retry once
     if http_object.error_state == 'Timeout':
         http_object.error_state = None
         try:
             driver.get(http_object.remote_system)
         except TimeoutException:
+            # Another timeout results in an error state and a return
             print '[*] Hit timeout limit when connecting to {0}'.format(http_object.remote_system)
             http_object.error_state = 'Timeout'
             http_object.page_title = 'Timeout Limit Reached'
             http_object.headers = {}
-            driver.quit()
-            return http_object
+            return http_object, driver
         except KeyboardInterrupt:
             print '[*] Skipping: {0}'.format(http_object.remote_system)
             http_object.error_state = 'Skipped'
@@ -102,6 +127,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     except NoAlertPresentException:
         pass
 
+    # Selenium does not return headers, so make a request using urllib to get them
     try:
         headers = dict(urllib2.urlopen(http_object.remote_system).info())
     except urllib2.HTTPError:
@@ -114,23 +140,28 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         headers = {'Error': 'Invalid SSL Certificate'}
         http_object.ssl_error = True
 
+    # Save our screenshot to the specified directory
     try:
         driver.save_screenshot(http_object.screenshot_path)
     except WebDriverException:
         print('[*] Error saving web page screenshot'
               ' for ' + http_object.remote_system)
+
     try:
-        http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode(
-            'utf-8')
+        http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode('utf-8')
+    except Exception:
+        http_object.page_title = 'Unable to Display'
+    # Save page source to the object and to a file. Also set the title in the object
+    try:
         http_object.headers = headers
         http_object.source_code = driver.page_source.encode('utf-8')
 
         with open(http_object.source_path, 'w') as f:
-            f.write(driver.page_source.encode('utf-8'))
+            f.write(http_object.source_code)
     except UnexpectedAlertPresentException:
         with open(http_object.source_path, 'w') as f:
             f.write('Cannot render webpage')
         http_object.headers = {'Cannot Render Web Page': 'n/a'}
 
-    driver.quit()
-    return http_object
+    # It's important to quit your drivers or you end up with hanging processes!
+    return http_object, driver

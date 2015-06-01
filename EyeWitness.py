@@ -26,9 +26,12 @@ from modules import phantomjs_module
 from modules import selenium_module
 from modules import vnc_module
 from modules import rdp_module
-from multiprocessing import Manager
+from multiprocessing.managers import SyncManager
 from multiprocessing import Pool
-from multiprocessing import active_children
+from multiprocessing import Process
+from multiprocessing import Lock
+from multiprocessing import Manager
+from multiprocessing import TimeoutError
 try:
     from pyvirtualdisplay import Display
 except ImportError:
@@ -112,6 +115,8 @@ def create_cli_parser():
                               help='IP of web proxy to go through')
     http_options.add_argument('--proxy-port', metavar='8080', default=None,
                               type=int, help='Port of web proxy to go through')
+    http_options.add_argument('--show-selenium', default=False,
+                              action='store_true', help='Show display for selenium')
 
     args = parser.parse_args()
     args.date = time.strftime('%m/%d/%Y')
@@ -179,22 +184,19 @@ def create_cli_parser():
     return args
 
 
-def single_mode(cli_parsed, url=None, q=None):
+def single_mode(cli_parsed):
     display = None
     if cli_parsed.web:
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
-        display = Display(visible=0, size=(1920, 1080))
-        display.start()
+        if not cli_parsed.show_selenium:
+            display = Display(visible=0, size=(1920, 1080))
+            display.start()
     elif cli_parsed.headless:
         create_driver = phantomjs_module.create_driver
         capture_host = phantomjs_module.capture_host
-    else:
-        print '[*] No valid engine provided! Choose phantomjs or selenium!'
-        sys.exit(0)
 
-    if url is None:
-        url = cli_parsed.single
+    url = cli_parsed.single
     http_object = objects.HTTPTableObject()
     http_object.remote_system = url
     http_object.set_paths(
@@ -209,7 +211,7 @@ def single_mode(cli_parsed, url=None, q=None):
     driver = create_driver(cli_parsed)
     result = capture_host(cli_parsed, http_object, driver)
 
-    result = default_creds_category(cli_parsed, result)
+    result = default_creds_category(result)
     if cli_parsed.cycle is not None and result.error_state is None:
         ua_dict = get_ua_values(cli_parsed.cycle)
         for browser_key, user_agent_value in ua_dict.iteritems():
@@ -219,20 +221,64 @@ def single_mode(cli_parsed, url=None, q=None):
             ua_object.copy_data(result)
             driver = create_driver(cli_parsed, user_agent_value)
             ua_object = capture_host(cli_parsed, ua_object, driver)
-            ua_object = default_creds_category(cli_parsed, ua_object)
+            ua_object = default_creds_category(ua_object)
             result.add_ua_data(ua_object)
     if display is not None:
         display.stop()
-    if q is None:
-        html = result.create_table_html()
-        with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
-            f.write(web_index_head)
-            f.write(create_table_head())
-            f.write(html)
-            f.write("</table><br>")
-    else:
-        q.put(result)
-        do_jitter(cli_parsed)
+    html = result.create_table_html()
+    with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
+        f.write(web_index_head)
+        f.write(create_table_head())
+        f.write(html)
+        f.write("</table><br>")
+
+
+def worker_thread(cli_parsed, targets, data, lock, counter, user_agent=None):
+    try:
+        if cli_parsed.web:
+            create_driver = selenium_module.create_driver
+            capture_host = selenium_module.capture_host
+        elif cli_parsed.headless:
+            create_driver = phantomjs_module.create_driver
+            capture_host = phantomjs_module.capture_host
+        with lock:
+            driver = create_driver(cli_parsed, user_agent)
+        while True:
+            http_object = targets.get()
+            if http_object is None:
+                break
+
+            if cli_parsed.cycle is not None:
+                if user_agent is None:
+                    print 'Making baseline request for {0}'.format(http_object.remote_system)
+                else:
+                    browser_key, user_agent_str = user_agent
+                    print 'Now making web request with: {0} for {1}'.format(
+                        browser_key, http_object.remote_system)
+            else:
+                print 'Attempting to screenshot {0}'.format(http_object.remote_system)
+            if user_agent is not None:
+                if http_object.error_state is None:
+                    ua_object = objects.UAObject(browser_key, user_agent_str)
+                    ua_object.copy_data(http_object)
+                    ua_object, driver = capture_host(cli_parsed, ua_object, driver)
+                    ua_object = default_creds_category(ua_object)
+                    http_object.add_ua_data(ua_object)
+                    data.put(http_object)
+                else:
+                    data.put(http_object)
+            else:
+                http_object, driver = capture_host(cli_parsed, http_object, driver)
+                http_object = default_creds_category(http_object)
+                data.put(http_object)
+            counter[0].value += 1
+            if counter[0].value % 15 == 0:
+                print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(counter[0].value, counter[1])
+            do_jitter(cli_parsed)
+    except KeyboardInterrupt:
+        print 'kbinterrupt'
+
+    driver.quit()
 
 
 def single_vnc_rdp(cli_parsed, engine, url=None, q=None):
@@ -276,53 +322,85 @@ def single_vnc_rdp(cli_parsed, engine, url=None, q=None):
         q.put(obj)
 
 
-def multi_callback(x):
-    global multi_counter
-    global multi_total
-    multi_counter += 1
-
-    if multi_counter % 15 == 0:
-        print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(multi_counter, multi_total)
-
-
 def multi_mode(cli_parsed):
-    global multi_total
-    p = Pool(cli_parsed.threads)
     m = Manager()
     data = m.Queue()
+    targets = m.Queue()
+    lock = m.Lock()
+    multi_counter = m.Value('i', 0)
     threads = []
+    display = None
 
     url_list, rdp_list, vnc_list = target_creator(cli_parsed)
-    multi_total = len(url_list) + len(rdp_list) + len(vnc_list)
+    multi_total = len(url_list)
+
     if any((cli_parsed.web, cli_parsed.headless)):
+        print 'Starting Web Requests'
+        multi_total = len(url_list)
+        if cli_parsed.web and not cli_parsed.show_selenium:
+            display = Display(visible=0, size=(1920, 1080))
+            display.start()
         for url in url_list:
-            threads.append(
-                p.apply_async(single_mode, [cli_parsed, url, data],
-                              callback=multi_callback))
+            http_object = objects.HTTPTableObject()
+            http_object.remote_system = url
+            http_object.set_paths(cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
+            targets.put(http_object)
+        for i in xrange(cli_parsed.threads):
+            targets.put(None)
+        try:
+            workers = [Process(target=worker_thread, args=(cli_parsed, targets, data, lock, (multi_counter, multi_total))) for i in xrange(cli_parsed.threads)]
+            for w in workers:
+                w.start()
+            for w in workers:
+                w.join()
+            if cli_parsed.cycle is not None:
+                ua_dict = get_ua_values(cli_parsed.cycle)
+                for ua_value in ua_dict.iteritems():
+                    multi_counter.value = 0
+                    while not targets.empty():
+                        targets.get()
+                    while not data.empty():
+                        targets.put(data.get())
+                    for i in xrange(cli_parsed.threads):
+                        targets.put(None)
+                    workers = [Process(target=worker_thread, args=(cli_parsed, targets, data, lock, (multi_counter, multi_total), ua_value)) for i in xrange(cli_parsed.threads)]
+                    for w in workers:
+                        w.start()
+                    for w in workers:
+                        w.join()
+        except KeyboardInterrupt:
+            pass
+        except Exception as e:
+            print str(e)
 
-    if cli_parsed.vnc:
-        for vnc in vnc_list:
-            threads.append(
-                p.apply_async(single_vnc_rdp, [cli_parsed, 'vnc', vnc, data], callback=multi_callback))
+    p = Pool(cli_parsed.threads)
+    if any((cli_parsed.vnc, cli_parsed.rdp)):
+        print 'Staring VNC/RDP Requests'
+        multi_total = len(vnc_list) + len(rdp_list)
+        multi_counter.value = 0
+        if cli_parsed.vnc:
+            for vnc in vnc_list:
+                threads.append(
+                    p.apply_async(single_vnc_rdp, [cli_parsed, 'vnc', vnc, data], callback=multi_callback))
 
-    if cli_parsed.rdp:
-        for rdp in rdp_list:
-            threads.append(
-                p.apply_async(single_vnc_rdp, [cli_parsed, 'rdp', rdp, data], callback=multi_callback))
+        if cli_parsed.rdp:
+            for rdp in rdp_list:
+                threads.append(
+                    p.apply_async(single_vnc_rdp, [cli_parsed, 'rdp', rdp, data], callback=multi_callback))
 
     p.close()
     try:
         while not all([r.ready() for r in threads]):
-            active_children()
             time.sleep(1)
     except KeyboardInterrupt:
         p.terminate()
         p.join()
-
+    if display is not None:
+        display.stop()
     results = []
     while not data.empty():
         results.append(data.get())
-
+    m.shutdown()
     sort_data_and_write(cli_parsed, results)
 
 
@@ -338,6 +416,7 @@ def open_file_input():
 if __name__ == "__main__":
     title_screen()
     cli_parsed = create_cli_parser()
+    start_time = time.time()
 
     if cli_parsed.createtargets:
         target_creator(cli_parsed)
@@ -364,6 +443,8 @@ if __name__ == "__main__":
 
     if cli_parsed.f is not None:
         multi_mode(cli_parsed)
+
+    print 'Finished in {0} seconds'.format(time.time() - start_time)
 
     print('\n[*] Done! Report written in the {0} folder!').format(
         cli_parsed.d)

@@ -17,59 +17,79 @@ except ImportError:
     print '[*] Please run the script in the setup directory!'
     sys.exit()
 
-title_regex = re.compile("<title(.*)>(.*)</title>", re.IGNORECASE + re.DOTALL)
-
 
 def create_driver(cli_parsed, user_agent=None):
+    """Creates a phantomjs webdriver instance
+    
+    Args:
+        cli_parsed (ArgumentParser): CLI Options
+        user_agent (String, optional): User Agent String
+    
+    Returns:
+        webdriver: PhantomJS Webdriver
+    """
     capabilities = DesiredCapabilities.PHANTOMJS
     service_args = []
     phantomjs_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin', 'phantomjs')
 
+    # Set up our user agent if necessary
     if cli_parsed.user_agent is not None:
         capabilities[
             'phantomjs.page.settings.userAgent'] = cli_parsed.user_agent
 
+    # This block is for UA cycling
     if user_agent is not None:
         capabilities['phantomjs.page.settings.userAgent'] = user_agent
 
+    # Set up proxy settings
     if cli_parsed.proxy_ip is not None and cli_parsed.proxy_port is not None:
         service_args.append(
             '--proxy={0}:{1}'.format(cli_parsed.proxy_ip, cli_parsed.proxy_port))
 
+    # PhantomJS resource timeout
     capabilities[
         'phantomjs.page.settings.resourceTimeout'] = cli_parsed.t * 1000
+    # Basic auth settings
     capabilities['phantomjs.page.settings.userName'] = 'none'
     capabilities['phantomjs.page.settings.password'] = 'none'
+    # Flags to ignore SSL problems and get screenshots
     service_args.append('--ignore-ssl-errors=true')
     service_args.append('--web-security=no')
     service_args.append('--ssl-protocol=any')
 
     log_path = os.path.join(cli_parsed.d, 'ghostdriver.log')
+    driver = None
+    while driver is None:
+        try:
+            driver = webdriver.PhantomJS(
+                desired_capabilities=capabilities, service_args=service_args,
+                service_log_path=log_path, executable_path=phantomjs_path)
+            # This is the default size from the firefox driver
+            driver.set_window_size(1200, 675)
+            driver.set_page_load_timeout(cli_parsed.t)
+            return driver
+        except WebDriverException:
+            #print 'WebDriverException, retrying'
+            time.sleep(2.5)
+            continue
+        except Exception as e:
+            print str(e)
 
-    try:
-        driver = webdriver.PhantomJS(
-            desired_capabilities=capabilities, service_args=service_args,
-            service_log_path=log_path, executable_path=phantomjs_path)
-        # This is the default width from the firefox driver
-        driver.set_window_size(1200, 675)
-        driver.set_page_load_timeout(cli_parsed.t)
-        return driver
-    except WebDriverException:
-        time.sleep(200)
-        driver = webdriver.PhantomJS(
-            desired_capabilities=capabilities, service_args=service_args,
-            service_log_path=log_path)
-        # This is the default width from the firefox driver
-        driver.set_window_size(1200, 675)
-        driver.set_page_load_timeout(cli_parsed.t)
-        return driver
-    except Exception as e:
-        print str(e)
+    return driver
 
 
 def capture_host(cli_parsed, http_object, driver, ua=None):
-    global title_regex
+    """Captures a single host and populates the HTTP Object
 
+    Args:
+        cli_parsed (ArgumentParser): CLI Object
+        http_object (HTTPTableObject): HTTP Object representing a URL
+        driver (Webdriver): Webdriver
+        ua (TYPE, String): Optional User Agent String
+
+    Returns:
+        HTTPTableObject: Filled out HTTP Object
+    """
     try:
         driver.get(http_object.remote_system)
     except KeyboardInterrupt:
@@ -77,12 +97,11 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             print '[*] Skipping: {0}'.format(http_object.remote_system)
         http_object.error_state = 'Skipped'
         http_object.page_title = 'Page Skipped by User'
-        driver.quit()
-        return http_object
+        return http_object, driver
     except TimeoutException:
         print '[*] Hit timeout limit when connecting to {0}, retrying'.format(http_object.remote_system)
         http_object.error_state = 'Timeout'
-
+    # Retry block for a timeout
     if http_object.error_state == 'Timeout':
         http_object.error_state = None
         try:
@@ -91,16 +110,14 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             print '[*] Hit timeout limit when connecting to {0}'.format(http_object.remote_system)
             http_object.error_state = 'Timeout'
             http_object.page_title = 'Timeout Limit Reached'
-            http_object.headers = {}
-            driver.quit()
-            return http_object
+            return http_object, driver
         except KeyboardInterrupt:
             print '[*] Skipping: {0}'.format(http_object.remote_system)
             http_object.error_state = 'Skipped'
             http_object.page_title = 'Page Skipped by User'
-            driver.quit()
-            return http_object
+            return http_object, driver
 
+    # Get our headers using urllib2
     try:
         headers = dict(urllib2.urlopen(http_object.remote_system).info())
     except urllib2.HTTPError:
@@ -118,17 +135,14 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     except Exception as e:
         print str(e)
 
-    # tag = title_regex.search(driver.page_source.encode('utf-8'))
-    # if tag is not None:
-    #     http_object.page_title = tag.group(2).strip()
-    # else:
-    #     http_object.page_title = 'Unknown'
-    http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode('utf-8')
+    try:
+        http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode('utf-8')
+    except Exception:
+        http_object.page_title = 'Unable to Display'
 
     http_object.headers = headers
     http_object.source_code = driver.page_source.encode('utf-8')
 
     with open(http_object.source_path, 'w') as f:
-        f.write(driver.page_source.encode('utf-8'))
-    driver.quit()
-    return http_object
+        f.write(http_object.source_code)
+    return http_object, driver
