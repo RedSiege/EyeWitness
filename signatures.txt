@@ -124,8 +124,8 @@ Cisco Unified IP Phone Cisco Communicator;<img src="/FS/Logo.png";/CGI/Java/Serv
 <p>In Tomcat 8.0 access to the manager application is split between;<title>Apache Tomcat/;<pre>$CATALINA_HOME/RUNNING.txt</pre>||highval
 <title>Test Page for the Apache HTTP Server on Red Hat Enterprise Linux</title>;<h1>Red Hat Enterprise Linux <strong>Test Page||crap
 <title>Welcome to VMware vSphere</title>;<meta content="VMware VirtualCenter is virtual infrastructure software for partitioning, consolidating and managing systems in mission-critical environments.||crap
-<a title="VMware vFabric, Cloud Application Platform";<p>This is the default vFabric tc Server Runtime home page||crap
-<meta content="VMware ESXi is virtual infrastructure software for partitioning, consolidating, and managing systems in mission-critical environments.||crap
+title="VMware vFabric, Cloud Application Platform";<p>This is the default vFabric tc Server Runtime home page||crap
+content="VMware ESXi is virtual infrastructure software for partitioning, consolidating, and managing systems in mission-critical environments.;document.write(ID_ESX_VIClientDesc)||crap
 src="./cgi-bin/dynamic/topbar.html" target="Main" name="Printer Information" />;<!-- Title in case of ENA's is not a single variable so it is a function -->||printer
 <strong>Cisco IP Conference Station CP-7937G</strong>;src="/Logo";<title>Cisco Systems, Inc.||voip
 <img src="/FS/Logo.png";size="4">Cisco IP Phone CP-7961G-GE;/CGI/Java/Serviceability?||voip
@@ -144,3 +144,4 @@ div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;Printers</title>||printer
 div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;MFP Series</title>||printer
 <frame target="_self" noresize="noresize" marginheight="10" marginwidth="15" scrolling="auto" src="/cgi-bin/dynamic/PrinterStatus.html" name="rbottom" />||printer
 <frame scrolling="no" noresize="noresize" src="/cgi-bin/dynamic/left_bar.html" target="Printer Information" name="Directory" />;<!-- Title in case of ENA's is not a single variable so it is a function -->||printer
+<img src="welcome.png" alt="IIS7" width="571" height="411"></a>||crap

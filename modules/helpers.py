@@ -523,7 +523,7 @@ def process_group(data, group, toc, toc_table, page_num, section, sectionid, htm
             sectionid, section)
     else:
         toc += ("<li><a href=\"report_page{0}.html#{1}\">{2} (Page {0})</a></li>").format(
-            str(page_num), sectionid, section)
+            str(page_num+1), sectionid, section)
 
     html += "<h2 id=\"{0}\">{1}</h2>".format(sectionid, section)
     unknowns = [x for x in group_data if x.page_title == 'Unknown']
@@ -649,7 +649,6 @@ def sort_data_and_write(cli_parsed, data):
     if total_results == 0:
         print '[*] No URLS specified or no screenshots taken! Exiting'
         sys.exit()
-
     # Initialize stuff we need
     pages = []
     toc = create_report_toc_head(cli_parsed.date, cli_parsed.time)
@@ -668,15 +667,19 @@ def sort_data_and_write(cli_parsed, data):
     for cat in categories:
         grouped, toc, toc_table, html = process_group(
             data, cat[0], toc, toc_table, len(pages), cat[1], cat[2], html)
-
+        if len(grouped) > 0:
+            html += table_head
         for obj in grouped:
             html += obj.create_table_html()
             if counter % cli_parsed.results == 0:
-                html = (web_index_head + "EW_REPLACEME" + table_head + html +
+                html = (web_index_head + "EW_REPLACEME" +  html +
                         "</table><br>")
                 pages.append(html)
-                html = u""
+                html = u"" + table_head
             counter += 1
+        if len(grouped) > 0:
+            html += "</table><br>"
+
     # Add our errors here (at the very very end)
     for obj in errors:
         html += obj.create_table_html()
@@ -695,7 +698,7 @@ def sort_data_and_write(cli_parsed, data):
     toc_table += "</table>"
 
     if html != u"":
-        html = (web_index_head + "EW_REPLACEME" + table_head + html +
+        html = (web_index_head + "EW_REPLACEME" + html +
                 "</table><br>")
         pages.append(html)
 
@@ -879,7 +882,7 @@ def default_creds_category(http_object):
             # If the signature was found, return the creds
             if sig_not_found == 0:
                 http_object.default_creds = cred_info
-                http_object.category = category
+                http_object.category = category.strip()
                 return http_object
 
         http_object.default_creds = None

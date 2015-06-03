@@ -114,6 +114,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.error_state = 'Timeout'
             http_object.page_title = 'Timeout Limit Reached'
             http_object.headers = {}
+            driver.quit()
+            driver = create_driver(cli_parsed, ua)
             return http_object, driver
         except KeyboardInterrupt:
             print '[*] Skipping: {0}'.format(http_object.remote_system)
@@ -163,5 +165,4 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             f.write('Cannot render webpage')
         http_object.headers = {'Cannot Render Web Page': 'n/a'}
 
-    # It's important to quit your drivers or you end up with hanging processes!
     return http_object, driver

@@ -337,6 +337,10 @@ def multi_mode(cli_parsed):
     if any((cli_parsed.web, cli_parsed.headless)):
         print 'Starting Web Requests'
         multi_total = len(url_list)
+        if multi_total < cli_parsed.threads:
+            num_threads = multi_total
+        else:
+            num_threads = cli_parsed.threads
         if cli_parsed.web and not cli_parsed.show_selenium:
             display = Display(visible=0, size=(1920, 1080))
             display.start()
@@ -348,7 +352,7 @@ def multi_mode(cli_parsed):
         for i in xrange(cli_parsed.threads):
             targets.put(None)
         try:
-            workers = [Process(target=worker_thread, args=(cli_parsed, targets, data, lock, (multi_counter, multi_total))) for i in xrange(cli_parsed.threads)]
+            workers = [Process(target=worker_thread, args=(cli_parsed, targets, data, lock, (multi_counter, multi_total))) for i in xrange(num_threads)]
             for w in workers:
                 w.start()
             for w in workers:
