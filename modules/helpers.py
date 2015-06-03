@@ -643,6 +643,8 @@ def sort_data_and_write(cli_parsed, data):
                   ('nas', 'Network Attached Storage (NAS)', 'nas'),
                   ('netdev', 'Network Devices', 'netdev'),
                   ('voip', 'Voice/Video over IP (VoIP)', 'voip'),
+                  ('unauth', '401/403 Unauthorized', 'unauth'),
+                  ('notfound', '404 Not Found', 'notfound'),
                   ('crap', 'Splash Pages', 'crap'),
                   ('printer', 'Printers', 'printer'),
                   ]

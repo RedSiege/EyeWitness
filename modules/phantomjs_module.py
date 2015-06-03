@@ -119,7 +119,13 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
 
     # Get our headers using urllib2
     try:
-        headers = dict(urllib2.urlopen(http_object.remote_system).info())
+        opened = urllib2.urlopen(http_object.remote_system)
+        headers = dict(opened.info())
+        responsecode = opened.getcode()
+        if responsecode == 404:
+            http_object.category = 'notfound'
+        if responsecode == 403 or responsecode == 401:
+            http_object.category = 'unauth'
     except urllib2.HTTPError:
         headers = {'Error': 'Error when grabbing web server headers...'}
     except urllib2.URLError:

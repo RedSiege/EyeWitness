@@ -262,14 +262,16 @@ def worker_thread(cli_parsed, targets, data, lock, counter, user_agent=None):
                     ua_object = objects.UAObject(browser_key, user_agent_str)
                     ua_object.copy_data(http_object)
                     ua_object, driver = capture_host(cli_parsed, ua_object, driver)
-                    ua_object = default_creds_category(ua_object)
+                    if ua_object.category is None:
+                        ua_object = default_creds_category(ua_object)
                     http_object.add_ua_data(ua_object)
                     data.put(http_object)
                 else:
                     data.put(http_object)
             else:
                 http_object, driver = capture_host(cli_parsed, http_object, driver)
-                http_object = default_creds_category(http_object)
+                if http_object.category is None:
+                    http_object = default_creds_category(http_object)
                 data.put(http_object)
             counter[0].value += 1
             if counter[0].value % 15 == 0:

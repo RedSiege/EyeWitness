@@ -145,3 +145,8 @@ div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;MFP Series</title>||printer
 <frame target="_self" noresize="noresize" marginheight="10" marginwidth="15" scrolling="auto" src="/cgi-bin/dynamic/PrinterStatus.html" name="rbottom" />||printer
 <frame scrolling="no" noresize="noresize" src="/cgi-bin/dynamic/left_bar.html" target="Printer Information" name="Directory" />;<!-- Title in case of ENA's is not a single variable so it is a function -->||printer
 <img src="welcome.png" alt="IIS7" width="571" height="411"></a>||crap
+<frame src="/index_top.htm" name="Banner" noresize="noresize";<frame src="/index_top_2.htm" name="Tabs" noresize="noresize";<frame src="/index_down.htm" name="Main";name="PhoneHome"||printer
+Polycom '+GetCurrentPageName ()+'</title>');document.title = sysName+' - Polycom '+model||voip
+wp-login.php">Log in</a>;title="Powered by WordPress||highval
+<a href="http://solutions.brother.com/cgi-bin/solutions.cgi?;alt="Brother"||printer
+<img src="iis-85.png";go.microsoft.com/fwlink;IIS Windows||crap
