@@ -58,9 +58,11 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         @param addr: address of target
         """
         class ScreenShotObserver(rfb.RFBClientObserver):
+
             """
             @summary: observer that connect, cache every image received and save at deconnection
             """
+
             def __init__(self, controller, path):
                 """
                 @param controller: RFBClientController
@@ -97,7 +99,8 @@ class RFBScreenShotFactory(rfb.ClientFactory):
                 @summary: callback use when RDP stack is connected (just before received bitmap)
                 """
                 width, height = self._controller.getScreen()
-                self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format_RGB32)
+                self._buffer = QtGui.QImage(
+                    width, height, QtGui.QImage.Format_RGB32)
 
             def onClose(self):
                 """
@@ -117,11 +120,10 @@ def capture_host(cli_parsed, vnc_object):
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    password = ""
     print 'Attempting to screenshot {0}:{1}'.format(vnc_object.remote_system, str(vnc_object.port))
     reactor.connectTCP(
-            vnc_object.remote_system, vnc_object.port, RFBScreenShotFactory(
-                vnc_object.screenshot_path, reactor, app))
+        vnc_object.remote_system, vnc_object.port, RFBScreenShotFactory(
+            vnc_object.screenshot_path, reactor, app))
 
     reactor.runReturn()
     app.exec_()

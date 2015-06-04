@@ -105,7 +105,7 @@ def target_creator(command_line_object):
                                     rdp.append(target)
 
                             if command_line_object.vnc:
-                                if int(port) in vnc_ports or 'vnc' in services:
+                                if int(port) in vnc_ports or 'vnc' in service:
                                     vnc.append((target, port))
 
                         if check_ip_address:
@@ -169,7 +169,7 @@ def target_creator(command_line_object):
                                 urls.append(urlBuild)
 
                         # Check for RDP
-                        if int(port) in rdp_port:
+                        if int(port) in rdp_ports:
                             protocol = 'rdp'
                             if target not in rdp:
                                 rdp.append(target)
@@ -674,7 +674,7 @@ def sort_data_and_write(cli_parsed, data):
         for obj in grouped:
             html += obj.create_table_html()
             if counter % cli_parsed.results == 0:
-                html = (web_index_head + "EW_REPLACEME" +  html +
+                html = (web_index_head + "EW_REPLACEME" + html +
                         "</table><br>")
                 pages.append(html)
                 html = u"" + table_head

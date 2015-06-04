@@ -26,12 +26,9 @@ from modules import phantomjs_module
 from modules import selenium_module
 from modules import vnc_module
 from modules import rdp_module
-from multiprocessing.managers import SyncManager
 from multiprocessing import Pool
 from multiprocessing import Process
-from multiprocessing import Lock
 from multiprocessing import Manager
-from multiprocessing import TimeoutError
 try:
     from pyvirtualdisplay import Display
 except ImportError:
@@ -121,8 +118,6 @@ def create_cli_parser():
     args = parser.parse_args()
     args.date = time.strftime('%m/%d/%Y')
     args.time = time.strftime('%H:%M:%S')
-
-    local_path = os.path.dirname(os.path.realpath(__file__))
 
     if args.h:
         parser.print_help()
@@ -261,7 +256,8 @@ def worker_thread(cli_parsed, targets, data, lock, counter, user_agent=None):
                 if http_object.error_state is None:
                     ua_object = objects.UAObject(browser_key, user_agent_str)
                     ua_object.copy_data(http_object)
-                    ua_object, driver = capture_host(cli_parsed, ua_object, driver)
+                    ua_object, driver = capture_host(
+                        cli_parsed, ua_object, driver)
                     if ua_object.category is None:
                         ua_object = default_creds_category(ua_object)
                     http_object.add_ua_data(ua_object)
@@ -269,7 +265,8 @@ def worker_thread(cli_parsed, targets, data, lock, counter, user_agent=None):
                 else:
                     data.put(http_object)
             else:
-                http_object, driver = capture_host(cli_parsed, http_object, driver)
+                http_object, driver = capture_host(
+                    cli_parsed, http_object, driver)
                 if http_object.category is None:
                     http_object = default_creds_category(http_object)
                 data.put(http_object)
@@ -349,12 +346,14 @@ def multi_mode(cli_parsed):
         for url in url_list:
             http_object = objects.HTTPTableObject()
             http_object.remote_system = url
-            http_object.set_paths(cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
+            http_object.set_paths(
+                cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
             targets.put(http_object)
         for i in xrange(cli_parsed.threads):
             targets.put(None)
         try:
-            workers = [Process(target=worker_thread, args=(cli_parsed, targets, data, lock, (multi_counter, multi_total))) for i in xrange(num_threads)]
+            workers = [Process(target=worker_thread, args=(
+                cli_parsed, targets, data, lock, (multi_counter, multi_total))) for i in xrange(num_threads)]
             for w in workers:
                 w.start()
             for w in workers:
@@ -369,7 +368,8 @@ def multi_mode(cli_parsed):
                         targets.put(data.get())
                     for i in xrange(cli_parsed.threads):
                         targets.put(None)
-                    workers = [Process(target=worker_thread, args=(cli_parsed, targets, data, lock, (multi_counter, multi_total), ua_value)) for i in xrange(cli_parsed.threads)]
+                    workers = [Process(target=worker_thread,
+                                       args=(cli_parsed, targets, data, lock, (multi_counter, multi_total), ua_value)) for i in xrange(cli_parsed.threads)]
                     for w in workers:
                         w.start()
                     for w in workers:
@@ -417,6 +417,15 @@ def open_file_input():
             return strtobool(raw_input().lower())
         except ValueError:
             print "Please respond with y or n",
+
+
+def multi_callback(x):
+    global multi_counter
+    global multi_total
+    multi_counter += 1
+
+    if multi_counter % 15 == 0:
+        print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(multi_counter, multi_total)
 
 
 if __name__ == "__main__":

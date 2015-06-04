@@ -1,6 +1,5 @@
 import httplib
 import os
-import re
 import socket
 import ssl
 import time
@@ -20,11 +19,11 @@ except ImportError:
 
 def create_driver(cli_parsed, user_agent=None):
     """Creates a phantomjs webdriver instance
-    
+
     Args:
         cli_parsed (ArgumentParser): CLI Options
         user_agent (String, optional): User Agent String
-    
+
     Returns:
         webdriver: PhantomJS Webdriver
     """
