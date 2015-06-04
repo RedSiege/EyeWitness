@@ -683,13 +683,15 @@ def sort_data_and_write(cli_parsed, data):
             html += "</table><br>"
 
     # Add our errors here (at the very very end)
+    html += '<h2>Errors</h2>'
+    html += table_head
     for obj in errors:
         html += obj.create_table_html()
         if counter % cli_parsed.results == 0:
-            html = (web_index_head + "EW_REPLACEME" + table_head + html +
+            html = (web_index_head + "EW_REPLACEME" + html +
                     "</table><br>")
             pages.append(html)
-            html = u""
+            html = u"" + table_head
         counter += 1
 
     # Close out any stuff thats hanging
