@@ -118,15 +118,14 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
 
     # Get our headers using urllib2
     try:
-        opened = urllib2.urlopen(http_object.remote_system)
-        headers = dict(opened.info())
-        responsecode = opened.getcode()
+        headers = dict(urllib2.urlopen(http_object.remote_system).info())
+    except urllib2.HTTPError as e:
+        responsecode = e.code
         if responsecode == 404:
             http_object.category = 'notfound'
         if responsecode == 403 or responsecode == 401:
             http_object.category = 'unauth'
-    except urllib2.HTTPError:
-        headers = {'Error': 'Error when grabbing web server headers...'}
+        headers = dict(e.headers)
     except urllib2.URLError:
         headers = {'Error': 'SSL Handshake Error...'}
     except (socket.error, httplib.BadStatusLine):

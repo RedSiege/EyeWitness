@@ -204,8 +204,7 @@ def single_mode(cli_parsed):
     else:
         print 'Attempting to screenshot {0}'.format(http_object.remote_system)
     driver = create_driver(cli_parsed)
-    result = capture_host(cli_parsed, http_object, driver)
-
+    result, driver = capture_host(cli_parsed, http_object, driver)
     result = default_creds_category(result)
     if cli_parsed.cycle is not None and result.error_state is None:
         ua_dict = get_ua_values(cli_parsed.cycle)
@@ -215,7 +214,7 @@ def single_mode(cli_parsed):
             ua_object = objects.UAObject(browser_key, user_agent_value)
             ua_object.copy_data(result)
             driver = create_driver(cli_parsed, user_agent_value)
-            ua_object = capture_host(cli_parsed, ua_object, driver)
+            ua_object, driver = capture_host(cli_parsed, ua_object, driver)
             ua_object = default_creds_category(ua_object)
             result.add_ua_data(ua_object)
     if display is not None:
