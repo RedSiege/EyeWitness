@@ -37,9 +37,9 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install fuzzywuzzy
     pip install selenium
-    pip install pyvirtualdisplay
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
+    pip install pyvirtualdisplay
     cd ../bin/
     wget http://www.christophertruncer.com/InstallMe/phantomjs
     chmod +x phantomjs
@@ -60,9 +60,9 @@ case ${osinfo} in
     pip install python_qt_binding
     pip install fuzzywuzzy
     pip install selenium
-    pip install pyvirtualdisplay
     pip install python-Levenshtein
     pip install pyasn1
+    pip install pyvirtualdisplay
     echo
     cd ../bin/
     wget http://www.christophertruncer.com/InstallMe/phantomjs
@@ -84,9 +84,9 @@ case ${osinfo} in
     pip install python_qt_binding
     pip install fuzzywuzzy
     pip install selenium
-    pip install pyvirtualdisplay
     pip install python-Levenshtein
     pip install pyasn1
+    pip install pyvirtualdisplay
     echo
     cd ../bin/
     wget http://www.christophertruncer.com/InstallMe/phantomjs
@@ -117,9 +117,9 @@ case ${osinfo} in
     pip install python_qt_binding
     pip install fuzzywuzzy
     pip install selenium
-    pip install pyvirtualdisplay
     pip install python-Levenshtein
     pip install pyasn1
+    pip install pyvirtualdisplay
     echo
     cd ../bin/
     wget http://www.christophertruncer.com/InstallMe/phantomjs
