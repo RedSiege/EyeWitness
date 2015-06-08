@@ -26,6 +26,8 @@ fi
 case ${osinfo} in
   # Kali Dependency Installation
   Kali)
+    apt-get update
+    apt-get dist-upgrade
     echo '[*] Installing Kali Dependencies'
     apt-get install python-qt4 python-pip xvfb python-netaddr python-dev
     echo '[*] Installing RDPY'
@@ -47,6 +49,8 @@ case ${osinfo} in
   ;;
   # Debian 7+ Dependency Installation
   Debian)
+    apt-get update
+    apt-get dist-upgrade
     echo '[*] Installing Debian Dependencies'
     apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev
     echo '[*] Installing RDPY'
@@ -71,6 +75,8 @@ case ${osinfo} in
   ;;
   # Ubuntu (tested in 13.10) Dependency Installation
   Ubuntu)
+    apt-get update
+    apt-get dist-upgrade
     echo '[*] Installing Ubuntu Dependencies'
     apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev
     echo '[*] Installing RDPY'
