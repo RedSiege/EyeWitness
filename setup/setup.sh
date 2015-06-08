@@ -95,7 +95,7 @@ case ${osinfo} in
     pip install pyvirtualdisplay
     echo
     cd ../bin/
-    wget http://www.christophertruncer.com/InstallMe/phantomjs
+    wget -O phantomjs http://www.christophertruncer.com/InstallMe/phantom_ubu
     chmod +x phantomjs
     cd ..
   ;;
