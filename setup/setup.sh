@@ -29,7 +29,7 @@ case ${osinfo} in
     apt-get update
     apt-get dist-upgrade
     echo '[*] Installing Kali Dependencies'
-    apt-get install python-qt4 python-pip xvfb python-netaddr python-dev
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -52,7 +52,7 @@ case ${osinfo} in
     apt-get update
     apt-get dist-upgrade
     echo '[*] Installing Debian Dependencies'
-    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -78,7 +78,7 @@ case ${osinfo} in
     apt-get update
     apt-get dist-upgrade
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev
+    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
