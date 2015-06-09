@@ -43,7 +43,7 @@ case ${osinfo} in
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
     cd ../bin/
-    wget http://www.christophertruncer.com/InstallMe/phantomjs
+    wget -O phantomjs http://www.christophertruncer.com/InstallMe/phantomjs
     chmod +x phantomjs
     cd ..
   ;;
