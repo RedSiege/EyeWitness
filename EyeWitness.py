@@ -8,6 +8,7 @@ import sys
 import time
 import webbrowser
 import shutil
+import pickle
 
 from distutils.util import strtobool
 from modules.helpers import create_folders_css
@@ -26,6 +27,7 @@ from modules import phantomjs_module
 from modules import selenium_module
 from modules import vnc_module
 from modules import rdp_module
+from modules import db_manager
 from multiprocessing import Pool
 from multiprocessing import Process
 from multiprocessing import Manager
@@ -115,6 +117,10 @@ def create_cli_parser():
     http_options.add_argument('--show-selenium', default=False,
                               action='store_true', help='Show display for selenium')
 
+    resume_options = parser.add_argument_group('Resume Options')
+    resume_options.add_argument('--resume', metavar='Path to DB to resume',
+                                default=None, help='Path to db file if you want to resume')
+
     args = parser.parse_args()
     args.date = time.strftime('%m/%d/%Y')
     args.time = time.strftime('%H:%M:%S')
@@ -159,17 +165,22 @@ def create_cli_parser():
 
     args.log_file_path = os.path.join(args.d, 'logfile.log')
 
-    if args.f is None and args.single is None:
+    if args.f is None and args.single is None and args.resume is None:
         print("[*] Error: You didn't specify a file! I need a file containing "
               "URLs!")
         parser.print_help()
         sys.exit()
 
-    if not any((args.web, args.vnc, args.rdp, args.all_protocols, args.headless)):
+    if not any((args.resume, args.web, args.vnc, args.rdp, args.all_protocols, args.headless)):
         print "[*] Error: You didn't give me an action to perform."
         print "[*] Error: Please use --web, --rdp, or --vnc!\n"
         parser.print_help()
         sys.exit()
+
+    if args.resume:
+        if not os.path.isfile(args.resume):
+            print(" [*] Error: No valid DB file provided for resume!")
+            sys.exit()
 
     if args.all_protocols:
         args.web = True
@@ -206,6 +217,7 @@ def single_mode(cli_parsed):
     driver = create_driver(cli_parsed)
     result, driver = capture_host(cli_parsed, http_object, driver)
     result = default_creds_category(result)
+    driver.quit()
     if cli_parsed.cycle is not None and result.error_state is None:
         ua_dict = get_ua_values(cli_parsed.cycle)
         for browser_key, user_agent_value in ua_dict.iteritems():
@@ -217,6 +229,7 @@ def single_mode(cli_parsed):
             ua_object, driver = capture_host(cli_parsed, ua_object, driver)
             ua_object = default_creds_category(ua_object)
             result.add_ua_data(ua_object)
+            driver.quit()
     if display is not None:
         display.stop()
     html = result.create_table_html()
@@ -228,6 +241,8 @@ def single_mode(cli_parsed):
 
 
 def worker_thread(cli_parsed, targets, data, lock, counter, user_agent=None):
+    manager = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
+    manager.open_connection()
     try:
         if cli_parsed.web:
             create_driver = selenium_module.create_driver
@@ -269,13 +284,15 @@ def worker_thread(cli_parsed, targets, data, lock, counter, user_agent=None):
                 if http_object.category is None:
                     http_object = default_creds_category(http_object)
                 data.put(http_object)
+
+            manager.update_http_object(http_object)
             counter[0].value += 1
             if counter[0].value % 15 == 0:
                 print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(counter[0].value, counter[1])
             do_jitter(cli_parsed)
     except KeyboardInterrupt:
         print 'kbinterrupt'
-
+    manager.close()
     driver.quit()
 
 
@@ -321,6 +338,11 @@ def single_vnc_rdp(cli_parsed, engine, url=None, q=None):
 
 
 def multi_mode(cli_parsed):
+    dbm = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
+    dbm.open_connection()
+    if not cli_parsed.resume:
+        dbm.initialize_db()
+    dbm.save_options(cli_parsed)
     m = Manager()
     data = m.Queue()
     targets = m.Queue()
@@ -330,24 +352,26 @@ def multi_mode(cli_parsed):
     display = None
 
     url_list, rdp_list, vnc_list = target_creator(cli_parsed)
-    multi_total = len(url_list)
 
     if any((cli_parsed.web, cli_parsed.headless)):
-        print 'Starting Web Requests'
-        multi_total = len(url_list)
+        if cli_parsed.web and not cli_parsed.show_selenium:
+            display = Display(visible=0, size=(1920, 1080))
+            display.start()
+        if cli_parsed.resume:
+            multi_total = dbm.get_incomplete_http(targets)
+            print 'Resuming scan ({0} Hosts Remaining)'.format(str(multi_total))
+        else:
+            multi_total = len(url_list)
+            print 'Starting Web Requests ({0} Hosts)'.format(str(multi_total))
+        
         if multi_total < cli_parsed.threads:
             num_threads = multi_total
         else:
             num_threads = cli_parsed.threads
-        if cli_parsed.web and not cli_parsed.show_selenium:
-            display = Display(visible=0, size=(1920, 1080))
-            display.start()
-        for url in url_list:
-            http_object = objects.HTTPTableObject()
-            http_object.remote_system = url
-            http_object.set_paths(
-                cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
-            targets.put(http_object)
+        if not cli_parsed.resume:
+            for url in url_list:
+                obj = dbm.create_http_object(url, cli_parsed)
+                targets.put(obj)
         for i in xrange(cli_parsed.threads):
             targets.put(None)
         try:
@@ -374,10 +398,10 @@ def multi_mode(cli_parsed):
                     for w in workers:
                         w.join()
         except KeyboardInterrupt:
-            pass
+            sys.exit()
         except Exception as e:
             print str(e)
-
+    data = m.Queue()
     p = Pool(cli_parsed.threads)
     if any((cli_parsed.vnc, cli_parsed.rdp)):
         print 'Staring VNC/RDP Requests'
@@ -402,7 +426,7 @@ def multi_mode(cli_parsed):
         p.join()
     if display is not None:
         display.stop()
-    results = []
+    results = dbm.get_complete_http()
     while not data.empty():
         results.append(data.get())
     m.shutdown()
@@ -436,7 +460,16 @@ if __name__ == "__main__":
         target_creator(cli_parsed)
         sys.exit()
 
-    create_folders_css(cli_parsed)
+    
+    if cli_parsed.resume:
+        temp = cli_parsed.resume
+        dbm = db_manager.DB_Manager(cli_parsed.resume)
+        dbm.open_connection()
+        cli_parsed = dbm.get_options()
+        cli_parsed.resume = temp
+        dbm.close()
+    else:
+        create_folders_css(cli_parsed)
 
     if cli_parsed.single:
         if any((cli_parsed.web, cli_parsed.headless)):
@@ -469,3 +502,4 @@ if __name__ == "__main__":
             files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
             for f in files:
                 webbrowser.open(f)
+            sys.exit()

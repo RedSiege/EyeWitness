@@ -11,6 +11,7 @@ class HTTPTableObject(object):
 
     def __init__(self):
         super(HTTPTableObject, self).__init__()
+        self._id = None
         self._screenshot_path = None
         self._http_headers = {}
         self._page_title = None
@@ -25,6 +26,7 @@ class HTTPTableObject(object):
         self._default_creds = None
         self._category = None
         self._ssl_error = False
+        self._ua_left = None
 
     def set_paths(self, outdir, suffix=None):
         file_name = self.remote_system.replace('://', '.')
@@ -36,6 +38,22 @@ class HTTPTableObject(object):
         self.screenshot_path = os.path.join(
             outdir, 'screens', file_name + '.png')
         self.source_path = os.path.join(outdir, 'source', file_name + '.txt')
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, id):
+        self._id = id
+
+    @property
+    def ua_left(self):
+        return self._ua_left
+
+    @ua_left.setter
+    def ua_left(self, ua_left):
+        self._ua_left = ua_left
 
     @property
     def root_path(self):
@@ -244,6 +262,14 @@ class HTTPTableObject(object):
             uaobject.difference = difference
             self._uadata.append(uaobject)
 
+    @property
+    def uadata(self):
+        return self._uadata
+
+    @uadata.setter
+    def uadata(self, uadata):
+        self._uadata = uadata
+
 
 class UAObject(HTTPTableObject):
 
@@ -254,6 +280,8 @@ class UAObject(HTTPTableObject):
         self._browser = browser
         self._ua = ua
         self._difference = None
+        self._id = None
+        self._parent = None
 
     @property
     def browser(self):
@@ -279,9 +307,26 @@ class UAObject(HTTPTableObject):
     def ua(self, ua):
         self._ua = ua
 
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, id):
+        self._id = id
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, parent):
+        self._parent = parent
+
     def copy_data(self, http_object):
         self.remote_system = http_object.remote_system
         self.root_path = http_object.root_path
+        self.parent = http_object.id
         super(UAObject, self).set_paths(self.root_path, self.browser)
 
     def create_table_html(self, divid):
@@ -343,10 +388,19 @@ class VNCRDPTableObject(object):
 
     def __init__(self, proto):
         super(VNCRDPTableObject, self).__init__()
+        self._id = None
         self._screenshot_path = None
         self._port = None
         self._remote_system = None
         self._proto = proto
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, id):
+        self._id = id
 
     @property
     def screenshot_path(self):
