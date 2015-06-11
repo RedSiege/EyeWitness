@@ -167,13 +167,13 @@ class DB_Manager(object):
         obj.remote_system = ip
         obj.port = port
         obj.set_paths(cli_parsed.d)
-        c.execute("SELECT MAX(id) FROM vncrdp")
+        c.execute("SELECT MAX(id) FROM rdpvnc")
         rowid = c.fetchone()[0]
         if rowid is None:
             rowid = 0
         obj.id = rowid + 1
         pobj = sqlite3.Binary(pickle.dumps(obj, protocol=2))
-        c.execute(("INSERT INTO vncrdp (object, complete)"
+        c.execute(("INSERT INTO rdpvnc (object, complete)"
                    "VALUES (?,?)"),
                   (pobj, False))
         self.connection.commit()
