@@ -273,12 +273,13 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
             if user_agent is None:
                 http_object, driver = capture_host(
                     cli_parsed, http_object, driver)
+                http_object = default_creds_category(http_object)
                 manager.update_http_object(http_object)
             else:
                 ua_object, driver = capture_host(
                     cli_parsed, http_object, driver)
                 if http_object.category is None:
-                    http_object = default_creds_category(http_object)
+                    ua_object = default_creds_category(ua_object)
                 manager.update_ua_object(ua_object)
 
             counter[0].value += 1
