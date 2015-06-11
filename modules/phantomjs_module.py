@@ -142,8 +142,16 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             return http_object, driver
         else:
             headers = {'Error': 'HTTP Error...'}
-    except (socket.error, httplib.BadStatusLine):
-        headers = {'Error': 'Potential timeout connecting to server'}
+    except socket.error as e:
+        if e.errno == 104:
+            headers = {'Error': 'Connection Reset'}
+            http_object.error_state = 'ConnReset'
+            return http_object, driver
+        else:
+            headers = {'Error': 'Potential timeout connecting to server'}
+    except httplib.BadStatusLine:
+        http_object.error_state = 'BadStatus'
+        return http_object, driver
     except ssl.CertificateError:
         headers = {'Error': 'Invalid SSL Certificate'}
         http_object.ssl_error = True
