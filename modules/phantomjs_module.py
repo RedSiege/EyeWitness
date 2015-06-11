@@ -136,9 +136,13 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.category = 'unauth'
         headers = dict(e.headers)
     except urllib2.URLError as e:
-        if '104' in e.reason:
+        if '104' in str(e.reason):
             headers = {'Error': 'Connection Reset'}
             http_object.error_state = 'ConnReset'
+            return http_object, driver
+        elif '111' in str(e.reason):
+            headers = {'Error': 'Connection Refused'}
+            http_object.error_state = 'ConnRefuse'
             return http_object, driver
         else:
             headers = {'Error': 'HTTP Error...'}

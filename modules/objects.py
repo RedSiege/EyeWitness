@@ -233,6 +233,8 @@ class HTTPTableObject(object):
             screenshot</td></tr>""")
         elif self.error_state == 'ConnReset':
             html += ("""</td><td>Connection Reset</td></tr>""")
+        elif self.error_state == 'ConnRefuse':
+            html += ("""</td><td>Connection Refused</td></tr>""")
         else:
             html += ("""<br><br><a href=\"{0}\"
                 target=\"_blank\">Source Code</a></div></td>

@@ -164,3 +164,9 @@ Xerox;/status/consumables.dhtml;displayTree;SMart||printer
 div.hpGasGaugeBlock;div.hpPageText;hp LaserJet;||printer
 It works!;This is the default web page for this server;The web server software is running||crap
 <html><head></head><body><h1>It works!</h1>||crap
+<title>AXIS;Network Camera;/view/view.shtml||voip
+It works!;Tomcat home page;Tomcat7 veterans;tomcat7-admin||highval
+Canon Inc;DeviceDetail;t_title.gif;alt="Network Configuration"||printer
+function encode (psstrs, iLen);D-LINK||netdev
+Laser Printer</title>;Dell;<frame name="Printer Information" target="Main";dynamic/printer/PrinterStatus||printer
+var user;var pwd;<script src="spanish/string.js";top.alias=alias||voip
