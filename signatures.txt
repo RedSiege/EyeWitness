@@ -151,3 +151,4 @@ wp-login.php">Log in</a>;title="Powered by WordPress||highval
 <a href="http://solutions.brother.com/cgi-bin/solutions.cgi?;alt="Brother"||printer
 <img src="iis-85.png";go.microsoft.com/fwlink;IIS Windows||crap
 jenkins;yuiResizeMonitor;projectstatus||highval
+<frame src="/index_top.htm" name="Banner" leftmargin="5" noresize="";<frame src="/index_top_2.htm" name="Tabs" leftmargin="25" noresize="";<frame src="/index_down.htm" name="Main";||printer

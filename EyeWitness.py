@@ -559,8 +559,6 @@ if __name__ == "__main__":
             single_vnc_rdp(cli_parsed, 'rdp')
         elif cli_parsed.vnc:
             single_vnc_rdp(cli_parsed, 'vnc')
-        print(
-            '\n[*] Done! Check out the report in the {0} folder!').format(cli_parsed.d)
         if not cli_parsed.no_prompt:
             open_file = open_file_input(cli_parsed)
             if open_file:

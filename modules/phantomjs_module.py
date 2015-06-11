@@ -29,7 +29,8 @@ def create_driver(cli_parsed, user_agent=None):
     """
     capabilities = DesiredCapabilities.PHANTOMJS
     service_args = []
-    phantomjs_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin', 'phantomjs')
+    phantomjs_path = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), '..', 'bin', 'phantomjs')
 
     # Set up our user agent if necessary
     if cli_parsed.user_agent is not None:
@@ -68,7 +69,7 @@ def create_driver(cli_parsed, user_agent=None):
             driver.set_page_load_timeout(cli_parsed.t)
             return driver
         except WebDriverException:
-            #print 'WebDriverException, retrying'
+            # print 'WebDriverException, retrying'
             time.sleep(2.5)
             continue
         except Exception as e:
@@ -134,8 +135,13 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         if responsecode == 403 or responsecode == 401:
             http_object.category = 'unauth'
         headers = dict(e.headers)
-    except urllib2.URLError:
-        headers = {'Error': 'HTTP Error...'}
+    except urllib2.URLError as e:
+        if '104' in e.reason:
+            headers = {'Error': 'Connection Reset'}
+            http_object.error_state = 'ConnReset'
+            return http_object, driver
+        else:
+            headers = {'Error': 'HTTP Error...'}
     except (socket.error, httplib.BadStatusLine):
         headers = {'Error': 'Potential timeout connecting to server'}
     except ssl.CertificateError:
@@ -148,7 +154,11 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         print str(e)
 
     try:
-        http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode('utf-8')
+        http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode(
+            'utf-8')
+        if '403 Forbidden' in http_object.page_title or
+        '401 Forbidden' in http_object.page_title:
+            http_object.category = 'unauth'
     except Exception:
         http_object.page_title = 'Unable to Display'
 

@@ -146,8 +146,13 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         if responsecode == 403 or responsecode == 401:
             http_object.category = 'unauth'
         headers = dict(e.headers)
-    except urllib2.URLError:
-        headers = {'Error': 'SSL Handshake Error...'}
+    except urllib2.URLError as e:
+        if '104' in e.reason:
+            headers = {'Error': 'Connection Reset'}
+            http_object.error_state = 'ConnReset'
+            return http_object, driver
+        else:
+            headers = {'Error': 'HTTP Error...'}
     except (socket.error, httplib.BadStatusLine):
         headers = {'Error': 'Potential timeout connecting to server'}
     except ssl.CertificateError:
