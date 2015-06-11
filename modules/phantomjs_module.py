@@ -144,6 +144,10 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             headers = {'Error': 'Connection Refused'}
             http_object.error_state = 'ConnRefuse'
             return http_object, driver
+        elif 'Errno 1' in str(e.reason) and 'SSL23' in str(e.reason):
+            headers = {'Error': 'SSL Handshake Error'}
+            http_object.error_state = 'SSLHandshake'
+            return http_object, driver
         else:
             headers = {'Error': 'HTTP Error...'}
     except socket.error as e:

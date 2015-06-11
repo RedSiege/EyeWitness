@@ -235,6 +235,8 @@ class HTTPTableObject(object):
             html += ("""</td><td>Connection Reset</td></tr>""")
         elif self.error_state == 'ConnRefuse':
             html += ("""</td><td>Connection Refused</td></tr>""")
+        elif self.error_state == 'SSLHandshake':
+            html += ("""</td><td>SSL Handshake Error</td></tr>""")
         else:
             html += ("""<br><br><a href=\"{0}\"
                 target=\"_blank\">Source Code</a></div></td>
