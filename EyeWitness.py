@@ -371,9 +371,9 @@ def multi_mode(cli_parsed):
         for url in url_list:
             obj = dbm.create_http_object(url, cli_parsed)
         for rdp in rdp_list:
-            obj = dbm.create_vnc_rdp_object('rdp', remote_system, cli_parsed)
+            obj = dbm.create_vnc_rdp_object('rdp', rdp, cli_parsed)
         for vnc in vnc_list:
-            obj = dbm.create_vnc_rdp_object('vnc', remote_system, cli_parsed)
+            obj = dbm.create_vnc_rdp_object('vnc', vnc, cli_parsed)
 
     if any((cli_parsed.web, cli_parsed.headless)):
         if cli_parsed.web and not cli_parsed.show_selenium:
