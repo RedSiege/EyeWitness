@@ -482,8 +482,8 @@ def multi_mode(cli_parsed):
     vnc_rdp = dbm.get_complete_vnc_rdp()
     dbm.close()
     m.shutdown()
-    sort_data_and_write(cli_parsed, results)
     write_vnc_rdp_data(cli_parsed, vnc_rdp)
+    sort_data_and_write(cli_parsed, results)
 
 
 def open_file_input():

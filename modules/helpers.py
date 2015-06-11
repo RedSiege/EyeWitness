@@ -645,8 +645,7 @@ def sort_data_and_write(cli_parsed, data):
                   ('printer', 'Printers', 'printer'),
                   ]
     if total_results == 0:
-        print '[*] No URLS specified or no screenshots taken! Exiting'
-        sys.exit()
+        return
     # Initialize stuff we need
     pages = []
     toc = create_report_toc_head(cli_parsed.date, cli_parsed.time)
