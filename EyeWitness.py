@@ -34,6 +34,8 @@ from multiprocessing import Process
 from multiprocessing import Manager
 try:
     from pyvirtualdisplay import Display
+    import rdpy.core.log as log
+    from PyQt4 import QtGui
 except ImportError:
     print '[*] pyvirtualdisplay not found.'
     print '[*] Please run the script in the setup directory!'
@@ -292,6 +294,12 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
 def vncrdp_worker(cli_parsed, targets, counter):
     manager = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
     manager.open_connection()
+    app = QtGui.QApplication(sys.argv)
+
+    # add qt4 reactor
+    import qt4reactor
+    qt4reactor.install()
+    from twisted.internet import reactor
 
     try:
         while True:
@@ -300,11 +308,13 @@ def vncrdp_worker(cli_parsed, targets, counter):
             if obj is None:
                 break
 
-            if obj.proto == 'vnc':
-                capture_host = vnc_module.capture_host
-            else:
-                capture_host = rdp_module.capture_host
-            capture_host(cli_parsed, obj)
+            # if obj.proto == 'vnc':
+            #     capture_host = vnc_module.capture_host
+            # else:
+            #     capture_host = rdp_module.capture_host
+            reactor.connectTCP(
+                obj.remote_system, obj.port, vnc_module.RFBScreenShotFactory(
+                    obj.screenshot_path, reactor, app))
             manager.update_vnc_rdp_object(obj)
             counter[0].value += 1
             if counter[0].value % 15 == 0:
@@ -312,7 +322,12 @@ def vncrdp_worker(cli_parsed, targets, counter):
 
     except KeyboardInterrupt:
         pass
+    except Exception as e:
+        print str(e)
+    reactor.runReturn()
+    app.exec_()
     manager.close()
+    print 'done'
 
 
 def single_vnc_rdp(cli_parsed, engine):
@@ -449,33 +464,35 @@ def multi_mode(cli_parsed):
                     display.stop()
                 sys.exit()
 
-    targets = m.Queue()
     if any((cli_parsed.vnc, cli_parsed.rdp)):
-        multi_total = dbm.get_incomplete_vnc_rdp(targets)
+        log._LOG_LEVEL = log.Level.ERROR
+        multi_total, targets = dbm.get_incomplete_vnc_rdp()
         if multi_total > 0:
             print 'Staring VNC/RDP Requests ({0} Hosts)'.format(str(multi_total))
-        multi_counter.value = 0
-        if multi_total < cli_parsed.threads:
-            num_threads = multi_total
-        else:
-            num_threads = cli_parsed.threads
-        for i in xrange(num_threads):
-            targets.put(None)
-        try:
-            workers = [Process(target=vncrdp_worker,
-                               args=(cli_parsed, targets,
-                                     (multi_counter, multi_total),
-                                     ))
-                       for i in xrange(num_threads)]
-            for w in workers:
-                w.start()
-            for w in workers:
-                w.join()
-        except KeyboardInterrupt:
-            if display is not None:
-                display.stop()
-            sys.exit()
+        app = QtGui.QApplication(sys.argv)
 
+        # add qt4 reactor
+        import qt4reactor
+        qt4reactor.install()
+        from twisted.internet import reactor
+
+        try:
+            for target in targets:
+                if target.proto == 'vnc':
+                    reactor.connectTCP(
+                        target.remote_system, target.port, vnc_module.RFBScreenShotFactory(
+                            target.screenshot_path, reactor, app))
+                    dbm.update_vnc_rdp_object(target)
+                else:
+                    reactor.connectTCP(
+                        target.remote_system, int(target.port), rdp_module.RDPScreenShotFactory(
+                            reactor, app, 1200, 800,
+                            target.screenshot_path, cli_parsed.t))
+                    dbm.update_vnc_rdp_object(target)
+        except KeyboardInterrupt:
+            pass
+        reactor.runReturn()
+        app.exec_()
     if display is not None:
         display.stop()
     results = dbm.get_complete_http()
@@ -486,17 +503,24 @@ def multi_mode(cli_parsed):
     sort_data_and_write(cli_parsed, results)
 
 
-def open_file_input():
-    print 'Would you like to open the report now? [Y/n]',
-    while True:
-        try:
-            response = raw_input().lower()
-            if response is "":
-                return True
-            else:
-                return strtobool(response)
-        except ValueError:
-            print "Please respond with y or n",
+def open_file_input(cli_parsed):
+    files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
+    if len(files) > 0:
+        print('\n[*] Done! Report written in the {0} folder!').format(
+            cli_parsed.d)
+        print 'Would you like to open the report now? [Y/n]',
+        while True:
+            try:
+                response = raw_input().lower()
+                if response is "":
+                    return True
+                else:
+                    return strtobool(response)
+            except ValueError:
+                print "Please respond with y or n",
+    else:
+        print '[*] No report files found to open, perhaps no hosts were successful'
+        return False
 
 
 def multi_callback(x):
@@ -538,7 +562,7 @@ if __name__ == "__main__":
         print(
             '\n[*] Done! Check out the report in the {0} folder!').format(cli_parsed.d)
         if not cli_parsed.no_prompt:
-            open_file = open_file_input()
+            open_file = open_file_input(cli_parsed)
             if open_file:
                 files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
                 for f in files:
@@ -550,11 +574,8 @@ if __name__ == "__main__":
 
     print 'Finished in {0} seconds'.format(time.time() - start_time)
 
-    print('\n[*] Done! Report written in the {0} folder!').format(
-        cli_parsed.d)
-
     if not cli_parsed.no_prompt:
-        open_file = open_file_input()
+        open_file = open_file_input(cli_parsed)
         if open_file:
             files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
             for f in files:

@@ -186,15 +186,16 @@ class DB_Manager(object):
         self.connection.commit()
         c.close()
 
-    def get_incomplete_vnc_rdp(self, q):
+    def get_incomplete_vnc_rdp(self):
+        targets = []
         count = 0
         c = self.connection.cursor()
         for row in c.execute("SELECT * FROM rdpvnc WHERE complete=0",):
             o = pickle.loads(str(row['object']))
-            q.put(o)
+            targets.append(o)
             count += 1
         c.close()
-        return count
+        return count, targets
 
     def get_complete_vnc_rdp(self):
         finished = []
