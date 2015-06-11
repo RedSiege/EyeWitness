@@ -470,7 +470,7 @@ def multi_mode(cli_parsed):
         log._LOG_LEVEL = log.Level.ERROR
         multi_total, targets = dbm.get_incomplete_vnc_rdp()
         if multi_total > 0:
-            print 'Staring VNC/RDP Requests ({0} Hosts)'.format(str(multi_total))
+            print 'Starting VNC/RDP Requests ({0} Hosts)'.format(str(multi_total))
         app = QtGui.QApplication(sys.argv)
 
         # add qt4 reactor
@@ -481,11 +481,13 @@ def multi_mode(cli_parsed):
         try:
             for target in targets:
                 if target.proto == 'vnc':
+                    print "Connecting to " + target.remote_system
                     reactor.connectTCP(
                         target.remote_system, target.port, vnc_module.RFBScreenShotFactory(
                             target.screenshot_path, reactor, app))
                     dbm.update_vnc_rdp_object(target)
                 else:
+                    print "Connecting to " + target.remote_system
                     reactor.connectTCP(
                         target.remote_system, int(target.port), rdp_module.RDPScreenShotFactory(
                             reactor, app, 1200, 800,
