@@ -228,6 +228,9 @@ class HTTPTableObject(object):
         elif self.error_state == 'Timeout':
             html += ("""</td><td>Hit timeout limit while attempting to
             screenshot</td></tr>""")
+        elif self.error_state == 'BadStatus':
+            html += ("""</td><td>Unknown error while attempting to
+            screenshot</td></tr>""")
         else:
             html += ("""<br><br><a href=\"{0}\"
                 target=\"_blank\">Source Code</a></div></td>

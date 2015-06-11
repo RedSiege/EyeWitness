@@ -187,6 +187,7 @@ def create_cli_parser():
         args.vnc = True
         args.rdp = True
 
+    args.ua_init = False
     return args
 
 
@@ -240,7 +241,7 @@ def single_mode(cli_parsed):
         f.write("</table><br>")
 
 
-def worker_thread(cli_parsed, targets, data, lock, counter, user_agent=None):
+def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
     manager = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
     manager.open_connection()
     try:
@@ -266,32 +267,23 @@ def worker_thread(cli_parsed, targets, data, lock, counter, user_agent=None):
                         browser_key, http_object.remote_system)
             else:
                 print 'Attempting to screenshot {0}'.format(http_object.remote_system)
-            if user_agent is not None:
-                if http_object.error_state is None:
-                    ua_object = objects.UAObject(browser_key, user_agent_str)
-                    ua_object.copy_data(http_object)
-                    ua_object, driver = capture_host(
-                        cli_parsed, ua_object, driver)
-                    if ua_object.category is None:
-                        ua_object = default_creds_category(ua_object)
-                    http_object.add_ua_data(ua_object)
-                    data.put(http_object)
-                else:
-                    data.put(http_object)
-            else:
+            if user_agent is None:
                 http_object, driver = capture_host(
+                    cli_parsed, http_object, driver)
+                manager.update_http_object(http_object)
+            else:
+                ua_object, driver = capture_host(
                     cli_parsed, http_object, driver)
                 if http_object.category is None:
                     http_object = default_creds_category(http_object)
-                data.put(http_object)
+                manager.update_ua_object(ua_object)
 
-            manager.update_http_object(http_object)
             counter[0].value += 1
             if counter[0].value % 15 == 0:
                 print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(counter[0].value, counter[1])
             do_jitter(cli_parsed)
     except KeyboardInterrupt:
-        print 'kbinterrupt'
+        pass
     manager.close()
     driver.quit()
 
@@ -351,56 +343,92 @@ def multi_mode(cli_parsed):
     threads = []
     display = None
 
-    url_list, rdp_list, vnc_list = target_creator(cli_parsed)
+    if cli_parsed.resume:
+        pass
+    else:
+        url_list, rdp_list, vnc_list = target_creator(cli_parsed)
+        for url in url_list:
+            obj = dbm.create_http_object(url, cli_parsed)
 
     if any((cli_parsed.web, cli_parsed.headless)):
         if cli_parsed.web and not cli_parsed.show_selenium:
             display = Display(visible=0, size=(1920, 1080))
             display.start()
-        if cli_parsed.resume:
-            multi_total = dbm.get_incomplete_http(targets)
-            print 'Resuming scan ({0} Hosts Remaining)'.format(str(multi_total))
-        else:
-            multi_total = len(url_list)
-            print 'Starting Web Requests ({0} Hosts)'.format(str(multi_total))
-        
+
+        multi_total = dbm.get_incomplete_http(targets)
+        if multi_total > 0:
+            if cli_parsed.resume:
+                print 'Resuming scan ({0} Hosts Remaining)'.format(str(multi_total))
+            else:
+                print 'Starting Web Requests ({0} Hosts)'.format(str(multi_total))
+
         if multi_total < cli_parsed.threads:
             num_threads = multi_total
         else:
             num_threads = cli_parsed.threads
-        if not cli_parsed.resume:
-            for url in url_list:
-                obj = dbm.create_http_object(url, cli_parsed)
-                targets.put(obj)
-        for i in xrange(cli_parsed.threads):
+        for i in xrange(num_threads):
             targets.put(None)
         try:
             workers = [Process(target=worker_thread, args=(
-                cli_parsed, targets, data, lock, (multi_counter, multi_total))) for i in xrange(num_threads)]
+                cli_parsed, targets, lock, (multi_counter, multi_total))) for i in xrange(num_threads)]
             for w in workers:
                 w.start()
             for w in workers:
                 w.join()
-            if cli_parsed.cycle is not None:
-                ua_dict = get_ua_values(cli_parsed.cycle)
-                for ua_value in ua_dict.iteritems():
-                    multi_counter.value = 0
-                    while not targets.empty():
-                        targets.get()
-                    while not data.empty():
-                        targets.put(data.get())
-                    for i in xrange(cli_parsed.threads):
-                        targets.put(None)
-                    workers = [Process(target=worker_thread,
-                                       args=(cli_parsed, targets, data, lock, (multi_counter, multi_total), ua_value)) for i in xrange(cli_parsed.threads)]
-                    for w in workers:
-                        w.start()
-                    for w in workers:
-                        w.join()
         except KeyboardInterrupt:
             sys.exit()
         except Exception as e:
             print str(e)
+
+        # Set up UA table here
+        targets = m.Queue()
+        if cli_parsed.cycle is not None:
+            ua_dict = get_ua_values(cli_parsed.cycle)
+            if not cli_parsed.ua_init:
+                dbm.clear_table("ua")
+                completed = dbm.get_complete_http()
+                completed[:] = [x for x in completed if x.error_state is None]
+                for item in completed:
+                    for browser, ua in ua_dict.iteritems():
+                        dbm.create_ua_object(item, browser, ua)
+
+                cli_parsed.ua_init = True
+                dbm.clear_table("opts")
+                dbm.save_options(cli_parsed)
+
+            for browser, ua in ua_dict.iteritems():
+                multi_counter.value = 0
+                multi_total = dbm.get_incomplete_ua(targets, browser)
+                if multi_total > 0:
+                    print("[*] Starting requests for User Agent {0}"
+                          " ({1} Hosts)").format(browser, str(multi_total))
+                if multi_total < cli_parsed.threads:
+                    num_threads = multi_total
+                else:
+                    num_threads = cli_parsed.threads
+                for i in xrange(num_threads):
+                    targets.put(None)
+                workers = [Process(target=worker_thread,
+                                   args=(cli_parsed, targets, lock,
+                                         (multi_counter, multi_total),
+                                         (browser, ua)))
+                           for i in xrange(num_threads)]
+                for w in workers:
+                    w.start()
+                for w in workers:
+                    w.join()
+
+        if cli_parsed.cycle is not None and cli_parsed.ua_init is False:
+            ua_dict = get_ua_values(cli_parsed.cycle)
+            for ua_value in ua_dict.iteritems():
+                multi_counter.value = 0
+                while not targets.empty():
+                    targets.get()
+                while not data.empty():
+                    targets.put(data.get())
+                for i in xrange(cli_parsed.threads):
+                    targets.put(None)
+
     data = m.Queue()
     p = Pool(cli_parsed.threads)
     if any((cli_parsed.vnc, cli_parsed.rdp)):
@@ -429,15 +457,20 @@ def multi_mode(cli_parsed):
     results = dbm.get_complete_http()
     while not data.empty():
         results.append(data.get())
+    dbm.close()
     m.shutdown()
     sort_data_and_write(cli_parsed, results)
 
 
 def open_file_input():
-    print 'Would you like to open the report now? [y/n]',
+    print 'Would you like to open the report now? [Y/n]',
     while True:
         try:
-            return strtobool(raw_input().lower())
+            response = raw_input().lower()
+            if response is "":
+                return True
+            else:
+                return strtobool(response)
         except ValueError:
             print "Please respond with y or n",
 
@@ -460,7 +493,6 @@ if __name__ == "__main__":
         target_creator(cli_parsed)
         sys.exit()
 
-    
     if cli_parsed.resume:
         temp = cli_parsed.resume
         dbm = db_manager.DB_Manager(cli_parsed.resume)

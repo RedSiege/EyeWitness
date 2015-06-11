@@ -100,6 +100,10 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     except TimeoutException:
         print '[*] Hit timeout limit when connecting to {0}, retrying'.format(http_object.remote_system)
         http_object.error_state = 'Timeout'
+    except httplib.BadStatusLine:
+        print '[*] Bad status line when connecting to {0}'.format(http_object.remote_system)
+        http_object.error_state = 'BadStatus'
+        return http_object, driver
     # Retry block for a timeout
     if http_object.error_state == 'Timeout':
         http_object.error_state = None
@@ -115,6 +119,10 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.error_state = 'Skipped'
             http_object.page_title = 'Page Skipped by User'
             return http_object, driver
+        except httplib.BadStatusLine:
+            print '[*] Bad status line when connecting to {0}'.format(http_object.remote_system)
+            http_object.error_state = 'BadStatus'
+            return http_object, driver
 
     # Get our headers using urllib2
     try:
@@ -127,7 +135,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.category = 'unauth'
         headers = dict(e.headers)
     except urllib2.URLError:
-        headers = {'Error': 'SSL Handshake Error...'}
+        headers = {'Error': 'HTTP Error...'}
     except (socket.error, httplib.BadStatusLine):
         headers = {'Error': 'Potential timeout connecting to server'}
     except ssl.CertificateError:

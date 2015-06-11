@@ -92,6 +92,10 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         driver.quit()
         driver = create_driver(cli_parsed, ua)
         http_object.error_state = 'Timeout'
+    except httplib.BadStatusLine:
+        print '[*] Bad status line when connecting to {0}'.format(http_object.remote_system)
+        http_object.error_state = 'BadStatus'
+        return http_object, driver
 
     # Dismiss any alerts present on the page
     # Will not work for basic auth dialogs!
@@ -120,6 +124,10 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             print '[*] Skipping: {0}'.format(http_object.remote_system)
             http_object.error_state = 'Skipped'
             http_object.page_title = 'Page Skipped by User'
+        except httplib.BadStatusLine:
+            print '[*] Bad status line when connecting to {0}'.format(http_object.remote_system)
+            http_object.error_state = 'BadStatus'
+            return http_object, driver
 
     try:
         alert = driver.switch_to_alert()

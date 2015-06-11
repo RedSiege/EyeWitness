@@ -636,8 +636,8 @@ def sort_data_and_write(cli_parsed, data):
     data[:] = [x for x in data if not isinstance(x, VNCRDPTableObject)]
     write_vnc_rdp_data(cli_parsed, vncrdpdata)
     web_results = len(data)
-    categories = [(None, 'Uncategorized', 'uncat'),
-                  ('highval', 'High Value Targets', 'highval'),
+    categories = [('highval', 'High Value Targets', 'highval'),
+                  (None, 'Uncategorized', 'uncat'),
                   ('cms', 'Content Management System (CMS)', 'cms'),
                   ('idrac', 'IDRAC/ILo', 'idrac'),
                   ('nas', 'Network Attached Storage (NAS)', 'nas'),

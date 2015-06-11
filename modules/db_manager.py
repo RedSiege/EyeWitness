@@ -34,6 +34,9 @@ class DB_Manager(object):
         c.execute('''CREATE TABLE rdpvnc
             (id integer primary key, screenshot_path text, port integer,
                 remote_system text, proto text, complete boolean)''')
+        c.execute('''CREATE TABLE ua
+            (id integer primary key, parent_id integer, object blob,
+                complete boolean, key text)''')
         self.connection.commit()
         c.close()
 
@@ -61,6 +64,31 @@ class DB_Manager(object):
         self.connection.commit()
         c.close()
         return obj
+
+    def create_ua_object(self, http_object, browser, ua):
+        c = self.connection.cursor()
+        obj = UAObject(browser, ua)
+        obj.copy_data(http_object)
+        c.execute("SELECT MAX(id) FROM ua")
+        rowid = c.fetchone()[0]
+        if rowid is None:
+            rowid = 0
+        obj.id = rowid + 1
+        pobj = sqlite3.Binary(pickle.dumps(obj, protocol=2))
+        c.execute(("INSERT INTO ua (parent_id, object, complete, key)"
+                   " VALUES (?,?,?,?)"),
+                  (http_object.id, pobj, False, browser))
+        self.connection.commit()
+        c.close()
+        return obj
+
+    def update_ua_object(self, ua_object):
+        c = self.connection.cursor()
+        o = sqlite3.Binary(pickle.dumps(ua_object, protocol=2))
+        c.execute(("UPDATE ua SET object=?,complete=? WHERE id=?"),
+                  (o, True, ua_object.id))
+        self.connection.commit()
+        c.close()
 
     def update_http_object(self, http_object):
         c = self.connection.cursor()
@@ -92,15 +120,40 @@ class DB_Manager(object):
             o = pickle.loads(str(row['object']))
             q.put(o)
             count += 1
+        c.close()
+        return count
+
+    def get_incomplete_ua(self, q, key):
+        count = 0
+        c = self.connection.cursor()
+        for row in c.execute("SELECT * FROM ua WHERE complete=? AND key=?",
+                             (0, key)):
+            o = pickle.loads(str(row['object']))
+            q.put(o)
+            count += 1
+        c.close()
         return count
 
     def get_complete_http(self):
         finished = []
         c = self.connection.cursor()
-        for row in c.execute("SELECT * FROM http WHERE complete=1"):
+        rows = c.execute("SELECT * FROM http WHERE complete=1").fetchall()
+        for row in rows:
             o = pickle.loads(str(row['object']))
+            uadat = c.execute("SELECT * FROM ua WHERE parent_id=?",
+                              (o.id,)).fetchall()
+            for ua in uadat:
+                uao = pickle.loads(str(ua['object']))
+                o.add_ua_data(uao)
             finished.append(o)
+        c.close()
         return finished
+
+    def clear_table(self, tname):
+        c = self.connection.cursor()
+        c.execute("DELETE FROM {0}".format(tname))
+        self.connection.commit()
+        c.close()
 
     def close(self):
         self._connection.close()
