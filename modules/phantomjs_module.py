@@ -166,7 +166,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             'utf-8')
         if '403 Forbidden' in http_object.page_title or '401 Forbidden' in http_object.page_title:
             http_object.category = 'unauth'
-        if 'Index of /' in page_title:
+        if 'Index of /' in http_object.page_title:
             http_object.category = 'dirlist'
     except Exception:
         http_object.page_title = 'Unable to Display'

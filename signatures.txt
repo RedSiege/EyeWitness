@@ -162,3 +162,5 @@ This is a placeholder page installed by the Ubuntu;bug in this Light||crap
 Welcome to nginx on Ubuntu;ubuntu-bug;Thank you for using Ubuntu||crap
 Xerox;/status/consumables.dhtml;displayTree;SMart||printer
 div.hpGasGaugeBlock;div.hpPageText;hp LaserJet;||printer
+It works!;This is the default web page for this server;The web server software is running||crap
+<html><head></head><body><h1>It works!</h1>||crap
