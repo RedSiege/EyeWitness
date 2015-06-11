@@ -174,3 +174,16 @@ HP Color LaserJet;search(pattern);WirelessAlertBox;DevStatus||printer
 HP Designjet;EWStransferBoxManager;mastheadTitle||printer
 HP LaserJet;jsfiles/nsbugfix;hplogo||printer
 hp LaserJet;jsfiles/formatting.css;Link to the HP corporate||printer
+HP LaserJet;applicationMastheadSmall;Click this Hewlett-Packard||printer
+HP Officejet;EWSCookieId;alt="HP logo"||printer
+/hp/device/SignIn;"product">HP LaserJet;Go to Link||printer
+"product">HP LaserJet;Go to Link to the HP corporate;PageDeviceStatus||printer
+"product">HP Color LaserJet;Go to Link to the HP corporate;PageDeviceStatus||printer
+Dell-KACE;Systems Deployment;Administrator Console||idrac
+Welcome to Lion Server;ServerCenter.png;Apple Inc.||crap
+OS X Server;Welcome to Server;com.apple.entity.Page||crap
+Welcome to OS X Server;/xcode;/profilemanager||crap
+Synology DiskStation;full-featured network attached;logo-synology||nas
+Under Construction</title>;The site you are trying to view does not||crap
+Welcome to VMware vSphere;Getting Started;ID_ForAdmins||crap
+qnap-lib;myqnapcloud.com;logo-img x-abs-layout|QNAP NAS admin/admin|nas
