@@ -5,7 +5,10 @@ import ssl
 import time
 import urllib2
 import sys
-
+try:
+    from ssl import CertificateError as sslerr
+except:
+    from ssl import SSLError as sslerr
 try:
     from selenium import webdriver
     from selenium.common.exceptions import TimeoutException
@@ -160,7 +163,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     except httplib.BadStatusLine:
         http_object.error_state = 'BadStatus'
         return http_object, driver
-    except ssl.CertificateError:
+    except sslerr:
         headers = {'Error': 'Invalid SSL Certificate'}
         http_object.ssl_error = True
 
