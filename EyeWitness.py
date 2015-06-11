@@ -22,6 +22,7 @@ from modules.helpers import target_creator
 from modules.helpers import title_screen
 from modules.helpers import vnc_rdp_header
 from modules.helpers import vnc_rdp_table_head
+from modules.helpers import write_vnc_rdp_data
 from modules import objects
 from modules import phantomjs_module
 from modules import selenium_module
@@ -288,9 +289,34 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
     driver.quit()
 
 
-def single_vnc_rdp(cli_parsed, engine, url=None, q=None):
-    if url is None:
-        url = cli_parsed.single
+def vncrdp_worker(cli_parsed, targets, counter):
+    manager = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
+    manager.open_connection()
+
+    try:
+        while True:
+            obj = targets.get()
+
+            if obj is None:
+                break
+
+            if obj.proto == 'vnc':
+                capture_host = vnc_module.capture_host
+            else:
+                capture_host = rdp_module.capture_host
+            capture_host(cli_parsed, obj)
+            manager.update_vnc_rdp_object(obj)
+            counter[0].value += 1
+            if counter[0].value % 15 == 0:
+                print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(counter[0].value, counter[1])
+
+    except KeyboardInterrupt:
+        pass
+    manager.close()
+
+
+def single_vnc_rdp(cli_parsed, engine):
+    url = cli_parsed.single
     if engine == 'vnc':
         capture_host = vnc_module.capture_host
 
@@ -318,15 +344,12 @@ def single_vnc_rdp(cli_parsed, engine, url=None, q=None):
 
     capture_host(cli_parsed, obj)
 
-    if q is None:
-        html = obj.create_table_html()
-        with open(os.path.join(cli_parsed.d, engine + '_report.html'), 'w') as f:
-            f.write(vnc_rdp_header(cli_parsed.date, cli_parsed.time))
-            f.write(vnc_rdp_table_head())
-            f.write(html)
-            f.write("</table><br>")
-    else:
-        q.put(obj)
+    html = obj.create_table_html()
+    with open(os.path.join(cli_parsed.d, engine + '_report.html'), 'w') as f:
+        f.write(vnc_rdp_header(cli_parsed.date, cli_parsed.time))
+        f.write(vnc_rdp_table_head())
+        f.write(html)
+        f.write("</table><br>")
 
 
 def multi_mode(cli_parsed):
@@ -336,11 +359,9 @@ def multi_mode(cli_parsed):
         dbm.initialize_db()
     dbm.save_options(cli_parsed)
     m = Manager()
-    data = m.Queue()
     targets = m.Queue()
     lock = m.Lock()
     multi_counter = m.Value('i', 0)
-    threads = []
     display = None
 
     if cli_parsed.resume:
@@ -349,6 +370,10 @@ def multi_mode(cli_parsed):
         url_list, rdp_list, vnc_list = target_creator(cli_parsed)
         for url in url_list:
             obj = dbm.create_http_object(url, cli_parsed)
+        for rdp in rdp_list:
+            obj = dbm.create_vnc_rdp_object('rdp', remote_system, cli_parsed)
+        for vnc in vnc_list:
+            obj = dbm.create_vnc_rdp_object('vnc', remote_system, cli_parsed)
 
     if any((cli_parsed.web, cli_parsed.headless)):
         if cli_parsed.web and not cli_parsed.show_selenium:
@@ -376,12 +401,13 @@ def multi_mode(cli_parsed):
             for w in workers:
                 w.join()
         except KeyboardInterrupt:
+            if display is not None:
+                display.stop()
             sys.exit()
         except Exception as e:
             print str(e)
 
         # Set up UA table here
-        targets = m.Queue()
         if cli_parsed.cycle is not None:
             ua_dict = get_ua_values(cli_parsed.cycle)
             if not cli_parsed.ua_init:
@@ -395,71 +421,69 @@ def multi_mode(cli_parsed):
                 cli_parsed.ua_init = True
                 dbm.clear_table("opts")
                 dbm.save_options(cli_parsed)
+            try:
+                for browser, ua in ua_dict.iteritems():
+                    targets = m.Queue()
+                    multi_counter.value = 0
+                    multi_total = dbm.get_incomplete_ua(targets, browser)
+                    if multi_total > 0:
+                        print("[*] Starting requests for User Agent {0}"
+                              " ({1} Hosts)").format(browser, str(multi_total))
+                    if multi_total < cli_parsed.threads:
+                        num_threads = multi_total
+                    else:
+                        num_threads = cli_parsed.threads
+                    for i in xrange(num_threads):
+                        targets.put(None)
+                    workers = [Process(target=worker_thread,
+                                       args=(cli_parsed, targets, lock,
+                                             (multi_counter, multi_total),
+                                             (browser, ua)))
+                               for i in xrange(num_threads)]
+                    for w in workers:
+                        w.start()
+                    for w in workers:
+                        w.join()
+            except KeyboardInterrupt:
+                if display is not None:
+                    display.stop()
+                sys.exit()
 
-            for browser, ua in ua_dict.iteritems():
-                multi_counter.value = 0
-                multi_total = dbm.get_incomplete_ua(targets, browser)
-                if multi_total > 0:
-                    print("[*] Starting requests for User Agent {0}"
-                          " ({1} Hosts)").format(browser, str(multi_total))
-                if multi_total < cli_parsed.threads:
-                    num_threads = multi_total
-                else:
-                    num_threads = cli_parsed.threads
-                for i in xrange(num_threads):
-                    targets.put(None)
-                workers = [Process(target=worker_thread,
-                                   args=(cli_parsed, targets, lock,
-                                         (multi_counter, multi_total),
-                                         (browser, ua)))
-                           for i in xrange(num_threads)]
-                for w in workers:
-                    w.start()
-                for w in workers:
-                    w.join()
-
-        if cli_parsed.cycle is not None and cli_parsed.ua_init is False:
-            ua_dict = get_ua_values(cli_parsed.cycle)
-            for ua_value in ua_dict.iteritems():
-                multi_counter.value = 0
-                while not targets.empty():
-                    targets.get()
-                while not data.empty():
-                    targets.put(data.get())
-                for i in xrange(cli_parsed.threads):
-                    targets.put(None)
-
-    data = m.Queue()
-    p = Pool(cli_parsed.threads)
+    targets = m.Queue()
     if any((cli_parsed.vnc, cli_parsed.rdp)):
-        print 'Staring VNC/RDP Requests'
-        multi_total = len(vnc_list) + len(rdp_list)
+        multi_total = dbm.get_incomplete_vnc_rdp(targets)
+        if multi_total > 0:
+            print 'Staring VNC/RDP Requests ({0} Hosts)'.format(str(multi_total))
         multi_counter.value = 0
-        if cli_parsed.vnc:
-            for vnc in vnc_list:
-                threads.append(
-                    p.apply_async(single_vnc_rdp, [cli_parsed, 'vnc', vnc, data], callback=multi_callback))
+        if multi_total < cli_parsed.threads:
+            num_threads = multi_total
+        else:
+            num_threads = cli_parsed.threads
+        for i in xrange(num_threads):
+            targets.put(None)
+        try:
+            workers = [Process(target=vncrdp_worker,
+                               args=(cli_parsed, targets,
+                                     (multi_counter, multi_total),
+                                     ))
+                       for i in xrange(num_threads)]
+            for w in workers:
+                w.start()
+            for w in workers:
+                w.join()
+        except KeyboardInterrupt:
+            if display is not None:
+                display.stop()
+            sys.exit()
 
-        if cli_parsed.rdp:
-            for rdp in rdp_list:
-                threads.append(
-                    p.apply_async(single_vnc_rdp, [cli_parsed, 'rdp', rdp, data], callback=multi_callback))
-
-    p.close()
-    try:
-        while not all([r.ready() for r in threads]):
-            time.sleep(1)
-    except KeyboardInterrupt:
-        p.terminate()
-        p.join()
     if display is not None:
         display.stop()
     results = dbm.get_complete_http()
-    while not data.empty():
-        results.append(data.get())
+    vnc_rdp = dbm.get_complete_vnc_rdp()
     dbm.close()
     m.shutdown()
     sort_data_and_write(cli_parsed, results)
+    write_vnc_rdp_data(cli_parsed, vnc_rdp)
 
 
 def open_file_input():
@@ -494,6 +518,7 @@ if __name__ == "__main__":
         sys.exit()
 
     if cli_parsed.resume:
+        print '[*] Loading Resume Data...'
         temp = cli_parsed.resume
         dbm = db_manager.DB_Manager(cli_parsed.resume)
         dbm.open_connection()

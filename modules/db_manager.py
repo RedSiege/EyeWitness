@@ -1,9 +1,8 @@
 import sqlite3
 from objects import HTTPTableObject
 from objects import UAObject
+from objects import VNCRDPTableObject
 import pickle
-from helpers import get_ua_values
-from pprint import pprint
 
 
 class DB_Manager(object):
@@ -32,8 +31,7 @@ class DB_Manager(object):
         c.execute('''CREATE TABLE http
             (id integer primary key, object blob, complete boolean)''')
         c.execute('''CREATE TABLE rdpvnc
-            (id integer primary key, screenshot_path text, port integer,
-                remote_system text, proto text, complete boolean)''')
+            (id integer primary key, object blob, complete boolean)''')
         c.execute('''CREATE TABLE ua
             (id integer primary key, parent_id integer, object blob,
                 complete boolean, key text)''')
@@ -144,7 +142,66 @@ class DB_Manager(object):
                               (o.id,)).fetchall()
             for ua in uadat:
                 uao = pickle.loads(str(ua['object']))
-                o.add_ua_data(uao)
+                if uao is not None:
+                    o.add_ua_data(uao)
+            finished.append(o)
+        c.close()
+        return finished
+
+    def create_vnc_rdp_object(self, proto, remote_system, cli_parsed):
+        c = self.connection.cursor()
+        obj = VNCRDPTableObject(proto)
+        if proto == 'vnc':
+            if ':' in remote_system:
+                ip, port = remote_system.split(':')
+                port = int(port)
+            else:
+                ip, port = remote_system, 5900
+        else:
+            if ':' in remote_system:
+                ip, port = remote_system.split(':')
+                port = int(port)
+            else:
+                ip, port = remote_system, 3389
+
+        obj.remote_system = ip
+        obj.port = port
+        obj.set_paths(cli_parsed.d)
+        c.execute("SELECT MAX(id) FROM vncrdp")
+        rowid = c.fetchone()[0]
+        if rowid is None:
+            rowid = 0
+        obj.id = rowid + 1
+        pobj = sqlite3.Binary(pickle.dumps(obj, protocol=2))
+        c.execute(("INSERT INTO vncrdp (object, complete)"
+                   "VALUES (?,?)"),
+                  (pobj, False))
+        self.connection.commit()
+        c.close()
+
+    def update_vnc_rdp_object(self, obj):
+        c = self.connection.cursor()
+        c.execute(("UPDATE rdpvnc SET complete=? WHERE id=?"),
+                  (True, obj.id))
+        self.connection.commit()
+        c.close()
+
+    def get_incomplete_vnc_rdp(self, q):
+        count = 0
+        c = self.connection.cursor()
+        for row in c.execute("SELECT * FROM rdpvnc WHERE complete=0",):
+            o = pickle.loads(str(row['object']))
+            q.put(o)
+            count += 1
+        c.close()
+        return count
+
+    def get_complete_vnc_rdp(self):
+        finished = []
+        c = self.connection.cursor()
+        rows = c.execute("SELECT * FROM rdpvnc WHERE complete=1").fetchall()
+        for row in rows:
+            o = pickle.loads(str(row['object']))
             finished.append(o)
         c.close()
         return finished
