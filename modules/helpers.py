@@ -673,10 +673,9 @@ def sort_data_and_write(cli_parsed, data):
                         "</table><br>")
                 pages.append(html)
                 html = u""
-                if counter < len(grouped):
-                    html += table_head
+                html += table_head
             counter += 1
-        if len(grouped) > 0 and html != u"":
+        if len(grouped) > 0:
             html += "</table><br>"
 
     # Add our errors here (at the very very end)
