@@ -537,6 +537,7 @@ if __name__ == "__main__":
                 files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
                 for f in files:
                     webbrowser.open(f)
+                    sys.exit()
         sys.exit()
 
     if cli_parsed.f is not None:
@@ -550,4 +551,5 @@ if __name__ == "__main__":
             files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
             for f in files:
                 webbrowser.open(f)
-            sys.exit()
+                sys.exit()
+        sys.exit()
