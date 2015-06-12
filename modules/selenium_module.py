@@ -79,6 +79,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     Returns:
         HTTPTableObject: Complete http_object
     """
+    tempua = driver.execute_script("return navigator.userAgent")
 
     # Attempt to take the screenshot
     try:
@@ -138,7 +139,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
 
     # Selenium does not return headers, so make a request using urllib to get them
     try:
-        opened = urllib2.urlopen(http_object.remote_system)
+        req = urllib2.Request(http_object.remote_system, headers={'User-Agent': tempua})
+        opened = urllib2.urlopen(req)
         headers = dict(opened.info())
         headers['Response Code'] = str(opened.getcode())
     except urllib2.HTTPError as e:

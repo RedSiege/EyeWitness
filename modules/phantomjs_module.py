@@ -93,6 +93,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     Returns:
         HTTPTableObject: Filled out HTTP Object
     """
+    tempua = driver.execute_script("return navigator.userAgent")
     try:
         driver.get(http_object.remote_system)
     except KeyboardInterrupt:
@@ -130,7 +131,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
 
     # Get our headers using urllib2
     try:
-        opened = urllib2.urlopen(http_object.remote_system)
+        req = urllib2.Request(http_object.remote_system, headers={'User-Agent': tempua})
+        opened = urllib2.urlopen(req)
         headers = dict(opened.info())
         headers['Response Code'] = str(opened.getcode())
     except urllib2.HTTPError as e:
