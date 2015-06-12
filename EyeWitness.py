@@ -32,6 +32,7 @@ from modules import db_manager
 from multiprocessing import Pool
 from multiprocessing import Process
 from multiprocessing import Manager
+from multiprocessing import current_process
 import signal
 try:
     from pyvirtualdisplay import Display
@@ -344,6 +345,14 @@ def multi_mode(cli_parsed):
     multi_counter = m.Value('i', 0)
     display = None
 
+    def exitsig(*args):
+        dbm.close()
+        if current_process().name == 'MainProcess':
+            print ''
+            print 'Resume using ./EyeWitness.py --resume {0}'.format(cli_parsed.d + '/ew.db')
+        os._exit(1)
+
+    signal.signal(signal.SIGINT, exitsig)
     if cli_parsed.resume:
         pass
     else:
@@ -381,10 +390,6 @@ def multi_mode(cli_parsed):
                 w.start()
             for w in workers:
                 w.join()
-        except KeyboardInterrupt:
-            if display is not None:
-                display.stop()
-            sys.exit()
         except Exception as e:
             print str(e)
 
@@ -402,40 +407,36 @@ def multi_mode(cli_parsed):
                 cli_parsed.ua_init = True
                 dbm.clear_table("opts")
                 dbm.save_options(cli_parsed)
-            try:
-                for browser, ua in ua_dict.iteritems():
-                    targets = m.Queue()
-                    multi_counter.value = 0
-                    multi_total = dbm.get_incomplete_ua(targets, browser)
-                    if multi_total > 0:
-                        print("[*] Starting requests for User Agent {0}"
-                              " ({1} Hosts)").format(browser, str(multi_total))
-                    if multi_total < cli_parsed.threads:
-                        num_threads = multi_total
-                    else:
-                        num_threads = cli_parsed.threads
-                    for i in xrange(num_threads):
-                        targets.put(None)
-                    workers = [Process(target=worker_thread,
-                                       args=(cli_parsed, targets, lock,
-                                             (multi_counter, multi_total),
-                                             (browser, ua)))
-                               for i in xrange(num_threads)]
-                    for w in workers:
-                        w.start()
-                    for w in workers:
-                        w.join()
-            except KeyboardInterrupt:
-                if display is not None:
-                    display.stop()
-                sys.exit()
+
+            for browser, ua in ua_dict.iteritems():
+                targets = m.Queue()
+                multi_counter.value = 0
+                multi_total = dbm.get_incomplete_ua(targets, browser)
+                if multi_total > 0:
+                    print("[*] Starting requests for User Agent {0}"
+                          " ({1} Hosts)").format(browser, str(multi_total))
+                if multi_total < cli_parsed.threads:
+                    num_threads = multi_total
+                else:
+                    num_threads = cli_parsed.threads
+                for i in xrange(num_threads):
+                    targets.put(None)
+                workers = [Process(target=worker_thread,
+                                   args=(cli_parsed, targets, lock,
+                                         (multi_counter, multi_total),
+                                         (browser, ua)))
+                           for i in xrange(num_threads)]
+                for w in workers:
+                    w.start()
+                for w in workers:
+                    w.join()
 
     if any((cli_parsed.vnc, cli_parsed.rdp)):
         log._LOG_LEVEL = log.Level.ERROR
         multi_total, targets = dbm.get_incomplete_vnc_rdp()
         if multi_total > 0:
             print 'Starting VNC/RDP Requests ({0} Hosts)'.format(str(multi_total))
-            signal.signal(signal.SIGINT, exitsig)
+
             app = QtGui.QApplication(sys.argv)
             timer = QTimer()
             timer.start(10)
@@ -446,27 +447,23 @@ def multi_mode(cli_parsed):
             qt4reactor.install()
             from twisted.internet import reactor
 
-            try:
-                for target in targets:
-                    tdbm = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
-                    if target.proto == 'vnc':
-                        reactor.connectTCP(
-                            target.remote_system, target.port,
-                            vnc_module.RFBScreenShotFactory(
-                                target.screenshot_path, reactor, app,
-                                target, tdbm))
-                    else:
-                        reactor.connectTCP(
-                            target.remote_system, int(target.port),
-                            rdp_module.RDPScreenShotFactory(
-                                reactor, app, 1200, 800,
-                                target.screenshot_path, cli_parsed.t,
-                                target, tdbm))
-                reactor.runReturn()
-                app.exec_()
-            except KeyboardInterrupt:
-                print 'Exiting'
-                sys.exit()
+            for target in targets:
+                tdbm = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
+                if target.proto == 'vnc':
+                    reactor.connectTCP(
+                        target.remote_system, target.port,
+                        vnc_module.RFBScreenShotFactory(
+                            target.screenshot_path, reactor, app,
+                            target, tdbm))
+                else:
+                    reactor.connectTCP(
+                        target.remote_system, int(target.port),
+                        rdp_module.RDPScreenShotFactory(
+                            reactor, app, 1200, 800,
+                            target.screenshot_path, cli_parsed.t,
+                            target, tdbm))
+            reactor.runReturn()
+            app.exec_()
 
     if display is not None:
         display.stop()
@@ -476,10 +473,6 @@ def multi_mode(cli_parsed):
     m.shutdown()
     write_vnc_rdp_data(cli_parsed, vnc_rdp)
     sort_data_and_write(cli_parsed, results)
-
-
-def exitsig(*args):
-    os._exit(1)
 
 
 def open_file_input(cli_parsed):
