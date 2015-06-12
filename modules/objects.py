@@ -402,6 +402,15 @@ class VNCRDPTableObject(object):
         self._port = None
         self._remote_system = None
         self._proto = proto
+        self._error_state = False
+
+    @property
+    def error_state(self):
+        return self._error_state
+
+    @error_state.setter
+    def error_state(self, error_state):
+        self._error_state = error_state
 
     @property
     def id(self):
@@ -444,11 +453,16 @@ class VNCRDPTableObject(object):
         self._proto = proto
 
     def create_table_html(self):
-        html = "<tr><td><b><center>{0}:{1}</center></b><br>".format(
-            self.remote_system, str(self.port))
-        html += ("<div id=\"screenshot\"><img src=\"{0}\">"
-                 "</div></td></tr>").format(self._screenshot_path)
-
+        if self._error_state:
+            html = "<tr><td><b><center>{0}:{1}</center></b><br>".format(
+                self.remote_system, str(self.port))
+            html += ("<div id=\"screenshot\"><center>Unable to screenshot<center>"
+                     "</div></td></tr>").format(self._screenshot_path)
+        else:
+            html = "<tr><td><b><center>{0}:{1}</center></b><br>".format(
+                self.remote_system, str(self.port))
+            html += ("<div id=\"screenshot\"><img src=\"{0}\">"
+                     "</div></td></tr>").format(self._screenshot_path)
         return html
 
     def set_paths(self, outdir):

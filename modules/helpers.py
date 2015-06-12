@@ -551,8 +551,10 @@ def write_vnc_rdp_data(cli_parsed, data):
         cli_parsed (ArgumentParser): CLI Options
         data (TYPE): Full set of VNC/RDP data
     """
-    vncstuff = [x for x in data if x.proto == 'vnc']
-    rdpstuff = [x for x in data if x.proto == 'rdp']
+    vncstuff = sorted([x for x in data if x.proto == 'vnc'],
+                      key=lambda v: v.error_state)
+    rdpstuff = sorted([x for x in data if x.proto == 'rdp'],
+                      key=lambda v: v.error_state)
 
     for x in [x for x in [vncstuff, rdpstuff] if len(x) > 0]:
         if len(x) == 0:

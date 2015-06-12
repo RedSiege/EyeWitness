@@ -181,8 +181,9 @@ class DB_Manager(object):
 
     def update_vnc_rdp_object(self, obj):
         c = self.connection.cursor()
-        c.execute(("UPDATE rdpvnc SET complete=? WHERE id=?"),
-                  (True, obj.id))
+        o = sqlite3.Binary(pickle.dumps(obj, protocol=2))
+        c.execute(("UPDATE rdpvnc SET complete=?, object=? WHERE id=?"),
+                  (True, o, obj.id))
         self.connection.commit()
         c.close()
 

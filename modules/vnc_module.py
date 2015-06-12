@@ -1,5 +1,6 @@
 import rdpy.core.log as log
 import sys
+from db_manager import DB_Manager
 
 try:
     from PyQt4 import QtGui
@@ -18,7 +19,7 @@ class RFBScreenShotFactory(rfb.ClientFactory):
     """
     __INSTANCE__ = 0
 
-    def __init__(self, path, reactor, app):
+    def __init__(self, path, reactor, app, vnc_obj, dbm):
         """
         @param password: password for VNC authentication
         @param path: path of output screenshot
@@ -28,6 +29,9 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         self._password = ''
         self._reactor = reactor
         self._app = app
+        self._dbm = dbm
+        self._obj = vnc_obj
+        self._complete = False
 
     def clientConnectionLost(self, connector, reason):
         """
@@ -37,7 +41,10 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         """
         RFBScreenShotFactory.__INSTANCE__ -= 1
         if(RFBScreenShotFactory.__INSTANCE__ == 0):
-            self._reactor.stop()
+            try:
+                self._reactor.stop()
+            except:
+                pass
             self._app.exit()
 
     def clientConnectionFailed(self, connector, reason):
@@ -46,9 +53,18 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         @param connector: twisted connector use for rfb connection (use reconnect to restart connection)
         @param reason: str use to advertise reason of lost connection
         """
+        self._dbm.open_connection()
+        self._obj.error_state = True
+        self._dbm.update_vnc_rdp_object(self._obj)
+        self._dbm.close()
+        print '[*] Error connecting to {0}:{1}'.format(
+            self._obj.remote_system, self._obj.port)
         RFBScreenShotFactory.__INSTANCE__ -= 1
         if(RFBScreenShotFactory.__INSTANCE__ == 0):
-            self._reactor.stop()
+            try:
+                self._reactor.stop()
+            except:
+                pass
             self._app.exit()
 
     def buildObserver(self, controller, addr):
@@ -63,7 +79,7 @@ class RFBScreenShotFactory(rfb.ClientFactory):
             @summary: observer that connect, cache every image received and save at deconnection
             """
 
-            def __init__(self, controller, path):
+            def __init__(self, controller, path, dbm, obj):
                 """
                 @param controller: RFBClientController
                 @param path: path of output screenshot
@@ -71,6 +87,10 @@ class RFBScreenShotFactory(rfb.ClientFactory):
                 rfb.RFBClientObserver.__init__(self, controller)
                 self._path = path
                 self._buffer = None
+                self._dbm = dbm
+                self._obj = obj
+                print '[*] Connecting to {0}:{1}'.format(
+                    self._obj.remote_system, self._obj.port)
 
             def onUpdate(self, width, height, x, y, pixelFormat, encoding, data):
                 """
@@ -91,6 +111,7 @@ class RFBScreenShotFactory(rfb.ClientFactory):
 
                 with QtGui.QPainter(self._buffer) as qp:
                     qp.drawImage(x, y, image, 0, 0, width, height)
+                    self._complete = True
 
                 self._controller.close()
 
@@ -106,24 +127,11 @@ class RFBScreenShotFactory(rfb.ClientFactory):
                 """
                 @summary: callback use when RDP stack is closed
                 """
-                self._buffer.save(self._path)
+                if self._complete:
+                    self._dbm.open_connection()
+                    self._dbm.update_vnc_rdp_object(self._obj)
+                    self._dbm.close()
+                    self._buffer.save(self._path)
 
         controller.setPassword(self._password)
-        return ScreenShotObserver(controller, self._path)
-
-
-def capture_host(cli_parsed, vnc_object):
-    log._LOG_LEVEL = log.Level.ERROR
-    app = QtGui.QApplication(sys.argv)
-
-    # add qt4 reactor
-    import qt4reactor
-    qt4reactor.install()
-    from twisted.internet import reactor
-    print 'Attempting to screenshot {0}:{1}'.format(vnc_object.remote_system, str(vnc_object.port))
-    reactor.connectTCP(
-        vnc_object.remote_system, vnc_object.port, RFBScreenShotFactory(
-            vnc_object.screenshot_path, reactor, app))
-
-    reactor.runReturn()
-    app.exec_()
+        return ScreenShotObserver(controller, self._path, self._dbm, self._obj)

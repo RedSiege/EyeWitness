@@ -32,10 +32,12 @@ from modules import db_manager
 from multiprocessing import Pool
 from multiprocessing import Process
 from multiprocessing import Manager
+import signal
 try:
     from pyvirtualdisplay import Display
     import rdpy.core.log as log
     from PyQt4 import QtGui
+    from PyQt4.QtCore import QTimer
 except ImportError:
     print '[*] pyvirtualdisplay not found.'
     print '[*] Please run the script in the setup directory!'
@@ -293,45 +295,6 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
     driver.quit()
 
 
-def vncrdp_worker(cli_parsed, targets, counter):
-    manager = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
-    manager.open_connection()
-    app = QtGui.QApplication(sys.argv)
-
-    # add qt4 reactor
-    import qt4reactor
-    qt4reactor.install()
-    from twisted.internet import reactor
-
-    try:
-        while True:
-            obj = targets.get()
-
-            if obj is None:
-                break
-
-            # if obj.proto == 'vnc':
-            #     capture_host = vnc_module.capture_host
-            # else:
-            #     capture_host = rdp_module.capture_host
-            reactor.connectTCP(
-                obj.remote_system, obj.port, vnc_module.RFBScreenShotFactory(
-                    obj.screenshot_path, reactor, app))
-            manager.update_vnc_rdp_object(obj)
-            counter[0].value += 1
-            if counter[0].value % 15 == 0:
-                print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(counter[0].value, counter[1])
-
-    except KeyboardInterrupt:
-        pass
-    except Exception as e:
-        print str(e)
-    reactor.runReturn()
-    app.exec_()
-    manager.close()
-    print 'done'
-
-
 def single_vnc_rdp(cli_parsed, engine):
     url = cli_parsed.single
     if engine == 'vnc':
@@ -385,8 +348,9 @@ def multi_mode(cli_parsed):
         pass
     else:
         url_list, rdp_list, vnc_list = target_creator(cli_parsed)
-        for url in url_list:
-            obj = dbm.create_http_object(url, cli_parsed)
+        if any((cli_parsed.web, cli_parsed.headless)):
+            for url in url_list:
+                obj = dbm.create_http_object(url, cli_parsed)
         for rdp in rdp_list:
             obj = dbm.create_vnc_rdp_object('rdp', rdp, cli_parsed)
         for vnc in vnc_list:
@@ -471,32 +435,39 @@ def multi_mode(cli_parsed):
         multi_total, targets = dbm.get_incomplete_vnc_rdp()
         if multi_total > 0:
             print 'Starting VNC/RDP Requests ({0} Hosts)'.format(str(multi_total))
-        app = QtGui.QApplication(sys.argv)
+            signal.signal(signal.SIGINT, exitsig)
+            app = QtGui.QApplication(sys.argv)
+            timer = QTimer()
+            timer.start(10)
+            timer.timeout.connect(lambda: None)
 
-        # add qt4 reactor
-        import qt4reactor
-        qt4reactor.install()
-        from twisted.internet import reactor
+            # add qt4 reactor
+            import qt4reactor
+            qt4reactor.install()
+            from twisted.internet import reactor
 
-        try:
-            for target in targets:
-                if target.proto == 'vnc':
-                    print "Connecting to " + target.remote_system
-                    reactor.connectTCP(
-                        target.remote_system, target.port, vnc_module.RFBScreenShotFactory(
-                            target.screenshot_path, reactor, app))
-                    dbm.update_vnc_rdp_object(target)
-                else:
-                    print "Connecting to " + target.remote_system
-                    reactor.connectTCP(
-                        target.remote_system, int(target.port), rdp_module.RDPScreenShotFactory(
-                            reactor, app, 1200, 800,
-                            target.screenshot_path, cli_parsed.t))
-                    dbm.update_vnc_rdp_object(target)
-        except KeyboardInterrupt:
-            pass
-        reactor.runReturn()
-        app.exec_()
+            try:
+                for target in targets:
+                    tdbm = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
+                    if target.proto == 'vnc':
+                        reactor.connectTCP(
+                            target.remote_system, target.port,
+                            vnc_module.RFBScreenShotFactory(
+                                target.screenshot_path, reactor, app,
+                                target, tdbm))
+                    else:
+                        reactor.connectTCP(
+                            target.remote_system, int(target.port),
+                            rdp_module.RDPScreenShotFactory(
+                                reactor, app, 1200, 800,
+                                target.screenshot_path, cli_parsed.t,
+                                target, tdbm))
+                reactor.runReturn()
+                app.exec_()
+            except KeyboardInterrupt:
+                print 'Exiting'
+                sys.exit()
+
     if display is not None:
         display.stop()
     results = dbm.get_complete_http()
@@ -505,6 +476,10 @@ def multi_mode(cli_parsed):
     m.shutdown()
     write_vnc_rdp_data(cli_parsed, vnc_rdp)
     sort_data_and_write(cli_parsed, results)
+
+
+def exitsig(*args):
+    os._exit(1)
 
 
 def open_file_input(cli_parsed):
