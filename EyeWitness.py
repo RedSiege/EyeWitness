@@ -5,11 +5,10 @@ import glob
 import os
 import re
 import shutil
+import signal
 import sys
 import time
 import webbrowser
-
-import signal
 
 from distutils.util import strtobool
 from modules import db_manager
@@ -19,17 +18,17 @@ from modules import rdp_module
 from modules import selenium_module
 from modules import vnc_module
 from modules.helpers import create_folders_css
-from modules.helpers import create_table_head
-from modules.helpers import create_web_index_head
 from modules.helpers import default_creds_category
 from modules.helpers import do_jitter
 from modules.helpers import get_ua_values
-from modules.helpers import sort_data_and_write
 from modules.helpers import target_creator
 from modules.helpers import title_screen
-from modules.helpers import vnc_rdp_header
-from modules.helpers import vnc_rdp_table_head
-from modules.helpers import write_vnc_rdp_data
+from modules.reporting import create_table_head
+from modules.reporting import create_web_index_head
+from modules.reporting import sort_data_and_write
+from modules.reporting import vnc_rdp_header
+from modules.reporting import vnc_rdp_table_head
+from modules.reporting import write_vnc_rdp_data
 from multiprocessing import Manager
 from multiprocessing import Process
 from multiprocessing import current_process
