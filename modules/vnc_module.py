@@ -30,7 +30,6 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         self._app = app
         self._dbm = dbm
         self._obj = vnc_obj
-        self._complete = False
 
     def clientConnectionLost(self, connector, reason):
         """
@@ -89,7 +88,8 @@ class RFBScreenShotFactory(rfb.ClientFactory):
                 self._buffer = None
                 self._dbm = dbm
                 self._obj = obj
-                print '[*] Connecting to {0}:{1}'.format(
+                self._complete = False
+                print '[*] Connecting to {0}:{1} (VNC)'.format(
                     self._obj.remote_system, self._obj.port)
 
             def onUpdate(self, width, height, x, y, pixelFormat, encoding, data):

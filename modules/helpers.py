@@ -6,6 +6,8 @@ import shutil
 import sys
 import time
 import xml.etree.ElementTree as XMLParser
+from distutils.util import strtobool
+import glob
 
 
 def target_creator(command_line_object):
@@ -99,7 +101,7 @@ def target_creator(command_line_object):
 
                             if command_line_object.vnc:
                                 if int(port) in vnc_ports or 'vnc' in service:
-                                    vnc.append((target, port))
+                                    vnc.append(target + ':' + port)
 
                         if check_ip_address:
                             if int(port) in http_ports or 'http' in service:
@@ -418,9 +420,6 @@ def strip_nonalphanum(string):
     return string.translate(None, todel)
 
 
-
-
-
 def do_jitter(cli_parsed):
     """Jitters between URLs to add delay/randomness
 
@@ -560,3 +559,23 @@ def default_creds_category(http_object):
               " as EyeWitness")
         print '[*] Skipping credential check'
         return http_object
+
+
+def open_file_input(cli_parsed):
+    files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
+    if len(files) > 0:
+        print('\n[*] Done! Report written in the {0} folder!').format(
+            cli_parsed.d)
+        print 'Would you like to open the report now? [Y/n]',
+        while True:
+            try:
+                response = raw_input().lower()
+                if response is "":
+                    return True
+                else:
+                    return strtobool(response)
+            except ValueError:
+                print "Please respond with y or n",
+    else:
+        print '[*] No report files found to open, perhaps no hosts were successful'
+        return False

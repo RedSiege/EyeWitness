@@ -220,3 +220,21 @@ class DB_Manager(object):
 
     def get_cursor(self):
         return self.connection.cursor()
+
+    def search_for_term(self, search):
+        finished = []
+        c = self.connection.cursor()
+        rows = c.execute("SELECT * FROM http WHERE complete=1").fetchall()
+        for row in rows:
+            o = pickle.loads(str(row['object']))
+            uadat = c.execute("SELECT * FROM ua WHERE parent_id=?",
+                              (o.id,)).fetchall()
+            for ua in uadat:
+                uao = pickle.loads(str(ua['object']))
+                if uao is not None:
+                    o.add_ua_data(uao)
+
+            if search in o.source_code or search in o.page_title and o.error_state is None:
+                finished.append(o)
+        c.close()
+        return finished

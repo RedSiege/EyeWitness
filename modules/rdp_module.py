@@ -119,7 +119,7 @@ class RDPScreenShotFactory(rdp.ClientFactory):
                 self._dbm = dbm
                 self._obj = obj
                 self._complete = False
-                print '[*] Connecting to {0}'.format(self._obj.remote_system)
+                print '[*] Connecting to {0} (RDP)'.format(self._obj.remote_system)
 
             def onUpdate(self, destLeft, destTop, destRight, destBottom, width, height, bitsPerPixel, isCompress, data):
                 """

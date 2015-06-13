@@ -10,7 +10,6 @@ import sys
 import time
 import webbrowser
 
-from distutils.util import strtobool
 from modules import db_manager
 from modules import objects
 from modules import phantomjs_module
@@ -23,6 +22,7 @@ from modules.helpers import do_jitter
 from modules.helpers import get_ua_values
 from modules.helpers import target_creator
 from modules.helpers import title_screen
+from modules.helpers import open_file_input
 from modules.reporting import create_table_head
 from modules.reporting import create_web_index_head
 from modules.reporting import sort_data_and_write
@@ -433,6 +433,7 @@ def multi_mode(cli_parsed):
         log._LOG_LEVEL = log.Level.ERROR
         multi_total, targets = dbm.get_incomplete_vnc_rdp()
         if multi_total > 0:
+            print ''
             print 'Starting VNC/RDP Requests ({0} Hosts)'.format(str(multi_total))
 
             app = QtGui.QApplication(sys.argv)
@@ -471,26 +472,6 @@ def multi_mode(cli_parsed):
     m.shutdown()
     write_vnc_rdp_data(cli_parsed, vnc_rdp)
     sort_data_and_write(cli_parsed, results)
-
-
-def open_file_input(cli_parsed):
-    files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
-    if len(files) > 0:
-        print('\n[*] Done! Report written in the {0} folder!').format(
-            cli_parsed.d)
-        print 'Would you like to open the report now? [Y/n]',
-        while True:
-            try:
-                response = raw_input().lower()
-                if response is "":
-                    return True
-                else:
-                    return strtobool(response)
-            except ValueError:
-                print "Please respond with y or n",
-    else:
-        print '[*] No report files found to open, perhaps no hosts were successful'
-        return False
 
 
 def multi_callback(x):

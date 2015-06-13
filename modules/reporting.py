@@ -307,6 +307,30 @@ def create_web_index_head(date, time):
         <center>Report Generated on {0} at {1}</center>""").format(date, time)
 
 
+def search_index_head():
+    return ("""<html>
+        <head>
+        <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+        <title>EyeWitness Report</title>
+        <script src="jquery-1.11.3.min.js"></script>
+        <script type="text/javascript">
+        function toggleUA(id, url){{
+        idi = "." + id;
+        $(idi).toggle();
+        change = document.getElementById(id);
+        if (change.innerHTML.indexOf("expand") > -1){{
+            change.innerHTML = "Click to collapse User Agents for " + url;
+        }}else{{
+            change.innerHTML = "Click to expand User Agents for " + url;
+        }}
+        }}
+        </script>
+        </head>
+        <body>
+        <center>
+        """)
+
+
 def create_table_head():
     return ("""<table border=\"1\">
         <tr>
@@ -340,3 +364,79 @@ def vnc_rdp_header(date, time):
     <center>Report Generated on {0} at {1}</center>
     <br>""").format(date, time)
     return web_index_head
+
+
+def search_report(cli_parsed, data, search_term):
+    pages = []
+    web_index_head = search_index_head()
+    table_head = create_table_head()
+    counter = 1
+
+    data[:] = [x for x in data if x.error_state is None]
+    data = sorted(data, key=lambda (k): k.page_title)
+    html = u""
+
+    # Add our errors here (at the very very end)
+    html += '<h2>Results for {0}</h2>'.format(search_term)
+    html += table_head
+    for obj in data:
+        html += obj.create_table_html()
+        if counter % cli_parsed.results == 0:
+            html = (web_index_head + "EW_REPLACEME" + html +
+                    "</table><br>")
+            pages.append(html)
+            html = u"" + table_head
+        counter += 1
+
+    if html != u"":
+        html = (web_index_head + html + "</table><br>")
+        pages.append(html)
+
+    if len(pages) == 1:
+        with open(os.path.join(cli_parsed.d, 'search.html'), 'a') as f:
+            f.write(pages[0].replace('EW_REPLACEME', ''))
+            f.write("</body>\n</html>")
+    else:
+        num_pages = len(pages) + 1
+        bottom_text = "\n<center><br>"
+        bottom_text += ("<a href=\"search.html\"> Page 1</a>")
+        # Generate our header/footer data here
+        for i in range(2, num_pages):
+            bottom_text += ("<a href=\"report_page{0}.html\"> Page {0}</a>").format(
+                str(i))
+        bottom_text += "</center>\n"
+        top_text = bottom_text
+        # Generate our next/previous page buttons
+        for i in range(0, len(pages)):
+            headfoot = "<center>"
+            if i == 0:
+                headfoot += ("<a href=\"search_page2.html\"> Next Page "
+                             "</a></center>")
+            elif i == len(pages) - 1:
+                if i == 1:
+                    headfoot += ("<a href=\"search.html\"> Previous Page "
+                                 "</a></center>")
+                else:
+                    headfoot += ("<a href=\"search_page{0}.html\"> Previous Page "
+                                 "</a></center>").format(str(i))
+            elif i == 1:
+                headfoot += ("<a href=\"search.html\">Previous Page</a>&nbsp"
+                             "<a href=\"search_page{0}.html\"> Next Page"
+                             "</a></center>").format(str(i+2))
+            else:
+                headfoot += ("<a href=\"search_page{0}.html\">Previous Page</a>"
+                             "&nbsp<a href=\"search_page{1}.html\"> Next Page"
+                             "</a></center>").format(str(i), str(i+2))
+            # Finalize our pages by replacing placeholder stuff and writing out
+            # the headers/footers
+            pages[i] = pages[i].replace(
+                'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
+
+        # Write out our report to disk!
+        if len(pages) == 0:
+            return
+        with open(os.path.join(cli_parsed.d, 'search.html'), 'a') as f:
+            f.write(pages[0])
+        for i in range(2, len(pages) + 1):
+            with open(os.path.join(cli_parsed.d, 'search_page{0}.html'.format(str(i))), 'w') as f:
+                f.write(pages[i - 1])
