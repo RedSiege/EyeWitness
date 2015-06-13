@@ -36,6 +36,7 @@ if __name__ == "__main__":
     db_path = sys.argv[1]
     if not os.path.isfile(db_path):
         print '[*] No valid db path provided'
+        sys.exit()
     search_term = sys.argv[2]
     dbm = DB_Manager(db_path)
     dbm.open_connection()
