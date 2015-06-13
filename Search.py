@@ -31,7 +31,9 @@ def open_file_input(cli_parsed):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
+        print 'Search a previously completed EyeWitness scan (HTTP page title/source)\n'
         print '[*] Usage: python Search.py <dbpath> <searchterm>'
+        print 'DBPath should point to the ew.db file in your EyeWitness output folder'
         sys.exit()
     db_path = sys.argv[1]
     if not os.path.isfile(db_path):
@@ -52,8 +54,9 @@ if __name__ == "__main__":
     for f in oldfiles:
         os.remove(f)
     search_report(cli_parsed, results, search_term)
-    newfiles = glob.glob(os.path.join(cli_parsed.d, "*search*.html"))
+    newfiles = glob.glob(os.path.join(cli_parsed.d, "search.html"))
     if open_file_input(cli_parsed):
         for f in newfiles:
             webbrowser.open(f)
+        sys.exit()
     sys.exit()
