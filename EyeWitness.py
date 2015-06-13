@@ -4,13 +4,20 @@ import argparse
 import glob
 import os
 import re
+import shutil
 import sys
 import time
 import webbrowser
-import shutil
-import pickle
+
+import signal
 
 from distutils.util import strtobool
+from modules import db_manager
+from modules import objects
+from modules import phantomjs_module
+from modules import rdp_module
+from modules import selenium_module
+from modules import vnc_module
 from modules.helpers import create_folders_css
 from modules.helpers import create_table_head
 from modules.helpers import create_web_index_head
@@ -23,17 +30,9 @@ from modules.helpers import title_screen
 from modules.helpers import vnc_rdp_header
 from modules.helpers import vnc_rdp_table_head
 from modules.helpers import write_vnc_rdp_data
-from modules import objects
-from modules import phantomjs_module
-from modules import selenium_module
-from modules import vnc_module
-from modules import rdp_module
-from modules import db_manager
-from multiprocessing import Pool
-from multiprocessing import Process
 from multiprocessing import Manager
+from multiprocessing import Process
 from multiprocessing import current_process
-import signal
 try:
     from pyvirtualdisplay import Display
     import rdpy.core.log as log
@@ -359,11 +358,11 @@ def multi_mode(cli_parsed):
         url_list, rdp_list, vnc_list = target_creator(cli_parsed)
         if any((cli_parsed.web, cli_parsed.headless)):
             for url in url_list:
-                obj = dbm.create_http_object(url, cli_parsed)
+                dbm.create_http_object(url, cli_parsed)
         for rdp in rdp_list:
-            obj = dbm.create_vnc_rdp_object('rdp', rdp, cli_parsed)
+            dbm.create_vnc_rdp_object('rdp', rdp, cli_parsed)
         for vnc in vnc_list:
-            obj = dbm.create_vnc_rdp_object('vnc', vnc, cli_parsed)
+            dbm.create_vnc_rdp_object('vnc', vnc, cli_parsed)
 
     if any((cli_parsed.web, cli_parsed.headless)):
         if cli_parsed.web and not cli_parsed.show_selenium:

@@ -1,9 +1,13 @@
 import httplib
 import os
 import socket
-import ssl
 import sys
 import urllib2
+
+try:
+    from ssl import CertificateError as sslerr
+except:
+    from ssl import SSLError as sslerr
 
 try:
     from selenium import webdriver
@@ -137,7 +141,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     except NoAlertPresentException:
         pass
 
-    # Selenium does not return headers, so make a request using urllib to get them
+    # Get our headers using urllib2
     try:
         req = urllib2.Request(http_object.remote_system, headers={'User-Agent': tempua})
         opened = urllib2.urlopen(req)
@@ -150,17 +154,37 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         if responsecode == 403 or responsecode == 401:
             http_object.category = 'unauth'
         headers = dict(e.headers)
-        headers['Response Code'] = str(responsecode)
+        headers['Response Code'] = str(e.code)
     except urllib2.URLError as e:
-        if '104' in e.reason:
+        if '104' in str(e.reason):
+            headers = {'Error': 'Connection Reset'}
+            http_object.error_state = 'ConnReset'
+            return http_object, driver
+        elif '111' in str(e.reason):
+            headers = {'Error': 'Connection Refused'}
+            http_object.error_state = 'ConnRefuse'
+            return http_object, driver
+        elif 'Errno 1' in str(e.reason) and 'SSL23' in str(e.reason):
+            headers = {'Error': 'SSL Handshake Error'}
+            http_object.error_state = 'SSLHandshake'
+            return http_object, driver
+        elif 'Errno 8' in str(e.reason) and 'EOF occurred' in str(e.reason):
+            headers = {'Error': 'SSL Handshake Error'}
+            http_object.error_state = 'SSLHandshake'
+            return http_object, driver
+        else:
+            headers = {'Error': 'HTTP Error...'}
+    except socket.error as e:
+        if e.errno == 104:
             headers = {'Error': 'Connection Reset'}
             http_object.error_state = 'ConnReset'
             return http_object, driver
         else:
-            headers = {'Error': 'HTTP Error...'}
-    except (socket.error, httplib.BadStatusLine):
-        headers = {'Error': 'Potential timeout connecting to server'}
-    except ssl.CertificateError:
+            headers = {'Error': 'Potential timeout connecting to server'}
+    except httplib.BadStatusLine:
+        http_object.error_state = 'BadStatus'
+        return http_object, driver
+    except sslerr:
         headers = {'Error': 'Invalid SSL Certificate'}
         http_object.ssl_error = True
 

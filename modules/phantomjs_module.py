@@ -1,7 +1,6 @@
 import httplib
 import os
 import socket
-import ssl
 import time
 import urllib2
 import sys

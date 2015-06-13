@@ -1,11 +1,11 @@
 import sys
 
-from db_manager import DB_Manager
 try:
+    import rdpy.core.log as log
+
     from PyQt4 import QtGui
     from rdpy.protocol.rdp import rdp
     from rdpy.ui.qt4 import RDPBitmapToQtImage
-    import rdpy.core.log as log
     from rdpy.core.error import RDPSecurityNegoFail
 except ImportError:
     print '[*] RDP libraries not found.'
@@ -24,7 +24,7 @@ class RDPScreenShotFactory(rdp.ClientFactory):
     __INSTANCE__ = 0
     __STATE__ = []
 
-    def __init__(self, reactor, app, width, height, path, timeout, rdp_obj, dbm):
+    def __init__(self, reactor, app, width, height, path, timeout, rdp_obj, dbm=None):
         """
         @param reactor: twisted reactor
         @param width: {integer} width of screen
@@ -72,10 +72,11 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         @param reason: str use to advertise reason of lost connection
         """
         log.info("connection failed : %s" % reason)
-        self._dbm.open_connection()
-        self._object.error_state = True
-        self._dbm.update_vnc_rdp_object(self._object)
-        self._dbm.close()
+        if self._dbm:
+            self._dbm.open_connection()
+            self._object.error_state = True
+            self._dbm.update_vnc_rdp_object(self._object)
+            self._dbm.close()
         print '[*] Error connecting to {0}'.format(self._object.remote_system)
         RDPScreenShotFactory.__STATE__.append(
             (connector.host, connector.port, reason))
@@ -154,9 +155,10 @@ class RDPScreenShotFactory(rdp.ClientFactory):
                 """
                 log.info("save screenshot into %s" % self._path)
                 if self._complete:
-                    self._dbm.open_connection()
-                    self._dbm.update_vnc_rdp_object(self._obj)
-                    self._dbm.close()
+                    if self._dbm:
+                        self._dbm.open_connection()
+                        self._dbm.update_vnc_rdp_object(self._obj)
+                        self._dbm.close()
                     self._buffer.save(self._path)
 
             def checkUpdate(self):
@@ -167,3 +169,24 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         return ScreenShotObserver(controller, self._width, self._height,
                                   self._path, self._timeout, self._reactor,
                                   self._dbm, self._object)
+
+
+def capture_host(cli_parsed, rdp_object):
+    log._LOG_LEVEL = log.Level.ERROR
+    width = 1200
+    height = 800
+    timeout = cli_parsed.t
+
+    app = QtGui.QApplication(sys.argv)
+
+    import qt4reactor
+    qt4reactor.install()
+    from twisted.internet import reactor
+
+    reactor.connectTCP(
+        rdp_object.remote_system, int(rdp_object.port), RDPScreenShotFactory(
+            reactor, app, width, height,
+            rdp_object.screenshot_path, timeout, rdp_object))
+
+    reactor.runReturn()
+    app.exec_()

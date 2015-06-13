@@ -1,8 +1,9 @@
+import pickle
 import sqlite3
+
 from objects import HTTPTableObject
 from objects import UAObject
 from objects import VNCRDPTableObject
-import pickle
 
 
 class DB_Manager(object):

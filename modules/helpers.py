@@ -1,11 +1,11 @@
 import os
 import platform
+import random
 import re
 import shutil
 import sys
-import xml.etree.ElementTree as XMLParser
 import time
-import random
+import xml.etree.ElementTree as XMLParser
 
 try:
     from fuzzywuzzy import fuzz
@@ -632,8 +632,6 @@ def sort_data_and_write(cli_parsed, data):
     """
     # We'll be using this number for our table of contents
     total_results = len(data)
-    from modules.objects import VNCRDPTableObject
-    web_results = len(data)
     categories = [('highval', 'High Value Targets', 'highval'),
                   ('dirlist', 'Directory Listings', 'dirlist'),
                   (None, 'Uncategorized', 'uncat'),
@@ -698,7 +696,7 @@ def sort_data_and_write(cli_parsed, data):
     toc += "</ul>"
     toc_table += "<tr><td>Errors</td><td>{0}</td></tr>".format(
         str(len(errors)))
-    toc_table += "<tr><th>Total</th><td>{0}</td></tr>".format(web_results)
+    toc_table += "<tr><th>Total</th><td>{0}</td></tr>".format(total_results)
     toc_table += "</table>"
 
     if html != u"":
