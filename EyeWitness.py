@@ -181,6 +181,11 @@ def create_cli_parser():
         parser.print_help()
         sys.exit()
 
+    if all((args.web, args.headless)):
+        print "[*] Error: Choose either web or headless"
+        parser.print_help()
+        sys.exit()
+
     if args.resume:
         if not os.path.isfile(args.resume):
             print(" [*] Error: No valid DB file provided for resume!")
@@ -372,7 +377,7 @@ def multi_mode(cli_parsed):
         multi_total = dbm.get_incomplete_http(targets)
         if multi_total > 0:
             if cli_parsed.resume:
-                print 'Resuming scan ({0} Hosts Remaining)'.format(str(multi_total))
+                print 'Resuming Web Scan ({0} Hosts Remaining)'.format(str(multi_total))
             else:
                 print 'Starting Web Requests ({0} Hosts)'.format(str(multi_total))
 
@@ -501,6 +506,23 @@ if __name__ == "__main__":
         cli_parsed = dbm.get_options()
         cli_parsed.resume = temp
         dbm.close()
+
+        print 'Loaded Resume Data with the following options:'
+        engines = []
+        if cli_parsed.web:
+            engines.append('Firefox')
+        if cli_parsed.headless:
+            engines.append('PhantomJS')
+        if cli_parsed.vnc:
+            engines.append('VNC')
+        if cli_parsed.rdp:
+            engines.append('RDP')
+        print ''
+        print 'Input File: {0}'.format(cli_parsed.f)
+        print 'Engine(s): {0}'.format(','.join(engines))
+        print 'Threads: {0}'.format(cli_parsed.threads)
+        print 'Output Directory: {0}'.format(cli_parsed.d)
+        print ''
     else:
         create_folders_css(cli_parsed)
 
