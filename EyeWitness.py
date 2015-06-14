@@ -122,7 +122,7 @@ def create_cli_parser():
                               action='store_true', help='Show display for selenium')
 
     resume_options = parser.add_argument_group('Resume Options')
-    resume_options.add_argument('--resume', metavar='Path to DB to resume',
+    resume_options.add_argument('--resume', metavar='ew.db',
                                 default=None, help='Path to db file if you want to resume')
 
     args = parser.parse_args()
@@ -248,15 +248,16 @@ def single_mode(cli_parsed):
 def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
     manager = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
     manager.open_connection()
-    try:
-        if cli_parsed.web:
+
+    if cli_parsed.web:
             create_driver = selenium_module.create_driver
             capture_host = selenium_module.capture_host
-        elif cli_parsed.headless:
-            create_driver = phantomjs_module.create_driver
-            capture_host = phantomjs_module.capture_host
-        with lock:
-            driver = create_driver(cli_parsed, user_agent)
+    elif cli_parsed.headless:
+        create_driver = phantomjs_module.create_driver
+        capture_host = phantomjs_module.capture_host
+    with lock:
+        driver = create_driver(cli_parsed, user_agent)
+    try:
         while True:
             http_object = targets.get()
             if http_object is None:

@@ -196,7 +196,12 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
               ' for ' + http_object.remote_system)
 
     try:
-        http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode('utf-8')
+        http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode(
+            'utf-8')
+        if '403 Forbidden' in http_object.page_title or '401 Unauthorized' in http_object.page_title:
+            http_object.category = 'unauth'
+        if 'Index of /' in http_object.page_title:
+            http_object.category = 'dirlist'
     except Exception:
         http_object.page_title = 'Unable to Display'
     # Save page source to the object and to a file. Also set the title in the object

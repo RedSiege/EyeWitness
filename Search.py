@@ -4,7 +4,6 @@ import glob
 import os
 import sys
 import webbrowser
-import os
 
 from distutils.util import strtobool
 from modules.db_manager import DB_Manager
