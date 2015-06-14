@@ -522,6 +522,7 @@ if __name__ == "__main__":
         print 'Engine(s): {0}'.format(','.join(engines))
         print 'Threads: {0}'.format(cli_parsed.threads)
         print 'Output Directory: {0}'.format(cli_parsed.d)
+        print 'Timeout: {0}'.format(cli_parsed.t)
         print ''
     else:
         create_folders_css(cli_parsed)
