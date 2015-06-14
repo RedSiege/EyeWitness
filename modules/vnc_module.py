@@ -37,7 +37,7 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         @param connector: twisted connector use for rfb connection (use reconnect to restart connection)
         @param reason: str use to advertise reason of lost connection
         """
-        if 'failure with no frames' in str(reason):
+        if not 'Connection was closed cleanly' in str(reason):
             self._dbm.open_connection()
             self._obj.error_state = True
             self._dbm.update_vnc_rdp_object(self._obj)

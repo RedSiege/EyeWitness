@@ -183,16 +183,19 @@ def sort_data_and_write(cli_parsed, data):
             data, cat[0], toc, toc_table, len(pages), cat[1], cat[2], html)
         if len(grouped) > 0:
             html += table_head
+        pcount = 0
         for obj in grouped:
+            pcount += 1
             html += obj.create_table_html()
             if counter % cli_parsed.results == 0:
                 html = (web_index_head + "EW_REPLACEME" + html +
                         "</table><br>")
                 pages.append(html)
                 html = u""
-                html += table_head
+                if pcount < len(grouped):
+                    html += table_head
             counter += 1
-        if len(grouped) > 0:
+        if len(grouped) > 0 and counter % cli_parsed.results != 0:
             html += "</table><br>"
 
     # Add our errors here (at the very very end)
