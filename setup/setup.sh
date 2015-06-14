@@ -134,7 +134,7 @@ case ${osinfo} in
   ;;
   # Notify Manual Installation Requirement And Exit
   *)
-    echo "[Error]: ${OS} is not supported by this setup script."
+    echo "[Error]: ${osinfo} is not supported by this setup script."
     echo
     exit 1
 esac
