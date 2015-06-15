@@ -26,44 +26,78 @@ fi
 case ${osinfo} in
   # Kali Dependency Installation
   Kali)
+    apt-get update
+    apt-get dist-upgrade
     echo '[*] Installing Kali Dependencies'
-    apt-get install python-qt4 python-pip xvfb python-netaddr
-    echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/ChrisTruncer/Ghost.py.git
-    cd Ghost.py
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
     python setup.py install
     cd ..
-    rm -rf Ghost.py
+    rm -rf rdpy
+    echo '[*] Installing Python Modules'
+    pip install fuzzywuzzy
+    pip install selenium
+    pip install python-Levenshtein
+    pip install pyasn1 --upgrade
+    pip install pyvirtualdisplay
+    cd ../bin/
+    wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantomjs
+    chmod +x phantomjs
+    cd ..
   ;;
   # Debian 7+ Dependency Installation
   Debian)
+    apt-get update
+    apt-get dist-upgrade
     echo '[*] Installing Debian Dependencies'
-    apt-get install cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
+    python setup.py install
+    cd ..
+    rm -rf rdpy
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
+    pip install fuzzywuzzy
+    pip install selenium
+    pip install python-Levenshtein
+    pip install pyasn1
+    pip install pyvirtualdisplay
     echo
-    echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/ChrisTruncer/Ghost.py.git
-    cd Ghost.py
-    python setup.py install
+    cd ../bin/
+    wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantom_deb
+    chmod +x phantomjs
     cd ..
-    rm -rf Ghost.py
   ;;
   # Ubuntu (tested in 13.10) Dependency Installation
   Ubuntu)
+    apt-get update
+    apt-get dist-upgrade
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr
+    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
+    python setup.py install
+    cd ..
+    rm -rf rdpy
     echo
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
+    pip install fuzzywuzzy
+    pip install selenium
+    pip install python-Levenshtein
+    pip install pyasn1
+    pip install pyvirtualdisplay
     echo
-    echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/ChrisTruncer/Ghost.py.git
-    cd Ghost.py
-    python setup.py install
+    cd ../bin/
+    wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantom_ubu
+    chmod +x phantomjs
     cd ..
-    rm -rf Ghost.py
   ;;
   # CentOS 6.5+ Dependency Installation
   CentOS)
@@ -77,23 +111,30 @@ case ${osinfo} in
     fi
     echo '[*] Installing CentOS Dependencies'
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse xvfb python-netaddr
+                python-argparse xvfb python-netaddr python-dev
     echo
-    echo '[*] Installing Python Modules'
-    pip install python_qt_binding
-    echo
-    echo '[*] Cloning and installing Ghost'
-    git clone https://github.com/ChrisTruncer/Ghost.py.git
-    cd Ghost.py
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
     python setup.py install
     cd ..
-    rm -rf Ghost.py
+    rm -rf rdpy
+    echo '[*] Installing Python Modules'
+    pip install python_qt_binding
+    pip install fuzzywuzzy
+    pip install selenium
+    pip install python-Levenshtein
+    pip install pyasn1
+    pip install pyvirtualdisplay
+    echo
+    cd ../bin/
+    wget http://www.christophertruncer.com/InstallMe/phantomjs
+    chmod +x phantomjs
+    cd ..
   ;;
   # Notify Manual Installation Requirement And Exit
   *)
-    echo "[Error]: ${OS} is not supported by this setup script."
-    echo '[Error]: To use EyeWitness, manually install python, PyQt4.'
-    echo '[Error]: Install ghost.py from https://github.com/ChrisTruncer/Ghost.py.git'
+    echo "[Error]: ${osinfo} is not supported by this setup script."
     echo
     exit 1
 esac
