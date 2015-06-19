@@ -3,6 +3,7 @@ import os
 import socket
 import sys
 import urllib2
+import ssl
 
 try:
     from ssl import CertificateError as sslerr
@@ -55,6 +56,10 @@ def create_driver(cli_parsed, user_agent=None):
             'network.proxy.http_port', cli_parsed.proxy_port)
         profile.set_preference('network.proxy.ssl', cli_parsed.proxy_ip)
         profile.set_preference('network.proxy.ssl_port', cli_parsed.proxy_port)
+
+    profile.set_preference('app.update.enabled', False)
+    profile.set_preference('browser.search.update', False)
+    profile.set_preference('extensions.update.enabled', False)
 
     try:
         driver = webdriver.Firefox(profile)
@@ -150,9 +155,21 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         pass
 
     # Get our headers using urllib2
+    context = None
+    try:
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+    except:
+        context = None
+        pass
+
     try:
         req = urllib2.Request(http_object.remote_system, headers={'User-Agent': tempua})
-        opened = urllib2.urlopen(req)
+        if context is None:
+            opened = urllib2.urlopen(req)
+        else:
+            opened = urllib2.urlopen(req, context=context)
         headers = dict(opened.info())
         headers['Response Code'] = str(opened.getcode())
     except urllib2.HTTPError as e:
@@ -210,6 +227,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.category = 'unauth'
         if 'Index of /' in http_object.page_title:
             http_object.category = 'dirlist'
+        if '404 Not Found' in http_object.page_title:
+            http_object.category = 'notfound'
     except Exception:
         http_object.page_title = 'Unable to Display'
     # Save page source to the object and to a file. Also set the title in the object
