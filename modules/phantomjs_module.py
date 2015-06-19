@@ -108,6 +108,11 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         print '[*] Bad status line when connecting to {0}'.format(http_object.remote_system)
         http_object.error_state = 'BadStatus'
         return http_object, driver
+    except WebDriverException:
+        print '[*] WebDriverError when connecting to {0}'.format(http_object.remote_system)
+        http_object.error_state = 'BadStatus'
+        return http_object, driver
+
     # Retry block for a timeout
     if http_object.error_state == 'Timeout':
         http_object.error_state = None
@@ -125,6 +130,10 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             return http_object, driver
         except httplib.BadStatusLine:
             print '[*] Bad status line when connecting to {0}'.format(http_object.remote_system)
+            http_object.error_state = 'BadStatus'
+            return http_object, driver
+        except WebDriverException:
+            print '[*] WebDriverError when connecting to {0}'.format(http_object.remote_system)
             http_object.error_state = 'BadStatus'
             return http_object, driver
 
