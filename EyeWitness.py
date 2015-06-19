@@ -267,6 +267,10 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
             http_object = targets.get()
             if http_object is None:
                 break
+            #Fix our directory if its resuming from a different path
+            if os.path.dirname(cli_parsed.d) != os.path.dirname(http_object.screenshot_path):
+                http_object.set_paths(
+                    cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
 
             if cli_parsed.cycle is not None:
                 if user_agent is None:
@@ -453,6 +457,8 @@ def multi_mode(cli_parsed):
             from twisted.internet import reactor
 
             for target in targets:
+                if os.path.dirname(cli_parsed.d) != os.path.dirname(target.screenshot_path):
+                    target.set_paths(cli_parsed.d)
                 tdbm = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
                 if target.proto == 'vnc':
                     reactor.connectTCP(
@@ -504,6 +510,7 @@ if __name__ == "__main__":
         dbm = db_manager.DB_Manager(cli_parsed.resume)
         dbm.open_connection()
         cli_parsed = dbm.get_options()
+        cli_parsed.d = os.path.dirname(temp)
         cli_parsed.resume = temp
         dbm.close()
 

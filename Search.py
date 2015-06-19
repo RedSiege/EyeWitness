@@ -49,6 +49,7 @@ if __name__ == "__main__":
         print 'Found {0} Results!'.format(str(len(results)))
     cli_parsed = dbm.get_options()
     cli_parsed.results = 25
+    cli_parsed.d = os.path.dirname(db_path)
     oldfiles = glob.glob(os.path.join(cli_parsed.d, "*search*.html"))
     for f in oldfiles:
         os.remove(f)
