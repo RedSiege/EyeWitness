@@ -23,6 +23,7 @@ from modules.helpers import get_ua_values
 from modules.helpers import target_creator
 from modules.helpers import title_screen
 from modules.helpers import open_file_input
+from modules.helpers import resolve_host
 from modules.reporting import create_table_head
 from modules.reporting import create_web_index_head
 from modules.reporting import sort_data_and_write
@@ -120,6 +121,9 @@ def create_cli_parser():
                               type=int, help='Port of web proxy to go through')
     http_options.add_argument('--show-selenium', default=False,
                               action='store_true', help='Show display for selenium')
+    http_options.add_argument('--resolve', default=False,
+                              action='store_true', help=("Resolve IP/Hostname"
+                                                         " for targets"))
 
     resume_options = parser.add_argument_group('Resume Options')
     resume_options.add_argument('--resume', metavar='ew.db',
@@ -227,6 +231,8 @@ def single_mode(cli_parsed):
     driver = create_driver(cli_parsed)
     result, driver = capture_host(cli_parsed, http_object, driver)
     result = default_creds_category(result)
+    if cli_parsed.resolve:
+        result.resolved = resolve_host(result.remote_system)
     driver.quit()
     if cli_parsed.cycle is not None and result.error_state is None:
         ua_dict = get_ua_values(cli_parsed.cycle)
@@ -255,8 +261,8 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
     manager.open_connection()
 
     if cli_parsed.web:
-            create_driver = selenium_module.create_driver
-            capture_host = selenium_module.capture_host
+        create_driver = selenium_module.create_driver
+        capture_host = selenium_module.capture_host
     elif cli_parsed.headless:
         create_driver = phantomjs_module.create_driver
         capture_host = phantomjs_module.capture_host
@@ -267,7 +273,7 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
             http_object = targets.get()
             if http_object is None:
                 break
-            #Fix our directory if its resuming from a different path
+            # Fix our directory if its resuming from a different path
             if os.path.dirname(cli_parsed.d) != os.path.dirname(http_object.screenshot_path):
                 http_object.set_paths(
                     cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
@@ -281,6 +287,8 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
                         browser_key, http_object.remote_system)
             else:
                 print 'Attempting to screenshot {0}'.format(http_object.remote_system)
+
+            http_object.resolved = resolve_host(http_object.remote_system)
             if user_agent is None:
                 http_object, driver = capture_host(
                     cli_parsed, http_object, driver)

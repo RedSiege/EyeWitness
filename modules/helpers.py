@@ -8,6 +8,29 @@ import time
 import xml.etree.ElementTree as XMLParser
 from distutils.util import strtobool
 import glob
+import socket
+from netaddr import IPAddress
+from netaddr.core import AddrFormatError
+from urlparse import urlparse
+
+
+def resolve_host(system):
+    parsed = urlparse(system)
+    system = parsed.path if parsed.netloc == '' else parsed.netloc
+    try:
+        toresolve = IPAddress(system)
+        resolved = socket.gethostbyaddr(str(toresolve))
+        return resolved
+    except AddrFormatError:
+        pass
+    except socket.herror:
+        return 'Unknown'
+
+    try:
+        resolved = socket.gethostbyname(system)
+        return resolved
+    except socket.gaierror:
+        return 'Unknown'
 
 
 def target_creator(command_line_object):

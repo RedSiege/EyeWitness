@@ -27,6 +27,7 @@ class HTTPTableObject(object):
         self._category = None
         self._ssl_error = False
         self._ua_left = None
+        self._resolved = None
 
     def set_paths(self, outdir, suffix=None):
         file_name = self.remote_system.replace('://', '.')
@@ -38,6 +39,14 @@ class HTTPTableObject(object):
         self.screenshot_path = os.path.join(
             outdir, 'screens', file_name + '.png')
         self.source_path = os.path.join(outdir, 'source', file_name + '.txt')
+
+    @property
+    def resolved(self):
+        return self._resolved
+
+    @resolved.setter
+    def resolved(self, resolved):
+        self._resolved = resolved
 
     @property
     def id(self):
@@ -191,6 +200,9 @@ class HTTPTableObject(object):
         <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
         <a href=\"{address}\" target=\"_blank\">{address}</a><br>
         """).format(address=self.remote_system)
+
+        if self.resolved is not None and self.resolved is not 'Unknown':
+            html += ("""<b>Resolved to:</b> {0}<br>""").format(self.resolved)
 
         if len(self._uadata) > 0:
             html += ("""
