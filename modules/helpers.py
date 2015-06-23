@@ -19,7 +19,7 @@ def resolve_host(system):
     system = parsed.path if parsed.netloc == '' else parsed.netloc
     try:
         toresolve = IPAddress(system)
-        resolved = socket.gethostbyaddr(str(toresolve))
+        resolved = socket.gethostbyaddr(str(toresolve))[0]
         return resolved
     except AddrFormatError:
         pass
