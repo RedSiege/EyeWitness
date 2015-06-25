@@ -405,7 +405,7 @@ def search_report(cli_parsed, data, search_term):
         bottom_text += ("<a href=\"search.html\"> Page 1</a>")
         # Generate our header/footer data here
         for i in range(2, num_pages):
-            bottom_text += ("<a href=\"report_page{0}.html\"> Page {0}</a>").format(
+            bottom_text += ("<a href=\"search_page{0}.html\"> Page {0}</a>").format(
                 str(i))
         bottom_text += "</center>\n"
         top_text = bottom_text
