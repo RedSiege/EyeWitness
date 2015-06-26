@@ -4,6 +4,7 @@ import socket
 import sys
 import urllib2
 import ssl
+import time
 
 try:
     from ssl import CertificateError as sslerr
@@ -60,6 +61,9 @@ def create_driver(cli_parsed, user_agent=None):
     profile.set_preference('app.update.enabled', False)
     profile.set_preference('browser.search.update', False)
     profile.set_preference('extensions.update.enabled', False)
+    profile.set_preference('capability.policy.default.Window.alert', 'noAccess');
+    profile.set_preference('capability.policy.default.Window.confirm', 'noAccess');
+    profile.set_preference('capability.policy.default.Window.prompt', 'noAccess');
 
     try:
         driver = webdriver.Firefox(profile)
@@ -113,10 +117,9 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     # Dismiss any alerts present on the page
     # Will not work for basic auth dialogs!
     try:
-        alert = driver.switch_to_alert()
+        alert = driver.switch_to.alert
         alert.dismiss()
-        alert.accept()
-    except NoAlertPresentException:
+    except Exception as e:
         pass
 
     # If we hit a timeout earlier, retry once
@@ -147,11 +150,17 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             return http_object, driver
 
     try:
-        alert = driver.switch_to_alert()
+        alert = driver.switch_to.alert
         alert.dismiss()
-        alert.accept()
-    except NoAlertPresentException:
+    except Exception as e:
         pass
+    # Save our screenshot to the specified directory
+    try:
+        driver.save_screenshot(http_object.screenshot_path)
+    except WebDriverException as e:
+        print('[*] Error saving web page screenshot'
+              ' for ' + http_object.remote_system)
+    
 
     # Get our headers using urllib2
     context = None
@@ -215,13 +224,6 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     except sslerr:
         headers = {'Error': 'Invalid SSL Certificate'}
         http_object.ssl_error = True
-
-    # Save our screenshot to the specified directory
-    try:
-        driver.save_screenshot(http_object.screenshot_path)
-    except WebDriverException:
-        print('[*] Error saving web page screenshot'
-              ' for ' + http_object.remote_system)
 
     try:
         http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode(
