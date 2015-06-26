@@ -94,7 +94,6 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     Returns:
         HTTPTableObject: Filled out HTTP Object
     """
-    tempua = driver.execute_script("return navigator.userAgent")
     try:
         driver.get(http_object.remote_system)
     except KeyboardInterrupt:
@@ -149,6 +148,10 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         context = None
         pass
 
+    try:
+        tempua = driver.execute_script("return navigator.userAgent")
+    except:
+        tempua = ''
     try:
         req = urllib2.Request(http_object.remote_system, headers={'User-Agent': tempua})
         if context is None:
