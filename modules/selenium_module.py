@@ -149,11 +149,11 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.error_state = 'BadStatus'
             return http_object, driver
 
-    try:
-        alert = driver.switch_to.alert
-        alert.dismiss()
-    except Exception as e:
-        pass
+        try:
+            alert = driver.switch_to.alert
+            alert.dismiss()
+        except Exception as e:
+            pass
     # Save our screenshot to the specified directory
     try:
         driver.save_screenshot(http_object.screenshot_path)

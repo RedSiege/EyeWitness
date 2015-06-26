@@ -195,7 +195,7 @@ def sort_data_and_write(cli_parsed, data):
                 if pcount < len(grouped):
                     html += table_head
             counter += 1
-        if len(grouped) > 0 and counter % cli_parsed.results != 0:
+        if len(grouped) > 0 and counter - 1 % cli_parsed.results != 0:
             html += "</table><br>"
 
     # Add our errors here (at the very very end)
