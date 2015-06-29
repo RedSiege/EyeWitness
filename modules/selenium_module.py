@@ -216,8 +216,13 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             headers = {'Error': 'Connection Reset'}
             http_object.error_state = 'ConnReset'
             return http_object, driver
+        elif e.errno == 10054:
+            headers = {'Error': 'Connection Reset'}
+            http_object.error_state = 'ConnReset'
+            return http_object, driver
         else:
-            headers = {'Error': 'Potential timeout connecting to server'}
+            http_object.error_state = 'BadStatus'
+            return http_object, driver
     except httplib.BadStatusLine:
         http_object.error_state = 'BadStatus'
         return http_object, driver
@@ -240,7 +245,6 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     try:
         http_object.headers = headers
         http_object.source_code = driver.page_source.encode('utf-8')
-
         with open(http_object.source_path, 'w') as f:
             f.write(http_object.source_code)
     except UnexpectedAlertPresentException:

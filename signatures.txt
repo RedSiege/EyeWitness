@@ -1,189 +1,109 @@
-Integrated Dell Remote Access Controller|(Dell iDRAC) root/calvin|idrac
-ACE 4710 Device Manager;Cisco|(ACE 4710 Device Manager) admin/admin|netdev
-ATutor;form_login_action;/gad_search.php|(ATutor Web CMS) admin/admin or instructor:instructor|cms
-Apache Lenya;lenya.action=introspect|(Apache Lenya) admin/levi|cms
-Polycom RSS 2000|(Polycom RSS 2000) Administrator/polycom|voip
-Polycom;HDX 8000 HD|(Polycom HDX 8000) admin/<SerialNumberofDevice>|voip
-Drupal.settings|(Drupal) admin/<assigned at install>|cms
-var daisy;daisy.site;daisy.site.name|(Daisy CMS) admin/admin or user/user|cms
-Hewlett-Packard Development Company;iLO.init|(HP iLo) Administrator/<random 8 characters>|idrac
-<frame src="framelogo.htm" name="TopLogo" title="logo" frameborder=0 scrolling=no noresize>;<frame src="frameleft.htm" name="TopFrame" title="main" frameborder=0 scrolling=auto>;<frame src="frametop.htm" name="LeftFrame" title="header" frameborder=0 scrolling=no noresize>;<frame src="status/status.htm" name="RightFrame" title="contents" frameborder=0>|(Dell Generic Signature)No default username or pass|none
-Dell Color Laser 5110cn|(Dell Color Laser 5110cn) No default username or pass|printer
-Dell Laser Printer 1700n|(Dell Laser Printer 1700n) No default username or pass|printer
-Dell Laser Printer 1720dn|(Dell Laser Printer 1720dn) No default username or pass|printer
-Dell B5465dnf;/cgi-bin/dynamic/dell_header.html|(Dell B5465dnf) No default username or pass|printer
-Dell B3465dnf Laser MFP;/cgi-bin/dynamic/dell_header.html|(Dell b3465dnf) No default username or pass|printer
-Dell Laser Printer 3000cn;frame src="status/status.htm" name="RightFrame"|(Dell 3000cn) No default username or pass|printer
-Xerox WorkCentre 7435;function restore_saved_params(form, key_html)|(Xerox WorkCentre 7435) admin/1111|printer
-WorkCentre 7120;Fuji Xerox Co;var biItms|(WorkCentre 7120) admin/1111|printer
-WorkCentre 7125;Fuji Xerox Co;var nvTree|(WorkCentre 7125) admin/1111|printer
-Xerox WorkCentre 5225;inNN;var trItms|(Xerox WorkCentre 5225) 11111/x-admin|printer
-Xerox Corporation;XEROX WORKCENTRE;Header Frame;inUriToMatch|(Potential Generic Xerox) admin/1111 or x-admin/11111|printer
-Xerox Workstation M20i;var HEADER_FRAME;var BRANDING_FRAME|(Xerox Workstation M20i) admin/1111|printer
-ChangeDefWebLanguage();script/cookieCoke.js;script/Common_script.js;NOSCRIPT|(Potential Workcenter 3550) admin/1111|printer
-WorkCentre 6605DN;frame src="menuhome.htm"|(WorkCentre 6605DN) No default pass|printer
-Xerox WorkCentre 7232;var nvTree;var rSec|(Xerox WorkCentre 7232) 11111/x-admin|printer
-Xerox WorkCentre 5325;var nvTree;var csItms|(Xerox WorkCentre 5325) admin/1111|printer
-Xerox WorkCentre 7345;var nvTree;var csItms|(Xerox WorkCentre 7345) admin/1111 or 11111/x-admin|printer
-Dell Color Laser 3110cn;frameleft.htm;TopFrame|(Dell Laser 3110cn) No Default Username or Pass|printer
-HP LaserJet Pro MFP M521dn;setupUrls[index++];manageUrls|(HP MFP M521dn) No default username or pass|printer
-HP Color LaserJet CM2320nf MFP;applicationMastheadSmall|(HP Color LaserJet CM2320nf) No default username or pass|printer
-HP LaserJet M1522n MFP;mastheadIcon|(HP LaserJet M1522n) No default username or pass|printer
-HP LaserJet M1536dnf;buttonManager.js;mastheadIcon|(HP LaserJet M1536dnf) No default username or pass|printer
-HP LaserJet M2727nf MFP;mastheadIcon;mastheadTitle|(HP LaserJet M2727nf) No default username or pass|printer
-HP LaserJet 1536dnf MFP;mastheadIcon;mastheadTitle|(HP LaserJet 1536dnf) No default username or pass|printer
-HP Color LaserJet CM4540 MFP;class="device-name"|(HP Color LaserJet CM4540) No default username or pass (potential username admin, no pass)|printer
-Synology DiskStation - Monego;DiskMessageHandler;VideoPlayer|(Synology) admin/<nopass>|nas
-Brother MFC-8480DN;Brother Industries;OpenConfirmWindow|(Brother 8480DN) <no username>/access or admin/access|printer
-HP LaserJet 700 color MFP M775;/hp/device/ControlPanelCustomization/Index|(HP LaserJet 700) No default username or pass|printer
-MB471;okilogo;replacelogo;savecolor|(OKI MB471) <nousername or root>/aaaaaa or 000000 or 0000 or root/(last 6 of mac address Uppercased)|printer
-MB461;okilogo;var pagename;var status_ad_flag|(OKI MB461) <nousername or root>/aaaaaa or 000000 or 0000 or root/(last 6 of mac address Uppercased)|printer
-dlink;document.login_form.f_LOGIN_NAME.value!="admin";document.login_form.f_login_type.value=0;function checkID()|(DNS-323 or DNS-343) admin/<nopassword>|nas
-var re=/root;anonymous;nobody;administrator;ftp;guest;squeezecenter;sshd;messagebus;netdev/i;var cUName = $.cookie('uname');var cPwd = $.cookie('password');/cgi-bin/login_mgr.cgi|(Potential DNS-320L NAS) admin/<setduringinstall> or admin/<none>|nas
-APC;Log On;function isValidBrowser();APC Website;var nAgt|(Potential APC SmartUPS) apc/apc|netdev
-<title></title></head><head></head>;var RVL_str = "NULL";var RVL_decode_flg = "0";frameset rows="*";src="/configuration/cover_frame" scrolling="no"|(Potential IPmux-216) su/1234 or user/1234 or tech/1234|netdev
-Avaya Aura; System manager 6.1;div class="legalNoticeDiv";div class="loginouterdiv"|(Avaya Aura System Manager 6.1) admin/admin123|voip
-hp LaserJet 1320 series;var ieVSupported = "MSIE 5.0";hp/device/banner.html|(HP LaserJet 1320 series) <no default username or password>|printer
-hp LaserJet 4250;a.hpButtonNavigationLink;div.hpConsumableBlockData|(HP LaserJet 4250) <no default username or password>|printer
-hp color LaserJet 4600;images/hp_invent_logo.gif;jsfiles/formatting.css|(HP LaserJet 4600) <no default username or password>|printer
-HP Color LaserJet CP2025;td class="mastheadIcon";applicationMastheadSmall|(HP LaserJet CP2025) <no default username or password>|printer
-Rainwise IP-100;Relative Humidity;Solar Rad;Leaf Wetness;var exdate=new Date()|(Rainwise IP-100) admin/admin, admin/paradox, or paradox/paradox|netdev
-WebDVR;var ip;var pwd;login.sitecode.value;DX8100|(DX8100 Web DVR) admin/admin|none
-DYMO LabelWriter Print Server;InternetExplorer3.0(or later)|(DYMO LabelWriter Print Server) admin/admin|printer
-HP System Management Homepage Login;Check if the user is already connected;pageColumns|(HP System Management) username and pass of OS or domain account|idrac
-Polycom RMX 1000;ondragstart;cfg_ui_hide;proxy_log_ip|(Polycom RMX 1000) POLYCOM/POLYCOM|voip
-Sign In - Hyperic;body class="tundra";since dojo has trouble when;screencastLink|hqadmin/hqadmin|vm
-HP System Management Homepage;HP-UX removed;Unable to create a socket to communicate|(HP System Management) username and pass of OS or domain account|idrac
-On Board Remote Management;This site requires the use of a frames capable;Web browser|guest/guest|idrac
-QUANTUM - Scalar i40 Login Screen;var bLoggingin = false;enterKey(event)|(Scalar i40 Login) admin/password|none
-Management Console - Login;AVANCE CSS;Stratus Technologies Bermuda|admin/admin|none
-Login;Sun GlassFish Enterprise Server;onmouseover|(Oracle Glassfish Server) admin/<nopass> admin/changeit admin/admin|none
-ZeroShell;cgi-bin/kerbynet?Action=Render;StartSession|(Zeroshell Web App) admin/zeroshell|none
-HP System Management Homepage Login;FramesAreThere;inNimbus;imageFromStatus(|(HP System Management) username and pass of OS or domain account|idrac
-images/loytec.gif;LIP-3ECTB|(Loytec LIP-3ECTB) admin/loytec4u|idrac
-LenovaEMC px4-300r;Enter administrator username and password;mngpwd|(Iomega px4-300r) root/ADMIN or admin/ADMIN or ADMIN/ADMIN|nas
-My Book World Edition;Network Storage Manager;Copy Manager;Downloader|(My Book World Edition) admin/admin|nas
-THECUS 1U4500;/usr/usrgetform.html;/pub/css.css|(THECUS 1U4500) admin/admin|nas
-HP IP Console Switch G2|(HP IP Console Switch G2) Admin/<nopassword>|netdev
-Oracle;PeopleSoft Enterprise Sign-in;function setFocus;pslogincopyright|(Oracle Peoplesoft Enterprise) PS/PS or VP1/VP1|none
-a id="id_LaCie" target="_blanck" href= "http://www.lacie.com">;LaCie;Dashboard;body class="bodynormaldashboard"|(Lacie 2Big NAS) admin/admin (changed at first login though)|nas
-Synology;DiskStation;DS1513;Multitasking,Web Application,Personal Cloud;SynohdpackStatus|(Synology DS1513) admin/<nopassword>|nas
-Synology;DiskStation;DS212J;modules/PersonalSettings/style.css;script type="text/javascript">SYNO.SDS.Session|(Synology DS212J) admin/<nopassword>|nas
-Synology;DiskStation;DS214;modules/BackupReplicationApp/style.css;|(Synology Diskstation DS214) admin/<nopassword>|nas
-Synology;DiskStation;DS413;modules/BackupReplicationApp/style.css;|(Synology Diskstation DS413) admin/<nopassword>|nas
-Synology;DiskStation;DS713;modules/AdminCenter/style.css|(Synology Diskstation DS713) admin/<nopassword>|nas
-hp color LaserJet 5550;div.hpConsumableBlockData;td class="hpBanner"|(HP Color LaserJet 5550) <nodefaultcreds>|printer
-HP LaserJet P4015;td style="vertical-align;this.LCDispatcher;deviceStatusPage|(HP Color LaserJet P4015) <nodefaultcreds>|printer
-function initFavoriteDevices(;function javaPluginExists();Dominion;function addDiscoveredDevices|Raritan Dominion KX II admin/raritan|none
-EasyCoder PM4i;navframe;FRAME src;FRAMESET;noresize scrolling| EasyCoder PM4i admin/pass|printer
-Symmetricom SyncServer S100;var serverName;function usernameKey;function answerKey;loginPasswordTable;passedit|Symmetricom SyncServer S100 admin/symmetricom|none
-KYOCERA;idxlang;opt_msg1_;startwlm|Kyocera Printer (General) Admin/Admin|printer
-Top Page - MX-M465N;class="modelName">MX-M465N</div>;delta_close.gif;name="updatebtn" type="button"|SHARP MX-M456N Printer admin/admin|printer
-NetGear GS108T;class="logoNetGear space50Percent topAlign;class="logoNetGear space50Percent topAlign|Netgear GS108T Switch <nousername>/password|netdev
-airos_logo.png;form enctype="multipart/form-data" id="loginform" method="post";align="center" class="loginsubtable";function onLangChange()|AirOS ubnt/ubnt|netdev
-Any time &amp; Any where;IP Surveillance for Your Life;form name="myForm" method="POST" target="_top" onSubmit="return check();function createHttpRequestObj()|DVR (AV760 DVR) admin/admin or admin,/admin|none
-Grandstream Device Configuration;action="dologin" method="post" name="loginForm";All Rights Reserved Grandstream Networks|GrandStream Device Admin User: <nouser>/admin  End User: <nouser>/123|voip
-DSL-2640U;input type="checkbox" class="remb"> <span class="remember">Remember me</span>;id="A2" name="A2" type="password" maxlength="30"|D-Link DSL-2640U admin/admin|netdev
-a href="http://mikrotik.com"><img src="mikrotik_logo.png";You have connected to a router. Administrative access only. If this device is not in your possession, please contact your local network administrator;<td colspan="3"><h2>WebFig Login:</h2>|Mikrotik Router admin/<nopassword>|netdev
-loginPassword.value = "ZyXEL ZyWALL Series";P-660RU-T1 v2;function passwordMD5(str);function LoginClick(hiddenPassword, loginPassword)|P-660RU-T1 v2 Ethernet/USB Router <nousername>/1234|netdev
-function hex_md5(s) { return binl2hex(core_md5(str2binl(s), s.length * chrsz));bit_rol(;Welcome to the  Web Configurator;OX253P|OX253P Router admin/admin admin/1234|netdev
-var kerio = {lib:{};kerio.engine.acceptedLanguages;upper-message-container;action="/server/login" method="post" id="container"|Kerio Control Device admin/<passwordofadminuseronbox>|netdev
-meta name="SonicWALL Administrator" content;<title>SonicWALL - Authentication</title>;window.onunload=onPageUnload;"auth1.html" name="authFrm"|SonicWall Device admin/password|netdev
-D-Link VoIP Router;frameset framespacing="0" frameborder="0" rows="0,*";fxdriver-screenshot-canvas" style="display: none;script src="util.js" language="JavaScript"></script>|DVG-5402SP admin/<nopassword>|voip
-mikrotik routeros > administration;form name="loginForm" action="/cfg" method="post" onsubmit="doLogin();mikrotik routeros;configuration page|Mikrotik Routeros admin/<nopassword>|netdev
-Grandstream Device Configuration;form action="/cgi-bin/dologin" method="post" name="loginForm";All Rights Reserved Grandstream Networks;input name="P2" type=password size=30 maxlength=30|Grandstream Networks: <nouser>/admin or <nouser>/123|voip
-HP Color LaserJet CP3505;input name="btnContinue"  type="image";img class="hpPageImage" src="images/question.gif" alt="On-line help|HP Color Jet CP3505 Printer <no admin username or password>|printer
-ATEN International Co Ltd;body onload='PageInit();form name="form1" action="/cgi/login.cgi" method="post";img src="../images/logo.gif" style="margin;alert(lang.LANG_LOGIN_INVALID_USERNAME);document.getElementById("login_word")|Possible SuperMicro IPMI ADMIN/ADMIN (Creds need confirming)|none
-Welcome to the Web-Based Configurator;function str2blks_MD5(str);loginPassword.value = "ZyXEL ZyWALL Series";Prestige_Login" value="Login"|Zyxel P-660HW-T1 <nousername>/1234|netdev
-<meta http-equiv="refresh" content="0;url=/designs/imm/noscript/noscript_en.php";meta http-equiv="Content-Type" content="text/html;@import "/designs/ibmdojo/dojo/resources/dojo.css";@import "/designs/imm/login.css"|IBM Integrated Management Module USERID\PASSW0RD|none
-var slControl = new ActiveXObject('AgControl.AgControl');form name="Form1" method="post" action="Default.aspx" id="Form1";<title>AxisTV</title>|AxisTV Login administrator/tech|voip
-If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;<a href="mailto:users@tomcat.apache.org">users@tomcat.apache.org||highval
-<h2>If you're seeing this, you've successfully installed Tomcat. Congratulations!</h2>;<p>In Tomcat 7.0 access to the manager application is split between;<li id="list-announce"><strong><a href="mailto:announce-subscribe@tomcat.apache.org">||highval
-ilo.ico;SetCookie('hp-iLO-Login';<title>HP Integrated Lights-Out 2 Login</title>||idrac
-<span class="login_server_type" id="login_server_type_id">M1000e;img.src='/cmc/images/login_progress.14824.gif';<img src="/cmc/images/cmc_title.14824.png"|(Dell CMC) root/calvin|idrac
-<span class="loginTitle">Integrated Lights-Out 2 <span class="advanced">Advanced</span></span>;<!-- Masterhead Start -->||idrac
-<span class="loginTitle">Integrated Lights-Out 3 <span class="advanced">Advanced</span></span>;;<!-- Masterhead Start -->;src="public/images/telescopeLg.jpg"||idrac
-Cisco Systems, Inc. IP Phone CP-7960G;<title>Cisco Systems, Inc.</title>;<img a="" <="" src="/Images/Logo"||voip
-<strong>Cisco IP Conference Station CP-7937G</strong>;<img border="0" align="bottom" hspace="0" alt="Cisco Systems, Inc." src="/Logo" />;<a href="localmenus.cgi?func=604">||voip
-<p align="center"><b><font color="#FFFFFF" size="4">Cisco Unified IP Phone CP-7962G;<a href="/CGI/Java/Serviceability?||voip
-<p align="center"><b><font size="4" color="#FFFFFF">Cisco Unified IP Phone CP-7975G;/CGI/Java/Serviceability?adapter||voip
-<div id="product"><span>Xirrus XN8 WiFi Array;<div onclick="window.open('http://www.xirrus.com/feedback')";if ( key_code &lt; 0x20 || key_code &gt; 0x7E)||netdev
-<meta content="Splunk Inc." name="author" />;MRSPARKLE;<p><span>First time logging in?</span> Splunk's default credentials are|Splunk admin/changeme|highval
-<p>If you've forgotten your username or password, please contact your Splunk administrator.<br /><br />username <span>admin</span><br />password <span>changeme</span></p><p></p>;MRSPARKLE;<meta content="Splunk Inc." name="author" />|Splunk admin/changeme|highval
-<meta content="Infoblox WebUI Login Page ID" />;<title>Infoblox Grid Manager</title>;Wicket.Event.add(window, "domready", function(event) { document.getElementById('timezone').value = IB.getBrowserTimezone()|InfoBlox admin/infoblox|none
-dummyActiveXObject = new ActiveXObject('Msxml2.XMLHTTP');<td class="mastheadTitle">HP Designjet T1200</td>||printer
-<strong class="product">HP LaserJet 600 M602</strong>;<link href="/hp/device/theme/onevoice/;action="/hp/device/DeviceStatus/Save">||printer
-<strong class="product">HP Color LaserJet M651</strong>;<link href="/hp/device/theme/onevoice/basic.css;action="/hp/device/DeviceStatus/Save">||printer
-Cisco Codec:;<p style="display: none;" class="alert alert-info recommended-browsers">;if (vega.global.isOlderBrowser())|admin/<nopassword>|voip
-var thisIDRACText = EntityDecode(;// Dell's limit on the maximum # of char in a username;/images/Ttl_2_iDRAC7_Base_ML.png|iDRAC root/calvin|idrac
-alt="Oracle(R) Integrated Lights Out Manager";<input type="submit" tabindex="3" title="Log In to Oracle(R) Integrated Lights Out Manager "|Oracle ILO root/changeme|idrac
-var thisIDRACText = " This iDRAC";// Return true if value contains only printable ASCII chars;Integrated Remote Access Controller 6|Dell iDRAC root/calvin|idrac
-Teradata Viewpoint V14.10.00.05-b47;if (new Date().getTime() - loginRenderMillis|TeraData NAS admin/teradata|nas
-Cisco Unified IP Phone Cisco Communicator;<img src="/FS/Logo.png";/CGI/Java/Serviceability||voip
-<title>IIS7</title>;<img width="571" height="411" alt="IIS7" src="welcome.png"||crap
-<p>In Tomcat 8.0 access to the manager application is split between;<title>Apache Tomcat/;<pre>$CATALINA_HOME/RUNNING.txt</pre>||highval
-<title>Test Page for the Apache HTTP Server on Red Hat Enterprise Linux</title>;<h1>Red Hat Enterprise Linux <strong>Test Page||crap
-<title>Welcome to VMware vSphere</title>;<meta content="VMware VirtualCenter is virtual infrastructure software for partitioning, consolidating and managing systems in mission-critical environments.||crap
-title="VMware vFabric, Cloud Application Platform";<p>This is the default vFabric tc Server Runtime home page||crap
-content="VMware ESXi is virtual infrastructure software for partitioning, consolidating, and managing systems in mission-critical environments.;document.write(ID_ESX_VIClientDesc)||crap
-src="./cgi-bin/dynamic/topbar.html" target="Main" name="Printer Information" />;<!-- Title in case of ENA's is not a single variable so it is a function -->||printer
-<strong>Cisco IP Conference Station CP-7937G</strong>;src="/Logo";<title>Cisco Systems, Inc.||voip
-<img src="/FS/Logo.png";size="4">Cisco IP Phone CP-7961G-GE;/CGI/Java/Serviceability?||voip
-<font color="#FFFFFF" size="4">Cisco Unified IP Phone;<img src="/FS/Logo.png";/CGI/Java/Serviceability?||voip
-<font size="4" color="#FFFFFF">Cisco IP Phone;/CGI/Java/Serviceability?||voip
-HP Color LaserJet 4700 Printers</title>;class="hpLogo" src="images/hp_invent_logo.gif"||printer
-<title>HP Designjet T610 44in;function launchLicenceAgreement() {var fw = document.fw_upd_form.System||printer
-<title>HP Color LaserJet CP4525 Printers</title>;<form action="this.LCDispatcher?nav=hp.DeviceStatus||printer
-hp LaserJet 9050</title>;div.hpGasGaugeBlock||printer
-div.hpGasGaugeBlock;div.hpPageText;HP 9250C Digital Sender||printer
-<title>HP Designjet T1100 44in;getElementById('printerStatusId').innerHTML||printer
-Wired PrintServer<h3>Status;<h1>Zebra Technologies<br />||printer
-<div id="headertitle">;Phaser 7760;<div id="stattableWithoutBkGif">||printer
-document.write("&lt;title&gt;XEROX WORKCENTRE");Function Name:	SyncTreeToThisUrl||printer
-div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;Printers</title>||printer
-div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;MFP Series</title>||printer
-<frame target="_self" noresize="noresize" marginheight="10" marginwidth="15" scrolling="auto" src="/cgi-bin/dynamic/PrinterStatus.html" name="rbottom" />||printer
-<frame scrolling="no" noresize="noresize" src="/cgi-bin/dynamic/left_bar.html" target="Printer Information" name="Directory" />;<!-- Title in case of ENA's is not a single variable so it is a function -->||printer
-<img src="welcome.png" alt="IIS7" width="571" height="411"></a>||crap
-<frame src="/index_top.htm" name="Banner" noresize="noresize";<frame src="/index_top_2.htm" name="Tabs" noresize="noresize";<frame src="/index_down.htm" name="Main";name="PhoneHome"||printer
-Polycom '+GetCurrentPageName ()+'</title>');document.title = sysName+' - Polycom '+model||voip
-wp-login.php";Log in</a>;title="Powered by WordPress||highval
-<a href="http://solutions.brother.com/cgi-bin/solutions.cgi?;alt="Brother"||printer
-<img src="iis-85.png";go.microsoft.com/fwlink;IIS Windows||crap
-jenkins;yuiResizeMonitor;projectstatus||highval
-<frame src="/index_top.htm" name="Banner" leftmargin="5" noresize="";<frame src="/index_top_2.htm" name="Tabs" leftmargin="25" noresize="";<frame src="/index_down.htm" name="Main";||printer
-Apache2 Ubuntu Default Page;This is the default welcome page||crap
-Dell;status/status.htm;frametop.htm||printer
-div.hpGasGaugeBlock;div.hpPageText;HP Color LaserJet;Printers</title>||printer
-HP LaserJet;set_config_energy.html||printer
-KONICA MINOLTA PageScope;m_s_smm.html||printer
-Network Camera;AXIS;indexMain||voip
-This is a placeholder page installed by the Ubuntu;bug in this Light||crap
-Welcome to nginx on Ubuntu;ubuntu-bug;Thank you for using Ubuntu||crap
-Xerox;/status/consumables.dhtml;displayTree;SMart||printer
-div.hpGasGaugeBlock;div.hpPageText;hp LaserJet;||printer
-It works!;This is the default web page for this server;The web server software is running||crap
-<html><head></head><body><h1>It works!</h1>||crap
-<title>AXIS;Network Camera;/view/view.shtml||voip
-It works !;Tomcat home page;Tomcat7 veterans;tomcat7-admin||highval
-Canon Inc;DeviceDetail;t_title.gif;alt="Network Configuration"||printer
-function encode (psstrs, iLen);D-LINK||netdev
-Laser Printer</title>;Dell;<frame name="Printer Information" target="Main";dynamic/printer/PrinterStatus||printer
-var user;var pwd;<script src="spanish/string.js";top.alias=alias||voip
-HP Color LaserJet;search(pattern);WirelessAlertBox;DevStatus||printer
-HP Designjet;EWStransferBoxManager;mastheadTitle||printer
-HP LaserJet;jsfiles/nsbugfix;hplogo||printer
-hp LaserJet;jsfiles/formatting.css;Link to the HP corporate||printer
-HP LaserJet;applicationMastheadSmall;Click this Hewlett-Packard||printer
-HP Officejet;EWSCookieId;alt="HP logo"||printer
-/hp/device/SignIn;"product">HP LaserJet;Go to Link||printer
-"product">HP LaserJet;Go to Link to the HP corporate;PageDeviceStatus||printer
-"product">HP Color LaserJet;Go to Link to the HP corporate;PageDeviceStatus||printer
-Dell-KACE;Systems Deployment;Administrator Console||idrac
-Welcome to Lion Server;ServerCenter.png;Apple Inc.||crap
-OS X Server;Welcome to Server;com.apple.entity.Page||crap
-Welcome to OS X Server;/xcode;/profilemanager||crap
-Synology DiskStation;full-featured network attached;logo-synology||nas
-Under Construction</title>;The site you are trying to view does not||crap
-Welcome to VMware vSphere;Getting Started;ID_ForAdmins||crap
-qnap-lib;myqnapcloud.com;logo-img x-abs-layout|QNAP NAS admin/admin|nas
+Integrated Dell Remote Access Controller|(Dell iDRAC) root/calvin
+ACE 4710 Device Manager;Cisco|(ACE 4710 Device Manager) admin/admin
+ATutor;form_login_action;/gad_search.php|(ATutor Web CMS) admin/admin or instructor:instructor
+Apache Lenya;lenya.action=introspect|(Apache Lenya) admin/levi
+Polycom RSS 2000|(Polycom RSS 2000) Administrator/polycom
+Polycom;HDX 8000 HD|(Polycom HDX 8000) admin/<SerialNumberofDevice>
+Drupal.settings|(Drupal) admin/<assigned at install>
+var daisy;daisy.site;daisy.site.name|(Daisy CMS) admin/admin or user/user
+Hewlett-Packard Development Company;iLO.init|(HP iLo) Administrator/<random 8 characters>
+<frame src="framelogo.htm" name="TopLogo" title="logo" frameborder=0 scrolling=no noresize>;<frame src="frameleft.htm" name="TopFrame" title="main" frameborder=0 scrolling=auto>;<frame src="frametop.htm" name="LeftFrame" title="header" frameborder=0 scrolling=no noresize>;<frame src="status/status.htm" name="RightFrame" title="contents" frameborder=0>|(Dell Generic Signature)No default username or pass
+Dell Color Laser 5110cn|(Dell Color Laser 5110cn) No default username or pass
+Dell Laser Printer 1700n|(Dell Laser Printer 1700n) No default username or pass
+Dell Laser Printer 1720dn|(Dell Laser Printer 1720dn) No default username or pass
+Dell B5465dnf;/cgi-bin/dynamic/dell_header.html|(Dell B5465dnf) No default username or pass
+Dell B3465dnf Laser MFP;/cgi-bin/dynamic/dell_header.html|(Dell b3465dnf) No default username or pass
+Dell Laser Printer 3000cn;frame src="status/status.htm" name="RightFrame"|(Dell 3000cn) No default username or pass
+Xerox WorkCentre 7435;function restore_saved_params(form, key_html)|(Xerox WorkCentre 7435) admin/1111
+WorkCentre 7120;Fuji Xerox Co;var biItms|(WorkCentre 7120) admin/1111
+WorkCentre 7125;Fuji Xerox Co;var nvTree|(WorkCentre 7125) admin/1111
+Xerox WorkCentre 5225;inNN;var trItms|(Xerox WorkCentre 5225) 11111/x-admin
+Xerox Corporation;XEROX WORKCENTRE;Header Frame;inUriToMatch|(Potential Generic Xerox) admin/1111 or x-admin/11111
+Xerox Workstation M20i;var HEADER_FRAME;var BRANDING_FRAME|(Xerox Workstation M20i) admin/1111
+ChangeDefWebLanguage();script/cookieCoke.js;script/Common_script.js;NOSCRIPT|(Potential Workcenter 3550) admin/1111
+WorkCentre 6605DN;frame src="menuhome.htm"|(WorkCentre 6605DN) No default pass
+Xerox WorkCentre 7232;var nvTree;var rSec|(Xerox WorkCentre 7232) 11111/x-admin
+Xerox WorkCentre 5325;var nvTree;var csItms|(Xerox WorkCentre 5325) admin/1111
+Xerox WorkCentre 7345;var nvTree;var csItms|(Xerox WorkCentre 7345) admin/1111 or 11111/x-admin
+Dell Color Laser 3110cn;frameleft.htm;TopFrame|(Dell Laser 3110cn) No Default Username or Pass
+HP LaserJet Pro MFP M521dn;setupUrls[index++];manageUrls|(HP MFP M521dn) No default username or pass
+HP Color LaserJet CM2320nf MFP;applicationMastheadSmall|(HP Color LaserJet CM2320nf) No default username or pass
+HP LaserJet M1522n MFP;mastheadIcon|(HP LaserJet M1522n) No default username or pass
+HP LaserJet M1536dnf;buttonManager.js;mastheadIcon|(HP LaserJet M1536dnf) No default username or pass
+HP LaserJet M2727nf MFP;mastheadIcon;mastheadTitle|(HP LaserJet M2727nf) No default username or pass
+HP LaserJet 1536dnf MFP;mastheadIcon;mastheadTitle|(HP LaserJet 1536dnf) No default username or pass
+HP Color LaserJet CM4540 MFP;class="device-name"|(HP Color LaserJet CM4540) No default username or pass (potential username admin, no pass)
+Synology DiskStation - Monego;DiskMessageHandler;VideoPlayer|(Synology) admin/<nopass>
+Brother MFC-8480DN;Brother Industries;OpenConfirmWindow|(Brother 8480DN) <no username>/access or admin/access
+HP LaserJet 700 color MFP M775;/hp/device/ControlPanelCustomization/Index|(HP LaserJet 700) No default username or pass
+MB471;okilogo;replacelogo;savecolor|(OKI MB471) <nousername or root>/aaaaaa or 000000 or 0000 or root/(last 6 of mac address Uppercased)
+MB461;okilogo;var pagename;var status_ad_flag|(OKI MB461) <nousername or root>/aaaaaa or 000000 or 0000 or root/(last 6 of mac address Uppercased)
+dlink;document.login_form.f_LOGIN_NAME.value!="admin";document.login_form.f_login_type.value=0;function checkID()|(DNS-323 or DNS-343) admin/<nopassword>
+var re=/root;anonymous;nobody;administrator;ftp;guest;squeezecenter;sshd;messagebus;netdev/i;var cUName = $.cookie('uname');var cPwd = $.cookie('password');/cgi-bin/login_mgr.cgi|(Potential DNS-320L NAS) admin/<setduringinstall> or admin/<none>
+APC;Log On;function isValidBrowser();APC Website;var nAgt|(Potential APC SmartUPS) apc/apc
+<title></title></head><head></head>;var RVL_str = "NULL";var RVL_decode_flg = "0";frameset rows="*";src="/configuration/cover_frame" scrolling="no"|(Potential IPmux-216) su/1234 or user/1234 or tech/1234
+Avaya Aura; System manager 6.1;div class="legalNoticeDiv";div class="loginouterdiv"|(Avaya Aura System Manager 6.1) admin/admin123
+hp LaserJet 1320 series;var ieVSupported = "MSIE 5.0";hp/device/banner.html|(HP LaserJet 1320 series) <no default username or password>
+hp LaserJet 4250;a.hpButtonNavigationLink;div.hpConsumableBlockData|(HP LaserJet 4250) <no default username or password>
+hp color LaserJet 4600;images/hp_invent_logo.gif;jsfiles/formatting.css|(HP LaserJet 4600) <no default username or password>
+HP Color LaserJet CP2025;td class="mastheadIcon";applicationMastheadSmall|(HP LaserJet CP2025) <no default username or password>
+Rainwise IP-100;Relative Humidity;Solar Rad;Leaf Wetness;var exdate=new Date()|(Rainwise IP-100) admin/admin, admin/paradox, or paradox/paradox
+WebDVR;var ip;var pwd;login.sitecode.value;DX8100|(DX8100 Web DVR) admin/admin
+DYMO LabelWriter Print Server;InternetExplorer3.0(or later)|(DYMO LabelWriter Print Server) admin/admin
+HP System Management Homepage Login;Check if the user is already connected;pageColumns|(HP System Management) username and pass of OS or domain account
+Polycom RMX 1000;ondragstart;cfg_ui_hide;proxy_log_ip|(Polycom RMX 1000) POLYCOM/POLYCOM
+Sign In - Hyperic;body class="tundra";since dojo has trouble when;screencastLink|hqadmin/hqadmin
+HP System Management Homepage;HP-UX removed;Unable to create a socket to communicate|(HP System Management) username and pass of OS or domain account
+On Board Remote Management;This site requires the use of a frames capable;Web browser|guest/guest
+QUANTUM - Scalar i40 Login Screen;var bLoggingin = false;enterKey(event)|(Scalar i40 Login) admin/password
+Management Console - Login;AVANCE CSS;Stratus Technologies Bermuda|admin/admin
+Login;Sun GlassFish Enterprise Server;onmouseover|(Oracle Glassfish Server) admin/<nopass> admin/changeit admin/admin
+ZeroShell;cgi-bin/kerbynet?Action=Render;StartSession|(Zeroshell Web App) admin/zeroshell
+HP System Management Homepage Login;FramesAreThere;inNimbus;imageFromStatus(|(HP System Management) username and pass of OS or domain account
+images/loytec.gif;LIP-3ECTB|(Loytec LIP-3ECTB) admin/loytec4u
+LenovaEMC px4-300r;Enter administrator username and password;mngpwd|(Iomega px4-300r) root/ADMIN or admin/ADMIN or ADMIN/ADMIN
+My Book World Edition;Network Storage Manager;Copy Manager;Downloader|(My Book World Edition) admin/admin
+THECUS 1U4500;/usr/usrgetform.html;/pub/css.css|(THECUS 1U4500) admin/admin
+HP IP Console Switch G2|(HP IP Console Switch G2) Admin/<nopassword>
+Oracle;PeopleSoft Enterprise Sign-in;function setFocus;pslogincopyright|(Oracle Peoplesoft Enterprise) PS/PS or VP1/VP1
+a id="id_LaCie" target="_blanck" href= "http://www.lacie.com">;LaCie;Dashboard;body class="bodynormaldashboard"|(Lacie 2Big NAS) admin/admin (changed at first login though)
+Synology;DiskStation;DS1513;Multitasking,Web Application,Personal Cloud;SynohdpackStatus|(Synology DS1513) admin/<nopassword>
+Synology;DiskStation;DS212J;modules/PersonalSettings/style.css;script type="text/javascript">SYNO.SDS.Session|(Synology DS212J) admin/<nopassword>
+Synology;DiskStation;DS214;modules/BackupReplicationApp/style.css;|(Synology Diskstation DS214) admin/<nopassword>
+Synology;DiskStation;DS413;modules/BackupReplicationApp/style.css;|(Synology Diskstation DS413) admin/<nopassword>
+Synology;DiskStation;DS713;modules/AdminCenter/style.css|(Synology Diskstation DS713) admin/<nopassword>
+hp color LaserJet 5550;div.hpConsumableBlockData;td class="hpBanner"|(HP Color LaserJet 5550) <nodefaultcreds>
+HP LaserJet P4015;td style="vertical-align;this.LCDispatcher;deviceStatusPage|(HP Color LaserJet P4015) <nodefaultcreds>
+function initFavoriteDevices(;function javaPluginExists();Dominion;function addDiscoveredDevices|Raritan Dominion KX II admin/raritan
+EasyCoder PM4i;navframe;FRAME src;FRAMESET;noresize scrolling| EasyCoder PM4i admin/pass
+Symmetricom SyncServer S100;var serverName;function usernameKey;function answerKey;loginPasswordTable;passedit|Symmetricom SyncServer S100 admin/symmetricom
+KYOCERA;idxlang;opt_msg1_;startwlm|Kyocera Printer (General) Admin/Admin
+Top Page - MX-M465N;class="modelName">MX-M465N</div>;delta_close.gif;name="updatebtn" type="button"|SHARP MX-M456N Printer admin/admin
+NetGear GS108T;class="logoNetGear space50Percent topAlign;class="logoNetGear space50Percent topAlign|Netgear GS108T Switch <nousername>/password
+airos_logo.png;form enctype="multipart/form-data" id="loginform" method="post";align="center" class="loginsubtable";function onLangChange()|AirOS ubnt/ubnt
+Any time &amp; Any where;IP Surveillance for Your Life;form name="myForm" method="POST" target="_top" onSubmit="return check();function createHttpRequestObj()|DVR (AV760 DVR) admin/admin or admin,/admin
+Grandstream Device Configuration;action="dologin" method="post" name="loginForm";All Rights Reserved Grandstream Networks|GrandStream Device Admin User: <nouser>/admin  End User: <nouser>/123
+DSL-2640U;input type="checkbox" class="remb"> <span class="remember">Remember me</span>;id="A2" name="A2" type="password" maxlength="30"|D-Link DSL-2640U admin/admin
+a href="http://mikrotik.com"><img src="mikrotik_logo.png";You have connected to a router. Administrative access only. If this device is not in your possession, please contact your local network administrator;<td colspan="3"><h2>WebFig Login:</h2>|Mikrotik Router admin/<nopassword>
+loginPassword.value = "ZyXEL ZyWALL Series";P-660RU-T1 v2;function passwordMD5(str);function LoginClick(hiddenPassword, loginPassword)|P-660RU-T1 v2 Ethernet/USB Router <nousername>/1234
+function hex_md5(s) { return binl2hex(core_md5(str2binl(s), s.length * chrsz));bit_rol(;Welcome to the  Web Configurator;OX253P|OX253P Router admin/admin admin/1234
+var kerio = {lib:{};kerio.engine.acceptedLanguages;upper-message-container;action="/server/login" method="post" id="container"|Kerio Control Device admin/<passwordofadminuseronbox>
+meta name="SonicWALL Administrator" content;<title>SonicWALL - Authentication</title>;window.onunload=onPageUnload;"auth1.html" name="authFrm"|SonicWall Device admin/password
+D-Link VoIP Router;frameset framespacing="0" frameborder="0" rows="0,*";fxdriver-screenshot-canvas" style="display: none;script src="util.js" language="JavaScript"></script>|DVG-5402SP admin/<nopassword>
+mikrotik routeros > administration;form name="loginForm" action="/cfg" method="post" onsubmit="doLogin();mikrotik routeros;configuration page|Mikrotik Routeros admin/<nopassword>
+Grandstream Device Configuration;form action="/cgi-bin/dologin" method="post" name="loginForm";All Rights Reserved Grandstream Networks;input name="P2" type=password size=30 maxlength=30|Grandstream Networks: <nouser>/admin or <nouser>/123
+HP Color LaserJet CP3505;input name="btnContinue"  type="image";img class="hpPageImage" src="images/question.gif" alt="On-line help|HP Color Jet CP3505 Printer <no admin username or password>
+ATEN International Co Ltd;body onload='PageInit();form name="form1" action="/cgi/login.cgi" method="post";img src="../images/logo.gif" style="margin;alert(lang.LANG_LOGIN_INVALID_USERNAME);document.getElementById("login_word")|Possible SuperMicro IPMI ADMIN/ADMIN (Creds need confirming)
+Welcome to the Web-Based Configurator;function str2blks_MD5(str);loginPassword.value = "ZyXEL ZyWALL Series";Prestige_Login" value="Login"|Zyxel P-660HW-T1 <nousername>/1234
+<meta http-equiv="refresh" content="0;url=/designs/imm/noscript/noscript_en.php";meta http-equiv="Content-Type" content="text/html;@import "/designs/ibmdojo/dojo/resources/dojo.css";@import "/designs/imm/login.css"|IBM Integrated Management Module USERID\PASSW0RD
+var slControl = new ActiveXObject('AgControl.AgControl');form name="Form1" method="post" action="Default.aspx" id="Form1";<title>AxisTV</title>|AxisTV Login administrator/tech
+<span class="login_server_type" id="login_server_type_id">M1000e;img.src='/cmc/images/login_progress.14824.gif';<img src="/cmc/images/cmc_title.14824.png"|(Dell CMC) root/calvin
+<meta content="Splunk Inc." name="author" />;MRSPARKLE;<p><span>First time logging in?</span> Splunk's default credentials are|Splunk admin/changeme
+<p>If you've forgotten your username or password, please contact your Splunk administrator.<br /><br />username <span>admin</span><br />password <span>changeme</span></p><p></p>;MRSPARKLE;<meta content="Splunk Inc." name="author" />|Splunk admin/changeme
+<meta content="Infoblox WebUI Login Page ID" />;<title>Infoblox Grid Manager</title>;Wicket.Event.add(window, "domready", function(event) { document.getElementById('timezone').value = IB.getBrowserTimezone()|InfoBlox admin/infoblox
+Cisco Codec:;<p style="display: none;" class="alert alert-info recommended-browsers">;if (vega.global.isOlderBrowser())|admin/<nopassword>
+var thisIDRACText = EntityDecode(;// Dell's limit on the maximum # of char in a username;/images/Ttl_2_iDRAC7_Base_ML.png|iDRAC root/calvin
+alt="Oracle(R) Integrated Lights Out Manager";<input type="submit" tabindex="3" title="Log In to Oracle(R) Integrated Lights Out Manager "|Oracle ILO root/changeme
+var thisIDRACText = " This iDRAC";// Return true if value contains only printable ASCII chars;Integrated Remote Access Controller 6|Dell iDRAC root/calvin
+Teradata Viewpoint V14.10.00.05-b47;if (new Date().getTime() - loginRenderMillis|TeraData NAS admin/teradata
+qnap-lib;myqnapcloud.com;logo-img x-abs-layout|QNAP NAS admin/admin

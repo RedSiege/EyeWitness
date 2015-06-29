@@ -532,11 +532,18 @@ def default_creds_category(http_object):
     Returns:
         HTTPTableObject: Object with creds/category added
     """
+    http_object.default_creds = None
+    http_object.category = None
     try:
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                            '..', 'signatures.txt')
-        with open(path) as sig_file:
+        sigpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               '..', 'signatures.txt')
+        catpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               '..', 'categories.txt')
+        with open(sigpath) as sig_file:
             signatures = sig_file.readlines()
+        
+        with open(catpath) as cat_file:    
+            categories = cat_file.readlines()
 
         # Loop through and see if there are any matches from the source code
         # EyeWitness obtained
@@ -546,36 +553,40 @@ def default_creds_category(http_object):
             sig_cred = sig.split('|')
             page_sig = sig_cred[0].split(";")
             cred_info = sig_cred[1]
-            category = sig_cred[2]
-            if cred_info == '':
-                cred_info = None
-            if category == 'none':
-                category = None
 
             # Set our variable to 1 if the signature was not identified.  If it is
             # identified, it will be added later on.  Find total number of
             # "signatures" needed to uniquely identify the web app
-            sig_not_found = 0
             # signature_range = len(page_sig)
 
             # This is used if there is more than one "part" of the
             # web page needed to make a signature Delimete the "signature"
             # by ";" before the "|", and then have the creds after the "|"
-            for individual_signature in page_sig:
-                if str(http_object.source_code).lower().find(
-                        individual_signature.lower()) is not -1:
-                    pass
-                else:
-                    sig_not_found = 1
+            try:
+                if all([x.lower() in http_object.source_code.lower() for x in page_sig]):
+                    http_object.default_creds = cred_info
+                    break
+            except AttributeError:
+                print http
 
-            # If the signature was found, return the creds
-            if sig_not_found == 0:
-                http_object.default_creds = cred_info
-                http_object.category = category.strip()
-                return http_object
+        for cat in categories:
+            # Find the signature(s), split them into their own list if needed
+            # Assign default creds to its own variable
+            cat_split = cat.split('|')
+            cat_sig = cat_split[0].split(";")
+            cat_name = cat_split[1]
 
-        http_object.default_creds = None
-        http_object.category = None
+            # Set our variable to 1 if the signature was not identified.  If it is
+            # identified, it will be added later on.  Find total number of
+            # "signatures" needed to uniquely identify the web app
+            # signature_range = len(page_sig)
+
+            # This is used if there is more than one "part" of the
+            # web page needed to make a signature Delimete the "signature"
+            # by ";" before the "|", and then have the creds after the "|"
+            if all([x.lower() in http_object.source_code.lower() for x in cat_sig]):
+                http_object.category = cat_name
+                break
         return http_object
     except IOError:
         print("[*] WARNING: Credentials file not in the same directory"

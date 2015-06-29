@@ -192,8 +192,13 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             headers = {'Error': 'Connection Reset'}
             http_object.error_state = 'ConnReset'
             return http_object, driver
+        elif e.errno == 10054:
+            headers = {'Error': 'Connection Reset'}
+            http_object.error_state = 'ConnReset'
+            return http_object, driver
         else:
-            headers = {'Error': 'Potential timeout connecting to server'}
+            http_object.error_state = 'BadStatus'
+            return http_object, driver
     except httplib.BadStatusLine:
         http_object.error_state = 'BadStatus'
         return http_object, driver
@@ -204,6 +209,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     try:
         driver.save_screenshot(http_object.screenshot_path)
     except Exception as e:
+        print driver.remote_system
         print str(e)
 
     try:
