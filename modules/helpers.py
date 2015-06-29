@@ -541,52 +541,60 @@ def default_creds_category(http_object):
                                '..', 'categories.txt')
         with open(sigpath) as sig_file:
             signatures = sig_file.readlines()
-        
-        with open(catpath) as cat_file:    
+
+        with open(catpath) as cat_file:
             categories = cat_file.readlines()
 
         # Loop through and see if there are any matches from the source code
         # EyeWitness obtained
-        for sig in signatures:
-            # Find the signature(s), split them into their own list if needed
-            # Assign default creds to its own variable
-            sig_cred = sig.split('|')
-            page_sig = sig_cred[0].split(";")
-            cred_info = sig_cred[1]
+        if http_object.source_code is not None:
+            for sig in signatures:
+                # Find the signature(s), split them into their own list if needed
+                # Assign default creds to its own variable
+                sig_cred = sig.split('|')
+                page_sig = sig_cred[0].split(";")
+                cred_info = sig_cred[1].strip()
 
-            # Set our variable to 1 if the signature was not identified.  If it is
-            # identified, it will be added later on.  Find total number of
-            # "signatures" needed to uniquely identify the web app
-            # signature_range = len(page_sig)
+                # Set our variable to 1 if the signature was not identified.  If it is
+                # identified, it will be added later on.  Find total number of
+                # "signatures" needed to uniquely identify the web app
+                # signature_range = len(page_sig)
 
-            # This is used if there is more than one "part" of the
-            # web page needed to make a signature Delimete the "signature"
-            # by ";" before the "|", and then have the creds after the "|"
-            try:
+                # This is used if there is more than one "part" of the
+                # web page needed to make a signature Delimete the "signature"
+                # by ";" before the "|", and then have the creds after the "|"
                 if all([x.lower() in http_object.source_code.lower() for x in page_sig]):
                     http_object.default_creds = cred_info
                     break
-            except AttributeError:
-                print http
 
-        for cat in categories:
-            # Find the signature(s), split them into their own list if needed
-            # Assign default creds to its own variable
-            cat_split = cat.split('|')
-            cat_sig = cat_split[0].split(";")
-            cat_name = cat_split[1]
+            for cat in categories:
+                # Find the signature(s), split them into their own list if needed
+                # Assign default creds to its own variable
+                cat_split = cat.split('|')
+                cat_sig = cat_split[0].split(";")
+                cat_name = cat_split[1]
 
-            # Set our variable to 1 if the signature was not identified.  If it is
-            # identified, it will be added later on.  Find total number of
-            # "signatures" needed to uniquely identify the web app
-            # signature_range = len(page_sig)
+                # Set our variable to 1 if the signature was not identified.  If it is
+                # identified, it will be added later on.  Find total number of
+                # "signatures" needed to uniquely identify the web app
+                # signature_range = len(page_sig)
 
-            # This is used if there is more than one "part" of the
-            # web page needed to make a signature Delimete the "signature"
-            # by ";" before the "|", and then have the creds after the "|"
-            if all([x.lower() in http_object.source_code.lower() for x in cat_sig]):
-                http_object.category = cat_name
-                break
+                # This is used if there is more than one "part" of the
+                # web page needed to make a signature Delimete the "signature"
+                # by ";" before the "|", and then have the creds after the "|"
+                if all([x.lower() in http_object.source_code.lower() for x in cat_sig]):
+                    http_object.category = cat_name.strip()
+                    break
+
+        if http_object.page_title is not None:
+            if '403 Forbidden' in http_object.page_title or '401 Unauthorized' in http_object.page_title:
+                http_object.category = 'unauth'
+            if ('Index of /' in http_object.page_title or
+                    'Directory Listing For /' in http_object.page_title or
+                    'Directory of /' in http_object.page_title):
+                http_object.category = 'dirlist'
+            if '404 Not Found' in http_object.page_title:
+                http_object.category = 'notfound'
         return http_object
     except IOError:
         print("[*] WARNING: Credentials file not in the same directory"

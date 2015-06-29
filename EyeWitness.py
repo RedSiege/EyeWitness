@@ -514,12 +514,14 @@ if __name__ == "__main__":
 
     if cli_parsed.resume:
         print '[*] Loading Resume Data...'
-        temp = cli_parsed.resume
+        temp = cli_parsed
         dbm = db_manager.DB_Manager(cli_parsed.resume)
         dbm.open_connection()
         cli_parsed = dbm.get_options()
-        cli_parsed.d = os.path.dirname(temp)
-        cli_parsed.resume = temp
+        cli_parsed.d = os.path.dirname(temp.resume)
+        cli_parsed.resume = temp.resume
+        if temp.results:
+            cli_parsed.results = temp.results
         dbm.close()
 
         print 'Loaded Resume Data with the following options:'
