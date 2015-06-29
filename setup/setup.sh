@@ -42,7 +42,12 @@ case ${osinfo} in
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
     cd ../bin/
-    wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantomjs
+    MACHINE_TYPE=`uname -m`
+    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+      wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantomjs
+    else
+      wget -O phantomjs https://www.christophertruncer.com/InstallMe/kali32phantomjs
+    fi
     chmod +x phantomjs
     cd ..
   ;;
