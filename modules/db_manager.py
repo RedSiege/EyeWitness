@@ -4,6 +4,7 @@ import sqlite3
 from objects import HTTPTableObject
 from objects import UAObject
 from objects import VNCRDPTableObject
+from helpers import default_creds_category
 
 
 class DB_Manager(object):
@@ -220,6 +221,32 @@ class DB_Manager(object):
 
     def get_cursor(self):
         return self.connection.cursor()
+
+    def recategorize(self):
+        finished = []
+        counter = 0
+        c = self.connection.cursor()
+        rows = c.execute("SELECT * FROM http WHERE complete=1").fetchall()
+        total = len(rows)
+        for row in rows:
+            o = pickle.loads(str(row['object']))
+            uadat = c.execute("SELECT * FROM ua WHERE parent_id=?",
+                              (o.id,)).fetchall()
+            for ua in uadat:
+                uao = pickle.loads(str(ua['object']))
+                if uao is not None:
+                    o.add_ua_data(uao)
+            if o.category != 'unauth' and o.category != 'notfound':
+                t = o.category
+                o = default_creds_category(o)
+                if o.category != t:
+                    print '{0} changed to {1}'.format(t, o.category)
+            counter += 1
+            if counter % 10 == 0:
+                print '{0}/{1}'.format(counter, total)
+            finished.append(o)
+        c.close()
+        return finished
 
     def search_for_term(self, search):
         finished = []
