@@ -89,7 +89,7 @@ loginPassword.value = "ZyXEL ZyWALL Series";P-660RU-T1 v2;function passwordMD5(s
 function hex_md5(s) { return binl2hex(core_md5(str2binl(s), s.length * chrsz));bit_rol(;Welcome to the  Web Configurator;OX253P|OX253P Router admin/admin admin/1234
 var kerio = {lib:{};kerio.engine.acceptedLanguages;upper-message-container;action="/server/login" method="post" id="container"|Kerio Control Device admin/<passwordofadminuseronbox>
 meta name="SonicWALL Administrator" content;<title>SonicWALL - Authentication</title>;window.onunload=onPageUnload;"auth1.html" name="authFrm"|SonicWall Device admin/password
-D-Link VoIP Router;frameset framespacing="0" frameborder="0" rows="0,*";fxdriver-screenshot-canvas" style="display: none;script src="util.js" language="JavaScript"></script>|DVG-5402SP admin/<nopassword>
+D-Link VoIP Router;frameset framespacing="0" frameborder="0" rows="0,*"|DVG-5402SP admin/<nopassword>
 mikrotik routeros > administration;form name="loginForm" action="/cfg" method="post" onsubmit="doLogin();mikrotik routeros;configuration page|Mikrotik Routeros admin/<nopassword>
 Grandstream Device Configuration;form action="/cgi-bin/dologin" method="post" name="loginForm";All Rights Reserved Grandstream Networks;input name="P2" type=password size=30 maxlength=30|Grandstream Networks: <nouser>/admin or <nouser>/123
 HP Color LaserJet CP3505;input name="btnContinue"  type="image";img class="hpPageImage" src="images/question.gif" alt="On-line help|HP Color Jet CP3505 Printer <no admin username or password>
@@ -107,3 +107,12 @@ alt="Oracle(R) Integrated Lights Out Manager";<input type="submit" tabindex="3" 
 var thisIDRACText = " This iDRAC";// Return true if value contains only printable ASCII chars;Integrated Remote Access Controller 6|Dell iDRAC root/calvin
 Teradata Viewpoint V14.10.00.05-b47;if (new Date().getTime() - loginRenderMillis|TeraData NAS admin/teradata
 qnap-lib;myqnapcloud.com;logo-img x-abs-layout|QNAP NAS admin/admin
+var tmpDracName = "iDRAC6";idrac6 web GUI login fails with special character "\" in password;|IDRAC6 root/calvin
+<title>Advanced System Management</title>;<frame name="toc_frame" src="cgi?form=2">;<frame name="form_frame" src="cgi?form=4">|IBM Advanced System Management - general/general or admin/admin
+content="F5 Networks, Inc.";doesn't have a BIGIPAuthCookie;F5 Networks Logo|F5 Load Balancer - admin/admin
+Cisco Edge 340;For more information of Cisco Edge 340 Series, please visit homepage;/auth/static/images/logo_duotone_gradient1.png|Cisco Edge 340 - admin/aDMIN123#
+alt="Oracle(R) Integrated Lights Out Manager";Log In - Oracle(R) Integrated Lights Out Manager;Log In to Oracle(R) Integrated Lights Out Manager|Oracle ILO - root/changeme
+Riverbed Steelhead;Riverbed Technology, Inc. and/or its licensors;form id="loginForm" action="/mgmt/gui|Riverbed Steelhead - admin/password
+ADManager Plus Authentication;sel.options[i].text == 'ADManager Plus Authentication';ManageEngine;js/framework/Hashtable.js|ADManager - admin/admin (ADManager Plus Authentication in dropdown)
+ManageEngine ServiceDesk Plus;Local Authentication;alt="ManageEngine ServiceDesk Plus";loginDiv|ServiceDesk - administrator/administrator (Local Authentication)
+TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|TeraData NAS - admin/password

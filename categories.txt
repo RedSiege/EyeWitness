@@ -79,7 +79,7 @@ loginPassword.value = "ZyXEL ZyWALL Series";P-660RU-T1 v2;function passwordMD5(s
 function hex_md5(s) { return binl2hex(core_md5(str2binl(s), s.length * chrsz));bit_rol(;Welcome to the  Web Configurator;OX253P|netdev
 var kerio = {lib:{};kerio.engine.acceptedLanguages;upper-message-container;action="/server/login" method="post" id="container"|netdev
 meta name="SonicWALL Administrator" content;<title>SonicWALL - Authentication</title>;window.onunload=onPageUnload;"auth1.html" name="authFrm"|netdev
-D-Link VoIP Router;frameset framespacing="0" frameborder="0" rows="0,*";fxdriver-screenshot-canvas" style="display: none;script src="util.js" language="JavaScript"></script>|voip
+D-Link VoIP Router;frameset framespacing="0" frameborder="0" rows="0,*"|voip
 mikrotik routeros > administration;form name="loginForm" action="/cfg" method="post" onsubmit="doLogin();mikrotik routeros;configuration page|netdev
 Grandstream Device Configuration;form action="/cgi-bin/dologin" method="post" name="loginForm";All Rights Reserved Grandstream Networks;input name="P2" type=password size=30 maxlength=30|voip
 HP Color LaserJet CP3505;input name="btnContinue"  type="image";img class="hpPageImage" src="images/question.gif" alt="On-line help|printer
@@ -173,3 +173,36 @@ Synology DiskStation;full-featured network attached;logo-synology|nas
 Under Construction</title>;The site you are trying to view does not|crap
 Welcome to VMware vSphere;Getting Started;ID_ForAdmins|crap
 qnap-lib;myqnapcloud.com;logo-img x-abs-layout|nas
+var thisIDRACText = EntityDecode(" This iDRAC") //" This iDRAC"|idrac
+Avaya G450 - Avaya Device Manager;Welcome to the Avaya G450 Manager|netdev
+<frame src="/index_top.htm" name="Banner" noresize="noresize" frameborder="0" marginwidth="0" marginheight="0" scrolling="no">;document.writeln("This application cannot run on Windows 3.1.  Please upgrade to Windows NT 4.0, Windows 95 or Windows 98.")|printer
+If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;href="/manager/html";As you may have guessed by now, this is the default Tomcat home page|highval
+<a href="http://www.apachehaus.com/forum">;Apache Haus Distribution Installation Test;href="/apachehaus.ico";If you are seeing this it means that the web server installed at this site is working properly|crap
+If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;href="manager/html";As you may have guessed by now, this is the default Tomcat home page|highval
+If you're seeing this, you've successfully installed Tomcat. Congratulations!;href="manager/html"|highval
+content="F5 Networks, Inc.";doesn't have a BIGIPAuthCookie;F5 Networks Logo|netdev
+Cisco Codec;alert alert-info recommended-browsers tr;<span class="tr">System name|voip
+Cisco Edge 340;For more information of Cisco Edge 340 Series, please visit homepage;/auth/static/images/logo_duotone_gradient1.png|voip
+a href="EthernetInformation";Streaming Statistics;<a href="/">Device Information|voip
+If you're seeing this, you've successfully installed Tomcat. Congratulations!;href="/manager/html"|highval
+Cisco IP Phone;Device Information;/CGI/Java/Serviceability?adapter=device|voip
+GlassFish Server - Server Running;Your server is now running;go to the Administration Console|crap
+var alertMgr = new AlertManager();HP BladeSystem Onboard Administrator;Checks to see if we are signing on from HP SIM.;//hpoa:version|idrac
+var alertMgr=new AlertManager();HP BladeSystem Onboard Administrator;function checkHpSimSSO();//hpoa:version|idrac
+Integrated Lights-Out 2 supports Microsoft Internet Explorer;<title>HP Integrated Lights-Out 2 Login</title>;hp-iLO-Login|idrac
+<title>HP Integrated Lights-Out Login</title>;Integrated Lights-Out supports Microsoft Internet Explorer;hp-iLO-Login|idrac
+Integrated Lights Out 2;Establishing a secure Integrated Lights Out session with|idrac
+Integrated Lights-Out 2 supports Microsoft Internet Explorer version;HP Integrated Lights-Out 2 Login;ilo.ico|idrac
+Integrated Lights Out;Establishing a secure Integrated Lights Out session with|idrac
+alt="Oracle(R) Integrated Lights Out Manager";Log In - Oracle(R) Integrated Lights Out Manager|idrac
+HP iLO Redirection;Copyright Hewlett-Packard;You will automatically be redirected to a secure connection in 2 seconds|idrac
+Enable JavaScript to use CentreWare Internet Services;Phaser;More Printers|printer
+Internet Services;<frame src="headhome.htm";<frame src="menuhome.htm"|printer
+Riverbed Steelhead;Riverbed Technology, Inc. and/or its licensors;form id="loginForm" action="/mgmt/gui|netdev
+ADManager Plus Authentication;sel.options[i].text == 'ADManager Plus Authentication';ManageEngine;js/framework/Hashtable.js|highval
+Orion Application Server;mailto:info@orionserver.com;Orion Application Server is a pure java|crap
+Sample Home Page for APACHEDFT Server;This is the sample home page for the APACHEDFT;http://www.ibm.com/servers/eserver/iseries/software/http|crap
+To replace this page, overwrite;Sun Java System Application Server Platform Edition;https://softwarereg.sun.com/software/product_registration/index.jsp|crap
+TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|nas
+This page is used to test the Apache Haus distribution of the Apache HTTP server after it has been installed;Test Page for the Apache Haus distribution|crap
+WebTools;images/img_printer.gif;Xerox;WT2Home/English/WT2Home2/Output/Home.htm|crap
