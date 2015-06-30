@@ -265,3 +265,15 @@ class DB_Manager(object):
                     finished.append(o)
         c.close()
         return finished
+
+    def get_mikto_results(self):
+        results = []
+        c = self.connection.cursor()
+        rows = c.execute("SELECT * FROM http WHERE complete=1").fetchall()
+        for row in rows:
+            o = pickle.loads(str(row['object']))
+            if o.error_state is None and (o.category == 'notfound'
+                                          or o.category == 'crap'):
+                results.append(o)
+        c.close()
+        return results
