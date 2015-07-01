@@ -211,6 +211,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             return http_object, driver
         else:
             headers = {'Error': 'HTTP Error...'}
+            http_object.error_state = 'BadStatus'
+            return http_object, driver
     except socket.error as e:
         if e.errno == 104:
             headers = {'Error': 'Connection Reset'}

@@ -187,6 +187,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             return http_object, driver
         else:
             headers = {'Error': 'HTTP Error...'}
+            http_object.error_state = 'BadStatus'
+            return http_object, driver
     except socket.error as e:
         if e.errno == 104:
             headers = {'Error': 'Connection Reset'}
@@ -210,7 +212,6 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         driver.save_screenshot(http_object.screenshot_path)
     except Exception as e:
         print driver.remote_system
-        print str(e)
 
     try:
         http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode(

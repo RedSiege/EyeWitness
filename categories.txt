@@ -206,3 +206,17 @@ To replace this page, overwrite;Sun Java System Application Server Platform Edit
 TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|nas
 This page is used to test the Apache Haus distribution of the Apache HTTP server after it has been installed;Test Page for the Apache Haus distribution|crap
 WebTools;images/img_printer.gif;Xerox;WT2Home/English/WT2Home2/Output/Home.htm|crap
+Manage this JBoss AS Instance;href="css/jboss.css";/admin-console/|highval
+"css/jboss.css";/jmx-console/;JBoss Enterprise Application Platform|highval
+JBoss Application Server 7... it's here.;Administration Console;jboss_community.png|highval
+Welcome to WildFly 8;jboss_community.png;Your WildFly 8 is running|highval
+VMware ESXi Server is virtual infrastructure software for partitioning, consolidating, and managing systems in mission-critical environments.;ID_EESX_Welcome|crap
+VMware VirtualCenter is virtual infrastructure software for partitioning;VMware-viclient.exe|crap
+XEROX ColorQube  - Status;SyncTreeToThisUrl|printer
+XEROX WORKCENTRE;/index.dhtml;/status/tree.php|printer
+Sun(TM) Integrated Lights Out Manager;Display Product Version;/Images/sun/2.2|idrac
+Remote Insight Lights-Out;Establishing a secure Remote Insight session;img src="compaq.gif"|idrac
+Welcome to JBoss;/jmx-console/;JBoss AS Documentation;Tomcat status|highval
+hp color LaserJet;div.hpGasGaugeBlock|printer
+iLO 3;js/iLO.js;js/supersleight-min;Hewlett-Packard Development Company|idrac
+<center>Tomcat is running...</center>;</body></html>|crap
