@@ -52,7 +52,7 @@ case ${osinfo} in
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
       wget -O phantomjs https://www.christophertruncer.com/InstallMe/kali2phantomjs
     else
-      wget -O phantomjs https://www.christophertruncer.com/InstallMe/kali32phantomjs
+      wget -O phantomjs http://www.christophertruncer.com/InstallMe/phantom32kali2
     fi
     chmod +x phantomjs
     cd ..
