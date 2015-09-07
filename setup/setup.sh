@@ -22,8 +22,41 @@ if [ "${userid}" != '0' ]; then
   exit 1
 fi
 
+kali2test=`cat /etc/issue`
+
+if [ "${kali2test}" == "Kali GNU/Linux 2.0 \n \l" ]; then
+  osinfo="Kali2"
+fi
+
 # OS Specific Installation Statement
 case ${osinfo} in
+  # Kali 2 dependency Install
+  Kali2)
+    apt-get update
+    echo '[*] Installing Kali2 Dependencies'
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
+    python setup.py install
+    cd ..
+    rm -rf rdpy
+    echo '[*] Installing Python Modules'
+    pip install fuzzywuzzy
+    pip install selenium
+    pip install python-Levenshtein
+    pip install pyasn1 --upgrade
+    pip install pyvirtualdisplay
+    cd ../bin/
+    MACHINE_TYPE=`uname -m`
+    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+      wget -O phantomjs https://www.christophertruncer.com/InstallMe/kali2phantomjs
+    else
+      wget -O phantomjs https://www.christophertruncer.com/InstallMe/kali32phantomjs
+    fi
+    chmod +x phantomjs
+    cd ..
+  ;;
   # Kali Dependency Installation
   Kali)
     apt-get update
