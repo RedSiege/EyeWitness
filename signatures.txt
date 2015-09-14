@@ -116,3 +116,4 @@ Riverbed Steelhead;Riverbed Technology, Inc. and/or its licensors;form id="login
 ADManager Plus Authentication;sel.options[i].text == 'ADManager Plus Authentication';ManageEngine;js/framework/Hashtable.js|ADManager - admin/admin (ADManager Plus Authentication in dropdown)
 ManageEngine ServiceDesk Plus;Local Authentication;alt="ManageEngine ServiceDesk Plus";loginDiv|ServiceDesk - administrator/administrator (Local Authentication)
 TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|TeraData NAS - admin/password
+<title>Brother HL-2270DW series</title>;/printer/main.html?weblang='+ wlang|Brother HL-2270DW - admin/access

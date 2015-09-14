@@ -220,3 +220,4 @@ Welcome to JBoss;/jmx-console/;JBoss AS Documentation;Tomcat status|highval
 hp color LaserJet;div.hpGasGaugeBlock|printer
 iLO 3;js/iLO.js;js/supersleight-min;Hewlett-Packard Development Company|idrac
 <center>Tomcat is running...</center>;</body></html>|crap
+<title>Brother HL-2270DW series</title>;/printer/main.html?weblang='+ wlang|printer
