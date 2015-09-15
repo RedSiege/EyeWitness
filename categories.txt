@@ -221,3 +221,4 @@ hp color LaserJet;div.hpGasGaugeBlock|printer
 iLO 3;js/iLO.js;js/supersleight-min;Hewlett-Packard Development Company|idrac
 <center>Tomcat is running...</center>;</body></html>|crap
 <title>Brother HL-2270DW series</title>;/printer/main.html?weblang='+ wlang|printer
+<title>Brother HL-5350DN series</title>;src="/pbio/key_admin.gif"|printer
