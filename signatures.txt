@@ -118,3 +118,4 @@ ManageEngine ServiceDesk Plus;Local Authentication;alt="ManageEngine ServiceDesk
 TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|TeraData NAS - admin/password
 <title>Brother HL-2270DW series</title>;/printer/main.html?weblang='+ wlang|Brother HL-2270DW - admin/access
 <title>Brother HL-5350DN series</title>;src="/pbio/key_admin.gif"|Brother HL-5350DN - admin/access
+<title>Brother HL-5070N series;http://solutions.brother.com/cgi-bin/solutions.cgi;/printer/online.html?|Brother HL-5070N - admin/access

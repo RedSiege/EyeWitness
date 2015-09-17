@@ -222,3 +222,4 @@ iLO 3;js/iLO.js;js/supersleight-min;Hewlett-Packard Development Company|idrac
 <center>Tomcat is running...</center>;</body></html>|crap
 <title>Brother HL-2270DW series</title>;/printer/main.html?weblang='+ wlang|printer
 <title>Brother HL-5350DN series</title>;src="/pbio/key_admin.gif"|printer
+<title>Brother HL-5070N series;http://solutions.brother.com/cgi-bin/solutions.cgi;/printer/online.html?|printer
