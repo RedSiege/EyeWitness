@@ -304,7 +304,7 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
 
             counter[0].value += 1
             if counter[0].value % 15 == 0:
-                print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(counter[0].value, counter[1])
+                print '\x1b[32m[*] Completed {0} out of {1} services\x1b[0m'.format(counter[0].value, counter[1])
             do_jitter(cli_parsed)
     except KeyboardInterrupt:
         pass
