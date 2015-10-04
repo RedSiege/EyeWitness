@@ -45,7 +45,7 @@ def target_creator(command_line_object):
         List: Hosts detected for VNC
     """
     if command_line_object.createtargets is not None:
-        print "Creating text file containing all web servers..."
+        print "Creating target file for specified services..."
 
     urls = []
     rdp = []
@@ -143,11 +143,25 @@ def target_creator(command_line_object):
                                     urls.append(urlBuild)
                                     num_urls += 1
 
-            if command_line_object.createtargets is not None:
-                with open(command_line_object.createtargets, 'w') as target_file:
+            if command_line_object.createtargets is not None and command_line_object.web:
+                with open('web_' + command_line_object.createtargets, 'w') as target_file:
                     for item in urls:
                         target_file.write(item + '\n')
-                print "Target file created (" + command_line_object.createtargets + ").\n"
+                print "Target file created (web_" + command_line_object.createtargets + ").\n"
+                sys.exit()
+
+            if command_line_object.createtargets is not None and command_line_object.rdp:
+                with open('rdp_' + command_line_object.createtargets, 'w') as target_file:
+                    for item in rdp:
+                        target_file.write(item + '\n')
+                print "Target file created (rdp_" + command_line_object.createtargets + ").\n"
+                sys.exit()
+
+            if command_line_object.createtargets is not None and command_line_object.vnc:
+                with open('vnc_' + command_line_object.createtargets, 'w') as target_file:
+                    for item in vnc:
+                        target_file.write(item + '\n')
+                print "Target file created (vnc_" + command_line_object.createtargets + ").\n"
                 sys.exit()
             return urls, rdp, vnc
 
