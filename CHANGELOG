@@ -1,5 +1,6 @@
 [10.3.2015]
     Updated...: User output changed to reflect the fact EyeWitness scans services, not hosts.  Thanks @digininja
+    Updated...: Create targets now correctly parses for rdp, vnc, and web, not only web.  Thanks @digininja for letting us know!
 
 [6.25.2015]
     Fixed.....: Fixed search page links
