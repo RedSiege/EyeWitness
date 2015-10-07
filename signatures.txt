@@ -121,3 +121,4 @@ TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|TeraData 
 <title>Brother HL-5070N series;http://solutions.brother.com/cgi-bin/solutions.cgi;/printer/online.html?|Brother HL-5070N - admin/access
 <title>Citrix Login</title>;function checkform;Here goes the logic to allow bookmarked URLs|Cisco Netscaler - nsroot/nsroot
 <title>.::Welcome to ZyXEL P-660HN-51::.</title>;if ( loginrandom == '1' ) {;function framLoad () {|ZyXEL P-660HN-51 Modem - admin/1234
+<title>Brother HL-2250DN series</title>;function setCookie(key, val);Brother Industries, Ltd. All Rights Reserved|Brother HL-2250DN - admin/access
