@@ -226,3 +226,4 @@ iLO 3;js/iLO.js;js/supersleight-min;Hewlett-Packard Development Company|idrac
 <title>Citrix Login</title>;function checkform;Here goes the logic to allow bookmarked URLs|infrastructure
 <title>.::Welcome to ZyXEL P-660HN-51::.</title>;if ( loginrandom == '1' ) {;function framLoad () {|netdev
 <title>Brother HL-2250DN series</title>;function setCookie(key, val);Brother Industries, Ltd. All Rights Reserved|printer
+<title>Brother HL-2130 series</title>;function setCookie(key, val);getCookie('webLang')|printer
