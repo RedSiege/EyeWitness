@@ -228,3 +228,7 @@ iLO 3;js/iLO.js;js/supersleight-min;Hewlett-Packard Development Company|idrac
 <title>Brother HL-2250DN series</title>;function setCookie(key, val);Brother Industries, Ltd. All Rights Reserved|printer
 <title>Brother HL-2130 series</title>;function setCookie(key, val);getCookie('webLang')|printer
 <title> Dell B2375dnf Mono MFP </title>;css/sws-all-dell.css;sws_redirect_location|printer
+<body onload="document.login.password.focus()">;<span id="headerLabel">Polycom Web Configuration Utility</span>;Welcome to Polycom Web Configuration Utility|infrastructure
+<title>Ruckus Wireless Admin</title>;<h1>Ruckus Wireless Admin</h1>;</div><img src="/images/goahead.gif"|infrastructure
+Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't contain any text node to avoid IE insertBefore bug|infrastructure
+<script type="text/javascript">;frameWorkObj = {};frameWorkObj.pkg = "ews";href="/framework/Unified.css" rel="stylesheet" type="text/css"|printer

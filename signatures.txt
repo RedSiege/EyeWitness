@@ -124,3 +124,7 @@ TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|TeraData 
 <title>Brother HL-2250DN series</title>;function setCookie(key, val);Brother Industries, Ltd. All Rights Reserved|Brother HL-2250DN - admin/access
 <title>Brother HL-2130 series</title>;function setCookie(key, val);getCookie('webLang')|Brother HL-2130 - admin/access
 <title> Dell B2375dnf Mono MFP </title>;css/sws-all-dell.css;sws_redirect_location|Dell B2375dnf MFP - admin/admin
+<body onload="document.login.password.focus()">;<span id="headerLabel">Polycom Web Configuration Utility</span>;Welcome to Polycom Web Configuration Utility|Polycom Device - admin/456 user/123
+<title>Ruckus Wireless Admin</title>;<h1>Ruckus Wireless Admin</h1>;</div><img src="/images/goahead.gif"|Ruckus Wireless Controller - super/sp-admin or cloud/cloud123
+Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't contain any text node to avoid IE insertBefore bug|Synology Diskstation - admin/<blank>
+<script type="text/javascript">;frameWorkObj = {};frameWorkObj.pkg = "ews";href="/framework/Unified.css" rel="stylesheet" type="text/css"|HP OfficeJet Pro X576dw MFP - admin/<nopass>
