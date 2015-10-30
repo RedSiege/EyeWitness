@@ -150,7 +150,7 @@ Xerox;/status/consumables.dhtml;displayTree;SMart|printer
 div.hpGasGaugeBlock;div.hpPageText;hp LaserJet;|printer
 It works!;This is the default web page for this server;The web server software is running|crap
 <html><head></head><body><h1>It works!</h1>|crap
-<title>AXIS;Network Camera;/view/view.shtml|voip
+<title>AXIS;Network Camera;/view/view.shtml|camera
 It works !;Tomcat home page;Tomcat7 veterans;tomcat7-admin|highval
 Canon Inc;DeviceDetail;t_title.gif;alt="Network Configuration"|printer
 function encode (psstrs, iLen);D-LINK|netdev
@@ -232,3 +232,4 @@ iLO 3;js/iLO.js;js/supersleight-min;Hewlett-Packard Development Company|idrac
 <title>Ruckus Wireless Admin</title>;<h1>Ruckus Wireless Admin</h1>;</div><img src="/images/goahead.gif"|infrastructure
 Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't contain any text node to avoid IE insertBefore bug|infrastructure
 <script type="text/javascript">;frameWorkObj = {};frameWorkObj.pkg = "ews";href="/framework/Unified.css" rel="stylesheet" type="text/css"|printer
+<title>DigitalSi HVR / NVR Gateway</title>;form method="post" action="/login.cgi";Namo WebEditor|camera
