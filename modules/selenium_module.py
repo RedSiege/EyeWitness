@@ -67,7 +67,7 @@ def create_driver(cli_parsed, user_agent=None):
 
     try:
         driver = webdriver.Firefox(profile)
-        driver.set_page_load_timeout(cli_parsed.t)
+        driver.set_page_load_timeout(cli_parsed.timeout)
         return driver
     except Exception as e:
         if 'Failed to find firefox binary' in str(e):

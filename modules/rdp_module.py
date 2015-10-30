@@ -175,7 +175,7 @@ def capture_host(cli_parsed, rdp_object):
     log._LOG_LEVEL = log.Level.ERROR
     width = 1200
     height = 800
-    timeout = cli_parsed.t
+    timeout = cli_parsed.timeout
 
     app = QtGui.QApplication(sys.argv)
 

@@ -83,7 +83,7 @@ def create_cli_parser():
                             websites')
 
     timing_options = parser.add_argument_group('Timing Options')
-    timing_options.add_argument('-t', metavar='Timeout', default=7, type=int,
+    timing_options.add_argument('--timeout', metavar='Timeout', default=7, type=int,
                                 help='Maximum number of seconds to wait while\
                                  requesting a web page (Default: 7)')
     timing_options.add_argument('--jitter', metavar='# of Seconds', default=0,
@@ -479,7 +479,7 @@ def multi_mode(cli_parsed):
                         target.remote_system, int(target.port),
                         rdp_module.RDPScreenShotFactory(
                             reactor, app, 1200, 800,
-                            target.screenshot_path, cli_parsed.t,
+                            target.screenshot_path, cli_parsed.timeout,
                             target, tdbm))
             reactor.runReturn()
             app.exec_()
@@ -539,7 +539,7 @@ if __name__ == "__main__":
         print 'Engine(s): {0}'.format(','.join(engines))
         print 'Threads: {0}'.format(cli_parsed.threads)
         print 'Output Directory: {0}'.format(cli_parsed.d)
-        print 'Timeout: {0}'.format(cli_parsed.t)
+        print 'Timeout: {0}'.format(cli_parsed.timeout)
         print ''
     else:
         create_folders_css(cli_parsed)
