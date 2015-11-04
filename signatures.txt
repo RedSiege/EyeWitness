@@ -119,7 +119,7 @@ TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|TeraData 
 <title>Brother HL-2270DW series</title>;/printer/main.html?weblang='+ wlang|Brother HL-2270DW - admin/access
 <title>Brother HL-5350DN series</title>;src="/pbio/key_admin.gif"|Brother HL-5350DN - admin/access
 <title>Brother HL-5070N series;http://solutions.brother.com/cgi-bin/solutions.cgi;/printer/online.html?|Brother HL-5070N - admin/access
-<title>Citrix Login</title>;function checkform;Here goes the logic to allow bookmarked URLs|Cisco Netscaler - nsroot/nsroot
+<title>Citrix Login</title>;function checkform;if (form.username.value === "");if (form.password.value === "")|Cisco Netscaler - nsroot/nsroot or nsrecover/nsroot
 <title>.::Welcome to ZyXEL P-660HN-51::.</title>;if ( loginrandom == '1' ) {;function framLoad () {|ZyXEL P-660HN-51 Modem - admin/1234
 <title>Brother HL-2250DN series</title>;function setCookie(key, val);Brother Industries, Ltd. All Rights Reserved|Brother HL-2250DN - admin/access
 <title>Brother HL-2130 series</title>;function setCookie(key, val);getCookie('webLang')|Brother HL-2130 - admin/access
@@ -129,3 +129,7 @@ TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|TeraData 
 Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't contain any text node to avoid IE insertBefore bug|Synology Diskstation - admin/<blank>
 <script type="text/javascript">;frameWorkObj = {};frameWorkObj.pkg = "ews";href="/framework/Unified.css" rel="stylesheet" type="text/css"|HP OfficeJet Pro X576dw MFP - admin/<nopass>
 <title>DigitalSi HVR / NVR Gateway</title>;form method="post" action="/login.cgi";Namo WebEditor|DigitalSI HVR/DVR - administrator/<nopassword>
+<title>SolarWinds Virtualization Manager</title>;var message = "{action:'setFrameStatus',status:'loaded'}";link href="history/history.css" type="text/css"|SolarWinds Virtualization Manager - admin/admin
+<title>Citrix CloudBridge - Login</title>;var err_map = { "SESS_CORRUPTED": "Session expired or killed. Please login."};function checkHTTP()|Citrix CloudBridge - admin/password
+<title>SolarWinds Log &amp; Event Manager</title>;var requiredMajorVersion;var MMredirectURL = window.location;allowMultipleConsoleSessions|SolarWinds Log and Event Manager - manager/password
+<meta content="WEBUI LOGIN PAGE" name="others" /><title>Gaia</title>;var hostname=;/cgi-bin/home.tcl|Checkpoint Gaia - admin/admin
