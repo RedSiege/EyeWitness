@@ -133,3 +133,5 @@ Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't
 <title>Citrix CloudBridge - Login</title>;var err_map = { "SESS_CORRUPTED": "Session expired or killed. Please login."};function checkHTTP()|Citrix CloudBridge - admin/password
 <title>SolarWinds Log &amp; Event Manager</title>;var requiredMajorVersion;var MMredirectURL = window.location;allowMultipleConsoleSessions|SolarWinds Log and Event Manager - manager/password
 <meta content="WEBUI LOGIN PAGE" name="others" /><title>Gaia</title>;var hostname=;/cgi-bin/home.tcl|Checkpoint Gaia - admin/admin
+<title>HP Insight Control server provisioning</title>;Hewlett-Packard Development Company;hp-authn-provider-name|HP Insight Control Server Provisioning - administrator/admin
+<title>ManageEngine EventLog Analyzer;function userType(ADAuthEnabled);function GetXmlHttpObject();function loadLogin()|ManageEngine EventLog Analyzer - admin/admin or guest/guest

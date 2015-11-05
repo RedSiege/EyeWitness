@@ -239,3 +239,5 @@ Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't
 <meta content="WEBUI LOGIN PAGE" name="others" /><title>Gaia</title>;var hostname=;/cgi-bin/home.tcl|infrastructure
 <title>Microsoft Internet Information Services 8</title>;<img class="hero" alt="Microsoft Internet Information Services 8.0";<img class="brand" alt="Microsoft Windows Server" src="ws8-brand.png"|crap
 width="960" height="600" alt="IIS" src="iis-85.png" />;<title>IIS Windows Server</title>;background-color:#0072C6|crap
+<title>HP Insight Control server provisioning</title>;Hewlett-Packard Development Company;hp-authn-provider-name|virtualization
+<title>ManageEngine EventLog Analyzer;function userType(ADAuthEnabled);function GetXmlHttpObject();function loadLogin()|logging
