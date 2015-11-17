@@ -124,12 +124,14 @@ def create_cli_parser():
     http_options.add_argument('--resolve', default=False,
                               action='store_true', help=("Resolve IP/Hostname"
                                                          " for targets"))
-    http_options.add_argument('--add-http-ports', default=[], type=int,
-                              action='append', help=("Additional port(s) to"
-                                                      " assume are http"))
-    http_options.add_argument('--add-https-ports', default=[], type=int,
-                              action='append', help=("Additional port(s) to"
-                                                      " assume are https"))
+    http_options.add_argument('--add-http-ports', default=[], 
+                              type=lambda s:[int(i) for i in s.split(",")],
+                              help=("Comma-seperated additional port(s) to assume "
+                              "are http (e.g. '8018,8028')"))
+    http_options.add_argument('--add-https-ports', default=[],
+                              type=lambda s:[int(i) for i in s.split(",")],
+                              help=("Comma-seperated additional port(s) to assume "
+                              "are https (e.g. '8018,8028')"))
 
     resume_options = parser.add_argument_group('Resume Options')
     resume_options.add_argument('--resume', metavar='ew.db',
