@@ -160,6 +160,7 @@ def sort_data_and_write(cli_parsed, data):
                   ('notfound', '404 Not Found', 'notfound'),
                   ('crap', 'Splash Pages', 'crap'),
                   ('printer', 'Printers', 'printer'),
+                  ('infrastructure', 'Infrastructure', 'infrastructure'),
                   ]
     if total_results == 0:
         return
