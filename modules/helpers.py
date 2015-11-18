@@ -69,6 +69,13 @@ def target_creator(command_line_object):
 
         if root.tag.lower() == "nmaprun" and root.attrib.get('scanner') == 'nmap':
             print "Detected nmap xml file\n"
+
+            # command line provided ports
+            # in nmap logic, https ports must also be http 
+            http_ports += command_line_object.add_http_ports
+            http_ports += command_line_object.add_https_ports
+            https_ports += command_line_object.add_https_ports
+
             for item in root.iter('host'):
                 check_ip_address = False
                 # We only want hosts that are alive
@@ -185,7 +192,7 @@ def target_creator(command_line_object):
                         port = ports.attrib.get('portid')
 
                         # Check for http ports
-                        if int(port) in http_ports:
+                        if int(port) in http_ports + command_line_object.add_http_ports:
                             protocol = 'http'
                             urlBuild = '%s://%s:%s' % (
                                 protocol, target, port)
@@ -193,7 +200,7 @@ def target_creator(command_line_object):
                                 urls.append(urlBuild)
 
                         # Check for https ports
-                        if int(port) in https_ports:
+                        if int(port) in https_ports + command_line_object.add_https_ports:
                             protocol = 'https'
                             urlBuild = '%s://%s:%s' % (
                                 protocol, target, port)
