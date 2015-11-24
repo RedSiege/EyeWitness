@@ -43,6 +43,8 @@ except ImportError:
     print '[*] Please run the script in the setup directory!'
     sys.exit()
 
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 multi_counter = 0
 multi_total = 0

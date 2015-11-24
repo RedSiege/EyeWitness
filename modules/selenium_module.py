@@ -75,7 +75,7 @@ def create_driver(cli_parsed, user_agent=None):
             print 'You can fix this by installing Firefox/Iceweasel\
              or using phantomjs/ghost'
         else:
-            print 'Unknown Error when creating selenium driver. Exiting'
+            print e
         sys.exit()
 
 
