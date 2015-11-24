@@ -137,3 +137,4 @@ Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't
 <title>ManageEngine EventLog Analyzer;function userType(ADAuthEnabled);function GetXmlHttpObject();function loadLogin()|ManageEngine EventLog Analyzer - admin/admin or guest/guest
 <title>SAP NetWeaver Portal</title>;var webpath = "/caportallogon_new/;<script>var hash = document.location.hash;certLogonForm|SAP Netweaver - SAP*/06071992 or TMSADM/$1Pawd2&
 <title>Brother HL-5370DW series</title>;onchange="changeLanguage();</tbody></table>|Brother HL-5370DW admin/access
+<title>Welcome to Service Assistant</title>;var clusterAddressLabel = "System Address";BM Storwize V7000 Service Assistant Tool |IBM Storwize V7000 superuser password = passw0rd
