@@ -245,3 +245,4 @@ width="960" height="600" alt="IIS" src="iis-85.png" />;<title>IIS Windows Server
 <title>Brother HL-5370DW series</title>;onchange="changeLanguage();</tbody></table>|printer
 Check the address for typing errors such;Please contact the web site owners to inform them of this problem;<title>Problem loading page</title>|notfound
 <title>Welcome to Service Assistant</title>;var clusterAddressLabel = "System Address";BM Storwize V7000 Service Assistant Tool|infrastructure
+a class="login-page-logo" title="Go to;CA Performance Center;form id="frmSignIn" class="aui-form" method="post" action="sign-in-process.jsp"|infrastructure
