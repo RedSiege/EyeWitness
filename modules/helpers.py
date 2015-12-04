@@ -298,11 +298,16 @@ def target_creator(command_line_object):
                 elif line.startswith('vnc://'):
                     vnc.append(line[6:])
                 else:
-                    urls.append(line)
                     if command_line_object.rdp:
                         rdp.append(line)
                     if command_line_object.vnc:
                         vnc.append(line)
+                    if command_line_object.web or command_line_object.headless:
+                        if command_line_object.prepend_https:
+                            urls.append("http://" + line)
+                            urls.append("https://" + line)
+                        else:
+                            urls.append(line)
                 num_urls += 1
 
             return urls, rdp, vnc

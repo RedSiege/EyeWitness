@@ -134,6 +134,8 @@ def create_cli_parser():
                               type=lambda s:[int(i) for i in s.split(",")],
                               help=("Comma-seperated additional port(s) to assume "
                               "are https (e.g. '8018,8028')"))
+    http_options.add_argument('--prepend-https', default=False, action='store_true',
+                              help='Prepend http:\\\\ and https:\\\\ to URLs without either')
 
     resume_options = parser.add_argument_group('Resume Options')
     resume_options.add_argument('--resume', metavar='ew.db',
