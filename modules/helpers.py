@@ -585,8 +585,10 @@ def default_creds_category(http_object):
                 # web page needed to make a signature Delimete the "signature"
                 # by ";" before the "|", and then have the creds after the "|"
                 if all([x.lower() in http_object.source_code.lower() for x in page_sig]):
-                    http_object.default_creds = cred_info
-                    break
+                    if http_object.default_creds is None:
+                        http_object.default_creds = cred_info
+                    else:
+                        http_object.default_creds += '\n' + cred_info
 
             for cat in categories:
                 # Find the signature(s), split them into their own list if needed
