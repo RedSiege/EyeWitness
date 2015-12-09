@@ -139,3 +139,18 @@ Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't
 <title>Brother HL-5370DW series</title>;onchange="changeLanguage();</tbody></table>|Brother HL-5370DW admin/access
 <title>Welcome to Service Assistant</title>;var clusterAddressLabel = "System Address";BM Storwize V7000 Service Assistant Tool |IBM Storwize V7000 superuser password = passw0rd
 a class="login-page-logo" title="Go to;CA Performance Center;form id="frmSignIn" class="aui-form" method="post" action="sign-in-process.jsp"|CA Performance Center admin/admin or user/user
+<head><title>Log In</title>;Log in to begin an administrative session.;PCoIP;Idle Timeout:|PCoIP System teradici/4400Dominion (possibly SSH Pass)
+Licensed to the Apache Software Foundation;<title>Apache Tomcat</title>;If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!|Apache Tomcat tomcat/tomcat admin/admin etc.
+<h1>Apache Tomcat;Manager Application HOW-TO;<span>Manager App</span></a>;For security, access to the|Apache Tomcat tomcat/tomcat admin/admin etc.
+<title>AlienVault USM;function save_hash();To reset your password please login using ssh to your AlienVault device|AlienVault USM ADMIN/<PASSSENTBYALIENTVALUT> if on AWS admin/<instance-id>
+<title>AppInternals Xpert;Transaction Trace Warehouse;<div id="login-nav-menu"><div><div class="productSuiteName">APM Xpert|Appinternals XPert admin/admin
+<title>Avocent DSView 4</title>;Avocent DSView 4 Software End User License Agreement;Point and Click Access and Control|DSView 4 - username and pass specified at install
+<title>Axeda Policy Server</title>;Please log in.</td>;EMC Corporation|Axeda Policy Server admin/EMCPMAdm7n
+<title>Cisco Secure ACS Login</title>;function checkBroserCompatability();Cisco Secure ACS|Cisco ACS Login - ACSAdmin/default (changed at config)
+<title>Cisco Systems Login</title>;<input type="button" onclick="loginAction()" name="bSubmit " value="Login" style="cursor:pointer;<meta name="GENERATOR" content=|Cisco Wireless LAN Controller password set during config
+<title>Dell OpenManage </title>;<frame src="/servlet/Login?omacmd=getlogin&amp;page=Login"|Dell OpenManage windows auth
+EMC SourceOne Search Logon;<div class="aspNetHidden">;function __doPostBack(eventTarget, eventArgument)|EMC SourceOne Login - Windows auth
+<title>Foglight</title>;<td><label for="user">User Name:</label></td>;<td><label for="password">Password:</label></td>;Dell Inc. ALL RIGHTS RESERVED|Dell Foglight - foglight/foglight
+<title>HP Systems Insight Manager</title>;function preloadOne(url);Obtain an exported HP Systems Insight Manager server certificate file from the administrator|HP Systems Insight Manger - Windows Auth
+Login;The vShield Manager requires cookies;You must enable JavaScript in order to administer vShield Manager;VMware, Inc|vShield Manager - admin/default
+<title>OPNET Authentication Service Login</title>;function onDocumentLoad();function checkVersion();Riverbed Technology. All rights reserved|OPNET Authentication Service - admin/opnet
