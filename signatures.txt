@@ -161,3 +161,4 @@ RPM Dashboards - Login;Riverbed Technology. All rights reserved;form onsubmit="r
 <title>vRealize Operations Manager</title>;Ext.onReady(function();var userNameField = new Ext.form.TextField|vRealize Operations Manager - user and pass set at console during install
 Default Authentication : iR-ADV C5030 : iR-ADV C5030;login/image/favicon.ico;<span id="deviceName">iR-ADV C5030| Canon ImageRunner admin - 7654321   or   admin - 7654321/7654321
 <title>NETGEAR GS748Tv5</title>;function DisplayErrorMsg();<td class="font10Bold padding4Top">Password</td>|NetGear GS748Tv5 <nousername>/password
+/acsadmin/cues_images/login_progress.gif;checkServerStatus;<label for="username"><nobr>Username:</nobr>|Cisco ACSAdmin - ACSAdmin/default
