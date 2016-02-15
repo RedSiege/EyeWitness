@@ -272,3 +272,4 @@ OnCommand System Manager</title><style>;">Password</div></td><td align=;id="gwt-
 <title>QUANTUM - Scalar i500 Login Screen - scgqtape</title>;var bLoggingin = false;function comboKey(idEdit, idSel)|infrastructure
 <nobr>Cisco Edge 300 Series</nobr>;<form action="/" method="post">;div class="cuesLayoutCopyright" id="cuesLayoutCopyright|infrastructure
 <!--<title class="clsTitle1">TopAccess</title>-->;var gblTopWindow;var eFilingTitle;var gblTAUrl|printer
+<title>Configuration Summary - PageScope Web Connection</title>;<div class="devicename-layout" cellpadding="0" cellspacing="0">Model Name:bizhub C224e</div>;onmouseover="ContentsDragDropRegist('MC_OutputTray')|printer
