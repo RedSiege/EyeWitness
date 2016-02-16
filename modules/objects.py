@@ -198,41 +198,41 @@ class HTTPTableObject(object):
         html = u""
         html += ("""<tr>
         <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
-        <a href=\"{address}\" target=\"_blank\">{address}</a><br>
+        <a href=\"{address}\" rel=\"external\">{address}</a><br />
         """).format(address=self.remote_system)
 
         if self.resolved is not None and self.resolved is not 'Unknown':
-            html += ("""<b>Resolved to:</b> {0}<br>""").format(self.resolved)
+            html += ("""<b>Resolved to:</b> {0}<br />""").format(self.resolved)
 
         if len(self._uadata) > 0:
             html += ("""
-                <br><b>This is the baseline request.</b><br>
-                The browser type is: <b>Baseline</b><br><br>
-                The user agent is: <b>Baseline</b><br><br>""")
+                <br /><b>This is the baseline request.</b><br />
+                The browser type is: <b>Baseline</b><br /><br />
+                The user agent is: <b>Baseline</b><br /><br />""")
 
         if self.ssl_error:
-            html += "<br><b>SSL Certificate error present on\
-                     <a href=\"{0}\" target=\"_blank\">{0}</a></b><br>".format(
+            html += "<br /><b>SSL Certificate error present on\
+                     <a href=\"{0}\" rel=\"external\">{0}</a></b><br />".format(
                 self.remote_system)
 
         if self.default_creds is not None:
-            html += "<br><b>Default credentials:</b> {0}<br>".format(
+            html += "<br /><b>Default credentials:</b> {0}<br />".format(
                 self.sanitize(self.default_creds))
 
         if self.error_state is None:
             try:
-                html += "\n<br><b> Page Title: </b>{0}\n".format(
+                html += "\n<br /><b> Page Title: </b>{0}\n".format(
                     self.sanitize(self.page_title))
             except UnicodeDecodeError:
-                html += "\n<br><b> Page Title:</b>{0}\n".format(
+                html += "\n<br /><b> Page Title:</b>{0}\n".format(
                     'Unable to Display')
 
             for key, value in self.headers.items():
-                html += '<br><b> {0}:</b> {1}\n'.format(
+                html += '<br /><b> {0}:</b> {1}\n'.format(
                     self.sanitize(key), self.sanitize(value))
 
         if self.blank:
-            html += ("""<br></td>
+            html += ("""<br /></td>
             <td><div style=\"display: inline-block; width: 850px;\">Page Blank\
             ,Connection error, or SSL Issues</div></td>
             </tr>
@@ -250,11 +250,11 @@ class HTTPTableObject(object):
         elif self.error_state == 'SSLHandshake':
             html += ("""</td><td>SSL Handshake Error</td></tr>""")
         else:
-            html += ("""<br><br><a href=\"{0}\"
-                target=\"_blank\">Source Code</a></div></td>
-                <td><div id=\"screenshot\"><a href=\"{1}\"
-                target=\"_blank\"><img src=\"{1}\"
-                height=\"400\"></a></div></td></tr>""").format(
+            html += ("""<br /><br /><a href=\"{0}\"
+                rel=\"external\">Source Code</a></div></td>
+                <td><div class=\"screenshot\"><a href=\"{1}\"
+                rel=\"external\"><img alt="" src=\"{1}\"
+                height=\"400\" /></a></div></td></tr>""").format(
                 src_path, scr_path)
 
         if len(self._uadata) > 0:
@@ -270,8 +270,9 @@ class HTTPTableObject(object):
             Click to collapse User Agents for {1}</td></tr>""").format(
                 divid, self.remote_system)
 
-        html += ("""</div>
-        </div>""")
+        # I don't think this is needed, it closes divs that havne't been opened
+        #html += ("""</div>
+        #</div>""")
         return html
 
     def sanitize(self, html):
@@ -356,49 +357,49 @@ class UAObject(HTTPTableObject):
         html = u""
         html += ("""<tr class="hide {0}">
         <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
-        <a href=\"{1}\" target=\"_blank\">{1}</a><br>
+        <a href=\"{1}\" rel=\"external\">{1}</a><br />
         """).format(divid, self.remote_system)
 
         html += ("""
-        <br>This request was different from the baseline.<br>
-        The browser type is: <b>{0}</b><br><br>
-        The user agent is: <b>{1}</b><br><br>
+        <br />This request was different from the baseline.<br />
+        The browser type is: <b>{0}</b><br /><br />
+        The user agent is: <b>{1}</b><br /><br />
         Difference in length of the two webpage sources is\
-        : <b>{2}</b><br>
+        : <b>{2}</b><br />
         """).format(self.browser, self.ua, self.difference)
 
         if self.ssl_error:
-            html += "<br><b>SSL Certificate error present on\
-                     <a href=\"{0}\" target=\"_blank\">{0}</a></b><br>".format(
+            html += "<br /><b>SSL Certificate error present on\
+                     <a href=\"{0}\" rel=\"external\">{0}</a></b><br />".format(
                 self.remote_system)
 
         if self.default_creds is not None:
-            html += "<br><b>Default credentials:</b> {0}<br>".format(
+            html += "<br /><b>Default credentials:</b> {0}<br />".format(
                 self.sanitize(self.default_creds))
 
         try:
-            html += "\n<br><b> Page Title: </b>{0}\n".format(
+            html += "\n<br /><b> Page Title: </b>{0}\n".format(
                 self.sanitize(self.page_title))
         except UnicodeDecodeError:
-            html += "\n<br><b> Page Title:</b>{0}\n".format(
+            html += "\n<br /><b> Page Title:</b>{0}\n".format(
                 'Unable to Display')
 
         for key, value in self.headers.items():
-            html += '<br><b> {0}:</b> {1}\n'.format(
+            html += '<br /><b> {0}:</b> {1}\n'.format(
                 self.sanitize(key), self.sanitize(value))
 
         if self.blank:
-            html += ("""<br></td>
+            html += ("""<br /></td>
             <td><div style=\"display: inline-block; width: 850px;\">Page Blank,\
             Connection error, or SSL Issues</div></td>
             </tr>
             """)
         else:
-            html += ("""<br><br><a href=\"{0}\"
-                target=\"_blank\">Source Code</a></div></td>
-                <td><div id=\"screenshot\"><a href=\"{1}\"
-                target=\"_blank\"><img src=\"{1}\"
-                height=\"400\"></a></div></td></tr>""").format(
+            html += ("""<br /><br /><a href=\"{0}\"
+                rel=\"external\">Source Code</a></div></td>
+                <td><div class=\"screenshot\"><a href=\"{1}\"
+                rel=\"external\"><img alt="" src=\"{1}\"
+                height=\"400\" /></a></div></td></tr>""").format(
                 src_path, scr_path)
         return html
 
@@ -466,14 +467,14 @@ class VNCRDPTableObject(object):
 
     def create_table_html(self):
         if self._error_state:
-            html = "<tr><td><b><center>{0}:{1}</center></b><br>".format(
+            html = "<tr><td><b><center>{0}:{1}</center></b><br />".format(
                 self.remote_system, str(self.port))
-            html += ("<div id=\"screenshot\"><center>Unable to screenshot<center>"
+            html += ("<div class=\"screenshot\"><center>Unable to screenshot<center>"
                      "</div></td></tr>").format(self._screenshot_path)
         else:
-            html = "<tr><td><b><center>{0}:{1}</center></b><br>".format(
+            html = "<tr><td><b><center>{0}:{1}</center></b><br />".format(
                 self.remote_system, str(self.port))
-            html += ("<div id=\"screenshot\"><img src=\"{0}\">"
+            html += ("<div class=\"screenshot\"><img alt="" src=\"{0}\" />"
                      "</div></td></tr>").format(self._screenshot_path)
         return html
 
