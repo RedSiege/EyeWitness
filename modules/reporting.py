@@ -55,7 +55,7 @@ def process_group(data, group, toc, toc_table, page_num, section, sectionid, htm
             test_element.page_title, x.page_title) < 70]
 
     grouped_elements.extend(unknowns)
-    toc_table += ("<tr><td>{0}</td><td>{1}</td>").format(section,
+    toc_table += ("<tr><td>{0}</td><td>{1}</td></tr>").format(section,
                                                          str(len(grouped_elements)))
     return grouped_elements, toc, toc_table, html
 
@@ -85,14 +85,14 @@ def write_vnc_rdp_data(cli_parsed, data):
             html += y.create_table_html()
             if counter % cli_parsed.results == 0:
                 html = (header + "EW_REPLACEME" + table_head + html +
-                        "</table><br>")
+                        "</table><br />")
                 pages.append(html)
                 html = u""
             counter += 1
 
         if html != u"":
             html = (header + "EW_REPLACEME" + table_head + html +
-                    "</table><br>")
+                    "</table><br />")
             pages.append(html)
 
         if len(pages) == 1:
@@ -101,36 +101,37 @@ def write_vnc_rdp_data(cli_parsed, data):
                 f.write("</body>\n</html>")
         else:
             num_pages = len(pages) + 1
-            bottom_text = "\n<center><br>"
+            bottom_text = "\n<p><br />"
             bottom_text += (
                 "<a href=\"{0}_report.html\"> Page 1</a>").format(proto)
             for i in range(2, num_pages):
                 bottom_text += ("<a href=\"{0}_report_page{1}.html\"> Page {1}</a>").format(proto,
                                                                                             str(i))
-            bottom_text += "</center>\n"
+            bottom_text += "\n<br /></p>\n"
             top_text = bottom_text
             for i in range(0, len(pages)):
-                headfoot = "<center>"
+                headfoot = "<p>"
                 if i == 0:
-                    headfoot += ("<a href=\"{0}_report_page2.html\"> Next Page "
-                                 "</a></center>").format(proto)
+                    headfoot += ("<a id='next' href=\"{0}_report_page2.html\"> Next Page "
+                                 "</a>").format(proto)
                 elif i == len(pages) - 1:
                     if i == 1:
-                        headfoot += ("<a href=\"{0}_report.html\">Previous Page"
-                                     "</a>&nbsp</center>").format(proto)
+                        headfoot += ("<a id='prev' href=\"{0}_report.html\">Previous Page"
+                                     "</a>&nbsp").format(proto)
                     else:
-                        headfoot += ("<a href=\"{0}_report_page{1}.html\"> Previous Page "
-                                     "</a></center>").format(proto, str(i))
+                        headfoot += ("<a id='prev' href=\"{0}_report_page{1}.html\"> Previous Page "
+                                     "</a>").format(proto, str(i))
                 elif i == 1:
-                    headfoot += ("<a href=\"{0}_report.html\">Previous Page</a>&nbsp"
-                                 "<a href=\"{0}_report_page{1}.html\"> Next Page"
-                                 "</a></center>").format(proto, str(i+2))
+                    headfoot += ("<a id='prev' href=\"{0}_report.html\">Previous Page</a>&nbsp"
+                                 "<a id='next' href=\"{0}_report_page{1}.html\"> Next Page"
+                                 "</a>").format(proto, str(i+2))
                 else:
-                    headfoot += ("<a href=\"{0}_report_page{1}.html\">Previous Page</a>"
-                                 "&nbsp<a href=\"{0}_report_page{2}.html\"> Next Page"
-                                 "</a></center>").format(proto, str(i), str(i+2))
+                    headfoot += ("<a id='prev' href=\"{0}_report_page{1}.html\">Previous Page</a>"
+                                 "&nbsp<a id='next' href=\"{0}_report_page{2}.html\"> Next Page"
+                                 "</a>").format(proto, str(i), str(i+2))
+                headfoot += "\n</p>\n"
                 pages[i] = pages[i].replace(
-                    'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
+                    'EW_REPLACEME', headfoot + top_text) + bottom_text + headfoot + '</body></html>'
 
             with open(os.path.join(cli_parsed.d, proto + '_report.html'), 'a') as f:
                 f.write(pages[0])
@@ -166,7 +167,8 @@ def sort_data_and_write(cli_parsed, data):
         return
     # Initialize stuff we need
     pages = []
-    toc = create_report_toc_head(cli_parsed.date, cli_parsed.time)
+    toc = "<h2>Table of Contents</h2>\n"
+    toc += "<ul>"
     toc_table = "<table class=\"toc_table\">"
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
     table_head = create_table_head()
@@ -190,14 +192,15 @@ def sort_data_and_write(cli_parsed, data):
             html += obj.create_table_html()
             if counter % cli_parsed.results == 0:
                 html = (web_index_head + "EW_REPLACEME" + html +
-                        "</table><br>")
+                        "</table>")
                 pages.append(html)
                 html = u""
                 if pcount < len(grouped):
                     html += table_head
             counter += 1
-        if len(grouped) > 0 and counter - 1 % cli_parsed.results != 0:
-            html += "</table><br>"
+    # don't think needed
+    #   if len(grouped) > 0 and counter - 1 % cli_parsed.results != 0:
+    #        html += "</table>"
 
     # Add our errors here (at the very very end)
     if len(errors) > 0:
@@ -207,7 +210,7 @@ def sort_data_and_write(cli_parsed, data):
             html += obj.create_table_html()
             if counter % cli_parsed.results == 0:
                 html = (web_index_head + "EW_REPLACEME" + html +
-                        "</table><br>")
+                        "</table>")
                 pages.append(html)
                 html = u"" + table_head
             counter += 1
@@ -221,61 +224,63 @@ def sort_data_and_write(cli_parsed, data):
 
     if html != u"":
         html = (web_index_head + "EW_REPLACEME" + html +
-                "</table><br>")
+                "</table>")
         pages.append(html)
 
-    toc = "<center>{0}<br><br>{1}<br><br></center>".format(toc, toc_table)
+    toc = "{0}<p><br /><br /></p>{1}<p><br /><br /></p>".format(toc, toc_table)
 
     if len(pages) == 1:
         with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
-            f.write(toc)
-            f.write(pages[0].replace('EW_REPLACEME', ''))
+            f.write(pages[0].replace('EW_REPLACEME', '').replace("<TOC>", toc))
             f.write("</body>\n</html>")
     else:
         num_pages = len(pages) + 1
-        bottom_text = "\n<center><br>"
+        bottom_text = "\n<p><br />"
         bottom_text += ("<a href=\"report.html\"> Page 1</a>")
         # Generate our header/footer data here
         for i in range(2, num_pages):
             bottom_text += ("<a href=\"report_page{0}.html\"> Page {0}</a>").format(
                 str(i))
-        bottom_text += "</center>\n"
+        bottom_text += "\n<br /></p>\n"
         top_text = bottom_text
         # Generate our next/previous page buttons
         for i in range(0, len(pages)):
-            headfoot = "<center>"
+            headfoot = "\n<p>"
             if i == 0:
-                headfoot += ("<a href=\"report_page2.html\"> Next Page "
-                             "</a></center>")
+                headfoot += ("<a id='next' href=\"report_page2.html\"> Next Page "
+                             "</a>")
             elif i == len(pages) - 1:
                 if i == 1:
-                    headfoot += ("<a href=\"report.html\"> Previous Page "
-                                 "</a></center>")
+                    headfoot += ("<a id='prev' href=\"report.html\"> Previous Page "
+                                 "</a>")
                 else:
-                    headfoot += ("<a href=\"report_page{0}.html\"> Previous Page "
-                                 "</a></center>").format(str(i))
+                    headfoot += ("<a id='prev' href=\"report_page{0}.html\"> Previous Page "
+                                 "</a>").format(str(i))
             elif i == 1:
-                headfoot += ("<a href=\"report.html\">Previous Page</a>&nbsp"
-                             "<a href=\"report_page{0}.html\"> Next Page"
-                             "</a></center>").format(str(i+2))
+                headfoot += ("<a id='prev' href=\"report.html\">Previous Page</a>&nbsp"
+                             "<a id='next' href=\"report_page{0}.html\"> Next Page"
+                             "</a>").format(str(i+2))
             else:
-                headfoot += ("<a href=\"report_page{0}.html\">Previous Page</a>"
-                             "&nbsp<a href=\"report_page{1}.html\"> Next Page"
-                             "</a></center>").format(str(i), str(i+2))
+                headfoot += ("<a id='prev' href=\"report_page{0}.html\">Previous Page</a>"
+                             "&nbsp<a id='next' href=\"report_page{1}.html\"> Next Page"
+                             "</a>").format(str(i), str(i+2))
+            headfoot += "\n</p>\n"
             # Finalize our pages by replacing placeholder stuff and writing out
             # the headers/footers
             pages[i] = pages[i].replace(
-                'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
+                'EW_REPLACEME', headfoot + top_text) + bottom_text
+            # The id fields can only be on one set of anchor tags so let them be on the first set
+            # and then remove them from the second set
+            pages[i] += headfoot.replace("id='next'", "").replace("id='prev'", "") + '</body></html>'
 
         # Write out our report to disk!
         if len(pages) == 0:
             return
         with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
-            f.write(toc)
-            f.write(pages[0])
+            f.write(pages[0].replace("<TOC>", toc))
         for i in range(2, len(pages) + 1):
             with open(os.path.join(cli_parsed.d, 'report_page{0}.html'.format(str(i))), 'w') as f:
-                f.write(pages[i - 1])
+                f.write(pages[i - 1].replace("<TOC>", ""))
 
 
 def create_web_index_head(date, time):
@@ -288,11 +293,14 @@ def create_web_index_head(date, time):
     Returns:
         String: HTTP Report Start html
     """
-    return ("""<html>
+    return ("""<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
         <head>
-        <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />
         <title>EyeWitness Report</title>
-        <script src="jquery-1.11.3.min.js"></script>
+        <script src="jquery-1.11.3.min.js" type="text/javascript"></script>
         <script type="text/javascript">
         function toggleUA(id, url){{
         idi = "." + id;
@@ -304,19 +312,52 @@ def create_web_index_head(date, time):
             change.innerHTML = "Click to expand User Agents for " + url;
         }}
         }}
+
+        $(document).ready(function(){{
+
+            $('A[rel="external"]').click(function(){{
+                window.open($(this).attr('href'));
+                return false;
+            }});
+
+        }});
+
+        jQuery(function( $ ) {{
+            var keymap = {{}};
+
+            // LEFT
+            keymap[ 37 ] = "#prev";
+            // RIGHT
+            keymap[ 39 ] = "#next";
+
+            $( document ).on( "keyup", function(event) {{
+                var href,
+                    selector = keymap[ event.which ];
+                // if the key pressed was in our map, check for the href
+                if ( selector ) {{
+                    href = $( selector ).attr( "href" );
+                    if ( href ) {{
+                        // navigate where the link points
+                        window.location = href;
+                    }}
+                }}
+            }});
+        }});
         </script>
         </head>
         <body>
-        <center>
-        <center>Report Generated on {0} at {1}</center>""").format(date, time)
+        <TOC>
+        <p>Report Generated on {0} at {1}</p>""").format(date, time)
 
 
 def search_index_head():
-    return ("""<html>
+    return ("""<!DOCTYPE HTML SYSTEM>
+    <html>
         <head>
-        <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />
         <title>EyeWitness Report</title>
-        <script src="jquery-1.11.3.min.js"></script>
+        <script src="jquery-1.11.3.min.js" type="text/javascript"></script>
         <script type="text/javascript">
         function toggleUA(id, url){{
         idi = "." + id;
@@ -328,45 +369,68 @@ def search_index_head():
             change.innerHTML = "Click to expand User Agents for " + url;
         }}
         }}
+
+        $(document).ready(function(){{
+
+            $('A[rel="external"]').click(function(){{
+                window.open($(this).attr('href'));
+                return false;
+            }});
+
+        }});
+
+        jQuery(function( $ ) {{
+            var keymap = {{}};
+
+            // LEFT
+            keymap[ 37 ] = "#prev";
+            // RIGHT
+            keymap[ 39 ] = "#next";
+
+            $( document ).on( "keyup", function(event) {{
+                var href,
+                    selector = keymap[ event.which ];
+                // if the key pressed was in our map, check for the href
+                if ( selector ) {{
+                    href = $( selector ).attr( "href" );
+                    if ( href ) {{
+                        // navigate where the link points
+                        window.location = href;
+                    }}
+                }}
+            }});
+        }});
         </script>
+
         </head>
         <body>
-        <center>
         """)
 
 
 def create_table_head():
-    return ("""<table border=\"1\">
+    return ("""<table class=\"content\">
         <tr>
         <th>Web Request Info</th>
         <th>Web Screenshot</th>
         </tr>""")
 
-
-def create_report_toc_head(date, time):
-    return ("""<html>
-        <head>
-        <title>EyeWitness Report Table of Contents</title>
-        </head>
-        <h2>Table of Contents</h2>""")
-
-
 def vnc_rdp_table_head():
-    return ("""<table border=\"1\" align=\"center\">
+    return ("""<table class=\"content\">
     <tr>
     <th>IP / Screenshot</th>
     </tr>""")
 
 
+#This probably shouldn't be putting the head in
 def vnc_rdp_header(date, time):
     web_index_head = ("""<html>
     <head>
-    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />
     <title>EyeWitness Report</title>
     </head>
     <body>
     <center>Report Generated on {0} at {1}</center>
-    <br>""").format(date, time)
+    <br />""").format(date, time)
     return web_index_head
 
 
@@ -387,13 +451,13 @@ def search_report(cli_parsed, data, search_term):
         html += obj.create_table_html()
         if counter % cli_parsed.results == 0:
             html = (web_index_head + "EW_REPLACEME" + html +
-                    "</table><br>")
+                    "</table><br />")
             pages.append(html)
             html = u"" + table_head
         counter += 1
 
     if html != u"":
-        html = (web_index_head + html + "</table><br>")
+        html = (web_index_head + html + "</table><br />")
         pages.append(html)
 
     if len(pages) == 1:
@@ -402,7 +466,7 @@ def search_report(cli_parsed, data, search_term):
             f.write("</body>\n</html>")
     else:
         num_pages = len(pages) + 1
-        bottom_text = "\n<center><br>"
+        bottom_text = "\n<center><br />"
         bottom_text += ("<a href=\"search.html\"> Page 1</a>")
         # Generate our header/footer data here
         for i in range(2, num_pages):
@@ -434,7 +498,7 @@ def search_report(cli_parsed, data, search_term):
             # Finalize our pages by replacing placeholder stuff and writing out
             # the headers/footers
             pages[i] = pages[i].replace(
-                'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
+                'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br />' + headfoot + '</body></html>'
 
         # Write out our report to disk!
         if len(pages) == 0:

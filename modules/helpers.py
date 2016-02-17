@@ -496,43 +496,58 @@ def create_folders_css(cli_parsed):
     Args:
         cli_parsed (ArgumentParser): CLI Object
     """
-    css_page = """img {
+    css_page = """
+body {
+    text-align: center;
+}
+img {
     max-width:100%;
     height:auto;
-    }
-    #screenshot{
+}
+.screenshot{
     max-width: 850px;
     max-height: 550px;
     display: inline-block;
     width: 850px;
     overflow:scroll;
-    }
-    .hide{
+}
+.hide{
     display:none;
-    }
-    .uabold{
+}
+.uabold{
     font-weight:bold;
     cursor:pointer;
     background-color:green;
-    }
-    .uared{
+}
+.uared{
     font-weight:bold;
     cursor:pointer;
     background-color:red;
-    }
-    table.toc_table{
+}
+table.toc_table{
     border-collapse: collapse;
     border: 1px solid black;
-    }
-    table.toc_table td{
+    text-align:left;
+    margin: 0 auto;
+}
+table.toc_table td{
     border: 1px solid black;
     padding: 3px 8px 3px 8px;
-    }
-    table.toc_table th{
+}
+table.toc_table th{
     border: 1px solid black;
     text-align: left;
     padding: 3px 8px 3px 8px;
-    }
+}
+table.content {
+    border-collapse: collapse;
+    border: 1px solid black;
+    text-align:left;
+    margin: 0 auto;
+}
+table.content th, table.content td {
+    border: 1px solid black;
+}
     """
 
     # Create output directories
