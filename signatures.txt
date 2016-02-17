@@ -172,3 +172,4 @@ OnCommand System Manager</title><style>;">Password</div></td><td align=;id="gwt-
 <title>Configuration Summary - PageScope Web Connection</title>;<div class="devicename-layout" cellpadding="0" cellspacing="0">Model Name:bizhub C224e</div>;onmouseover="ContentsDragDropRegist('MC_OutputTray')|Konica Minolta Bizhub C224e - admin/12345678 or admin/1234567812345678
 <title>TransPort WR21;Configuration and Management</title>;function checkLoginInfo(form);<div class="tile_templates_container">|TransPort WR21 - username/password
 <title>NETGEAR GSM7352SV2</title>;<script src="/base/js/ng_tabs_Layer2.js";function pausecomp(millis);function DisplayErrorMsg()|Netgear GSM7352S - admin/<nopassword>
+<title>HUAWEI Home Gateway HG658d</title;Navbar======================top menu=;<ul class="nav pull-left logo_png|Huawei HG658 - vodafone/admin or vodafone/admin1234
