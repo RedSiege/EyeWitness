@@ -277,3 +277,4 @@ OnCommand System Manager</title><style>;">Password</div></td><td align=;id="gwt-
 <title>NETGEAR GSM7352SV2</title>;<script src="/base/js/ng_tabs_Layer2.js";function pausecomp(millis);function DisplayErrorMsg()|infrastructure
 <title>HUAWEI Home Gateway HG658d</title;Navbar======================top menu=;<ul class="nav pull-left logo_png|infrastructure
 <title>Login Page</title>;function to_submit();function init();action="/login.cgi" method="post" name="login" id="frm"|voip
+To view the Web interface of your device, JavaScript must be supported and enabled on your browser!;function disable_fields(theForm);function alignByClassFlag(node);TG582n';Technicolor|infrastructure
