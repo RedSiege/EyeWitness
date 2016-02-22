@@ -280,3 +280,4 @@ OnCommand System Manager</title><style>;">Password</div></td><td align=;id="gwt-
 To view the Web interface of your device, JavaScript must be supported and enabled on your browser!;function disable_fields(theForm);function alignByClassFlag(node);TG582n';Technicolor|infrastructure
 TM2AuthLogin_Form.LoginPasswordValue;TM2AuthLogin_Form.LoginNameValue;function SubmitForm();Streamyx Connection|infrastructure
 <title>Intelbras - Configura;form method="post" action="/cgi-bin/firmware.cgi" name="f";<table class="tbLoginCenter">;td class="tdLoginLeft"|infrastructure
+<title>HG8245H</title>;this.UserName = UserName;this.HintPassword = HintPassword;var ProductName = 'HG8245H';Username.focus()|infrastructure
