@@ -155,7 +155,7 @@ EMC SourceOne Search Logon;<div class="aspNetHidden">;function __doPostBack(even
 Login;The vShield Manager requires cookies;You must enable JavaScript in order to administer vShield Manager;VMware, Inc|vShield Manager - admin/default
 <title>OPNET Authentication Service Login</title>;function onDocumentLoad();function checkVersion();Riverbed Technology. All rights reserved|OPNET Authentication Service - admin/opnet
 RPM Dashboards - Login;Riverbed Technology. All rights reserved;form onsubmit="return onFormSubmit()|Riverbed RPM Dashboards - username and pass set at install
-<title>Sign in | Stratusphere</title>;var gProduct = 'ADMINISTRATION';var activePage = 'IManagerLoginPage'|Liquidware Labs - ssadmin/sspassword
+<title>Sign in ; Stratusphere</title>;var gProduct = 'ADMINISTRATION';var activePage = 'IManagerLoginPage'|Liquidware Labs - ssadmin/sspassword
 <title>Trend Micro Smart Protection Server</title>;<body onload="javascript:init();Trend Micro Incorporated. All Rights Reserved|Smart Protection Server - admin and root pass set at install
 <title>ipMonitor - Log In</title>;window.onload = function();function go_to_secure_page();SolarWinds. All Rights Reserved|ipMonitor - user and pass set at install
 <title>vRealize Operations Manager</title>;Ext.onReady(function();var userNameField = new Ext.form.TextField|vRealize Operations Manager - user and pass set at console during install
