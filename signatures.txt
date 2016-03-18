@@ -178,3 +178,8 @@ To view the Web interface of your device, JavaScript must be supported and enabl
 TM2AuthLogin_Form.LoginPasswordValue;TM2AuthLogin_Form.LoginNameValue;function SubmitForm();Streamyx Connection|Streamyx Connection - tmadmin/Adm@<last4ofmacaddress>
 <title>Intelbras - Configura;form method="post" action="/cgi-bin/firmware.cgi" name="f";<table class="tbLoginCenter">;td class="tdLoginLeft"|Intelbras WOM 5000 - admin/admin
 <title>HG8245H</title>;this.UserName = UserName;this.HintPassword = HintPassword;var ProductName = 'HG8245H';Username.focus()|Telmex HG8245H - telecomadmin/admintelecom
+script djconfig="parseOnLoad: true, isDebug;Equalizer Configuration;span dojoattachevent="onclick;Password;/dojo/dojo/resources|Coyote Point look/look or touch/touch
+Sign in</title>;div id="center" style="opacity: 1;div id="middleSection";Use of this Riverbed product is subject to the Riverbed;If you don't know your username or password please;var helpButtonContainer = Y.one|Riverbed Device admin/admin
+<title>ManageEngine - ADAudit Plus</title>;.greentxtbold1;var isPasswordChanged;function searchKeyPress(event);password = decryptPassword(encPassword)|admin/admin
+Paessler AG - The Network Monitoring Company;/images/prtg_network_monitor.png;You can not access all features of PRTG with this browser!;label for="loginpassword">Password</label>;input type="radio" name="loginurl"|PRTG - prtgadmin/prtgadmin
+<!-- BUFFALO LIBS -->;if (success) {;create_features_obj();var rawData = result.responseText;var data = response.data|Buffalo Linkstation - admin/password

@@ -280,3 +280,6 @@ To view the Web interface of your device, JavaScript must be supported and enabl
 TM2AuthLogin_Form.LoginPasswordValue;TM2AuthLogin_Form.LoginNameValue;function SubmitForm();Streamyx Connection|infrastructure
 <title>Intelbras - Configura;form method="post" action="/cgi-bin/firmware.cgi" name="f";<table class="tbLoginCenter">;td class="tdLoginLeft"|infrastructure
 <title>HG8245H</title>;this.UserName = UserName;this.HintPassword = HintPassword;var ProductName = 'HG8245H';Username.focus()|infrastructure
+<!-- BUFFALO LIBS -->;if (success) {;create_features_obj();var rawData = result.responseText;var data = response.data|nas
+Paessler AG - The Network Monitoring Company;/images/prtg_network_monitor.png;You can not access all features of PRTG with this browser!;label for="loginpassword">Password</label>;input type="radio" name="loginurl"|infrastructure
+script djconfig="parseOnLoad: true, isDebug;Equalizer Configuration;span dojoattachevent="onclick;Password;/dojo/dojo/resources|infrastructure
