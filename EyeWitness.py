@@ -136,6 +136,7 @@ def create_cli_parser():
                               "are https (e.g. '8018,8028')"))
     http_options.add_argument('--prepend-https', default=False, action='store_true',
                               help='Prepend http:\\\\ and https:\\\\ to URLs without either')
+    http_options.add_argument('--vhost-name', default=None,metavar='hostname', help='Hostname to use in Host header (headless + single mode only)')
 
     resume_options = parser.add_argument_group('Resume Options')
     resume_options.add_argument('--resume', metavar='ew.db',
@@ -200,6 +201,10 @@ def create_cli_parser():
     if all((args.web, args.headless)):
         print "[*] Error: Choose either web or headless"
         parser.print_help()
+        sys.exit()
+
+    if not all((args.vhost_name, args.single, args.headless)):
+        print "[*] Error: hostname can only be used in headless+single mode"
         sys.exit()
 
     if args.resume:
