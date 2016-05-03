@@ -34,7 +34,6 @@ class XML_Parser(xml.sax.ContentHandler):
         self.get_ip = False
         self.service_detection = False
         self.out_file = file_out
-        print "chris is here"
 
     def startElement(self, tag, attributes):
         # Determine the Scanner being used
@@ -197,13 +196,24 @@ def resolve_host(system):
 def find_file_name():
     file_not_found = True
     file_name = "parsed_xml"
-    counter = 1
+    counter = 0
+    first_time = True
     while file_not_found:
-        if os.path.isfile(file_name + ".txt"):
-            file_name = "parsed_xml" + str(counter)
+        if first_time:
+            if not os.path.isfile(file_name + ".txt"):
+                file_not_found = False
+            else:
+                counter += 1
+                first_time = False
         else:
-            file_not_found = False
-    return file_name + ".txt"
+            if not os.path.isfile(file_name + str(counter) + ".txt"):
+                file_not_found = False
+            else:
+                counter += 1
+    if first_time:
+        return file_name + ".txt"
+    else:
+        return file_name + str(counter) + ".txt"
 
 
 def textfile_parser(file_to_parse, cli_obj):
@@ -265,12 +275,14 @@ def target_creator(command_line_object):
 
         # Create parser
         parser = xml.sax.make_parser()
+
         # Turn off namespaces
         parser.setFeature(xml.sax.handler.feature_namespaces, 0)
         # Override the parser
         Handler = XML_Parser(parsed_file_name)
         parser.setContentHandler(Handler)
         # Parse the XML
+
         parser.parse(command_line_object.x)
 
         out_urls, out_rdp, out_vnc = textfile_parser(

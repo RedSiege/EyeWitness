@@ -574,7 +574,7 @@ if __name__ == "__main__":
                     sys.exit()
         sys.exit()
 
-    if cli_parsed.f is not None:
+    if cli_parsed.f  is not None or cli_parsed.x is not None:
         multi_mode(cli_parsed)
 
     print 'Finished in {0} seconds'.format(time.time() - start_time)
