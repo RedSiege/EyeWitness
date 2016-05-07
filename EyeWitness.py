@@ -202,6 +202,16 @@ def create_cli_parser():
         parser.print_help()
         sys.exit()
 
+    if args.proxy_ip is not None and args.proxy_port is None:
+        print "[*] Error: Please provide a port for the proxy!"
+        parser.print_help()
+        sys.exit()
+
+    if args.proxy_port is not None and args.proxy_ip is None:
+        print "[*] Error: Please provide an IP for the proxy!"
+        parser.print_help()
+        sys.exit()
+
     if args.resume:
         if not os.path.isfile(args.resume):
             print(" [*] Error: No valid DB file provided for resume!")
