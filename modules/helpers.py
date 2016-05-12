@@ -46,7 +46,10 @@ class XML_Parser(xml.sax.ContentHandler):
 
         if self.masscan or self.nmap:
             if tag == "address":
-                self.system_name = attributes['addr']
+                if attributes['addrtype'].lower() == "mac":
+                    pass
+                else:
+                    self.system_name = attributes['addr']
             elif tag == "port":
                 self.port_number = attributes['portid']
             elif tag == "service":

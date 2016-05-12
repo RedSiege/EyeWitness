@@ -1,3 +1,6 @@
+[05.11.2016]
+	Updated...: Fixed bug in XML parsing (Issue #187).  Mac address is now ignored.  This value was used instead of the IP when NMap is able to identify the MAC address of the system.
+
 [10.3.2015]
     Updated...: User output changed to reflect the fact EyeWitness scans services, not hosts.  Thanks @digininja
     Updated...: Create targets now correctly parses for rdp, vnc, and web, not only web.  Thanks @digininja for letting us know!
