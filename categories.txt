@@ -259,7 +259,7 @@ EMC SourceOne Search Logon;<div class="aspNetHidden">;function __doPostBack(even
 Login;The vShield Manager requires cookies;You must enable JavaScript in order to administer vShield Manager;VMware, Inc|infrastructure
 <title>OPNET Authentication Service Login</title>;function onDocumentLoad();function checkVersion();Riverbed Technology. All rights reserved|infrastructure
 RPM Dashboards - Login;Riverbed Technology. All rights reserved;form onsubmit="return onFormSubmit()|infrastructure
-<title>Sign in | Stratusphere</title>;var gProduct = 'ADMINISTRATION';var activePage = 'IManagerLoginPage'|infrastructure
+<title>Sign in;Stratusphere</title>;var gProduct = 'ADMINISTRATION';var activePage = 'IManagerLoginPage'|infrastructure
 <title>Trend Micro Smart Protection Server</title>;<body onload="javascript:init();Trend Micro Incorporated. All Rights Reserved|infrastructure
 <title>ipMonitor - Log In</title>;window.onload = function();function go_to_secure_page();SolarWinds. All Rights Reserved|infrastructure
 <title>vRealize Operations Manager</title>;Ext.onReady(function();var userNameField = new Ext.form.TextField|infrastructure
