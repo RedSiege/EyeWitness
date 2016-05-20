@@ -283,3 +283,5 @@ TM2AuthLogin_Form.LoginPasswordValue;TM2AuthLogin_Form.LoginNameValue;function S
 <!-- BUFFALO LIBS -->;if (success) {;create_features_obj();var rawData = result.responseText;var data = response.data|nas
 Paessler AG - The Network Monitoring Company;/images/prtg_network_monitor.png;You can not access all features of PRTG with this browser!;label for="loginpassword">Password</label>;input type="radio" name="loginurl"|infrastructure
 script djconfig="parseOnLoad: true, isDebug;Equalizer Configuration;span dojoattachevent="onclick;Password;/dojo/dojo/resources|infrastructure
+<title id=titletext>Under Construction</title>;The site you were trying to reach does not currently have a default page|construction
+<html><body><h1>It works!</h1></body></html>|construction

@@ -154,6 +154,7 @@ def sort_data_and_write(cli_parsed, data):
                   ('cms', 'Content Management System (CMS)', 'cms'),
                   ('idrac', 'IDRAC/ILo/Management Interfaces', 'idrac'),
                   ('nas', 'Network Attached Storage (NAS)', 'nas'),
+                  ('construction', 'Under Construction', 'construction'),
                   ('netdev', 'Network Devices', 'netdev'),
                   ('voip', 'Voice/Video over IP (VoIP)', 'voip'),
                   ('unauth', '401/403 Unauthorized', 'unauth'),
