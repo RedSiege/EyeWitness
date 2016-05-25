@@ -172,6 +172,7 @@ def handleCategoryMatch(data, http_object):
                 http_object.default_creds = "Default creds are valid: {}".format(y)
                 http_object.category = "successfulLogin"
                 http_object._remote_login = target
+                break
         elif logintype[0] == 'http_post':
             # login with form based auth
             if inputs is not None:
@@ -249,9 +250,14 @@ def getPostData(inputs, uname, pword):
     try:
         if inputs != []:
             for y in inputs:
-                if 'name' in str(y):
+                if 'name' in str(y) or 'user' in str(y) or 'usr' in str(y):
                     if y['type'] == 'text' or y['type'] == 'email':
-                        postData[y['name']] = uname
+                        if 'name' in str(y):
+                            postData[y['name']] = uname
+                        elif 'user' in str(y):
+                            postData[y['user']] = uname
+                        elif 'usr' in str(y):
+                            postData[y['usr']] = uname
                     elif y['type'] == 'password':
                         postData[y['name']] = pword
                     elif y['type'] == 'hidden':
@@ -264,7 +270,7 @@ def getPostData(inputs, uname, pword):
                         else:
                             postData[y['name']] = ""
                     else:
-                        if 'vaule' in str(y):
+                        if 'value' in str(y):
                             try:
                                 postData[y['name']] = y['value'].encode(
                                     'utf-8')
