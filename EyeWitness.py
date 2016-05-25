@@ -74,7 +74,9 @@ def create_cli_parser():
     input_options = parser.add_argument_group('Input Options')
     input_options.add_argument('-f', metavar='Filename', default=None,
                                help='Line seperated file containing URLs to \
-                            capture, Nmap XML output, or a .nessus file')
+                                capture')
+    input_options.add_argument('-x', metavar='Filename.xml', default=None,
+                               help='Nmap XML or .Nessus file')
     input_options.add_argument('--single', metavar='Single URL', default=None,
                                help='Single URL/Host to capture')
     input_options.add_argument('--createtargets', metavar='targetfilename.txt',
@@ -188,7 +190,7 @@ def create_cli_parser():
 
     args.log_file_path = os.path.join(args.d, 'logfile.log')
 
-    if args.f is None and args.single is None and args.resume is None:
+    if args.f is None and args.single is None and args.resume is None and args.x is None:
         print("[*] Error: You didn't specify a file! I need a file containing "
               "URLs!")
         parser.print_help()
@@ -202,6 +204,16 @@ def create_cli_parser():
 
     if all((args.web, args.headless)):
         print "[*] Error: Choose either web or headless"
+        parser.print_help()
+        sys.exit()
+
+    if args.proxy_ip is not None and args.proxy_port is None:
+        print "[*] Error: Please provide a port for the proxy!"
+        parser.print_help()
+        sys.exit()
+
+    if args.proxy_port is not None and args.proxy_ip is None:
+        print "[*] Error: Please provide an IP for the proxy!"
         parser.print_help()
         sys.exit()
 
@@ -579,7 +591,7 @@ if __name__ == "__main__":
                     sys.exit()
         sys.exit()
 
-    if cli_parsed.f is not None:
+    if cli_parsed.f is not None or cli_parsed.x is not None:
         multi_mode(cli_parsed)
 
     print 'Finished in {0} seconds'.format(time.time() - start_time)
