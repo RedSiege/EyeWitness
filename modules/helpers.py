@@ -51,6 +51,9 @@ class XML_Parser(xml.sax.ContentHandler):
                     pass
                 else:
                     self.system_name = attributes['addr']
+            elif tag == "hostname":
+                if attributes['type'].lower() == "user":
+                    self.system_name = attributes['name']
             elif tag == "port":
                 self.port_number = attributes['portid']
             elif tag == "service":
