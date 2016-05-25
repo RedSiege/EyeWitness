@@ -171,15 +171,17 @@ def handleCategoryMatch(data, http_object):
             if check:
                 http_object.default_creds = "Default creds are valid: {}".format(y)
                 http_object.category = "successfulLogin"
+                http_object._remote_login = target
         elif logintype[0] == 'http_post':
             # login with form based auth
-            if inputs != None:
+            if inputs is not None:
                 postData = getPostData(inputs, username, password)
-                # to be used for loggin                            
+                # to be used for logging
                 if loginPost(origTarget, target, postData, data):
                     print "\x1b[32m[+]Form Successful login against {} using {}\x1b[0m".format(target, y)
                     http_object.default_creds = "Default creds are valid: {}".format(y)
                     http_object.category = "successfulLogin"
+                    http_object._remote_login = target
                     break
                 else:
                     http_object.category = "identifiedLogin"
@@ -420,6 +422,7 @@ def findLogins(http_object, creds, urls):
                             http_object.default_creds = "Default creds are valid: {}".format(tempCred)
                             result = True
                             http_object.category = "successfulLogin"
+                            http_object._remote_login = target
                             break
                         else:
                             http_object.category = "identifiedLogin"
@@ -475,6 +478,7 @@ def checkCreds(http_object):
                                 print "\x1b[32m[+]Form Successful login against {} using {}s\x1b[0m".format(http_object.remote_system, ':'.join(tempCred))
                                 http_object.category = "successfulLogin"
                                 http_object.default_creds = "Default creds are valid: {}".format(tempCred)
+                                http_object._remote_login = target
                                 break
                             else:
                                 http_object.category = "identifiedLogin"

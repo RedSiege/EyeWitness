@@ -9,7 +9,9 @@ except ImportError:
     sys.exit()
 
 
-def process_group(data, group, toc, toc_table, page_num, section, sectionid, html):
+def process_group(
+        data, group, toc, toc_table, page_num, section,
+        sectionid, html):
     """Retreives a group from the full data, and creates toc stuff
 
     Args:

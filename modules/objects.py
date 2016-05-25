@@ -197,8 +197,8 @@ class HTTPTableObject(object):
     def create_table_html(self):
         scr_path = os.path.relpath(self.screenshot_path, self.root_path)
         src_path = os.path.relpath(self.source_path, self.root_path)
-        html = u""        
-        if self._remote_login != None:
+        html = u""
+        if self._remote_login is not None:
             html += ("""<tr>
             <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
             <a href=\"{address}\" target=\"_blank\">{address}</a><br>
