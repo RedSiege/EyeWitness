@@ -12,6 +12,7 @@ import socket
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from urlparse import urlparse
+from login_module import checkCreds
 
 
 class XML_Parser(xml.sax.ContentHandler):
@@ -50,6 +51,9 @@ class XML_Parser(xml.sax.ContentHandler):
                     pass
                 else:
                     self.system_name = attributes['addr']
+            elif tag == "hostname":
+                if attributes['type'].lower() == "user":
+                    self.system_name = attributes['name']
             elif tag == "port":
                 self.port_number = attributes['portid']
             elif tag == "service":
@@ -252,8 +256,7 @@ def textfile_parser(file_to_parse, cli_obj):
         return urls, rdp, vnc
 
     except IOError:
-        print "ERROR: You didn't give me a valid file name! I need a valid\
-        file containing URLs!"
+        print "ERROR: You didn't give me a valid file name! I need a valid file containing URLs!"
         sys.exit()
 
 
@@ -603,7 +606,12 @@ def default_creds_category(http_object):
                     'Directory of /' in http_object.page_title):
                 http_object.category = 'dirlist'
             if '404 Not Found' in http_object.page_title:
-                http_object.category = 'notfound'
+                http_object.category = 'notfound'        
+
+        #Performs login against host to see if it is a valid login
+        if http_object._active_scan:            
+            http_object = checkCreds(http_object)
+
         return http_object
     except IOError:
         print("[*] WARNING: Credentials file not in the same directory"

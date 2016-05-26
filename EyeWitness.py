@@ -74,7 +74,7 @@ def create_cli_parser():
     input_options = parser.add_argument_group('Input Options')
     input_options.add_argument('-f', metavar='Filename', default=None,
                                help='Line seperated file containing URLs to \
-                            capture')
+                                capture')
     input_options.add_argument('-x', metavar='Filename.xml', default=None,
                                help='Nmap XML or .Nessus file')
     input_options.add_argument('--single', metavar='Single URL', default=None,
@@ -138,6 +138,9 @@ def create_cli_parser():
                               "are https (e.g. '8018,8028')"))
     http_options.add_argument('--prepend-https', default=False, action='store_true',
                               help='Prepend http:\\\\ and https:\\\\ to URLs without either')
+    http_options.add_argument(
+        '--active-scan', default=False, action='store_true',
+        help='Perform live login attempts to identify credentials or login pages.')
 
     resume_options = parser.add_argument_group('Resume Options')
     resume_options.add_argument('--resume', metavar='ew.db',
@@ -242,9 +245,13 @@ def single_mode(cli_parsed):
 
     url = cli_parsed.single
     http_object = objects.HTTPTableObject()
+    if cli_parsed.active_scan:
+        http_object._active_scan = True
     http_object.remote_system = url
     http_object.set_paths(
         cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
+    if cli_parsed.active_scan:
+        http_object._active_scan = True
 
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
@@ -584,7 +591,7 @@ if __name__ == "__main__":
                     sys.exit()
         sys.exit()
 
-    if cli_parsed.f  is not None or cli_parsed.x is not None:
+    if cli_parsed.f is not None or cli_parsed.x is not None:
         multi_mode(cli_parsed)
 
     print 'Finished in {0} seconds'.format(time.time() - start_time)

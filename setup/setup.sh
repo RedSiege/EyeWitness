@@ -103,6 +103,7 @@ case ${osinfo} in
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
+    pip install beautifulsoup4
     echo
     cd ../bin/
     wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantom_deb
@@ -128,6 +129,7 @@ case ${osinfo} in
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
+    pip install beautifulsoup4
     echo
     cd ../bin/
     wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantom_ubu
@@ -161,6 +163,7 @@ case ${osinfo} in
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
+    pip install beautifulsoup4
     echo
     cd ../bin/
     wget http://www.christophertruncer.com/InstallMe/phantomjs

@@ -9,7 +9,9 @@ except ImportError:
     sys.exit()
 
 
-def process_group(data, group, toc, toc_table, page_num, section, sectionid, html):
+def process_group(
+        data, group, toc, toc_table, page_num, section,
+        sectionid, html):
     """Retreives a group from the full data, and creates toc stuff
 
     Args:
@@ -161,6 +163,8 @@ def sort_data_and_write(cli_parsed, data):
                   ('notfound', '404 Not Found', 'notfound'),
                   ('crap', 'Splash Pages', 'crap'),
                   ('printer', 'Printers', 'printer'),
+                  ('successfulLogin', 'Successful Logins', 'successfulLogin'),
+                  ('identifiedLogin', 'Identified Logins', 'identifiedLogin'),
                   ('infrastructure', 'Infrastructure', 'infrastructure'),
                   ]
     if total_results == 0:

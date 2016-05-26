@@ -16,9 +16,11 @@ class HTTPTableObject(object):
         self._http_headers = {}
         self._page_title = None
         self._remote_system = None
+        self._remote_login = None
         self._source_path = None
         self._error_state = None
         self._blank = False
+        self._active_scan = False
         self._uadata = []
         self._source_code = None
         self._max_difference = None
@@ -196,10 +198,16 @@ class HTTPTableObject(object):
         scr_path = os.path.relpath(self.screenshot_path, self.root_path)
         src_path = os.path.relpath(self.source_path, self.root_path)
         html = u""
-        html += ("""<tr>
-        <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
-        <a href=\"{address}\" target=\"_blank\">{address}</a><br>
-        """).format(address=self.remote_system)
+        if self._remote_login is not None:
+            html += ("""<tr>
+            <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
+            <a href=\"{address}\" target=\"_blank\">{address}</a><br>
+            """).format(address=self._remote_login)
+        else:
+            html += ("""<tr>
+            <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
+            <a href=\"{address}\" target=\"_blank\">{address}</a><br>
+            """).format(address=self.remote_system)
 
         if self.resolved is not None and self.resolved is not 'Unknown':
             html += ("""<b>Resolved to:</b> {0}<br>""").format(self.resolved)
