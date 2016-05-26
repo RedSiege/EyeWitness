@@ -205,7 +205,7 @@ def create_cli_parser():
         parser.print_help()
         sys.exit()
 
-    if args.vhost_name and not all(args.single, args.headless):
+    if args.vhost_name and not all((args.single, args.headless)):
         print "[*] Error: vhostname can only be used in headless+single mode"
         sys.exit()
     
