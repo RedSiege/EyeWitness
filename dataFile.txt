@@ -12,6 +12,13 @@ login_type: http_auth
 default creds: admin:admin, admin:password
 default path: /jmx-console
 
+Category: jboss
+identifier: <title>Welcome to JBoss
+invalid_identifier: log in attempt failed
+login_type: http_post
+default creds: admin:admin, admin:console
+default path: /admin-console
+
 Category: EPrints
 identifier: eprints.org
 invalid_identifier: Incorrect username or password
