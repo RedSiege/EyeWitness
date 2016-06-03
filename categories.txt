@@ -285,3 +285,4 @@ Paessler AG - The Network Monitoring Company;/images/prtg_network_monitor.png;Yo
 script djconfig="parseOnLoad: true, isDebug;Equalizer Configuration;span dojoattachevent="onclick;Password;/dojo/dojo/resources|infrastructure
 <title id=titletext>Under Construction</title>;The site you were trying to reach does not currently have a default page|construction
 <html><body><h1>It works!</h1></body></html>|construction
+<title>Login</title>;body id="login" class="no-menu";usernamefld;passwordfld;/css/pfSense.css|infrastructure
