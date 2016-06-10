@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+	<!-- Angular Material style sheet -->
+	<link rel="stylesheet" href="libs/angular-material.min.css">
+	<!--
+	link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic"
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	-->
+	<!-- Icons -->
+	<link href="libs/materialdesignicons.min.css" media="all" rel="stylesheet" type="text/css" />
+
+	<!-- code mirror -->
+	<link rel="stylesheet" type="text/css" href="libs/codemirror.css">
+  	
+	<style>
+		md-toolbar{
+			height: 64px;
+		}
+		md-input-container.md-default-theme .md-input, md-input-container .md-input {
+			border-color: rgba(255, 255, 255, 0.12);
+			color: rgba(255, 255, 255, 0.87);
+		}
+		md-sidenav, md-sidenav.md-locked-open, md-sidenav.md-closed.md-locked-open-add-active {
+		 	background: #f5f5f5 ;
+			margin:0;
+			width: 450px;
+		}
+
+		.md-dialog-fullscreen {
+			max-width: 100%;
+			max-height: 100%;
+			width: 100%;
+			height: 100%;
+			border-radius: 0;
+			margin-left: 1px;
+		}
+
+		.CodeMirror {
+			border: 1px solid #eee;
+			height: calc(100vh - 67px);
+		}
+		.noScroll{
+			overflow-x: hidden;
+			overflow-y: hidden;
+		}
+		md-dialog md-dialog-content {
+			overflow: hidden;
+		}
+		.dontBreakOut {
+			/* These are technically the same, but use both */
+			overflow-wrap: break-word;
+			word-wrap: break-word;
+			-ms-word-break: break-all;
+			/* This is the dangerous one in WebKit, as it breaks things wherever */
+			word-break: break-all;
+			/* Instead use this non-standard one: */
+			word-break: break-word;
+			/* Adds a hyphen where the word breaks, if supported (No Blink) */
+			-ms-hyphens: auto;
+			-moz-hyphens: auto;
+			-webkit-hyphens: auto;
+			hyphens: auto;
+		}
+		
+		.virtualRepeatdemoInfiniteScroll #vertical-container {
+			height: 300px;
+		}
+		.virtualRepeatdemoInfiniteScroll .repeated-item {
+			border-bottom: 1px solid #ddd;
+			padding-top: 10px;
+			height: 200px;
+		}
+		.virtualRepeatdemoInfiniteScroll md-virtual-repeat-container {
+			border: solid 10px grey;
+		}
+		.virtualRepeatdemoInfiniteScroll .md-virtual-repeat-container .md-virtual-repeat-offsetter {
+			padding-left: 16px;
+		}
+
+		:focus {
+			outline: none;
+			border: 0;
+		}
+		.mdi{
+			font-size:x-large;
+		}
+	</style>
+</head>
+<body ng-app="eyewitness" >
+	
+	<div ng-controller="EyeCtrl" layout="column" class="ng-cloak"  flex style="height: 100%;">
+
+		<section layout="column" flex>
+			<md-toolbar layout="row" ng-click="hideDialog()">
+				<div class="md-toolbar-tools">EyeWitness v2.1 </div>
+				<md-input-container md-no-float class="md-block">
+					<div layout="row" >
+						<ng-md-icon icon="{{search.length ? 'clear':'search'}}" ng-click="setSearch()" size="24" style="fill:white;margin-right:10px; margin-top:3px;" ></ng-md-icon>
+						<input ng-model="search" type="text" placeholder="Search" style="width:400px;" ng-change="setTab(0)"/>
+					</div>
+				</md-input-container>
+			</md-toolbar>
+
+			<div layout="row" flex>
+
+				<!-- sidenav holds overview and scan details-->
+				<md-sidenav class="md-sidenav-left md-whiteframe-z1" md-component-id="left" md-is-locked-open="true" layout="column" ng-click="hideDialog()">
+					<md-content flex>
+						<md-tabs md-dynamic-height md-border-bottom md-selected="selectedTab">
+							<md-tab label="TOC" >
+								<md-content class="md-blockXX">		
+
+									<div layout="column" ng-repeat="(type,count) in getCategories()">
+										<md-button ng-click="scrollToHost(type)" ng-disabled="!count">
+											<div layout="row" >
+												<div flex>{{type}} : </div><div flex="75"></div><div flex="25" layout="row" layout-align="end end">{{count}}</div>
+											</div>
+										</md-button>
+									</div>	
+									<md-divider></md-divider>
+									<div layout="column" flex>
+										<md-button md-no-ink ng-disabled="true">
+											<div layout="row" >
+												<div flex>Total : </div><div flex="75"></div><div flex="25" layout="row" layout-align="end end"> {{total_hosts }} </div>
+											</div>
+										</md-button>
+									</div>	
+									
+								</md-content>
+							</md-tab>
+
+							<!-- scan details ip/creds/headers -->
+							<md-tab label="{{filtered_data[curr_host_index].system}}">
+								<md-content class="md-padding">
+									<p>
+										<b>Resolved: </b>{{filtered_data[curr_host_index].resolved}}<br/><br/>
+										<md-divider></md-divider>
+										<div class="dontBreakOut" ng-repeat="(header,value) in filtered_data[curr_host_index].headers"><b>{{header}} : </b>{{value}}<br/></div>
+									</p>
+								</md-content>
+							</md-tab>
+						</md-tabs>
+					</md-content>
+				</md-sidenav>
+
+				
+				<md-content id="content" layout="row" flex md-focus>
+					<!-- loading -->
+					<div ng-show="!data_loaded" layout="column" layout-sm="column" layout-align="center center"  flex>
+						<md-progress-circular  md-mode="indeterminate" md-diameter="120"></md-progress-circular>
+						Loading large amount of data... !?!
+					</div>
+
+					<md-virtual-repeat-container  ng-show="data_loaded" flex layout-fill id="vertical-container" md-top-index="curr_host_index">
+						<div md-virtual-repeat="host in allHostData" md-on-demand="true" class="repeated-item" >
+
+							<md-card ng-click="scrollToHost($index)">
+								<md-card-header>
+									<md-card-avatar>
+										<md-icon class="mdi mdi-{{host.os-version||'windows'}}" ></md-icon>
+									</md-card-avatar>
+									<md-card-header-text>
+										<span class="md-title">{{host.system}}</span>
+										<span class="md-subhead">{{host.resolved}} </span>
+									</md-card-header-text>
+									
+									<md-button class="md-icon-button md-accent"  aria-label="Source" ng-click="showSourceCode(host.sourcecode)" ng-if="host.sourcecode.length">
+										<md-icon class="mdi mdi-language-html5"  ></md-icon>
+									</md-button>
+								</md-card-header>
+								<img ng-src="{{host.screenshot||'libs/noimg.png'}}" class="md-card-image" style="height: 825px;"/>
+							</md-card>
+
+						</div>
+					</md-virtual-repeat-container>
+				</md-content>
+
+			</div>
+		</section>
+	</div>
+
+	<!-- Angular Material requires Angular.js Libraries -->
+	<script type="text/javascript" src="libs/angular.min.js"></script>
+	<script type="text/javascript" src="libs/angular-animate.min.js"></script>
+	<script type="text/javascript" src="libs/angular-route.min.js"></script>
+	<script type="text/javascript" src="libs/angular-aria.min.js"></script>
+	<script type="text/javascript" src="libs/angular-messages.min.js"></script>
+	<script type="text/javascript" src="libs/angular-material-icons.min.js"></script>
+	<!-- Angular Material Library -->
+	<script type="text/javascript" src="libs/angular-material.min.js"></script>
+	<script type="text/javascript" src="libs/underscore-min.js"></script>
+
+	<!-- CodeMirror (IDE for markdown)-->
+	<script type="text/javascript" src="libs/ui-codemirror.js"></script>
+	<script type="text/javascript" src="libs/codemirror.min.js"></script>
+	<script type="text/javascript" src="libs/xml.js"></script>	
+
+	<!-- Your application bootstrap  -->
+	<script id="json_data" type="text/javascript" src="data.json"></script>
+	
+	<script>
+		var app = angular.module('eyewitness',['ngMaterial', 'ngMessages', 'ngMdIcons','ui.codemirror']);
+		/*app.config(function($mdIconProvider) {
+		  	$mdIconProvider.defaultIconSet('libs/mdi.svg'); //https://materialdesignicons.com/
+		});*/
+
+		app.controller('EyeCtrl', function($scope, $filter, $mdDialog, $mdMedia, $timeout, $http) {
+			$scope.search; //filter by search input
+			$scope.data_loaded=false;
+			$scope.original_data=[]; //store json data
+			$scope.filtered_data=[]; //store filtered data
+			$scope.curr_host_index=0;//host data to show
+			$scope.dialogOpen=false; //sourcode dialog show/hide status
+			$scope.html = '\n\n\n\n\n\n\n\n\n\n\n';	 //store current host html
+
+			
+			//should take string or int (category/index) 
+			$scope.scrollToHost = function(index){
+				if(_.isString(index)){
+					$scope.curr_host_index = _.indexOf($scope.filtered_data, _.find($scope.filtered_data, function(item){return item.category==index;}));
+				}
+				else{
+					$scope.curr_host_index = index;
+					$scope.selectedTab=1; //switch to the host tab
+				}
+				//TODO:set focus to container to allow scrolling
+			}
+			
+			//data used in virtual repeat (infinite scroll) in main content area
+			$scope.allHostData = {
+				data: '',
+				getItemAtIndex: function(index) {
+					return this.data[index]; 
+				},
+				getLength: function() {
+					return this.data.length;
+				},
+				update: function(data){
+					this.data=data;
+				}
+			};
+			
+			//json is loaded via script tag to get around local file restrictions
+			//loaded into the DOM as eyewitness
+			$scope.original_data = _.chain(window.eyewitness).sortBy('resolved').sortBy('category').value();
+			$scope.data_loaded=true; //remove loading spinner
+			$scope.filtered_data = $scope.original_data;
+			$scope.allHostData.update($scope.filtered_data); 
+
+
+			//set up a watch on the search field to update allHostData!
+			$scope.$watchCollection("search", function( newValue, oldValue ) {
+				$scope.filtered_data = $filter('filter')($scope.original_data, newValue);
+				$scope.allHostData.update($scope.filtered_data);
+				$scope.selectedTab=0;
+			});
+
+			//set & clear search field
+			$scope.setSearch=function(search){
+				$scope.search=search;
+			}
+
+			//get category types and a count of each & preserve original order
+			$scope.getCategories=function(){
+				var count_filtered = _.countBy(_.pluck($scope.filtered_data, "category"));
+				var all_categories = _.countBy(_.pluck($scope.original_data, "category"));
+
+				//get filtered hosts count
+				$scope.total_hosts=0;
+				for (var c in count_filtered)
+					$scope.total_hosts+=count_filtered[c];
+				
+				//preserve order by using original list of categories
+				_.each(all_categories, function(index,category){
+					all_categories[category]=0;
+				});
+				//now update original list with new counts
+				_.each(count_filtered, function(index,category,value){
+					all_categories[category] = value[category];
+				});
+
+				return all_categories
+			}
+
+
+			//show screenshot in modal/dialog
+			$scope.showSourceCode = function(location,ev) {
+				$mdDialog.show({
+					scope: $scope.$new(),
+					template: '<md-dialog aria-label="SourceCode" flex="100" md-focus><md-dialog-content flex><ui-codemirror id="CodeMirror" xui-refresh="html" ui-codemirror-opts="editorOptions" ng-model="html" layout="column" flex md-focus style="width:100%" class="noScroll language-html"></ui-codemirror></md-dialog-content></md-dialog>',
+					parent: angular.element(document.body.getElementsByTagName('md-content')),
+					targetEvent: ev,
+					clickOutsideToClose:true,
+					fullscreen: true,
+					disableParentScroll: true,
+					hasBackdrop: false,
+					onShowing:function(){
+						$scope.dialogOpen=true;
+						//hacky-fix as md-dialog-container always has top:0;
+						//$timeout(function(){angular.element( document.querySelector('.md-dialog-container') ).css({'top': $scope.scrollTop+'px'});}, 200);
+					},
+					onComplete:function(){
+						$http.get(location).success(function(data) {
+							$scope.html = data;
+						});
+					},
+					onRemoving:function(){
+						$scope.dialogOpen=false;
+						$scope.html = '\n\n\n\n\n\n\n\n\n\n\n';
+					}
+				});
+			};
+			$scope.hideDialog=function(){
+				if($scope.dialogOpen)
+					$mdDialog.hide($scope.dialogOpen=false);
+			}
+
+			//html editor options			
+			$scope.editorOptions = {
+				mode: 'text/xml',
+				htmlMode: true,
+				lineNumbers: true,
+				matchBrackets: true,
+				lineWrapping: true,
+				indentWithTabs: true,
+				breaks: false,
+				pedantic: false,
+				sanitize: false,
+				smartypants: false,
+				firstLineNumber:1,
+				autorefresh:true
+			}
+		});
+	</script>
+
+</body>
+</html>	

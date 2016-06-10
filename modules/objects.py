@@ -1,6 +1,7 @@
 import cgi
 import os
 import re
+import json
 
 from helpers import strip_nonalphanum
 
@@ -197,12 +198,34 @@ class HTTPTableObject(object):
     def create_table_html(self):
         scr_path = os.path.relpath(self.screenshot_path, self.root_path)
         src_path = os.path.relpath(self.source_path, self.root_path)
+        
+        hosts=[]
+        host={}
+        headers={}
+        
+        host['system']=self.remote_system
+        host['resolved']=''       
+        host['port']='80' #TODO: need to pull in data
+        host['protocol']='HTTP' #TODO: need to pull in data
+        host['category']=''
+        host['page-title']=''
+        host['login']=''
+        host['screenshot']=''
+        host['sourcecode']=''
+
+        #can't pull categories here so pick random ones for testing
+        categories = ['High Value Targets', 'Directory Listings', 'Uncategorized', 'IDRAC/ILo/Management Interfaces','Network Attached Storage (NAS)','Under Construction','Network Devices','Voice/Video over IP (VoIP)','401/403 Unauthorized','404 Not Found','Splash Pages', 'Printers','Successful Logins','Identified Logins','Infrastructure']        
+        import random
+        host['category']=random.choice(categories)
+
+
         html = u""
         if self._remote_login is not None:
             html += ("""<tr>
             <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
             <a href=\"{address}\" target=\"_blank\">{address}</a><br>
             """).format(address=self._remote_login)
+            host['resolved']=self._remote_login
         else:
             html += ("""<tr>
             <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
@@ -211,6 +234,7 @@ class HTTPTableObject(object):
 
         if self.resolved is not None and self.resolved is not 'Unknown':
             html += ("""<b>Resolved to:</b> {0}<br>""").format(self.resolved)
+            host['resolved']=self.resolved
 
         if len(self._uadata) > 0:
             html += ("""
@@ -226,18 +250,22 @@ class HTTPTableObject(object):
         if self.default_creds is not None:
             html += "<br><b>Default credentials:</b> {0}<br>".format(
                 self.sanitize(self.default_creds))
+            host['login']=self.default_creds
 
         if self.error_state is None:
             try:
                 html += "\n<br><b> Page Title: </b>{0}\n".format(
                     self.sanitize(self.page_title))
+                host['page-title']=self.page_title
             except UnicodeDecodeError:
                 html += "\n<br><b> Page Title:</b>{0}\n".format(
                     'Unable to Display')
+                host['page-title']=self.page_title
 
             for key, value in self.headers.items():
                 html += '<br><b> {0}:</b> {1}\n'.format(
                     self.sanitize(key), self.sanitize(value))
+                headers[self.sanitize(key)]=self.sanitize(value)
 
         if self.blank:
             html += ("""<br></td>
@@ -248,15 +276,20 @@ class HTTPTableObject(object):
         elif self.error_state == 'Timeout':
             html += ("""</td><td>Hit timeout limit while attempting to
             screenshot</td></tr>""")
+            host['state']='Hit timeout limit'
         elif self.error_state == 'BadStatus':
             html += ("""</td><td>Unknown error while attempting to
             screenshot</td></tr>""")
+            host['state']='Unknown error'
         elif self.error_state == 'ConnReset':
             html += ("""</td><td>Connection Reset</td></tr>""")
+            host['state']='Connection Reset'
         elif self.error_state == 'ConnRefuse':
             html += ("""</td><td>Connection Refused</td></tr>""")
+            host['state']='Connection Refused'
         elif self.error_state == 'SSLHandshake':
             html += ("""</td><td>SSL Handshake Error</td></tr>""")
+            host['state']='SSL error'
         else:
             html += ("""<br><br><a href=\"{0}\"
                 target=\"_blank\">Source Code</a></div></td>
@@ -264,6 +297,8 @@ class HTTPTableObject(object):
                 target=\"_blank\"><img src=\"{1}\"
                 height=\"400\"></a></div></td></tr>""").format(
                 src_path, scr_path)
+            host['screenshot']=scr_path
+            host['sourcecode']=src_path
 
         if len(self._uadata) > 0:
             divid = strip_nonalphanum(self.remote_system)
@@ -280,6 +315,22 @@ class HTTPTableObject(object):
 
         html += ("""</div>
         </div>""")
+
+        host['headers']=headers        
+        hosts.append(host)
+        
+        try:
+            with open(os.path.join(os.path.relpath(self.root_path), 'data.json'),'r') as f:
+                data = json.load(f)
+        
+            data.append(host)
+
+            with open(os.path.join(os.path.relpath(self.root_path), 'data.json'), 'w') as f:
+                json.dump(data, f)
+        except:
+            with open(os.path.join(os.path.relpath(self.root_path), 'data.json'), 'w') as f:
+                json.dump(hosts, f)
+                
         return html
 
     def sanitize(self, html):

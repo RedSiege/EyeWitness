@@ -596,6 +596,17 @@ if __name__ == "__main__":
 
     print 'Finished in {0} seconds'.format(time.time() - start_time)
 
+    #pull in report from eyewitness folder
+    from distutils.dir_util import copy_tree
+    copy_tree(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'report/libs'), os.path.join(cli_parsed.d, 'libs'))
+
+    from shutil import copyfile
+    copyfile(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'report/report.html'), os.path.join(cli_parsed.d, 'report.html'))
+
+    #add eyewitness variable to grab from DOM when json is loaded via a script tag...
+    with file(os.path.join(cli_parsed.d, 'data.json'), 'r') as original: data = original.read()
+    with file(os.path.join(cli_parsed.d, 'data.json'), 'w') as modified: modified.write("eyewitness=" + data)
+    
     if not cli_parsed.no_prompt:
         open_file = open_file_input(cli_parsed)
         if open_file:
