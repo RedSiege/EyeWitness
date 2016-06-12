@@ -49,6 +49,8 @@ class DB_Manager(object):
         c = self.connection.cursor()
         obj = HTTPTableObject()
         obj.remote_system = remote_system
+        if cli_parsed.active_scan: 
+            obj._active_scan = True
         obj.set_paths(
             cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
         obj.max_difference = cli_parsed.difference

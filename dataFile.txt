@@ -1,0 +1,150 @@
+Category: apache tomcat
+identifier: <title>Apache Tomcat
+invalid_identifier: 401
+login_type: http_auth
+default creds: tomcat:tomcat, apache:apache, apache:password, manager:manager, role1:tomcat, tomcat:s3cret, qcc:QLogic66, admin:admin
+default path: /manager/status
+
+Category: jboss
+identifier: <title>Welcome to JBoss
+invalid_identifier: log in attempt failed
+login_type: http_post
+default creds: admin:admin, admin:password
+default path: /admin-console
+
+Category: jboss
+identifier: <title>Welcome to JBoss
+invalid_identifier: 401
+login_type: http_auth
+default creds: admin:admin, admin:password
+default path: /jmx-console
+
+Category: EPrints
+identifier: eprints.org
+invalid_identifier: Incorrect username or password
+login_type: http_post
+default creds: admin:admin, admin:password
+default path: /perl/users/home
+
+Category: EPrints
+identifier: eprints.org
+invalid_identifier: 401
+login_type: http_auth
+default creds: admin:admin, admin:password
+default path: /perl/users/home
+
+Category: Cascade
+identifier: <title>Cascade Server
+invalid_identifier: Login failed
+login_type: http_post
+default creds: admin:admin, admin:password
+default path: /login.act
+
+Category: Ektron 
+identifier: ektron
+invalid_identifier: Error Authenticating User
+login_type: http_post
+default creds: admin:admin, admin:password
+default path: /WorkArea/login.aspx
+
+Category: OpenCMS 
+identifier: opencms
+invalid_identifier: Please provide a password
+login_type: http_post
+default creds: Admin:admin, Admin:password
+default path: /opencms/opencms/system/login/
+
+Category: Dell
+identifier: DRAC
+invalid_identifier: 401
+login_type: http_post
+default creds: admin:admin
+default path: /
+
+Category: Printer
+identifier: XEROX WORKCENTRE
+invalid_identifier: login.php?invalid
+login_type: http_post
+default creds: admin:admin, admin:1111
+default path: /properties/authentication/login.php
+
+Category: Vmware
+identifier: VMware
+invalid_identifier: 401
+login_type: http_auth
+default creds: root:admin, root:1111, root:password
+default path: /folder?dcPath=ha-datacenter
+
+Category: Dell
+identifier: <title>OpenManage
+invalid_identifier: loginFailed
+login_type: http_post
+default creds: root:calvin, root:root
+default path: /OMSALogin?msgStatus=null
+
+Category: Printer
+identifier: wt2parser.cgi?home_en
+invalid_identifier: Login Failed
+login_type: http_post
+default creds: admin:Fiery.1
+default path: /wt3/in_login.php
+
+Category: Netflow
+identifier: Netflow Analyzer
+invalid_identifier: Invalid Username
+login_type: http_post
+default creds: admin:admin
+default path: /netflow/jspui/NetworkSnapShot.jsp
+
+Category: Netapp
+identifier: OnCommand Report Login
+invalid_identifier: Invalid Login
+login_type: http_post
+default creds: admin:admin
+default path: /nerloginform/j_security_check
+
+Category: Netapp
+identifier: Insight Balance
+invalid_identifier: Login Error
+login_type: http_post
+default creds: netapp:netapp, admin:password, admin:admin
+default path: /bp/j_security_check
+
+Category: Foreman
+identifier: Welcome to Foreman
+invalid_identifier: Incorrect username
+login_type: http_post
+default creds: admin:changeme
+default path: /users/login
+
+###URL List###
+/login
+/admin
+/adminzone
+/opencms/opencms/system/login/index.html
+/perl/users/home
+/workarea/login.aspx
+/Administration
+/admin/login.php
+/admin.php
+/login.php
+/login.aspx
+/admin.aspx
+/administrator/index.php
+/console
+/phpwiki/admin.php
+/wp-admin
+
+### still trying cred list####
+admin:password
+admin:admin
+admin:123456
+admin:12345
+test:test
+admin:iloveyou
+admin:12345678
+admin:P@ssw0rd!
+admin:abc123
+admin:qwerty
+admin:111111
+admin:000000
