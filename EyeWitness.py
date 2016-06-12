@@ -138,6 +138,7 @@ def create_cli_parser():
                               "are https (e.g. '8018,8028')"))
     http_options.add_argument('--prepend-https', default=False, action='store_true',
                               help='Prepend http:\\\\ and https:\\\\ to URLs without either')
+    http_options.add_argument('--vhost-name', default=None,metavar='hostname', help='Hostname to use in Host header (headless + single mode only)')
     http_options.add_argument(
         '--active-scan', default=False, action='store_true',
         help='Perform live login attempts to identify credentials or login pages.')
@@ -207,6 +208,10 @@ def create_cli_parser():
         parser.print_help()
         sys.exit()
 
+    if args.vhost_name and not all((args.single, args.headless)):
+        print "[*] Error: vhostname can only be used in headless+single mode"
+        sys.exit()
+    
     if args.proxy_ip is not None and args.proxy_port is None:
         print "[*] Error: Please provide a port for the proxy!"
         parser.print_help()

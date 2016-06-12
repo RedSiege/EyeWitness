@@ -32,6 +32,10 @@ def create_driver(cli_parsed, user_agent=None):
         webdriver: PhantomJS Webdriver
     """
     capabilities = DesiredCapabilities.PHANTOMJS
+
+    if cli_parsed.vhost_name:
+        capabilities['phantomjs.page.customHeaders.Host'] = cli_parsed.vhost_name
+
     service_args = []
     phantomjs_path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), '..', 'bin', 'phantomjs')
