@@ -134,12 +134,12 @@ case ${osinfo} in
     cd ../bin/
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-      wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantomjs
-    else
       wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
       tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
       cd phantomjs-2.1.1-linux-x86_64/bin/
       mv phantomjs ../../bin/
+    else
+      wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantom_ubu
     fi
     chmod +x phantomjs
     cd ..
