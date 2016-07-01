@@ -138,6 +138,7 @@ case ${osinfo} in
       tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
       cd phantomjs-2.1.1-linux-x86_64/bin/
       mv phantomjs ../../
+      cd ../..
       rm -rf phantomjs-2.1.1-linux-x86_64
       rm phantomjs-2.1.1-linux-x86_64.tar.bz2
     else
@@ -145,6 +146,7 @@ case ${osinfo} in
       tar -xvf phantomjs-2.1.1-linux-i686.tar.bz2
       cd phantomjs-2.1.1-linux-i686/bin/
       mv phantomjs ../../
+      cd ../..
       rm -rf phantomjs-2.1.1-linux-i686
       rm phantomjs-2.1.1-linux-i686.tar.bz2
     fi
