@@ -137,7 +137,7 @@ case ${osinfo} in
       wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
       tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
       cd phantomjs-2.1.1-linux-x86_64/bin/
-      mv phantomjs ../../bin/
+      mv phantomjs ../../
     else
       wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantom_ubu
     fi
