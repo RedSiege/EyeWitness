@@ -1,7 +1,6 @@
 import os
 import platform
 import random
-import re
 import shutil
 import sys
 import time
@@ -17,7 +16,7 @@ from login_module import checkCreds
 
 class XML_Parser(xml.sax.ContentHandler):
 
-    def __init__(self, file_out):
+    def __init__(self, file_out, class_cli_obj):
         self.system_name = None
         self.port_number = None
         self.protocol = None
@@ -35,6 +34,9 @@ class XML_Parser(xml.sax.ContentHandler):
         self.get_ip = False
         self.service_detection = False
         self.out_file = file_out
+
+        self.http_ports = self.http_ports + class_cli_obj.add_http_ports
+        self.https_ports = self.https_ports + class_cli_obj.add_https_ports
 
     def startElement(self, tag, attributes):
         # Determine the Scanner being used
@@ -253,6 +255,7 @@ def textfile_parser(file_to_parse, cli_obj):
                         urls.append("https://" + line)
                     else:
                         urls.append(line)
+
         return urls, rdp, vnc
 
     except IOError:
@@ -285,7 +288,7 @@ def target_creator(command_line_object):
         # Turn off namespaces
         parser.setFeature(xml.sax.handler.feature_namespaces, 0)
         # Override the parser
-        Handler = XML_Parser(parsed_file_name)
+        Handler = XML_Parser(parsed_file_name, command_line_object)
         parser.setContentHandler(Handler)
         # Parse the XML
 
