@@ -37,6 +37,7 @@ class XML_Parser(xml.sax.ContentHandler):
 
         self.http_ports = self.http_ports + class_cli_obj.add_http_ports
         self.https_ports = self.https_ports + class_cli_obj.add_https_ports
+        self.no_dns = class_cli_obj.no_dns
 
     def startElement(self, tag, attributes):
         # Determine the Scanner being used
@@ -54,8 +55,9 @@ class XML_Parser(xml.sax.ContentHandler):
                 else:
                     self.system_name = attributes['addr']
             elif tag == "hostname":
-                if attributes['type'].lower() == "user":
-                    self.system_name = attributes['name']
+                if not self.no_dns:
+                    if attributes['type'].lower() == "user":
+                        self.system_name = attributes['name']
             elif tag == "port":
                 self.port_number = attributes['portid']
             elif tag == "service":
