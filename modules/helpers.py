@@ -126,22 +126,28 @@ class XML_Parser(xml.sax.ContentHandler):
                             if self.system_name not in self.rdp_list:
                                 self.rdp_list.append(self.system_name)
                 else:
-                    if (self.system_name is not None) and (self.port_number is not None) and self.port_open:
-                        if self.protocol == "http" or self.protocol == "https" and self.port_number in self.only_ports):
-                            built_url = self.protocol + "://" + self.system_name + ":" + self.port_number
+                    if (self.system_name is not None) and (self.port_number is not None) and self.port_open and int(self.port_number.encode('utf-8')) in self.only_ports:
+                        if self.protocol == "http" or self.protocol == "https":
+                            built_url = self.protocol + "://" + self.system_name
                             if built_url not in self.url_list:
                                 self.url_list.append(built_url)
                                 self.num_urls += 1
-                        elif self.protocol is None and self.port_number in self.http_ports == self.port_number in self.port_number:
-                            built_url = "http://" + self.system_name + ":" + self.port_number
+                        elif self.protocol is None and self.port_number in self.http_ports:
+                            built_url = "http://" + self.system_name
                             if built_url not in self.url_list:
                                 self.url_list.append(built_url)
                                 self.num_urls += 1
-                        elif self.protocol is None and self.port_number in self.https_ports and self.port_number == self.port_number:
-                            built_url = "https://" + self.system_name + ":" + self.port_number
+                        elif self.protocol is None and self.port_number in self.https_ports:
+                            built_url = "https://" + self.system_name
                             if built_url not in self.url_list:
                                 self.url_list.append(built_url)
                                 self.num_urls += 1
+                        elif self.protocol == "vnc":
+                            if self.system_name not in self.vnc_list:
+                                self.vnc_list.append(self.system_name)
+                        elif self.port_number == "3389":
+                            if self.system_name not in self.rdp_list:
+                                self.rdp_list.append(self.system_name)
 
                 self.port_number = None
                 self.protocol = None
@@ -179,11 +185,17 @@ class XML_Parser(xml.sax.ContentHandler):
                             if self.system_name not in self.rdp_list:
                                 self.rdp_list.append(self.system_name)
                 else:
-                    if (self.system_name is not None) and (self.protocol is not None) and self.service_detection and self.port_number in self.only_ports:
+                    if (self.system_name is not None) and (self.protocol is not None) and self.service_detection and int(self.port_number.encode('utf-8')) in self.only_ports:
                         if self.protocol == "http" or self.protocol == "https":
-                            built_url = self.protocol + "://" + self.system_name + ":" + self.port_number
+                            built_url = self.protocol + "://" + self.system_name + ":" + self.port_number.encode('utf-8')
                             if built_url not in self.url_list:
                                 self.url_list.append(built_url)
+                        elif self.protocol == "vnc":
+                            if self.system_name not in self.vnc_list:
+                                self.vnc_list.append(self.system_name)
+                        elif self.protocol == "rdp":
+                            if self.system_name not in self.rdp_list:
+                                self.rdp_list.append(self.system_name)
 
                 self.port_number = None
                 self.protocol = None
@@ -266,6 +278,7 @@ def textfile_parser(file_to_parse, cli_obj):
 
         # else:
         for line in all_urls:
+            line = line.strip()
             if not cli_obj.only_ports:
                 if line.startswith('http://') or line.startswith('https://'):
                     urls.append(line)
@@ -287,7 +300,7 @@ def textfile_parser(file_to_parse, cli_obj):
             else:
                 if line.startswith('http://') or line.startswith('https://'):
                     for port in cli_obj.only_ports:
-                        urls.append(line + ':' + str(port))
+                        urls.append(line.encode('utf-8') + ':' + str(port))
                 else:
                     if cli_obj.web or cli_obj.headless:
                         if cli_obj.prepend_https:
