@@ -187,7 +187,7 @@ class XML_Parser(xml.sax.ContentHandler):
                 else:
                     if (self.system_name is not None) and (self.protocol is not None) and self.service_detection and int(self.port_number.encode('utf-8')) in self.only_ports:
                         if self.protocol == "http" or self.protocol == "https":
-                            built_url = self.protocol + "://" + self.system_name + ":" + self.port_number.encode('utf-8')
+                            built_url = self.protocol + "://" + self.system_name + ":" + self.port_number
                             if built_url not in self.url_list:
                                 self.url_list.append(built_url)
                         elif self.protocol == "vnc":
@@ -300,7 +300,7 @@ def textfile_parser(file_to_parse, cli_obj):
             else:
                 if line.startswith('http://') or line.startswith('https://'):
                     for port in cli_obj.only_ports:
-                        urls.append(line.encode('utf-8') + ':' + str(port))
+                        urls.append(line + ':' + str(port))
                 else:
                     if cli_obj.web or cli_obj.headless:
                         if cli_obj.prepend_https:
