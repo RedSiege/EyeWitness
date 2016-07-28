@@ -286,3 +286,6 @@ script djconfig="parseOnLoad: true, isDebug;Equalizer Configuration;span dojoatt
 <title id=titletext>Under Construction</title>;The site you were trying to reach does not currently have a default page|construction
 <html><body><h1>It works!</h1></body></html>|construction
 <title>Login</title>;body id="login" class="no-menu";usernamefld;passwordfld;/css/pfSense.css|infrastructure
+<title>HP Officejet Pro 6830 e-All-in-One</title>;<div id="pgm-overall-container">;pgm-left-pane-bkground|printer
+<title>Apache HTTP Server Test Page powered by;The website you just visited is either experiencing problems or is undergoing routine maintenance;<p>You should add your website content to the directory <tt>/var/www/html/|crap
+<title id="titleLbl_id">idrac-;iDRAC8 - Login</title>;//  Set the field;//If we fail perform the callback;GUI: Web navigation after session termination|idrac
