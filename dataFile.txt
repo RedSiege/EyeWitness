@@ -117,6 +117,13 @@ login_type: http_post
 default creds: admin:changeme
 default path: /users/login
 
+Category: PHPMyAdmin
+identifier: <title>phpMyAdmin
+invalid_identifier: Cannot log in
+login_type: http_post
+default creds: root:, root:root, root:password
+default path: /index.php?db=&table=&server=1&target=
+
 ###URL List###
 /login
 /admin
