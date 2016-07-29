@@ -141,6 +141,8 @@ default path: /index.php?db=&table=&server=1&target=
 /console
 /phpwiki/admin.php
 /wp-admin
+/phpmyadmin
+
 
 ### still trying cred list####
 admin:password
