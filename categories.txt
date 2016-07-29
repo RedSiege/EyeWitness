@@ -289,3 +289,7 @@ script djconfig="parseOnLoad: true, isDebug;Equalizer Configuration;span dojoatt
 <title>HP Officejet Pro 6830 e-All-in-One</title>;<div id="pgm-overall-container">;pgm-left-pane-bkground|printer
 <title>Apache HTTP Server Test Page powered by;The website you just visited is either experiencing problems or is undergoing routine maintenance;<p>You should add your website content to the directory <tt>/var/www/html/|crap
 <title id="titleLbl_id">idrac-;iDRAC8 - Login</title>;//  Set the field;//If we fail perform the callback;GUI: Web navigation after session termination|idrac
+Please enable the browser cookie before login RPC2K;RPC2</font></b></p></th>;document.cookie="testcookie"|infrastructure
+iLO.sendJsonRequest("logout", "POST", "json/login_session";$.eventsource("addEventListener", "ui-event-source";function clearApplet()|idrac
+<title>Login - OpenStack Dashboard</title>;/* Load angular modules extensions list before we;<input type="password" value="" name="fake_password|infrastructure
+<title>GigaVUE-HB1 - Login</title>;function HidePasswordString();function ProcessKeyEvent(e)|infrastructure
