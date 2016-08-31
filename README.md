@@ -29,12 +29,9 @@ Examples:
 
 ./EyeWitness -f urls.txt --web
 
-./EyeWitness -f urls.xml -t 8 --headless
+./EyeWitness -x urls.xml -t 8 --headless
 
 ./EyeWitness -f rdp.txt --rdp
-
-Thanks:
-Thanks to Jason Hill (@jasonhillva) for helping to get the xml parsing working.  And thanks to the group of guys I work with giving me their thoughts on new features I could add in, ways to optimize the code, and more.
 
 Call to Action:
 I'd love for EyeWitness to identify more default credentials of various web applications.  As you find a device which utilizes default credentials, please e-mail me the source code of the index page and the default creds so I can add it in to EyeWitness!
