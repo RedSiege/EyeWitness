@@ -79,7 +79,7 @@ def create_cli_parser():
                                help='Nmap XML or .Nessus file')
     input_options.add_argument('--single', metavar='Single URL', default=None,
                                help='Single URL/Host to capture')
-    input_options.add_argument('--createtargets', metavar='targetfilename.txt',
+    input_options.add_argument('--createtargets',
                                default=None, help='Parses a .nessus or Nmap XML \
                             file into a line-seperated list of URLs')
     input_options.add_argument('--no-dns', default=False, action='store_true',
