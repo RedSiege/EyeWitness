@@ -329,8 +329,6 @@ def target_creator(command_line_object):
         List: Hosts detected for RDP
         List: Hosts detected for VNC
     """
-    if command_line_object.createtargets is not None:
-        print "Creating target file for specified services..."
 
     if command_line_object.x is not None:
 

@@ -79,9 +79,6 @@ def create_cli_parser():
                                help='Nmap XML or .Nessus file')
     input_options.add_argument('--single', metavar='Single URL', default=None,
                                help='Single URL/Host to capture')
-    input_options.add_argument('--createtargets',
-                               default=None, help='Parses a .nessus or Nmap XML \
-                            file into a line-seperated list of URLs')
     input_options.add_argument('--no-dns', default=False, action='store_true',
                                help='Skip DNS resolution when connecting to \
                             websites')
@@ -555,10 +552,6 @@ if __name__ == "__main__":
     title_screen()
     cli_parsed = create_cli_parser()
     start_time = time.time()
-
-    if cli_parsed.createtargets:
-        target_creator(cli_parsed)
-        sys.exit()
 
     if cli_parsed.resume:
         print '[*] Loading Resume Data...'
