@@ -66,6 +66,8 @@ class XML_Parser(xml.sax.ContentHandler):
                     self.protocol = "https"
                 elif "http" == attributes['name'] or self.port_number in self.http_ports:
                     self.protocol = "http"
+                elif "http-alt" == attributes['name']:
+                    self.protocol = "http"
                 elif "tunnel" in attributes:
                     if "ssl" in attributes['tunnel']:
                         self.protocol = "https"
