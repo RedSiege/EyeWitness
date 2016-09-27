@@ -185,3 +185,4 @@ Paessler AG - The Network Monitoring Company;/images/prtg_network_monitor.png;Yo
 <!-- BUFFALO LIBS -->;if (success) {;create_features_obj();var rawData = result.responseText;var data = response.data|Buffalo Linkstation - admin/password
 <title>Login</title>;body id="login" class="no-menu";usernamefld;passwordfld;/css/pfSense.css|PFSense admin/pfsense (Changed at install)
 Please enable the browser cookie before login RPC2K;RPC2</font></b></p></th>;document.cookie="testcookie"|Emerson Network Power admin/admin
+<IMG SRC="logo.png" ALT="[Logo]">;<H1>Zebra Technologies<BR>;ZTC 170Xi4-300dpi ZPL</H1>;<H2>Printer Home Page</H2>|Zebra Printer admin/1234
