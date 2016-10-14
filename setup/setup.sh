@@ -22,9 +22,9 @@ if [ "${userid}" != '0' ]; then
   exit 1
 fi
 
-kali2test=`cat /etc/issue`
+kalitest=`grep "Kali GNU/Linux.*\(2\|Rolling\)" /etc/issue`
 
-if [ "${kali2test}" == "Kali GNU/Linux 2.0 \n \l" ]; then
+if [ kalitest ]; then
   osinfo="Kali2"
 fi
 
