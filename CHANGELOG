@@ -1,3 +1,7 @@
+[11.03.2016]
+    Released..: 2.21
+    Fixed.....: Latest Firefox on Kali requires geckodriver.  This is now placed in /usr/sbin during the setup process
+
 [07.17.2016]
     Released..: 2.2
     Fixed.....: Replaced feature which allows you to specify extra ports to look for for HTTP or HTTPS services when parsing XML.

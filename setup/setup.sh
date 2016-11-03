@@ -51,8 +51,16 @@ case ${osinfo} in
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
       wget -O phantomjs https://www.christophertruncer.com/InstallMe/kali2phantomjs
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz
+      tar -xvf geckodriver-v0.11.1-linux64.tar.gz
+      rm geckodriver-v0.11.1-linux64.tar.gz
+      mv geckodriver /usr/sbin
     else
       wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantom32kali2
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux32.tar.gz
+      tar -xvf geckodriver-v0.11.1-linux32.tar.gz
+      rm geckodriver-v0.11.1-linux64.tar.gz
+      mv geckodriver /usr/sbin
     fi
     chmod +x phantomjs
     cd ..
