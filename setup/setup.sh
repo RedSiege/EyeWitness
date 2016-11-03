@@ -21,10 +21,8 @@ if [ "${userid}" != '0' ]; then
   echo
   exit 1
 fi
-
-kali2test=`cat /etc/issue`
-
-if [ "${kali2test}" == "Kali GNU/Linux 2.0 \n \l" ]; then
+#Support for kali 2 and kali rolling
+if [[ `grep "Kali GNU/Linux.*\(2\|Rolling\)" /etc/issue` ]]; then
   osinfo="Kali2"
 fi
 
