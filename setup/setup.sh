@@ -105,7 +105,7 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium
+    pip install selenium==2.53.6
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
