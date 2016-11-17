@@ -4,7 +4,6 @@ import socket
 import sys
 import urllib2
 import ssl
-import time
 
 try:
     from ssl import CertificateError as sslerr
@@ -124,29 +123,41 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
 
     # If we hit a timeout earlier, retry once
     if http_object.error_state == 'Timeout':
-        http_object.error_state = None
-        try:
-            driver.get(http_object.remote_system)
-        except TimeoutException:
-            # Another timeout results in an error state and a return
-            print '[*] Hit timeout limit when connecting to {0}'.format(http_object.remote_system)
-            http_object.error_state = 'Timeout'
-            http_object.page_title = 'Timeout Limit Reached'
-            http_object.headers = {}
-            driver.quit()
-            driver = create_driver(cli_parsed, ua)
-            return http_object, driver
-        except KeyboardInterrupt:
-            print '[*] Skipping: {0}'.format(http_object.remote_system)
-            http_object.error_state = 'Skipped'
-            http_object.page_title = 'Page Skipped by User'
-        except httplib.BadStatusLine:
-            print '[*] Bad status line when connecting to {0}'.format(http_object.remote_system)
-            http_object.error_state = 'BadStatus'
-            return http_object, driver
-        except WebDriverException:
-            print '[*] WebDriverError when connecting to {0}'.format(http_object.remote_system)
-            http_object.error_state = 'BadStatus'
+        retry_counter = 0
+        return_status = False
+        while retry_counter < cli_parsed.max_retries:
+            http_object.error_state = None
+            try:
+                driver.get(http_object.remote_system)
+                break
+            except TimeoutException:
+                # Another timeout results in an error state and a return
+                print '[*] Hit timeout limit when connecting to {0}'.format(http_object.remote_system)
+                http_object.error_state = 'Timeout'
+                http_object.page_title = 'Timeout Limit Reached'
+                http_object.headers = {}
+                driver.quit()
+                driver = create_driver(cli_parsed, ua)
+                return_status = True
+            except KeyboardInterrupt:
+                print '[*] Skipping: {0}'.format(http_object.remote_system)
+                http_object.error_state = 'Skipped'
+                http_object.page_title = 'Page Skipped by User'
+                break
+            except httplib.BadStatusLine:
+                print '[*] Bad status line when connecting to {0}'.format(http_object.remote_system)
+                http_object.error_state = 'BadStatus'
+                return_status = True
+                break
+            except WebDriverException:
+                print '[*] WebDriverError when connecting to {0}'.format(http_object.remote_system)
+                http_object.error_state = 'BadStatus'
+                return_status = True
+                break
+            retry_counter += 1
+
+        # Determine if I need to return the objects
+        if return_status:
             return http_object, driver
 
         try:
@@ -160,7 +171,6 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     except WebDriverException as e:
         print('[*] Error saving web page screenshot'
               ' for ' + http_object.remote_system)
-    
 
     # Get our headers using urllib2
     context = None
