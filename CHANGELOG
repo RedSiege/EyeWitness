@@ -1,3 +1,7 @@
+[11.16.2016]
+    Released..: 2.3
+    Added.....: Users can now specify how many times EyeWitness should retry connecting to websites after they've hit the timeout limit.
+
 [11.03.2016]
     Released..: 2.21
     Fixed.....: Latest Firefox on Kali requires geckodriver.  This is now placed in /usr/sbin during the setup process

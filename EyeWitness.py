@@ -93,6 +93,9 @@ def create_cli_parser():
     timing_options.add_argument('--threads', metavar='# of Threads', default=10,
                                 type=int, help='Number of threads to use while using\
                                 file based input')
+    timing_options.add_argument('--max-retries', default=1, metavar='Max retries on \
+                                a timeout'.replace('    ', ''), type=int,
+                                help='Max retries on timeouts')
 
     report_options = parser.add_argument_group('Report Output Options')
     report_options.add_argument('-d', metavar='Directory Name',
