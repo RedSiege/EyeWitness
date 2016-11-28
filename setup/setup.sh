@@ -157,6 +157,10 @@ case ${osinfo} in
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
       wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz
+      tar -xvf geckodriver-v0.11.1-linux64.tar.gz
+      rm geckodriver-v0.11.1-linux64.tar.gz
+      mv geckodriver /usr/sbin
       tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
       cd phantomjs-2.1.1-linux-x86_64/bin/
       mv phantomjs ../../
@@ -165,6 +169,10 @@ case ${osinfo} in
       rm phantomjs-2.1.1-linux-x86_64.tar.bz2
     else
       wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux32.tar.gz
+      tar -xvf geckodriver-v0.11.1-linux32.tar.gz
+      rm geckodriver-v0.11.1-linux64.tar.gz
+      mv geckodriver /usr/sbin
       tar -xvf phantomjs-2.1.1-linux-i686.tar.bz2
       cd phantomjs-2.1.1-linux-i686/bin/
       mv phantomjs ../../
