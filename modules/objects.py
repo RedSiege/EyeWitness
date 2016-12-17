@@ -477,12 +477,12 @@ class VNCRDPTableObject(object):
             html = "<tr><td><b><center>{0}:{1}</center></b><br>".format(
                 self.remote_system, str(self.port))
             html += ("<div id=\"screenshot\"><center>Unable to screenshot<center>"
-                     "</div></td></tr>").format(self._screenshot_path)
+                     "</div></td></tr>").format(self._screenshot_path.split('/')[-2] + '/' + self._screenshot_path.split('/')[-1])
         else:
             html = "<tr><td><b><center>{0}:{1}</center></b><br>".format(
                 self.remote_system, str(self.port))
             html += ("<div id=\"screenshot\"><img src=\"{0}\">"
-                     "</div></td></tr>").format(self._screenshot_path)
+                     "</div></td></tr>").format(self._screenshot_path.split('/')[-2] + '/' + self._screenshot_path.split('/')[-1])
         return html
 
     def set_paths(self, outdir):
@@ -490,4 +490,4 @@ class VNCRDPTableObject(object):
         for char in [':', '/', '?', '=', '%', '+']:
             file_name = file_name.replace(char, '.')
         self.screenshot_path = os.path.join(
-            'screens', file_name + '.jpg')
+            outdir, 'screens', file_name + '.jpg')
