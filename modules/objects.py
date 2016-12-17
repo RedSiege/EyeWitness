@@ -490,4 +490,4 @@ class VNCRDPTableObject(object):
         for char in [':', '/', '?', '=', '%', '+']:
             file_name = file_name.replace(char, '.')
         self.screenshot_path = os.path.join(
-            outdir, 'screens', file_name + '.jpg')
+            'screens', file_name + '.jpg')
