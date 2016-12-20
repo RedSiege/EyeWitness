@@ -316,7 +316,10 @@ def textfile_parser(file_to_parse, cli_obj):
         return urls, rdp, vnc
 
     except IOError:
-        print "ERROR: You didn't give me a valid file name! I need a valid file containing URLs!"
+        if cli_obj.x is not None:
+            print "ERROR: The XML file you provided does not have any active web servers!"
+        else:
+            print "ERROR: You didn't give me a valid file name! I need a valid file containing URLs!"
         sys.exit()
 
 
