@@ -123,6 +123,8 @@ def create_cli_parser():
                               help='IP of web proxy to go through')
     http_options.add_argument('--proxy-port', metavar='8080', default=None,
                               type=int, help='Port of web proxy to go through')
+    http_options.add_argument('--proxy-type', metavar='socks5', default="http",
+                              help='Proxy type (socks5/http)')
     http_options.add_argument('--show-selenium', default=False,
                               action='store_true', help='Show display for selenium')
     http_options.add_argument('--resolve', default=False,
