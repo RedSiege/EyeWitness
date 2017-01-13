@@ -155,6 +155,39 @@ class XML_Parser(xml.sax.ContentHandler):
                 self.protocol = None
                 self.port_open = False
 
+            elif tag == "port":
+                if not self.only_ports and (self.protocol == None):
+                    if (self.port_number is not None) and self.port_open and (self.system_name is not None):
+                        if self.port_number in self.http_ports:
+                            self.protocol = 'http'
+                            built_url = self.protocol + "://" + self.system_name + ":" + self.port_number
+                            if built_url not in self.url_list:
+                                self.url_list.append(built_url)
+                                self.num_urls += 1
+                        elif self.port_number in self.https_ports:
+                            self.protocol = 'https'
+                            built_url = self.protocol + "://" + self.system_name + ":" + self.port_number
+                            if built_url not in self.url_list:
+                                self.url_list.append(built_url)
+                                self.num_urls += 1
+                else:
+                    if (self.port_number is not None) and self.port_open and (self.system_name is not None) and int(self.port_number.encode('utf-8')) in self.only_ports:
+                        if self.port_number in self.http_ports:
+                            self.protocol = 'http'
+                            built_url = self.protocol + "://" + self.system_name + ":" + self.port_number
+                            if built_url not in self.url_list:
+                                self.url_list.append(built_url)
+                                self.num_urls += 1
+                        elif self.port_number in self.https_ports:
+                            self.protocol = 'https'
+                            built_url = self.protocol + "://" + self.system_name + ":" + self.port_number
+                            if built_url not in self.url_list:
+                                self.url_list.append(built_url)
+                                self.num_urls += 1
+                self.port_number = None
+                self.protocol = None
+                self.port_open = False
+
             elif tag == "host":
                 self.system_name = None
 
