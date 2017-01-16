@@ -129,11 +129,11 @@ def create_cli_parser():
                               action='store_true', help=("Resolve IP/Hostname"
                                                          " for targets"))
     http_options.add_argument('--add-http-ports', default=[], 
-                              type=lambda s:[int(i) for i in s.split(",")],
+                              type=lambda s:[str(i) for i in s.split(",")],
                               help=("Comma-seperated additional port(s) to assume "
                               "are http (e.g. '8018,8028')"))
     http_options.add_argument('--add-https-ports', default=[],
-                              type=lambda s:[int(i) for i in s.split(",")],
+                              type=lambda s:[str(i) for i in s.split(",")],
                               help=("Comma-seperated additional port(s) to assume "
                               "are https (e.g. '8018,8028')"))
     http_options.add_argument('--only-ports', default=[],
