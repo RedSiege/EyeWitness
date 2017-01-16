@@ -50,12 +50,17 @@ def create_driver(cli_parsed, user_agent=None):
 
     # Set up our proxy information directly in the firefox profile
     if cli_parsed.proxy_ip is not None and cli_parsed.proxy_port is not None:
-        profile.set_preference('network.proxy.type', 1)
-        profile.set_preference('network.proxy.http', cli_parsed.proxy_ip)
-        profile.set_preference(
-            'network.proxy.http_port', cli_parsed.proxy_port)
-        profile.set_preference('network.proxy.ssl', cli_parsed.proxy_ip)
-        profile.set_preference('network.proxy.ssl_port', cli_parsed.proxy_port)
+	profile.set_preference('network.proxy.type', 1)
+        if "socks" in cli_parsed.proxy_type:
+	    profile.set_preference('network.proxy.socks', cli_parsed.proxy_ip)
+	    profile.set_preference('network.proxy.socks_port', cli_parsed.proxy_port)
+	    profile.set_preference('network.proxy.socks_remote_dns', True)
+	else:
+	    profile.set_preference('network.proxy.http', cli_parsed.proxy_ip)
+	    profile.set_preference(
+		'network.proxy.http_port', cli_parsed.proxy_port)
+	    profile.set_preference('network.proxy.ssl', cli_parsed.proxy_ip)
+	    profile.set_preference('network.proxy.ssl_port', cli_parsed.proxy_port)
 
     profile.set_preference('app.update.enabled', False)
     profile.set_preference('browser.search.update', False)
