@@ -53,6 +53,8 @@ def create_driver(cli_parsed, user_agent=None):
     if cli_parsed.proxy_ip is not None and cli_parsed.proxy_port is not None:
         service_args.append(
             '--proxy={0}:{1}'.format(cli_parsed.proxy_ip, cli_parsed.proxy_port))
+        if "socks" in cli_parsed.proxy_type:
+            service_args.append('--proxy-type=socks5')
 
     # PhantomJS resource timeout
     capabilities[

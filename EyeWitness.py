@@ -123,17 +123,19 @@ def create_cli_parser():
                               help='IP of web proxy to go through')
     http_options.add_argument('--proxy-port', metavar='8080', default=None,
                               type=int, help='Port of web proxy to go through')
+    http_options.add_argument('--proxy-type', metavar='socks5', default="http",
+                              help='Proxy type (socks5/http)')
     http_options.add_argument('--show-selenium', default=False,
                               action='store_true', help='Show display for selenium')
     http_options.add_argument('--resolve', default=False,
                               action='store_true', help=("Resolve IP/Hostname"
                                                          " for targets"))
     http_options.add_argument('--add-http-ports', default=[], 
-                              type=lambda s:[int(i) for i in s.split(",")],
+                              type=lambda s:[str(i) for i in s.split(",")],
                               help=("Comma-seperated additional port(s) to assume "
                               "are http (e.g. '8018,8028')"))
     http_options.add_argument('--add-https-ports', default=[],
-                              type=lambda s:[int(i) for i in s.split(",")],
+                              type=lambda s:[str(i) for i in s.split(",")],
                               help=("Comma-seperated additional port(s) to assume "
                               "are https (e.g. '8018,8028')"))
     http_options.add_argument('--only-ports', default=[],
