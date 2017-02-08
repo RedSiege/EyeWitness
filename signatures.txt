@@ -186,3 +186,4 @@ Paessler AG - The Network Monitoring Company;/images/prtg_network_monitor.png;Yo
 <title>Login</title>;body id="login" class="no-menu";usernamefld;passwordfld;/css/pfSense.css|PFSense admin/pfsense (Changed at install)
 Please enable the browser cookie before login RPC2K;RPC2</font></b></p></th>;document.cookie="testcookie"|Emerson Network Power admin/admin
 <IMG SRC="logo.png" ALT="[Logo]">;<H1>Zebra Technologies<BR>;ZTC 170Xi4-300dpi ZPL</H1>;<H2>Printer Home Page</H2>|Zebra Printer <nousername>/1234 or admin/1234
+<title>Workbench Login</title>;<div id="loginFormContainer">;Username</label>;Password</label>|Oracle Commerce admin/admin
