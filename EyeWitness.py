@@ -24,6 +24,7 @@ from modules.helpers import target_creator
 from modules.helpers import title_screen
 from modules.helpers import open_file_input
 from modules.helpers import resolve_host
+from modules.helpers import duplicate_check
 from modules.reporting import create_table_head
 from modules.reporting import create_web_index_head
 from modules.reporting import sort_data_and_write
@@ -608,6 +609,7 @@ if __name__ == "__main__":
 
     if cli_parsed.f is not None or cli_parsed.x is not None:
         multi_mode(cli_parsed)
+        duplicate_check(cli_parsed)
 
     print 'Finished in {0} seconds'.format(time.time() - start_time)
 

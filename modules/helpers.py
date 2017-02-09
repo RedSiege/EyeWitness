@@ -1,3 +1,4 @@
+import hashlib
 import os
 import platform
 import random
@@ -256,6 +257,42 @@ class XML_Parser(xml.sax.ContentHandler):
 
     def characters(self, content):
         return
+
+
+def duplicate_check(cli_object):
+    # This is used for checking for duplicate images
+    # if it finds any, it removes them and uses a single image
+    # reducing file size for output
+    # dict = {sha1hash: [pic1, pic2]}
+    hash_files = {}
+    report_files = []
+
+    for name in glob.glob(cli_object.d + '/screens/*.png'):
+        with open(name, 'rb') as screenshot:
+            pic_data = screenshot.read()
+        md5_hash = hashlib.md5(pic_data).hexdigest()
+        if md5_hash in hash_files:
+            hash_files[md5_hash].append(name.split('/')[-2] + '/' + name.split('/')[-1])
+        else:
+            hash_files[md5_hash] = [name.split('/')[-2] + '/' + name.split('/')[-1]]
+
+    for html_file in glob.glob(cli_object.d + '/*.html'):
+        report_files.append(html_file)
+
+    for hex_value, file_dict in hash_files.items():
+        total_files = len(file_dict)
+        if total_files > 1:
+            original_pic_name = file_dict[0]
+            for num in xrange(1, total_files):
+                next_filename = file_dict[num]
+                for report_page in report_files:
+                    with open(report_page, 'r') as report:
+                        page_text = report.read()
+                    page_text = page_text.replace(next_filename, original_pic_name)
+                    with open(report_page, 'w') as report_out:
+                        report_out.write(page_text)
+                os.remove(cli_object.d + '/' + next_filename)
+    return
 
 
 def resolve_host(system):
