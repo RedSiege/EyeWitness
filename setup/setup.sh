@@ -53,12 +53,14 @@ case ${osinfo} in
       tar -xvf geckodriver-v0.13.0-linux64.tar.gz
       rm geckodriver-v0.13.0-linux64.tar.gz
       mv geckodriver /usr/sbin
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     else
       wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantom32kali2
       wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux32.tar.gz
       tar -xvf geckodriver-v0.13.0-linux32.tar.gz
       rm geckodriver-v0.13.0-linux64.tar.gz
       mv geckodriver /usr/sbin
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     fi
     chmod +x phantomjs
     cd ..
@@ -119,6 +121,7 @@ case ${osinfo} in
       tar -xvf geckodriver-v0.13.0-linux64.tar.gz
       rm geckodriver-v0.13.0-linux64.tar.gz
       mv geckodriver /usr/sbin
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
       tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
       cd phantomjs-2.1.1-linux-x86_64/bin/
       mv phantomjs ../../
@@ -131,6 +134,7 @@ case ${osinfo} in
       tar -xvf geckodriver-v0.13.0-linux32.tar.gz
       rm geckodriver-v0.13.0-linux64.tar.gz
       mv geckodriver /usr/sbin
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
       tar -xvf phantomjs-2.1.1-linux-i686.tar.bz2
       cd phantomjs-2.1.1-linux-i686/bin/
       mv phantomjs ../../

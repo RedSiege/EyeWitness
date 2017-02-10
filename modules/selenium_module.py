@@ -16,6 +16,7 @@ try:
     from selenium.common.exceptions import TimeoutException
     from selenium.common.exceptions import UnexpectedAlertPresentException
     from selenium.common.exceptions import WebDriverException
+    from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 except ImportError:
     print '[*] Selenium not found.'
     print '[*] Please run the script in the setup directory!'
@@ -70,7 +71,9 @@ def create_driver(cli_parsed, user_agent=None):
     profile.set_preference('capability.policy.default.Window.prompt', 'noAccess');
 
     try:
-        driver = webdriver.Firefox(profile)
+        capabilities = DesiredCapabilities.FIREFOX.copy()
+        capabilities.update({'acceptInsecureCerts': True})
+        driver = webdriver.Firefox(profile, capabilities=capabilities)
         driver.set_page_load_timeout(cli_parsed.timeout)
         return driver
     except Exception as e:
