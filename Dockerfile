@@ -9,5 +9,5 @@ RUN apt-get update \
 RUN	git clone https://github.com/ChrisTruncer/EyeWitness.git
 
 WORKDIR /EyeWitness/
-RUN ./setup/setup.sh
+RUN cd setup && ./setup.sh
 ENTRYPOINT ["python", "EyeWitness.py", "-d", "/tmp/EyeWitness/results", "--no-prompt", "--headless"]
