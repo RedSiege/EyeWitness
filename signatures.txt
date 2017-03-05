@@ -188,3 +188,10 @@ Please enable the browser cookie before login RPC2K;RPC2</font></b></p></th>;doc
 <IMG SRC="logo.png" ALT="[Logo]">;<H1>Zebra Technologies<BR>;ZTC 170Xi4-300dpi ZPL</H1>;<H2>Printer Home Page</H2>|Zebra Printer <nousername>/1234 or admin/1234
 <title>Workbench Login</title>;<div id="loginFormContainer">;Username</label>;Password</label>|Oracle Commerce admin/admin
 <meta http-equiv="Content-Type" content="text/html;<label id="lapassword" name="lapassword"></label>;Hikvision Digital Technology Co., Ltd;span class="loginbtn" onclick="doLogin()" onmousemove="this.className='loginbtnon'|Hikvision Cameras admin/12345
+Copyright 2010-2012, Nimble Storage;LoginPage.generation;com.nimblestorage.nimbus.NimbusEntryPoint.nocache.js;base64|Nimble Storage admin/admin
+<h1><a id="bitnami-link" href="redmine/">Access BitNami Redmine Stack</a></h1>;The BitNami Project was created to help spread;To enter the application please click on the link at the top of the page|Bitnami Redmine Stack <user>/<pass> Set during Install
+<title>MyDentist Password Reset - Self Service</title>;top.location = self.location;adminlogin.html;desc resetDesc|NervePoint MyDentist administrator/administrator (unconfirmed)
+Octopus Deploy'">Octopus Deploy</title>;Checking your credentials. Please wait...;Use a custom expression;dynamicallyGeneratedContent|Octopus Deploy - Local or Domain account for authentication
+<h1>Welcome to VisualSVN Server!</h1>;<title>VisualSVN Server</title>;<a href="/svn/">Repositories</a>|VisualSVN - Accounts created after install or Windows Auth
+/images/prtg_network_monitor.png;PRTG Network Monitor;loginpassword;This may considerably slow down|PRTG Network Monitor - prtgadmin/prtgadmin
+<title></title>;<span>Barracuda</span>;base64_encode;passwords over HTTP are what they are. Use HTTPS;Barracuda Networks;function obfuscatePassword|Barracuda Web Filter - admin/admin
