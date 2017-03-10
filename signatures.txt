@@ -195,3 +195,7 @@ Octopus Deploy'">Octopus Deploy</title>;Checking your credentials. Please wait..
 <h1>Welcome to VisualSVN Server!</h1>;<title>VisualSVN Server</title>;<a href="/svn/">Repositories</a>|VisualSVN - Accounts created after install or Windows Auth
 /images/prtg_network_monitor.png;PRTG Network Monitor;loginpassword;This may considerably slow down|PRTG Network Monitor - prtgadmin/prtgadmin
 <title></title>;<span>Barracuda</span>;base64_encode;passwords over HTTP are what they are. Use HTTPS;Barracuda Networks;function obfuscatePassword|Barracuda Web Filter - admin/admin
+<Title>ConfigSummary</Title>;<LangNo>En</LangNo>;DN71B7;DN73B1;DN88B2;EngType;IsAral65|Olivetti Printer - Password 12345678 or administrator
+This <a class="device_noun">access point;is trying to join a network or find;simple-tabs-content container;your_hideable_connection_info|Cisco Meraki - serial number/<nopassword>
+<h1>Zebra Technologies<br>;Internal Wired PrintServer;Status:;Printer Home Page;View and Modify Printer Settings|printer
+<title>Web Connection</title>;function popupCopyright;font color="red";Lang.cgi?LangSelect;i3ddgspc.gif|printer
