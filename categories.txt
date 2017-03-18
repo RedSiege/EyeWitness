@@ -294,3 +294,4 @@ iLO.sendJsonRequest("logout", "POST", "json/login_session";$.eventsource("addEve
 <title>Login - OpenStack Dashboard</title>;/* Load angular modules extensions list before we;<input type="password" value="" name="fake_password|infrastructure
 <title>GigaVUE-HB1 - Login</title>;function HidePasswordString();function ProcessKeyEvent(e)|infrastructure
 <IMG SRC="logo.png" ALT="[Logo]">;<H1>Zebra Technologies<BR>;ZTC 170Xi4-300dpi ZPL</H1>;<H2>Printer Home Page</H2>|printer
+<title>Login</title>;img src="/inc/errorbubble.gif;class="tt_form_row_peer" id='usernamePeer;class="tt_form_row_reqd" id="passwordRqd";<legend>Administrator login</legend>|infrastructure
