@@ -295,3 +295,14 @@ iLO.sendJsonRequest("logout", "POST", "json/login_session";$.eventsource("addEve
 <title>GigaVUE-HB1 - Login</title>;function HidePasswordString();function ProcessKeyEvent(e)|infrastructure
 <IMG SRC="logo.png" ALT="[Logo]">;<H1>Zebra Technologies<BR>;ZTC 170Xi4-300dpi ZPL</H1>;<H2>Printer Home Page</H2>|printer
 <title>Login</title>;img src="/inc/errorbubble.gif;class="tt_form_row_peer" id='usernamePeer;class="tt_form_row_reqd" id="passwordRqd";<legend>Administrator login</legend>|infrastructure
+Copyright 2010-2012, Nimble Storage;LoginPage.generation;com.nimblestorage.nimbus.NimbusEntryPoint.nocache.js;base64|infrastructure
+<h1><a id="bitnami-link" href="redmine/">Access BitNami Redmine Stack</a></h1>;The BitNami Project was created to help spread;To enter the application please click on the link at the top of the page|infrastructure
+Password Reset - Self Service</title>;top.location = self.location;adminlogin.html;desc resetDesc|infrastructure
+Octopus Deploy'">Octopus Deploy</title>;Checking your credentials. Please wait...;Use a custom expression;dynamicallyGeneratedContent|infrastructure
+<h1>Welcome to VisualSVN Server!</h1>;<title>VisualSVN Server</title>;<a href="/svn/">Repositories</a>|infrastructure
+/images/prtg_network_monitor.png;PRTG Network Monitor;loginpassword;This may considerably slow down|infrastructure
+<title></title>;<span>Barracuda</span>;base64_encode;passwords over HTTP are what they are. Use HTTPS;Barracuda Networks;function obfuscatePassword|infrastructure
+<Title>ConfigSummary</Title>;<LangNo>En</LangNo>;DN71B7;DN73B1;DN88B2;EngType;IsAral65|printer
+This <a class="device_noun">access point;is trying to join a network or find;simple-tabs-content container;your_hideable_connection_info|infrastructure
+<h1>Zebra Technologies<br>;Internal Wired PrintServer;Status:;Printer Home Page;View and Modify Printer Settings|Zebra Print Server - admin/1234
+<title>Web Connection</title>;function popupCopyright;font color="red";Lang.cgi?LangSelect;i3ddgspc.gif|Konica Minolta MF24-2 - <admin>?/password
