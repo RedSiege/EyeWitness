@@ -307,3 +307,4 @@ This <a class="device_noun">access point;is trying to join a network or find;sim
 <h1>Zebra Technologies<br>;Internal Wired PrintServer;Status:;Printer Home Page;View and Modify Printer Settings|printer
 <title>Web Connection</title>;function popupCopyright;font color="red";Lang.cgi?LangSelect;i3ddgspc.gif|printer
 <TITLE>Sony Network Camera SNC-RZ50</TITLE>;ViewerSelect;Sony Corporation|infrastructure
+<title>Fireware XTM User Authentication</title>;Fireware XTM User Authentication web page;var newloc;wgcgi.cgi?|infrastructure
