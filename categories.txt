@@ -308,3 +308,5 @@ This <a class="device_noun">access point;is trying to join a network or find;sim
 <title>Web Connection</title>;function popupCopyright;font color="red";Lang.cgi?LangSelect;i3ddgspc.gif|printer
 <TITLE>Sony Network Camera SNC-RZ50</TITLE>;ViewerSelect;Sony Corporation|infrastructure
 <title>Fireware XTM User Authentication</title>;Fireware XTM User Authentication web page;var newloc;wgcgi.cgi?|infrastructure
+<title>User Portal</title>;Date;Expression;necessary files to set up SSL VPN on Linux;jape/jape_prereq_10_prototype.js;Cfg.app=|infrastructure
+RD Web Access;WorkSpaceID;PublicModeTimeout;RedirectorName;tdClaimsDomainUserNameLable;trPasswordExpiredNoChange|infrastructure

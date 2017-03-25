@@ -202,3 +202,5 @@ This <a class="device_noun">access point;is trying to join a network or find;sim
 <title>Login</title>;img src="/inc/errorbubble.gif;class="tt_form_row_peer" id='usernamePeer;class="tt_form_row_reqd" id="passwordRqd";<legend>Administrator login</legend>|Cisco Telepresence admin/cisco
 <TITLE>Sony Network Camera SNC-RZ50</TITLE>;ViewerSelect;Sony Corporation|Sony SNC-RZ50 admin/admin
 <title>Fireware XTM User Authentication</title>;Fireware XTM User Authentication web page;var newloc;wgcgi.cgi?|WatchGuard XTM Fireware - admin/readwrite and status/readonly
+<title>User Portal</title>;Date;Expression;necessary files to set up SSL VPN on Linux;jape/jape_prereq_10_prototype.js;Cfg.app=|Sophos UTM admin/<pass set at install>
+RD Web Access;WorkSpaceID;PublicModeTimeout;RedirectorName;tdClaimsDomainUserNameLable;trPasswordExpiredNoChange|Windows Remote Desktop Web Services <username>/<password>
