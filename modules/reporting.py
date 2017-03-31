@@ -319,7 +319,7 @@ def create_web_index_head(date, time):
 def search_index_head():
     return ("""<html>
         <head>
-        <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+        <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
         <script src="jquery-1.11.3.min.js"></script>
         <script type="text/javascript">
@@ -366,7 +366,7 @@ def vnc_rdp_table_head():
 def vnc_rdp_header(date, time):
     web_index_head = ("""<html>
     <head>
-    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+    <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
     <title>EyeWitness Report</title>
     </head>
     <body>
