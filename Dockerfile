@@ -10,4 +10,5 @@ RUN	git clone https://github.com/ChrisTruncer/EyeWitness.git
 
 WORKDIR /EyeWitness/
 RUN cd setup && ./setup.sh
+RUN cd ..
 ENTRYPOINT ["python", "EyeWitness.py", "-d", "/tmp/EyeWitness/results", "--no-prompt", "--headless"]
