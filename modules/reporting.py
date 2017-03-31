@@ -172,7 +172,7 @@ def sort_data_and_write(cli_parsed, data):
     # Initialize stuff we need
     pages = []
     toc = create_report_toc_head(cli_parsed.date, cli_parsed.time)
-    toc_table = "<table class=\"toc_table\">"
+    toc_table = "<table class=\"table\">"
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
     table_head = create_table_head()
     counter = 1
@@ -295,7 +295,7 @@ def create_web_index_head(date, time):
     """
     return ("""<html>
         <head>
-        <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+        <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
         <script src="jquery-1.11.3.min.js"></script>
         <script type="text/javascript">
@@ -319,7 +319,7 @@ def create_web_index_head(date, time):
 def search_index_head():
     return ("""<html>
         <head>
-        <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+        <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
         <script src="jquery-1.11.3.min.js"></script>
         <script type="text/javascript">
@@ -366,7 +366,7 @@ def vnc_rdp_table_head():
 def vnc_rdp_header(date, time):
     web_index_head = ("""<html>
     <head>
-    <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
+    <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
     <title>EyeWitness Report</title>
     </head>
     <body>
