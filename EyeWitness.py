@@ -544,6 +544,11 @@ def multi_mode(cli_parsed):
     m.shutdown()
     write_vnc_rdp_data(cli_parsed, vnc_rdp)
     sort_data_and_write(cli_parsed, results)
+    for target in targets:
+        try:
+            rdp_module.parse_screenshot(cli_parsed.d, target)
+        except IOError:
+            pass
 
 
 def multi_callback(x):
