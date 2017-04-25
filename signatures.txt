@@ -204,3 +204,6 @@ This <a class="device_noun">access point;is trying to join a network or find;sim
 <title>Fireware XTM User Authentication</title>;Fireware XTM User Authentication web page;var newloc;wgcgi.cgi?|WatchGuard XTM Fireware - admin/readwrite and status/readonly
 <title>User Portal</title>;Date;Expression;necessary files to set up SSL VPN on Linux;jape/jape_prereq_10_prototype.js;Cfg.app=|Sophos UTM admin/<pass set at install>
 RD Web Access;WorkSpaceID;PublicModeTimeout;RedirectorName;tdClaimsDomainUserNameLable;trPasswordExpiredNoChange|Windows Remote Desktop Web Services <username>/<password>
+HTTP;refresh:/cgi-bin/pcast.cgi;url=/cgi-bin/pcast.cgi;<title>PCast</title>|Buffalo PCast Media NAS Server admin/password
+content="BUFFALO INC.";<title>TeraStation;id="frmNas" name="frmNas";C) BUFFALO INC;divAuthSubmitItem|Buffalo TeraStation admin/password && guest/<nopassword>
+parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryString"]|HP System Management Homepage <OS administrator account>/<os admin password>

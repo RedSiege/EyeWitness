@@ -166,6 +166,9 @@ def sort_data_and_write(cli_parsed, data):
                   ('successfulLogin', 'Successful Logins', 'successfulLogin'),
                   ('identifiedLogin', 'Identified Logins', 'identifiedLogin'),
                   ('infrastructure', 'Infrastructure', 'infrastructure'),
+                  ('redirector', 'Redirecting Pages', 'redirector'),
+                  ('badhost', 'Invalid Hostname', 'badhost'),
+                  ('serviceunavailable', 'Service Unavailable', 'serviceunavailable'),
                   ]
     if total_results == 0:
         return
