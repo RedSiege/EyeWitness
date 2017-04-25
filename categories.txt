@@ -310,3 +310,8 @@ This <a class="device_noun">access point;is trying to join a network or find;sim
 <title>Fireware XTM User Authentication</title>;Fireware XTM User Authentication web page;var newloc;wgcgi.cgi?|infrastructure
 <title>User Portal</title>;Date;Expression;necessary files to set up SSL VPN on Linux;jape/jape_prereq_10_prototype.js;Cfg.app=|infrastructure
 RD Web Access;WorkSpaceID;PublicModeTimeout;RedirectorName;tdClaimsDomainUserNameLable;trPasswordExpiredNoChange|infrastructure
+HTTP;refresh:/cgi-bin/pcast.cgi;url=/cgi-bin/pcast.cgi;<title>PCast</title>|infrastructure
+content="BUFFALO INC.";<title>TeraStation;id="frmNas" name="frmNas";C) BUFFALO INC;divAuthSubmitItem|infrastructure
+parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryString"]|redirector
+<html><head></head><body><h1>Bad Request (Invalid Hostname)</h1></body></html>|badhost
+<h2>Service Unavailable</h2>;HTTP Error 503. The service is unavailable.;<title>Service Unavailable</title>|serviceunavailable
