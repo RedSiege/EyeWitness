@@ -651,6 +651,8 @@ def create_folders_css(cli_parsed):
     """
 
     # Create output directories
+    if os.path.exists(cli_parsed.d):
+        shutil.rmtree(cli_parsed.d)
     os.makedirs(cli_parsed.d)
     os.makedirs(os.path.join(cli_parsed.d, 'screens'))
     os.makedirs(os.path.join(cli_parsed.d, 'source'))
