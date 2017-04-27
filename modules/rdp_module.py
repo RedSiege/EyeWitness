@@ -206,7 +206,6 @@ def capture_host(cli_parsed, rdp_object):
             rdp_object.screenshot_path, timeout, rdp_object))
 
     reactor.runReturn()
-    parse_screenshot(rdp_object.screenshot_path)
     app.exec_()
 
 
@@ -228,4 +227,4 @@ def parse_screenshot(directory, rdp_object):
     except KeyError:
         with open(directory + "/os.txt", "a") as f:
             f.write(str(rdp_object.remote_system) + ":\n")
-            f.write("No valid OS found. Please add "+str(pixel)+" to oslist and determine where the username is located and ad this area to croplist (both located in rdp_module)")
+            f.write("No valid OS found. Please add "+str(pixel)+" to oslist and determine where the username is located and add this area to croplist (both located in rdp_module)")
