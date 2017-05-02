@@ -207,3 +207,5 @@ RD Web Access;WorkSpaceID;PublicModeTimeout;RedirectorName;tdClaimsDomainUserNam
 HTTP;refresh:/cgi-bin/pcast.cgi;url=/cgi-bin/pcast.cgi;<title>PCast</title>|Buffalo PCast Media NAS Server admin/password
 content="BUFFALO INC.";<title>TeraStation;id="frmNas" name="frmNas";C) BUFFALO INC;divAuthSubmitItem|Buffalo TeraStation admin/password && guest/<nopassword>
 parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryString"]|HP System Management Homepage <OS administrator account>/<os admin password>
+<title>Log In</title>;<div class="imc_ui_log_box_top bg_hpe">;loadErrForm_SUBMIT;centerContentIframeHref;PrimeFaces|HP Intelligent Management Center - admin/admin
+<title>Mitel 5000 Communications Platform</title>;username_vis;encodeURIComponent;login_form;authhash_hidden|Mitel 5000 Communications Platform - admin/itpassw or admin/support

@@ -315,3 +315,6 @@ content="BUFFALO INC.";<title>TeraStation;id="frmNas" name="frmNas";C) BUFFALO I
 parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryString"]|redirector
 <html><head></head><body><h1>Bad Request (Invalid Hostname)</h1></body></html>|badhost
 <h2>Service Unavailable</h2>;HTTP Error 503. The service is unavailable.;<title>Service Unavailable</title>|serviceunavailable
+<title>Log In</title>;<div class="imc_ui_log_box_top bg_hpe">;loadErrForm_SUBMIT;centerContentIframeHref;PrimeFaces|infrastructure
+Management Studio - Redirection;Refresh;ManagementStudio|redirector
+<title>Mitel 5000 Communications Platform</title>;username_vis;encodeURIComponent;login_form;authhash_hidden|infrastructure
