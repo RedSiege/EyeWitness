@@ -194,7 +194,7 @@ def handleCategoryMatch(data, http_object):
 
 def checkLoginForm(html_data):
     try:
-        html_proc = beatsop(html_data)
+        html_proc = beatsop(html_data, "html.parser")
         loginForm = False
 
         forms = html_proc.findAll('form')
@@ -209,7 +209,7 @@ def checkLoginForm(html_data):
 def getInputFields(html_data):
     # TODO: Consider getting new target if 301 or 302
     try:
-        html_proc = beatsop(html_data)
+        html_proc = beatsop(html_data, "html.parser")
         postData = {}
         inputs = []
         allInputs = ['', '']
