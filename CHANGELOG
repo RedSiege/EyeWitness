@@ -1,3 +1,6 @@
+[05.27.2017]
+    Modified..: DB checks for user agent source code values to not be None prior to running source code comparison
+
 [11.16.2016]
     Released..: 2.3
     Added.....: Users can now specify how many times EyeWitness should retry connecting to websites after they've hit the timeout limit.

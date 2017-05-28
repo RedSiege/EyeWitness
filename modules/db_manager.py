@@ -146,7 +146,7 @@ class DB_Manager(object):
                               (o.id,)).fetchall()
             for ua in uadat:
                 uao = pickle.loads(str(ua['object']))
-                if uao is not None:
+                if uao is not None and uao.source_code is not None and o.source_code:
                     o.add_ua_data(uao)
             finished.append(o)
         c.close()
