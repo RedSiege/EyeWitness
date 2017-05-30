@@ -404,7 +404,7 @@ def single_vnc_rdp(cli_parsed, engine):
         f.write("</table><br>")
 
     if cli_parsed.ocr:
-        rdp_module.parse_screenshot(obj.screenshot_path, cli_parsed.d)
+        rdp_module.parse_screenshot(cli_parsed.d, obj)
 
 
 def multi_mode(cli_parsed):
