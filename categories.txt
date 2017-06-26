@@ -321,3 +321,4 @@ Management Studio - Redirection;Refresh;ManagementStudio|redirector
 <a href="/" class="navbar-brand">EMC ViPR</a>;<title>Internal Server Error</title>;HTTPS Connection Required;<div class="well">|infrastructure
 "companyName":"Data Domain";"productName":"System Manager";EMC Corporation. All Rights Reserved.|infrastructure
 <title>Dell Remote Access Controller 5</title>;/cgi/support.html;document.location.replace("/cgi-bin/webcgi/sclogin");frmSubmit|idrac
+<title>Log In</title>;title="Go to CA Network Flow Analysis" class="login-page-logo";Network Flow Analysis</span>|infrastructure

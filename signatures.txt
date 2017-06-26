@@ -212,3 +212,4 @@ parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryStri
 <a href="/" class="navbar-brand">EMC ViPR</a>;<title>Internal Server Error</title>;HTTPS Connection Required;<div class="well">|EMV ViPR admin/changeme
 "companyName":"Data Domain";"productName":"System Manager";EMC Corporation. All Rights Reserved.|EMC Data Domain admin/<serialnumber>
 <title>Dell Remote Access Controller 5</title>;/cgi/support.html;document.location.replace("/cgi-bin/webcgi/sclogin");frmSubmit|Dell iDRAC root/calvin
+<title>Log In</title>;title="Go to CA Network Flow Analysis" class="login-page-logo";Network Flow Analysis</span>|CA Network Flow Analysis admin/admin
