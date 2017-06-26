@@ -319,3 +319,4 @@ parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryStri
 Management Studio - Redirection;Refresh;ManagementStudio|redirector
 <title>Mitel 5000 Communications Platform</title>;username_vis;encodeURIComponent;login_form;authhash_hidden|infrastructure
 <a href="/" class="navbar-brand">EMC ViPR</a>;<title>Internal Server Error</title>;HTTPS Connection Required;<div class="well">|infrastructure
+"companyName":"Data Domain";"productName":"System Manager";EMC Corporation. All Rights Reserved.|infrastructure
