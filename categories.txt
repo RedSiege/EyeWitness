@@ -318,3 +318,4 @@ parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryStri
 <title>Log In</title>;<div class="imc_ui_log_box_top bg_hpe">;loadErrForm_SUBMIT;centerContentIframeHref;PrimeFaces|infrastructure
 Management Studio - Redirection;Refresh;ManagementStudio|redirector
 <title>Mitel 5000 Communications Platform</title>;username_vis;encodeURIComponent;login_form;authhash_hidden|infrastructure
+<a href="/" class="navbar-brand">EMC ViPR</a>;<title>Internal Server Error</title>;HTTPS Connection Required;<div class="well">|infrastructure
