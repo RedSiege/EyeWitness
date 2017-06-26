@@ -40,14 +40,39 @@ Now you can execute EyeWitness in a docker container and prevent you from instal
 
 ##### Usage
 ```bash
-docker build --tag eyewitness .
-docker run -it -v /path/to/results:/tmp/EyeWitness/ eyewitness EyeWitness_flags_and_input
+docker build --build-arg user=$USER --tag eyewitness .
+docker run \
+    --rm \
+    -it \
+    -e DISPLAY=$DISPLAY \                   # optional flag in order to use vnc protocol
+    -v /tmp/.X11-unix:/tmp/.X11-unix \      # optional flag in order to use vnc protocol
+    -v /path/to/results:/tmp/EyeWitness \
+    eyewitness \
+    EyeWitness_flags_and_input
 ```
 
-##### Example
+##### Example #1 - headless capturing
 ```bash
-docker run -it -v ~/EyeWitness:/tmp/EyeWitness/ eyewitness --single http://www.google.com
-docker run -it -v ~/EyeWitness:/tmp/EyeWitness/ eyewitness -f /tmp/EyeWitness/urls.txt
+docker run \
+    --rm \
+    -it \
+    -v ~/EyeWitness:/tmp/EyeWitness \
+    eyewitness \
+    --single http://www.google.com
+    --headless
+```
+
+##### Example #2 - vnc capturing
+```bash
+docker run \
+    --rm \
+    -it \
+    -e DISPLAY=$DISPLAY \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v ~/EyeWitness:/tmp/EyeWitness \
+    eyewitness \
+    -f /tmp/EyeWitness/urls.txt
+    --vnc
 ```
 
 ###### Call to Action:
