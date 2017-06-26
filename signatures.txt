@@ -211,3 +211,4 @@ parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryStri
 <title>Mitel 5000 Communications Platform</title>;username_vis;encodeURIComponent;login_form;authhash_hidden|Mitel 5000 Communications Platform - admin/itpassw or admin/support
 <a href="/" class="navbar-brand">EMC ViPR</a>;<title>Internal Server Error</title>;HTTPS Connection Required;<div class="well">|EMV ViPR admin/changeme
 "companyName":"Data Domain";"productName":"System Manager";EMC Corporation. All Rights Reserved.|EMC Data Domain admin/<serialnumber>
+<title>Dell Remote Access Controller 5</title>;/cgi/support.html;document.location.replace("/cgi-bin/webcgi/sclogin");frmSubmit|Dell iDRAC root/calvin
