@@ -182,8 +182,12 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         responsecode = e.code
         if responsecode == 404:
             http_object.category = 'notfound'
-        if responsecode == 403 or responsecode == 401:
+        elif responsecode == 403 or responsecode == 401:
             http_object.category = 'unauth'
+        elif responsecode == 500:
+            http_object.category = 'inerror'
+        elif responsecode == 400:
+            http_object.category = 'badreq'
         headers = dict(e.headers)
         headers['Response Code'] = str(e.code)
     except urllib2.URLError as e:
