@@ -322,3 +322,5 @@ Management Studio - Redirection;Refresh;ManagementStudio|redirector
 "companyName":"Data Domain";"productName":"System Manager";EMC Corporation. All Rights Reserved.|infrastructure
 <title>Dell Remote Access Controller 5</title>;/cgi/support.html;document.location.replace("/cgi-bin/webcgi/sclogin");frmSubmit|idrac
 <title>Log In</title>;title="Go to CA Network Flow Analysis" class="login-page-logo";Network Flow Analysis</span>|infrastructure
+<p id="powered">Powered by <a href="http://www.ruckuswireless.com">Ruckus Wireless</a></p>;<tr><th>Admin Name</th><td><input class="login_input";<tr><th>Password</th><td><input class="login_input";<title>Log In</title>|infrastructure
+<link rel="stylesheet" href="resources/webLogin-all.css">;<title>Polycom Login</title>;<meta http-equiv="X-UA-Compatible" content="IE=edge">;Password:</label></div></div></div>;type="text" role="textbox" size="1" name="userName" class="x-form-field x-form-text|infrastructure
