@@ -324,3 +324,8 @@ Management Studio - Redirection;Refresh;ManagementStudio|redirector
 <title>Log In</title>;title="Go to CA Network Flow Analysis" class="login-page-logo";Network Flow Analysis</span>|infrastructure
 <p id="powered">Powered by <a href="http://www.ruckuswireless.com">Ruckus Wireless</a></p>;<tr><th>Admin Name</th><td><input class="login_input";<tr><th>Password</th><td><input class="login_input";<title>Log In</title>|infrastructure
 <link rel="stylesheet" href="resources/webLogin-all.css">;<title>Polycom Login</title>;<meta http-equiv="X-UA-Compatible" content="IE=edge">;Password:</label></div></div></div>;type="text" role="textbox" size="1" name="userName" class="x-form-field x-form-text|infrastructure
+<title>WebTools | Home</title>;<td align="left" valign="middle" class="name">XeroxC70;set_status_refresh_interval|printer
+<title>S2 Netbox Login</title>;<!--License IFRAME HERE GOES HERE-->;div id="headerframe"|infrastructure
+<title>Remote Support Portal | Powered by BOMGAR</title>;exitSurveyBox;Show Representatives Help Window;/content/access_key_input.js|infrastructure
+<title>Pritunl</title>;<link rel="icon" type="image/x-icon" href;onSubmit();login-form;var duoUserInput = document.getElementById('duo-username')|infrastructure
+<title>Log In - Juniper Web Device Manager</title>;document.getElementById("antiClickjack");Juniper Networks, Inc.;document.getElementById('errorMsgId')|infrastructure
