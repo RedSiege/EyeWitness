@@ -254,7 +254,10 @@ def single_mode(cli_parsed):
             display.start()
     elif cli_parsed.headless:
         if not os.path.isfile(
-            os.path.join(os.path.realpath(__file__), 'bin', 'phantomjs')
+            os.path.join(
+                os.path.dirname(
+                    os.path.realpath(__file__)
+                ), 'bin', 'phantomjs')
         ):
             print(" [*] Error: You are missing your phantomjs binary!")
             print(" [*] Please run the setup script!")
