@@ -1,5 +1,5 @@
-import rdpy.core.log as log
 import sys
+import rdpy.core.log as log
 
 try:
     from PyQt4 import QtGui
@@ -37,14 +37,14 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         @param connector: twisted connector use for rfb connection (use reconnect to restart connection)
         @param reason: str use to advertise reason of lost connection
         """
-        if not 'Connection was closed cleanly' in str(reason):
+        if 'Connection was closed cleanly' not in str(reason):
             self._dbm.open_connection()
             self._obj.error_state = True
             self._dbm.update_vnc_rdp_object(self._obj)
             self._dbm.close()
 
         RFBScreenShotFactory.__INSTANCE__ -= 1
-        if(RFBScreenShotFactory.__INSTANCE__ == 0):
+        if RFBScreenShotFactory.__INSTANCE__ == 0:
             try:
                 self._reactor.stop()
             except:
@@ -65,7 +65,7 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         print '[*] Error connecting to {0}:{1}'.format(
             self._obj.remote_system, self._obj.port)
         RFBScreenShotFactory.__INSTANCE__ -= 1
-        if(RFBScreenShotFactory.__INSTANCE__ == 0):
+        if RFBScreenShotFactory.__INSTANCE__ == 0:
             try:
                 self._reactor.stop()
             except:

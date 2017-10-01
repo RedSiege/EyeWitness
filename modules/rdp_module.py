@@ -58,7 +58,7 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         RDPScreenShotFactory.__STATE__.append(
             (connector.host, connector.port, reason))
         RDPScreenShotFactory.__INSTANCE__ -= 1
-        if(RDPScreenShotFactory.__INSTANCE__ == 0):
+        if RDPScreenShotFactory.__INSTANCE__ == 0:
             try:
                 self._reactor.stop()
             except:
@@ -81,7 +81,7 @@ class RDPScreenShotFactory(rdp.ClientFactory):
         RDPScreenShotFactory.__STATE__.append(
             (connector.host, connector.port, reason))
         RDPScreenShotFactory.__INSTANCE__ -= 1
-        if(RDPScreenShotFactory.__INSTANCE__ == 0):
+        if RDPScreenShotFactory.__INSTANCE__ == 0:
             try:
                 self._reactor.stop()
             except:

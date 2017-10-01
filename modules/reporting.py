@@ -34,7 +34,7 @@ def process_group(
                         key=lambda (k): k.page_title)
 
     grouped_elements = []
-    if len(group_data) == 0:
+    if not group_data:
         return grouped_elements, toc, toc_table, html
     if page_num == 0:
         toc += ("<li><a href=\"report.html#{0}\">{1} (Page 1)</a></li>").format(
@@ -46,7 +46,7 @@ def process_group(
     html += "<h2 id=\"{0}\">{1}</h2>".format(sectionid, section)
     unknowns = [x for x in group_data if x.page_title == 'Unknown']
     group_data = [x for x in group_data if x.page_title != 'Unknown']
-    while len(group_data) > 0:
+    while group_data:
         test_element = group_data.pop(0)
         temp = [x for x in group_data if fuzz.token_sort_ratio(
             test_element.page_title, x.page_title) >= 70]
@@ -75,7 +75,7 @@ def write_vnc_rdp_data(cli_parsed, data):
                       key=lambda v: v.error_state)
 
     for x in [x for x in [vncstuff, rdpstuff] if len(x) > 0]:
-        if len(x) == 0:
+        if not x:
             return
         pages = []
         html = u""
@@ -171,7 +171,7 @@ def sort_data_and_write(cli_parsed, data):
                   ('inerror', 'Internal Error', 'inerror'),
                   ('badreq', 'Bad Request', 'badreq'),
                   ('serviceunavailable', 'Service Unavailable', 'serviceunavailable'),
-                  ]
+                 ]
     if total_results == 0:
         return
     # Initialize stuff we need
@@ -192,7 +192,7 @@ def sort_data_and_write(cli_parsed, data):
     for cat in categories:
         grouped, toc, toc_table, html = process_group(
             data, cat[0], toc, toc_table, len(pages), cat[1], cat[2], html)
-        if len(grouped) > 0:
+        if grouped:
             html += table_head
         pcount = 0
         for obj in grouped:
@@ -206,11 +206,11 @@ def sort_data_and_write(cli_parsed, data):
                 if pcount < len(grouped):
                     html += table_head
             counter += 1
-        if len(grouped) > 0 and counter - 1 % cli_parsed.results != 0:
+        if grouped and counter - 1 % cli_parsed.results != 0:
             html += "</table><br>"
 
     # Add our errors here (at the very very end)
-    if len(errors) > 0:
+    if errors:
         html += '<h2>Errors</h2>'
         html += table_head
         for obj in errors:
@@ -278,7 +278,7 @@ def sort_data_and_write(cli_parsed, data):
                 'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
 
         # Write out our report to disk!
-        if len(pages) == 0:
+        if not pages:
             return
         with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
             f.write(toc)
@@ -322,7 +322,7 @@ def create_web_index_head(date, time):
 
 
 def search_index_head():
-    return ("""<html>
+    return """<html>
         <head>
         <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
@@ -342,30 +342,30 @@ def search_index_head():
         </head>
         <body>
         <center>
-        """)
+        """
 
 
 def create_table_head():
-    return ("""<table border=\"1\">
+    return """<table border=\"1\">
         <tr>
         <th>Web Request Info</th>
         <th>Web Screenshot</th>
-        </tr>""")
+        </tr>"""
 
 
 def create_report_toc_head(date, time):
-    return ("""<html>
+    return """<html>
         <head>
         <title>EyeWitness Report Table of Contents</title>
         </head>
-        <h2>Table of Contents</h2>""")
+        <h2>Table of Contents</h2>"""
 
 
 def vnc_rdp_table_head():
-    return ("""<table border=\"1\" align=\"center\">
+    return """<table border=\"1\" align=\"center\">
     <tr>
     <th>IP / Screenshot</th>
-    </tr>""")
+    </tr>"""
 
 
 def vnc_rdp_header(date, time):
@@ -447,7 +447,7 @@ def search_report(cli_parsed, data, search_term):
                 'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
 
         # Write out our report to disk!
-        if len(pages) == 0:
+        if not pages:
             return
         with open(os.path.join(cli_parsed.d, 'search.html'), 'a') as f:
             f.write(pages[0])

@@ -88,14 +88,13 @@ def create_driver(cli_parsed, user_agent=None):
     return driver
 
 
-def capture_host(cli_parsed, http_object, driver, ua=None):
+def capture_host(cli_parsed, http_object, driver):
     """Captures a single host and populates the HTTP Object
 
     Args:
         cli_parsed (ArgumentParser): CLI Object
         http_object (HTTPTableObject): HTTP Object representing a URL
         driver (Webdriver): Webdriver
-        ua (TYPE, String): Optional User Agent String
 
     Returns:
         HTTPTableObject: Filled out HTTP Object
@@ -164,7 +163,6 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         context.verify_mode = ssl.CERT_NONE
     except:
         context = None
-        pass
 
     try:
         tempua = driver.execute_script("return navigator.userAgent")
@@ -207,10 +205,9 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             headers = {'Error': 'SSL Handshake Error'}
             http_object.error_state = 'SSLHandshake'
             return http_object, driver
-        else:
-            headers = {'Error': 'HTTP Error...'}
-            http_object.error_state = 'BadStatus'
-            return http_object, driver
+        headers = {'Error': 'HTTP Error...'}
+        http_object.error_state = 'BadStatus'
+        return http_object, driver
     except socket.error as e:
         if e.errno == 104:
             headers = {'Error': 'Connection Reset'}
@@ -220,9 +217,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             headers = {'Error': 'Connection Reset'}
             http_object.error_state = 'ConnReset'
             return http_object, driver
-        else:
-            http_object.error_state = 'BadStatus'
-            return http_object, driver
+        http_object.error_state = 'BadStatus'
+        return http_object, driver
     except httplib.BadStatusLine:
         http_object.error_state = 'BadStatus'
         return http_object, driver
