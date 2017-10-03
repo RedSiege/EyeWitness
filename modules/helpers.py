@@ -355,9 +355,9 @@ def textfile_parser(file_to_parse, cli_obj):
             if not cli_obj.only_ports:
                 if scheme == 'http' or scheme == 'https':
                     urls.append(line)
-                elif if scheme == 'rdp':
+                elif scheme == 'rdp':
                     rdp.append(line[6:])
-                elif if scheme == 'vnc':
+                elif scheme == 'vnc':
                     vnc.append(line[6:])
                 else:
                     if cli_obj.rdp:
