@@ -13,7 +13,7 @@ from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from urlparse import urlparse
 from login_module import checkCreds
-from regex import Regex
+
 
 class XML_Parser(xml.sax.ContentHandler):
 
@@ -349,39 +349,40 @@ def textfile_parser(file_to_parse, cli_obj):
             all_urls = [url for url in f if url.strip()]
 
         # else:
-        for url_line in all_urls:
-            url_line = url_line.strip().lower()
+        for line in all_urls:
+            line = line.strip()
+            scheme = urlparse(line)[0]
             if not cli_obj.only_ports:
-                if Regex.isHTTP(url_line):
-                    urls.append(url_line)
-                elif Regex.isRDP(url_line):
-                    rdp.append(url_line[6:])
-                elif Regex.isVNC(url_line):
-                    vnc.append(url_line[6:])
+                if scheme == 'http' or scheme == 'https':
+                    urls.append(line)
+                elif if scheme == 'rdp':
+                    rdp.append(line[6:])
+                elif if scheme == 'vnc':
+                    vnc.append(line[6:])
                 else:
                     if cli_obj.rdp:
-                        rdp.append(url_line)
+                        rdp.append(line)
                     if cli_obj.vnc:
-                        vnc.append(url_line)
+                        vnc.append(line)
                     if cli_obj.web or cli_obj.headless:
                         if cli_obj.prepend_https:
-                            urls.append("http://" + url_line)
-                            urls.append("https://" + url_line)
+                            urls.append("http://" + line)
+                            urls.append("https://" + line)
                         else:
-                            urls.append(url_line)
+                            urls.append(line)
             else:
-                if Regex.isHTTP(url_line):
+                if scheme == 'http' or scheme == 'https':
                     for port in cli_obj.only_ports:
-                        urls.append(url_line + ':' + str(port))
+                        urls.append(line + ':' + str(port))
                 else:
                     if cli_obj.web or cli_obj.headless:
                         if cli_obj.prepend_https:
                             for port in cli_obj.only_ports:
-                                urls.append("http://" + url_line + ':' + str(port))
-                                urls.append("https://" + url_line + ':' + str(port))
+                                urls.append("http://" + line + ':' + str(port))
+                                urls.append("https://" + line + ':' + str(port))
                         else:
                             for port in cli_obj.only_ports:
-                                urls.append(url_line + ':' + str(port))
+                                urls.append(line + ':' + str(port))
 
         return urls, rdp, vnc
 
@@ -739,10 +740,10 @@ def default_creds_category(http_object):
                     'Directory of /' in http_object.page_title):
                 http_object.category = 'dirlist'
             if '404 Not Found' in http_object.page_title:
-                http_object.category = 'notfound'        
+                http_object.category = 'notfound'
 
         #Performs login against host to see if it is a valid login
-        if http_object._active_scan:            
+        if http_object._active_scan:
             http_object = checkCreds(http_object)
 
         return http_object
