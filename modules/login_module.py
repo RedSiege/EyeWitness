@@ -189,7 +189,7 @@ def handle_category_match(data, http_object):
 
 def check_login_form(html_data):
     try:
-        soup = BeautifulSoup(html_data)
+        soup = BeautifulSoup(html_data, "html.parser")
         login_form = False
 
         forms = soup.find_all('form')
@@ -204,7 +204,7 @@ def check_login_form(html_data):
 def get_input_fields(html_data):
     # TODO: Consider getting new target if 301 or 302
     try:
-        soup = BeautifulSoup(html_data)
+        soup = BeautifulSoup(html_data, "html.parser")
         inputs = []
         action = None
 
