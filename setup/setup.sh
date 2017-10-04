@@ -27,8 +27,7 @@ if [[ `grep "Kali GNU/Linux.*\(2\|Rolling\)" /etc/issue` ]]; then
 fi
 
 # make sure we run from this directory
-pushd . > /dev/null
-cd "$(dirname "$0")"
+pushd . > /dev/null && cd "$(dirname "$0")"
 
 # OS Specific Installation Statement
 case ${osinfo} in
