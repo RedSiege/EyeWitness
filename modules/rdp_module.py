@@ -1,4 +1,5 @@
 import sys
+import os
 
 try:
     import rdpy.core.log as log
@@ -7,6 +8,8 @@ try:
     from rdpy.protocol.rdp import rdp
     from rdpy.ui.qt4 import RDPBitmapToQtImage
     from rdpy.core.error import RDPSecurityNegoFail
+    from PIL import Image
+    import pytesseract
 except ImportError:
     print '[*] RDP libraries not found.'
     print '[*] Please run the script in the setup directory!'
@@ -14,6 +17,20 @@ except ImportError:
 
 # set log level
 log._LOG_LEVEL = log.Level.INFO
+
+oslist = {(24, 93, 124): "Windows Server 2008 or Windows 7 Enterprise",
+          (9, 24, 67): "Windows Server 2012",
+          (0, 15, 34): "Windows 10",
+          (24, 1, 83): "Windows 8.1",
+          (0, 77, 155): "Windows XP",
+}
+
+croplist = {(24, 93, 124): (480, 455, 750, 490),
+            (9, 24, 67): (390, 400, 600, 450),
+            (0, 15, 34): (480, 440, 730, 460),
+            (24, 1, 83): (390, 400, 600, 450),
+            (0, 77, 155): (475, 285, 730, 305),
+}
 
 
 class RDPScreenShotFactory(rdp.ClientFactory):
@@ -190,3 +207,24 @@ def capture_host(cli_parsed, rdp_object):
 
     reactor.runReturn()
     app.exec_()
+
+
+def parse_screenshot(directory, rdp_object):
+    log._LOG_LEVEL = log.Level.ERROR
+    img = Image.open(rdp_object.screenshot_path)
+    pixel = img.getpixel((img.width-10, 10))
+    try:
+        crop_image = img.crop(croplist[pixel])
+        user = pytesseract.image_to_string(crop_image)
+        user = user.rpartition("\n")[2]
+        with open(directory + "/users.txt", "a") as f:
+            f.write(user+"\n")
+        with open(directory + "/os.txt", "a") as f:
+            f.write(str(rdp_object.remote_system) + ":\n")
+            f.write(oslist[pixel]+"\n")
+        with open(directory + "/domains.txt", "a") as f:
+            f.write(user.partition("\\")[0] + "\n")
+    except KeyError:
+        with open(directory + "/os.txt", "a") as f:
+            f.write(str(rdp_object.remote_system) + ":\n")
+            f.write("No valid OS found. Please add "+str(pixel)+" to oslist and determine where the username is located and add this area to croplist (both located in rdp_module)")

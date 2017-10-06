@@ -154,6 +154,9 @@ def create_cli_parser():
     resume_options.add_argument('--resume', metavar='ew.db',
                                 default=None, help='Path to db file if you want to resume')
 
+    rdp_options = parser.add_argument_group('RDP Options')
+    rdp_options.add_argument('--ocr', default=False, action='store_true', help='Use OCR to determine RDP usernames')
+
     args = parser.parse_args()
     args.date = time.strftime('%m/%d/%Y')
     args.time = time.strftime('%H:%M:%S')
@@ -400,6 +403,9 @@ def single_vnc_rdp(cli_parsed, engine):
         f.write(html)
         f.write("</table><br>")
 
+    if cli_parsed.ocr:
+        rdp_module.parse_screenshot(cli_parsed.d, obj)
+
 
 def multi_mode(cli_parsed):
     dbm = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
@@ -544,6 +550,12 @@ def multi_mode(cli_parsed):
     m.shutdown()
     write_vnc_rdp_data(cli_parsed, vnc_rdp)
     sort_data_and_write(cli_parsed, results)
+    if cli_parsed.ocr:
+        for target in targets:
+            try:
+                rdp_module.parse_screenshot(cli_parsed.d, target)
+            except IOError:
+                pass
 
 
 def multi_callback(x):
