@@ -32,7 +32,7 @@ case ${osinfo} in
   Kali2)
     apt-get update
     echo '[*] Installing Kali2 Dependencies'
-    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -45,6 +45,7 @@ case ${osinfo} in
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
+    pip install pytesseract
     cd ../bin/
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
@@ -69,7 +70,7 @@ case ${osinfo} in
   Kali)
     apt-get update
     echo '[*] Installing Kali Dependencies'
-    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -82,6 +83,7 @@ case ${osinfo} in
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
+    pip install pytesseract
     cd ../bin/
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
@@ -96,7 +98,7 @@ case ${osinfo} in
   Debian)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -112,6 +114,7 @@ case ${osinfo} in
     pip install pyasn1
     pip install pyvirtualdisplay
     pip install beautifulsoup4
+    pip install pytesseract
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -148,7 +151,7 @@ case ${osinfo} in
   Ubuntu)
     apt-get update
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev
+    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -164,6 +167,7 @@ case ${osinfo} in
     pip install pyasn1
     pip install pyvirtualdisplay
     pip install beautifulsoup4
+    pip install pytesseract
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -206,7 +210,7 @@ case ${osinfo} in
     fi
     echo '[*] Installing CentOS Dependencies'
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse xvfb python-netaddr python-dev
+                python-argparse xvfb python-netaddr python-dev tesseract-ocr
     echo
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
@@ -222,6 +226,7 @@ case ${osinfo} in
     pip install pyasn1
     pip install pyvirtualdisplay
     pip install beautifulsoup4
+    pip install pytesseract
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
