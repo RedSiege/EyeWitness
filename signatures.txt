@@ -217,8 +217,11 @@ parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryStri
 <link rel="stylesheet" href="resources/webLogin-all.css">;<title>Polycom Login</title>;<meta http-equiv="X-UA-Compatible" content="IE=edge">;Password:</label></div></div></div>;type="text" role="textbox" size="1" name="userName" class="x-form-field x-form-text|Polycom Wireless Polycom/123 (user) Polycom/456 (admin)
 <title>WebTools | Home</title>;<td align="left" valign="middle" class="name">XeroxC70;set_status_refresh_interval|Xerox C70 Printer admin/1111
 <title>S2 Netbox Login</title>;<!--License IFRAME HERE GOES HERE-->;div id="headerframe"|S2 Netbox admin/admin
-<title>Remote Support Portal | Powered by BOMGAR</title>;exitSurveyBox;Show Representatives Help Window;/content/access_key_input.js|Bomgar Device admin/password
+<title>Remote Support Portal;Powered by BOMGAR</title>;exitSurveyBox;Show Representatives Help Window;/content/access_key_input.js|Bomgar Device admin/password
 <title>Pritunl</title>;<link rel="icon" type="image/x-icon" href;onSubmit();login-form;var duoUserInput = document.getElementById('duo-username')|Pritunl VPN pritunl/pritunl
 <title>Log In - Juniper Web Device Manager</title>;document.getElementById("antiClickjack");Juniper Networks, Inc.;document.getElementById('errorMsgId')|Juniper Web Device Manager root/<blank>
 var pageRandom=new Date().getTime();var pageRandom=new Date().getTime();<span>Are you sure you want to email an emergency security code?</span>;<div class="qnap-link show">;<div class="qts-tooltip">| QNAP Device admin/admin
 This can be refactored into waitWithCallback;function sendPost( reqUrl, postData, renderPageCallback );//var thisIDRACText = EntityDecode;sendLoginRequest;id="domainDisp" name="domainDisp"|Dell iDrac root/calvin
+<img src="images/cisco-meraki.png" width="120">;<a class="device_noun">access point;<label for="site_survey_select">|Cisco Meraki <SERIALNUMBER all uppercase with dashes>/<noPass>
+var applicationLoadingMessage = function ();var applicationLoadingMessage = function ();var views = {};var panels = {}|HP Storage Manager manage/!manage or monitor/!monitor
+<title>Lexmark MS312dn</title>;<frame name="Printer Information";<!-- Lexmark -->;This page uses frames|Lexmark Printer MS312dn <blank>/<blank>

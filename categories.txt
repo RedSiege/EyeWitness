@@ -331,3 +331,6 @@ Management Studio - Redirection;Refresh;ManagementStudio|redirector
 <title>Log In - Juniper Web Device Manager</title>;document.getElementById("antiClickjack");Juniper Networks, Inc.;document.getElementById('errorMsgId')|infrastructure
 var pageRandom=new Date().getTime();var pageRandom=new Date().getTime();<span>Are you sure you want to email an emergency security code?</span>;<div class="qnap-link show">;<div class="qts-tooltip">|nas
 This can be refactored into waitWithCallback;function sendPost( reqUrl, postData, renderPageCallback );//var thisIDRACText = EntityDecode;sendLoginRequest;id="domainDisp" name="domainDisp"|highval
+<img src="images/cisco-meraki.png" width="120">;<a class="device_noun">access point;<label for="site_survey_select">|netdev
+var applicationLoadingMessage = function ();var applicationLoadingMessage = function ();var views = {};var panels = {}|nas
+<title>Lexmark MS312dn</title>;<frame name="Printer Information";<!-- Lexmark -->;This page uses frames|printer
