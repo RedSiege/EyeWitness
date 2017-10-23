@@ -1,3 +1,0 @@
-To download a Windows binary version (EyeWitness.exe), grab it from here:
-
-https://www.christophertruncer.com/InstallMe/EyeWitness.exe
