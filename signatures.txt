@@ -225,3 +225,8 @@ This can be refactored into waitWithCallback;function sendPost( reqUrl, postData
 <img src="images/cisco-meraki.png" width="120">;<a class="device_noun">access point;<label for="site_survey_select">|Cisco Meraki <SERIALNUMBER all uppercase with dashes>/<noPass>
 var applicationLoadingMessage = function ();var applicationLoadingMessage = function ();var views = {};var panels = {}|HP Storage Manager manage/!manage or monitor/!monitor
 <title>Lexmark MS312dn</title>;<frame name="Printer Information";<!-- Lexmark -->;This page uses frames|Lexmark Printer MS312dn <blank>/<blank>
+script type="text/JavaScript";location.href = "/sclogin.html;op.document.location.href = "/index.html;document.location.href = "/login.html|Dell iDrac root/calvin
+Polycom Web Configuration Utility;Welcome to Polycom Web Configuration Utility;Enter Login Information;submitLoginInfo()|Polycom SoundStructure admin/456
+loginHeader;Bricked AWS SCSH Appliance Pane;SteelConnect Manager;confirmPasswordField;currPasswordField;helpPaneCloseButtonContainer|Riverbed Steelhead admin/password
+Polycom;Media Suite;You are using an;LOGIN.USER_ID;inputPassword3;LOGIN.PASSWORD|Polycom RealPresence admin/<deviceserialnumberofgroupsystem>
+<title>GigaVUE-OS</title>;checkIfMasterIp;response.localClusterMode;encodeURIComponent;httpUserName;httpUserPwd|Gigavue-OS admin/admin123A!

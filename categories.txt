@@ -334,3 +334,8 @@ This can be refactored into waitWithCallback;function sendPost( reqUrl, postData
 <img src="images/cisco-meraki.png" width="120">;<a class="device_noun">access point;<label for="site_survey_select">|netdev
 var applicationLoadingMessage = function ();var applicationLoadingMessage = function ();var views = {};var panels = {}|nas
 <title>Lexmark MS312dn</title>;<frame name="Printer Information";<!-- Lexmark -->;This page uses frames|printer
+script type="text/JavaScript";location.href = "/sclogin.html;op.document.location.href = "/index.html;document.location.href = "/login.html|highval
+Polycom Web Configuration Utility;Welcome to Polycom Web Configuration Utility;Enter Login Information;submitLoginInfo()|voip
+loginHeader;Bricked AWS SCSH Appliance Pane;SteelConnect Manager;confirmPasswordField;currPasswordField;helpPaneCloseButtonContainer|infrastructure
+Polycom;Media Suite;You are using an;LOGIN.USER_ID;inputPassword3;LOGIN.PASSWORD|voip
+<title>GigaVUE-OS</title>;checkIfMasterIp;response.localClusterMode;encodeURIComponent;httpUserName;httpUserPwd|netdev
