@@ -241,3 +241,7 @@ siteAuthReqd;loginReqdChkd;loginFailed;getUnityInfo;updReturnPageChgMode;documen
 framebreakout;<title>Cisco Web Accessible Phone Settings</title>;sym_Password;sym_DPBPwd|Cisco 7936 Cisco IP Conference Station password **#
 <title>NETGEAR ReadyNAS</title>;fostmedm-webfont.eot;link_remote_access_policy;ExtJs|NETGEAR ReadyNAS admin/password
 <title>Datamax-O'Neil Printer Page</title>;scrolling="auto" src="info.html">;meta name="ProgId"|Datamax O'Neil Printer password is "sysadm", "system", or "access"
+<title>Forcepoint Appliance</title>;For assistance with specific CLI commands, see the;Use the Content Gateway Manager;prodSelect_button|WebSense Content Gateway admin/<passwordsetatinstall>
+ATEN International Co Ltd;LANG_LOGIN_INVALID_USERNAME;LANG_LOGIN_INVALID_PASSWORD;form1.pwd.focus();LANG_LOGIN_PROMPT|SuperMicro admin/admin
+<title>Pure Storage Login</title>;pure-help;pure-header-links-action;type="password" style="float;groupOption|PureStorage pureuser/pureuser
+<title>Honeywell Building Control</title>;printCardholderManagementSection;message-install_silverlight;checkIfDotNetIsInstalled;HMIWeb Browser links|HoneyWell HVAC honeywell/webs (passphrase is websn4)
