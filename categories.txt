@@ -339,3 +339,7 @@ Polycom Web Configuration Utility;Welcome to Polycom Web Configuration Utility;E
 loginHeader;Bricked AWS SCSH Appliance Pane;SteelConnect Manager;confirmPasswordField;currPasswordField;helpPaneCloseButtonContainer|infrastructure
 Polycom;Media Suite;You are using an;LOGIN.USER_ID;inputPassword3;LOGIN.PASSWORD|voip
 <title>GigaVUE-OS</title>;checkIfMasterIp;response.localClusterMode;encodeURIComponent;httpUserName;httpUserPwd|netdev
+<title>Log On</title>;<body id="logonbg" onload="placeFocus()">;User Name</dt>;<a href="http://www.apc.com"|infrastructure
+meta http-equiv="Content-Type" content="text/html;img src="iisstart.png" alt="IIS";<div id="container">|crap
+SteelHead WAN optimization;Bricked AWS SCSH Appliance Pane;rvbdLoginLogoContainer;usernameField|netdev
+login-container;form class="form-horizontal";CSRF_TOKEN;h4 class="title">Login</h4>;SpinetiX</a></div>|infrastructure
