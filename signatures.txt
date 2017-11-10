@@ -233,3 +233,11 @@ Polycom;Media Suite;You are using an;LOGIN.USER_ID;inputPassword3;LOGIN.PASSWORD
 <title>Log On</title>;<body id="logonbg" onload="placeFocus()">;User Name</dt>;<a href="http://www.apc.com"|Schneider Electric UPS apc/apc
 SteelHead WAN optimization;Bricked AWS SCSH Appliance Pane;rvbdLoginLogoContainer;usernameField|Riverbed SteelHead admin/password
 login-container;form class="form-horizontal";CSRF_TOKEN;h4 class="title">Login</h4>;SpinetiX</a></div>|Spinetix admin/admin
+<title>Avocent DSR8035 Explorer;iframe id="status-source";td class="app-title" id="app-title";setRootNavNode|Avocent DSR8035 admin/<nopass>
+<title>;Web Image Monitor</title>;src="header.cgi";title="Header Area";src="topPage.cgi"|Ricoh Printer admin/<blank>
+g_direction = "rtl";forceReloadNav;kAllowDirectHTMLFileAccess;getUTF8Name;hdaccelerator;sipuseadcred|Polycom HDX password is 14 digit serial number
+siteAuthReqd;loginReqdChkd;loginFailed;getUnityInfo;updReturnPageChgMode;document.getElementById('loginMsg')|Emerson Network Power - (possibly admin/admin)
+<title>Webtools</title>;URL=wt2parser.cgi?home_en;selectedIndex;textsmall;name="inside" src="wt2parser.cgi?status_en.htm"|Fiery Printer admin/Fiery.1
+framebreakout;<title>Cisco Web Accessible Phone Settings</title>;sym_Password;sym_DPBPwd|Cisco 7936 Cisco IP Conference Station password **#
+<title>NETGEAR ReadyNAS</title>;fostmedm-webfont.eot;link_remote_access_policy;ExtJs|NETGEAR ReadyNAS admin/password
+<title>Datamax-O'Neil Printer Page</title>;scrolling="auto" src="info.html">;meta name="ProgId"|Datamax O'Neil Printer password is "sysadm", "system", or "access"

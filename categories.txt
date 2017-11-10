@@ -343,3 +343,14 @@ Polycom;Media Suite;You are using an;LOGIN.USER_ID;inputPassword3;LOGIN.PASSWORD
 meta http-equiv="Content-Type" content="text/html;img src="iisstart.png" alt="IIS";<div id="container">|crap
 SteelHead WAN optimization;Bricked AWS SCSH Appliance Pane;rvbdLoginLogoContainer;usernameField|netdev
 login-container;form class="form-horizontal";CSRF_TOKEN;h4 class="title">Login</h4>;SpinetiX</a></div>|infrastructure
+<title>Avocent DSR8035 Explorer;iframe id="status-source";td class="app-title" id="app-title";setRootNavNode|infrastructure
+<title>;Web Image Monitor</title>;src="header.cgi";title="Header Area";src="topPage.cgi"|printer
+g_direction = "rtl";forceReloadNav;kAllowDirectHTMLFileAccess;getUTF8Name;hdaccelerator;sipuseadcred|voip
+siteAuthReqd;loginReqdChkd;loginFailed;getUnityInfo;updReturnPageChgMode;document.getElementById('loginMsg')|infrastructure
+<title>Webtools</title>;URL=wt2parser.cgi?home_en;selectedIndex;textsmall;name="inside" src="wt2parser.cgi?status_en.htm"|printer
+framebreakout;<title>Cisco Web Accessible Phone Settings</title>;sym_Password;sym_DPBPwd|voip
+<title>NETGEAR ReadyNAS</title>;fostmedm-webfont.eot;link_remote_access_policy;ExtJs|nas
+<title>Datamax-O'Neil Printer Page</title>;scrolling="auto" src="info.html">;meta name="ProgId"|printer
+Cisco Unified IP Phone CP-7970G;Device Information;Serviceability;device.statistics.streaming.1|voip
+secure/ltx_conf.htm;sTargetURL;window.location.href = sTargetURL;doRedirect|infrastructure
+browsehappy;meta name="viewport" content;esxUiApp;$root.title;div ui-view|highval
