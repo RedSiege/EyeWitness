@@ -341,6 +341,8 @@ def textfile_parser(file_to_parse, cli_obj):
     urls = []
     rdp = []
     vnc = []
+    openports = {}
+    complete_urls = []
 
     try:
         # Open the URL file and read all URLs, and reading again to catch
@@ -382,6 +384,51 @@ def textfile_parser(file_to_parse, cli_obj):
                         else:
                             for port in cli_obj.only_ports:
                                 urls.append(line + ':' + str(port))
+        
+        # Look at URLs and make CSV output of open ports unless already parsed from XML output
+        # This parses the text file
+        for url_again in all_urls:
+            url_again = url_again.strip()
+            complete_urls.append(url_again)
+            if url_again.count(":") == 2:
+                port_number = int(url_again.split(":")[2].split("/")[0])
+                hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
+                if port_number in openports:
+                    openports[port_number] += "," + hostname_again
+                else:
+                    openports[port_number] = hostname_again
+            else:
+                if "https://" in url_again:
+                    if 443 in openports:
+                        openports[443] += "," + url_again
+                    else:
+                        openports[443] = url_again
+                else:
+                    if 80 in openports:
+                        openports[80] += "," + url_again
+                    else:
+                        openports[80] = url_again
+
+        # Start prepping to write out the CSV
+        csv_data = "URL"
+        ordered_ports = sorted(openports.iterkeys())
+        for opn_prt in ordered_ports:
+            csv_data += "," + str(opn_prt)
+
+        # Create the CSV data row by row
+        for ind_system in complete_urls:
+            # add new line and add hostname
+            csv_data += '\n'
+            csv_data += ind_system + ","
+            for test_for_port in ordered_ports:
+                if ind_system in openports[test_for_port]:
+                    csv_data += "X,"
+                else:
+                    csv_data += ","
+
+        # Write out CSV
+        with open(cli_obj.d + "/open_ports.csv", 'w') as csv_file_out:
+            csv_file_out.write(csv_data)
 
         return urls, rdp, vnc
 
