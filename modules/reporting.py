@@ -177,7 +177,6 @@ def sort_data_and_write(cli_parsed, data):
     if total_results == 0:
         return
     # Initialize stuff we need
-    pages = []
     toc = create_report_toc_head(cli_parsed.date, cli_parsed.time)
     toc_table = "<table class=\"table\">"
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
