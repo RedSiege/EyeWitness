@@ -300,31 +300,19 @@ def create_web_index_head(date, time):
         String: HTTP Report Start html
     """
     return ("""<html>
-        <head>
+    <head>
         <title>EyeWitness Report</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <!-- DataTables and Bootstrap CSS -->
         <link rel="stylesheet" href="bootstrap.min.css">
         <link rel="stylesheet" href="bootstrap.css">
         <link rel="stylesheet" href="dataTables.bootstrap4.min.css">
-        <script src="jquery-1.11.3.min.js"></script>
-        <script type="text/javascript">
-        function toggleUA(id, url){{
-        idi = "." + id;
-        $(idi).toggle();
-        change = document.getElementById(id);
-        if (change.innerHTML.indexOf("expand") > -1){{
-            change.innerHTML = "Click to collapse User Agents for " + url;
-        }}else{{
-            change.innerHTML = "Click to expand User Agents for " + url;
-        }}
-        }}
-        </script>
-        </head>
-        <body>
-        <center>
-        <center>Report Generated on {0} at {1}</center>""").format(date, time)
+    </head>
+    <body>
+        <div class="container=fluid">
+            <div class="text-center" style="padding: 20px;">
+                <h2>Table of Contents</h2>
+                <center>Report Generated on {0} at {1}</center>""").format(date, time)
 
 
 def search_index_head():
