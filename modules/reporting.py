@@ -10,8 +10,7 @@ except ImportError:
 
 
 def process_group(
-        data, group, toc, toc_table, page_num, section,
-        sectionid, html):
+        data, group, section, sectionid, html):
     """Retreives a group from the full data, and creates toc stuff
 
     Args:
@@ -19,7 +18,6 @@ def process_group(
         group (String): String representing group to process
         toc (String): HTML for Table of Contents
         toc_table (String): HTML for Table in ToC
-        page_num (int): Page number we're on in the report
         section (String): Display name of the group
         sectionid (String): Unique ID for ToC navigation
         html (String): HTML for current page of report
@@ -35,13 +33,7 @@ def process_group(
 
     grouped_elements = []
     if len(group_data) == 0:
-        return grouped_elements, toc, toc_table, html
-    if page_num == 0:
-        toc += ("<li><a href=\"report.html#{0}\">{1} (Page 1)</a></li>").format(
-            sectionid, section)
-    else:
-        toc += ("<li><a href=\"report_page{0}.html#{1}\">{2} (Page {0})</a></li>").format(
-            str(page_num+1), sectionid, section)
+        return grouped_elements, html
 
     html += "<h2 id=\"{0}\">{1}</h2>".format(sectionid, section)
     unknowns = [x for x in group_data if x.page_title == 'Unknown']
@@ -57,9 +49,7 @@ def process_group(
             test_element.page_title, x.page_title) < 70]
 
     grouped_elements.extend(unknowns)
-    toc_table += ("<tr><td>{0}</td><td>{1}</td>").format(section,
-                                                         str(len(grouped_elements)))
-    return grouped_elements, toc, toc_table, html
+    return grouped_elements, html
 
 
 def write_vnc_rdp_data(cli_parsed, data):
@@ -177,11 +167,7 @@ def sort_data_and_write(cli_parsed, data):
     if total_results == 0:
         return
     # Initialize stuff we need
-    toc = create_report_toc_head(cli_parsed.date, cli_parsed.time)
-    toc_table = "<table class=\"table\">"
-    web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
-    table_head = create_table_head()
-    counter = 1
+    html_head_info = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
     # Pre-filter error entries
     errors = sorted([x for x in data if x.error_state is not None],
@@ -191,102 +177,21 @@ def sort_data_and_write(cli_parsed, data):
     html = u""
     # Loop over our categories and populate HTML
     for cat in categories:
-        grouped, toc, toc_table, html = process_group(
-            data, cat[0], toc, toc_table, len(pages), cat[1], cat[2], html)
+        grouped, html = process_group(
+            data, cat[0], cat[1], cat[2], html)
         if len(grouped) > 0:
-            html += table_head
+            print(grouped[0]._category)
+
         pcount = 0
         for obj in grouped:
+            print(obj)
             pcount += 1
             html += obj.create_table_html()
-            if counter % cli_parsed.results == 0:
-                html = (web_index_head + "EW_REPLACEME" + html +
-                        "</table><br>")
-                pages.append(html)
-                html = u""
-                if pcount < len(grouped):
-                    html += table_head
-            counter += 1
-        if len(grouped) > 0 and counter - 1 % cli_parsed.results != 0:
-            html += "</table><br>"
 
-    # Add our errors here (at the very very end)
-    if len(errors) > 0:
-        html += '<h2>Errors</h2>'
-        html += table_head
-        for obj in errors:
-            html += obj.create_table_html()
-            if counter % cli_parsed.results == 0:
-                html = (web_index_head + "EW_REPLACEME" + html +
-                        "</table><br>")
-                pages.append(html)
-                html = u"" + table_head
-            counter += 1
-
-    # Close out any stuff thats hanging
-    toc += "</ul>"
-    toc_table += "<tr><td>Errors</td><td>{0}</td></tr>".format(
-        str(len(errors)))
-    toc_table += "<tr><th>Total</th><td>{0}</td></tr>".format(total_results)
-    toc_table += "</table>"
-
-    if html != u"":
-        html = (web_index_head + "EW_REPLACEME" + html +
-                "</table><br>")
-        pages.append(html)
-
-    toc = "<center>{0}<br><br>{1}<br><br></center>".format(toc, toc_table)
-
-    if len(pages) == 1:
-        with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
-            f.write(toc)
-            f.write(pages[0].replace('EW_REPLACEME', ''))
-            f.write("</body>\n</html>")
-    else:
-        num_pages = len(pages) + 1
-        bottom_text = "\n<center><br>"
-        bottom_text += ("<a href=\"report.html\"> Page 1</a>")
-        # Generate our header/footer data here
-        for i in range(2, num_pages):
-            bottom_text += ("<a href=\"report_page{0}.html\"> Page {0}</a>").format(
-                str(i))
-        bottom_text += "</center>\n"
-        top_text = bottom_text
-        # Generate our next/previous page buttons
-        for i in range(0, len(pages)):
-            headfoot = "<center>"
-            if i == 0:
-                headfoot += ("<a href=\"report_page2.html\"> Next Page "
-                             "</a></center>")
-            elif i == len(pages) - 1:
-                if i == 1:
-                    headfoot += ("<a href=\"report.html\"> Previous Page "
-                                 "</a></center>")
-                else:
-                    headfoot += ("<a href=\"report_page{0}.html\"> Previous Page "
-                                 "</a></center>").format(str(i))
-            elif i == 1:
-                headfoot += ("<a href=\"report.html\">Previous Page</a>&nbsp"
-                             "<a href=\"report_page{0}.html\"> Next Page"
-                             "</a></center>").format(str(i+2))
-            else:
-                headfoot += ("<a href=\"report_page{0}.html\">Previous Page</a>"
-                             "&nbsp<a href=\"report_page{1}.html\"> Next Page"
-                             "</a></center>").format(str(i), str(i+2))
-            # Finalize our pages by replacing placeholder stuff and writing out
-            # the headers/footers
-            pages[i] = pages[i].replace(
-                'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
-
-        # Write out our report to disk!
-        if len(pages) == 0:
-            return
-        with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
-            f.write(toc)
-            f.write(pages[0])
-        for i in range(2, len(pages) + 1):
-            with open(os.path.join(cli_parsed.d, 'report_page{0}.html'.format(str(i))), 'w') as f:
-                f.write(pages[i - 1])
+    # Write out our report to disk!
+    with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
+        f.write(html_head_info)
+        f.write('data')
 
 
 def create_web_index_head(date, time):
@@ -345,14 +250,6 @@ def create_table_head():
         <th>Web Request Info</th>
         <th>Web Screenshot</th>
         </tr>""")
-
-
-def create_report_toc_head(date, time):
-    return ("""<html>
-        <head>
-        <title>EyeWitness Report Table of Contents</title>
-        </head>
-        <h2>Table of Contents</h2>""")
 
 
 def vnc_rdp_table_head():
