@@ -144,6 +144,7 @@ def sort_data_and_write(cli_parsed, data):
     write_report_deps(cli_parsed)
     table_data = []
     category_table = ''
+    footer_script = ''
     # We'll be using this number for our table of contents
     total_results = len(data)
     categories = [('highval', 'High Value Targets', 'highval'),
@@ -186,15 +187,28 @@ def sort_data_and_write(cli_parsed, data):
         if len(grouped) > 0:
             cat_key = grouped[0]._category
 
+            # Generate script code for the footer
+            footer_script += '\n\t\t\t$(\'#' + cat[1] + '-table\').DataTable( {\n'
+            footer_script += """\t\t\t\t\'searching\': true,
+                \'paging\': true,
+                \'info\': true,
+                \'stateSave\': true,
+                \'autoWidth\': false,
+                \'columnDefs\': [
+                    { \'width\': \'30%\', \'targets\': 0 },
+                    { \'width\': \'70%\', \'targets\': 1 }
+                ]
+            } );"""
+
             # build out link structure for top of report
             if cat[0] == cat_key:
-                html_report_output += '\n\t\t\t\t<a href=\"#' + cat[1] + '\">' + cat[1] + '</a><br />'
+                html_report_output += '\n\t\t\t\t<a href=\"#' + cat[1] + '-header\">' + cat[1] + '</a><br />'
         
             # seems out of order, but I'm going to build out the html for each category here
             # Easiest rather than adding another loop. HTML will be reassembled in the proper order
             # further down in this function
-            category_table += '\n\t\t\t<table id=\"' + cat[1] + '\" class=\"table table-sm\" width=\"100%\">'
-            category_table += '\n\t\t\t\t<h3 id=\"' + cat[1] + '\" class=\"text-center\">' + cat[1] + '</h3>'
+            category_table += '\n\t\t\t<table id=\"' + cat[1] + '-table\" class=\"table table-sm\" width=\"100%\">'
+            category_table += '\n\t\t\t\t<h3 id=\"' + cat[1] + '-header\" class=\"text-center\">' + cat[1] + '</h3>'
             category_table += '\n\t\t\t\t<thead>'
             category_table += '\n\t\t\t\t\t<tr>'
             category_table += '\n\t\t\t\t\t\t<th>Request Information</th>'
@@ -212,7 +226,7 @@ def sort_data_and_write(cli_parsed, data):
                     category_table += '\n\t\t\t\t\t\t\t<b>' + sanitize(header) + ':</b>' + sanitize(header_value) + '<br />'
                 category_table += '\n\t\t\t\t\t\t</td>'
                 category_table += '\n\t\t\t\t\t\t<td>'
-                category_table += '\n\t\t\t\t\t\t\t<img src=\"' + website._screenshot_path.split('/')[-2] + '/' + website._screenshot_path.split('/')[-1] + '\" height=\"50%\" width=\"50%\">'
+                category_table += '\n\t\t\t\t\t\t\t<img src=\"' + website._screenshot_path.split('/')[-2] + '/' + website._screenshot_path.split('/')[-1] + '\" height=\"100%\" width=\"100%\">'
                 category_table += '\n\t\t\t\t\t\t</td>'
                 category_table += '\n\t\t\t\t\t</tr>'
 
@@ -222,9 +236,9 @@ def sort_data_and_write(cli_parsed, data):
 
     # Check if errors exist, if so, add to the end of TOC
     if len(errors) > 0:
-        html_report_output += '\n\t\t\t\t<a href=\"#error">Errors</a><br />'
-        category_table += '\n\t\t\t<table id=\"error\" class=\"table table-sm\" width=\"100%\">'
-        category_table += '\n\t\t\t\t<h3 id=\"error\" class=\"text-center\">' + cat[1] + '</h3>'
+        html_report_output += '\n\t\t\t\t<a href=\"#error-header">Errors</a><br />'
+        category_table += '\n\t\t\t<table id=\"error-table\" class=\"table table-sm\" width=\"100%\">'
+        category_table += '\n\t\t\t\t<h3 id=\"error-header\" class=\"text-center\">' + cat[1] + '</h3>'
         category_table += '\n\t\t\t\t<thead>'
         category_table += '\n\t\t\t\t\t<tr>'
         category_table += '\n\t\t\t\t\t\t<th>Request Information</th>'
@@ -250,6 +264,18 @@ def sort_data_and_write(cli_parsed, data):
         category_table += '\n\t\t\t\t</tbody>'
         category_table += '\n\t\t\t</table>'
 
+        footer_script += '\n\t\t\t$(\'#error-table\').DataTable( {\n'
+        footer_script += """\t\t\t\t\'searching\': true,
+                \'paging\': true,
+                \'info\': true,
+                \'stateSave\': true,
+                \'autoWidth\': false,
+                \'columnDefs\': [
+                    { \'width\': \'30%\', \'targets\': 0 },
+                    { \'width\': \'70%\', \'targets\': 1 }
+                ]
+            } );"""
+
         # Add error table to the end of the category table
     
     # Close the div class for the table of contents
@@ -260,41 +286,19 @@ def sort_data_and_write(cli_parsed, data):
     # Then finish out report HTML
     html_report_output += category_table
     html_report_output += '\n\t\t</div><br />'
-    html_report_output += '\n\t\t<script type=\"text/javascript\" src=\"jquery-1.12.4.js\"></script>'
+    html_report_output += '\n\t\t<script type=\"text/javascript\" src=\"jquery-3.2.1.min.js\"></script>'
+    html_report_output += '\n\t\t<script type=\"text/javascript\" src=\"bootstrap.min.js\"></script>'
     html_report_output += '\n\t\t<script type=\"text/javascript\" src=\"jquery.dataTables.min.js\"></script>'
     html_report_output += '\n\t\t<script type=\"text/javascript\" src=\"dataTables.bootstrap4.min.js\"></script>'
-    html_report_output += """\n\t\t<script>
-            // Uncategorized DataTable
-            $('#uncategorized-table').DataTable( {
-                'searching': true,
-                'paging': true,
-                'info': true,
-                'stateSave': true,
-                'columnDefs': [
-                    { 'width': '50%', 'targets': 0 },
-                    { 'width': '50%', 'targets': 1 }
-                ]
-            } );
-
-            // Errors DataTable
-            $('#error-table').DataTable( {
-                'searching': true,
-                'paging': true,
-                'info': true,
-                'stateSave': true,
-                'columnDefs': [
-                    { 'width': '50%', 'targets': 0 },
-                    { 'width': '50%', 'targets': 1 }
-                ]
-            } );
-        </script>
+    html_report_output += '\n\t\t<script>'
+    html_report_output += footer_script
+    html_report_output += """\n\t\t</script>
     </body>
 </html>"""
 
     # Write out our report to disk!
     with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
         f.write(html_report_output)
-
 
 def create_web_index_head(date, time):
     """Creates the header for a http report
@@ -306,20 +310,26 @@ def create_web_index_head(date, time):
     Returns:
         String: HTTP Report Start html
     """
-    return ("""<html>
+    ret_val = """<html>
     <head>
         <title>EyeWitness Report</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href="bootstrap.min.css">
-        <link rel="stylesheet" href="bootstrap.css">
         <link rel="stylesheet" href="dataTables.bootstrap4.min.css">
+        <link rel="stylesheet" href="bootstrap.min.css">
+        <style>
+            table.dataTable tbody td {
+                word-break: break-all;
+                vertical-align: top;
+            }
+        </style>
     </head>
     <body>
         <div class="container=fluid">
             <div class="text-center" style="padding: 20px;">
-                <h2>Table of Contents</h2>
-                <center>Report Generated on {0} at {1}</center>""").format(date, time)
+                <h2>Table of Contents</h2>"""
+    ret_val += ('\n\t\t\t\t<center>Report Generated on ' + date + ' at ' + time + '</center>')
+    return ret_val
 
 
 def search_index_head():
@@ -456,6 +466,7 @@ def write_report_deps(cmd_line_obj):
     # write out css and js supporting files
     rel_path = os.path.realpath(__file__)
     dep_dir = rel_path.replace('modules/reporting.py', '') + 'deps/'
+    print(dep_dir)
     with open(dep_dir + "dataTables.bootstrap4.min.js", 'r') as dtwut:
         file1 = dtwut.read()
         with open(cmd_line_obj.d + "/dataTables.bootstrap4.min.js", 'w') as dtwut_out:
@@ -464,17 +475,17 @@ def write_report_deps(cmd_line_obj):
         file2 = dtbootjs.read()
         with open(cmd_line_obj.d + "/jquery.dataTables.min.js", 'w') as jqdtjs:
             jqdtjs.write(file2)
-    with open(dep_dir + "jquery-1.12.4.js", 'r') as jquery1124js:
+    with open(dep_dir + "jquery-3.2.1.min.js", 'r') as jquery1124js:
         file3 = jquery1124js.read()
-        with open(cmd_line_obj.d + "/jquery-1.12.4.js", 'w') as jquery1124out:
+        with open(cmd_line_obj.d + "/jquery-3.2.1.min.js", 'w') as jquery1124out:
             jquery1124out.write(file3)
-    with open(dep_dir + "bootstrap.min.css", 'r') as bootstrpmin_rd:
+    with open(dep_dir + "bootstrap.min.js", 'r') as bootstrpmin_rd:
         file4 = bootstrpmin_rd.read()
-        with open(cmd_line_obj.d + "/bootstrap.min.css", 'w') as bootstrpmin_out:
+        with open(cmd_line_obj.d + "/bootstrap.min.js", 'w') as bootstrpmin_out:
             bootstrpmin_out.write(file4)
-    with open(dep_dir + "bootstrap.css", 'r') as bootstrp_rd:
+    with open(dep_dir + "bootstrap.min.css", 'r') as bootstrp_rd:
         file5 = bootstrp_rd.read()
-        with open(cmd_line_obj.d + "/bootstrap.css", 'w') as bootstrp_out:
+        with open(cmd_line_obj.d + "/bootstrap.min.css", 'w') as bootstrp_out:
             bootstrp_out.write(file5)
     with open(dep_dir + "dataTables.bootstrap4.min.css", 'r') as bootstrpdt_rd:
         file6 = bootstrpdt_rd.read()
