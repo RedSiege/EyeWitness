@@ -474,7 +474,7 @@ def write_report_deps(cmd_line_obj):
     dep_dir = ''
     for file_path in rel_path:
         dep_dir += '/' + file_path
-    dep_dir += '/deps/'
+    dep_dir += '/bin/'
 
     with open(dep_dir + "dataTables.bootstrap4.min.js", 'r') as dtwut:
         file1 = dtwut.read()
