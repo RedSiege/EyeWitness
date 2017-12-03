@@ -2,6 +2,8 @@
 import cgi
 import os
 import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 from modules.helpers import default_creds_category
 
 try:
@@ -222,7 +224,7 @@ def sort_data_and_write(cli_parsed, data):
                 category_table += '\n\t\t\t\t\t\t<td>'
                 category_table += '\n\t\t\t\t\t\t\t<a href=\"' + website._remote_system + '\">' + website._remote_system + '</a><br />'
                 category_table += '\n\t\t\t\t\t\t\t<b>Resolved to:</b>' + website._resolved + '<br />'
-                category_table += '\n\t\t\t\t\t\t\t<b>Page Title:</b>' + website._page_title + '<br />'
+                category_table += '\n\t\t\t\t\t\t\t<b>Page Title:</b>' + sanitize(website.page_title) + '<br />'
                 for header, header_value in website.headers.iteritems():
                     category_table += '\n\t\t\t\t\t\t\t<b>' + sanitize(header) + ':</b>' + sanitize(header_value) + '<br />'
                 category_table += '\n\t\t\t\t\t\t\t<a href=\"' + website._source_path.split('/')[-2] + '/' + website._source_path.split('/')[-1] + '\">Source Code</a><br /><br />'
@@ -255,7 +257,7 @@ def sort_data_and_write(cli_parsed, data):
             category_table += '\n\t\t\t\t\t\t<td>'
             category_table += '\n\t\t\t\t\t\t\t<a href=\"' + err_website._remote_system + '\">' + err_website._remote_system + '</a><br />'
             category_table += '\n\t\t\t\t\t\t\t<b>Resolved to:</b>' + err_website._resolved + '<br />'
-            category_table += '\n\t\t\t\t\t\t\t<b>Page Title:</b>' + sanitize(err_website._page_title) + '<br />'
+            category_table += '\n\t\t\t\t\t\t\t<b>Page Title:</b>' + sanitize(err_website._page_title).encode('utf-8') + '<br />'
             for header, header_value in err_website.headers.iteritems():
                 category_table += '\n\t\t\t\t\t\t\t<b>' + sanitize(header) + ':</b>' + sanitize(header_value) + '<br />'
             category_table += '\n\t\t\t\t\t\t</td>'
@@ -473,7 +475,6 @@ def write_report_deps(cmd_line_obj):
     for file_path in rel_path:
         dep_dir += '/' + file_path
     dep_dir += '/deps/'
-    print(dep_dir)
 
     with open(dep_dir + "dataTables.bootstrap4.min.js", 'r') as dtwut:
         file1 = dtwut.read()
