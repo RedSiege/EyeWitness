@@ -232,7 +232,7 @@ def sort_data_and_write(cli_parsed, data):
                     category_table += '\n\t\t\t\t\t\t\t<b>Default Creds:</b> ' + website.default_creds
                 category_table += '\n\t\t\t\t\t\t</td>'
                 category_table += '\n\t\t\t\t\t\t<td>'
-                category_table += '\n\t\t\t\t\t\t\t<img src=\"' + website._screenshot_path.split('/')[-2] + '/' + website._screenshot_path.split('/')[-1] + '\" height=\"100%\" width=\"100%\">'
+                category_table += '\n\t\t\t\t\t\t\t<a href=\"' + website._screenshot_path.split('/')[-2] + '/' + website._screenshot_path.split('/')[-1] + '\"><img src=\"' + website._screenshot_path.split('/')[-2] + '/' + website._screenshot_path.split('/')[-1] + '\" height=\"100%\" width=\"100%\"></a>'
                 category_table += '\n\t\t\t\t\t\t</td>'
                 category_table += '\n\t\t\t\t\t</tr>'
 
