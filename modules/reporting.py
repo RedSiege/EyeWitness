@@ -2,6 +2,7 @@
 import cgi
 import os
 import sys
+from modules.helpers import default_creds_category
 
 try:
     from fuzzywuzzy import fuzz
@@ -224,6 +225,9 @@ def sort_data_and_write(cli_parsed, data):
                 category_table += '\n\t\t\t\t\t\t\t<b>Page Title:</b>' + website._page_title + '<br />'
                 for header, header_value in website.headers.iteritems():
                     category_table += '\n\t\t\t\t\t\t\t<b>' + sanitize(header) + ':</b>' + sanitize(header_value) + '<br />'
+                category_table += '\n\t\t\t\t\t\t\t<a href=\"' + website._source_path.split('/')[-2] + '/' + website._source_path.split('/')[-1] + '\">Source Code</a><br /><br />'
+                if website.default_creds is not None:
+                    category_table += '\n\t\t\t\t\t\t\t<b>Default Creds:</b> ' + website.default_creds
                 category_table += '\n\t\t\t\t\t\t</td>'
                 category_table += '\n\t\t\t\t\t\t<td>'
                 category_table += '\n\t\t\t\t\t\t\t<img src=\"' + website._screenshot_path.split('/')[-2] + '/' + website._screenshot_path.split('/')[-1] + '\" height=\"100%\" width=\"100%\">'
@@ -464,9 +468,13 @@ def search_report(cli_parsed, data, search_term):
 
 def write_report_deps(cmd_line_obj):
     # write out css and js supporting files
-    rel_path = os.path.realpath(__file__)
-    dep_dir = rel_path.replace('modules/reporting.py', '') + 'deps/'
+    rel_path = os.path.abspath(__file__).split('/')[1:-2]
+    dep_dir = ''
+    for file_path in rel_path:
+        dep_dir += '/' + file_path
+    dep_dir += '/deps/'
     print(dep_dir)
+
     with open(dep_dir + "dataTables.bootstrap4.min.js", 'r') as dtwut:
         file1 = dtwut.read()
         with open(cmd_line_obj.d + "/dataTables.bootstrap4.min.js", 'w') as dtwut_out:
