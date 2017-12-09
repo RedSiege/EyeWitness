@@ -351,7 +351,14 @@ def textfile_parser(file_to_parse, cli_obj):
         # else:
         for line in all_urls:
             line = line.strip()
+
+            # Account for odd case schemes and fix to lowercase for matching
             scheme = urlparse(line)[0]
+            if scheme == 'http':
+                line = scheme + '://' + line[7:]
+            elif scheme == 'https':
+                line = scheme + '://' + line[8:]
+
             if not cli_obj.only_ports:
                 if scheme == 'http' or scheme == 'https':
                     urls.append(line)
@@ -375,6 +382,7 @@ def textfile_parser(file_to_parse, cli_obj):
                     for port in cli_obj.only_ports:
                         urls.append(line + ':' + str(port))
                 else:
+
                     if cli_obj.web or cli_obj.headless:
                         if cli_obj.prepend_https:
                             for port in cli_obj.only_ports:
@@ -740,10 +748,10 @@ def default_creds_category(http_object):
                     'Directory of /' in http_object.page_title):
                 http_object.category = 'dirlist'
             if '404 Not Found' in http_object.page_title:
-                http_object.category = 'notfound'
+                http_object.category = 'notfound'        
 
         #Performs login against host to see if it is a valid login
-        if http_object._active_scan:
+        if http_object._active_scan:            
             http_object = checkCreds(http_object)
 
         return http_object
