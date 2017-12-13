@@ -258,8 +258,9 @@ def sort_data_and_write(cli_parsed, data):
             category_table += '\n\t\t\t\t\t\t\t<a href=\"' + err_website._remote_system + '\">' + err_website._remote_system + '</a><br />'
             category_table += '\n\t\t\t\t\t\t\t<b>Resolved to:</b>' + err_website._resolved + '<br />'
             category_table += '\n\t\t\t\t\t\t\t<b>Page Title:</b>' + sanitize(err_website._page_title).encode('utf-8') + '<br />'
-            for header, header_value in err_website.headers.iteritems():
-                category_table += '\n\t\t\t\t\t\t\t<b>' + sanitize(header) + ':</b>' + sanitize(header_value) + '<br />'
+            if type(err_website.headers) is not str:
+                for header, header_value in err_website.headers.iteritems():
+                    category_table += '\n\t\t\t\t\t\t\t<b>' + sanitize(header) + ':</b>' + sanitize(header_value) + '<br />'
             category_table += '\n\t\t\t\t\t\t</td>'
             category_table += '\n\t\t\t\t\t\t<td>'
             category_table += '\n\t\t\t\t\t\t\t' + sanitize(err_website._page_title)
@@ -390,7 +391,10 @@ def vnc_rdp_header(date, time):
 
 
 def sanitize(data):
-    return cgi.escape(data.decode('utf-8', errors='replace'), quote=True)
+	if data is not None:
+	    return cgi.escape(data.decode('utf-8', errors='replace'), quote=True)
+	else:
+		return "No Data Captured"
 
 
 def search_report(cli_parsed, data, search_term):

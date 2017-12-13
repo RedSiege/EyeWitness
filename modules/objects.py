@@ -131,7 +131,10 @@ class HTTPTableObject(object):
 
     @property
     def headers(self):
-        return self._headers
+        if hasattr(self, '_headers'):
+            return self._headers
+        else:
+            return "No Data Collected"
 
     @headers.setter
     def headers(self, headers):
