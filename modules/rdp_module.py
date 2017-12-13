@@ -4,9 +4,9 @@ import os
 try:
     import rdpy.core.log as log
 
-    from PyQt4 import QtGui
+    from PyQt5 import QtGui, QtWidgets
     from rdpy.protocol.rdp import rdp
-    from rdpy.ui.qt4 import RDPBitmapToQtImage
+    from rdpy.ui.qt5 import RDPBitmapToQtImage
     from rdpy.core.error import RDPSecurityNegoFail
     from PIL import Image
     import pytesseract
@@ -194,10 +194,10 @@ def capture_host(cli_parsed, rdp_object):
     height = 800
     timeout = cli_parsed.timeout
 
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
 
-    import qt4reactor
-    qt4reactor.install()
+    import qt5reactor
+    qt5reactor.install()
     from twisted.internet import reactor
 
     reactor.connectTCP(

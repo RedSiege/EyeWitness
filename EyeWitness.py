@@ -37,8 +37,8 @@ from multiprocessing import current_process
 try:
     from pyvirtualdisplay import Display
     import rdpy.core.log as log
-    from PyQt4 import QtGui
-    from PyQt4.QtCore import QTimer
+    from PyQt5 import QtGui, QtWidgets
+    from PyQt5.QtCore import QTimer
 except ImportError:
     print '[*] pyvirtualdisplay not found.'
     print '[*] Please run the script in the setup directory!'
@@ -512,14 +512,14 @@ def multi_mode(cli_parsed):
             print ''
             print 'Starting VNC/RDP Requests ({0} Hosts)'.format(str(multi_total))
 
-            app = QtGui.QApplication(sys.argv)
+            app = QtWidgets.QApplication(sys.argv)
             timer = QTimer()
             timer.start(10)
             timer.timeout.connect(lambda: None)
 
-            # add qt4 reactor
-            import qt4reactor
-            qt4reactor.install()
+            # add qt5 reactor
+            import qt5reactor
+            qt5reactor.install()
             from twisted.internet import reactor
 
             for target in targets:
