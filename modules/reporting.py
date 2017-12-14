@@ -153,13 +153,13 @@ def sort_data_and_write(cli_parsed, data):
     categories = [('highval', 'High Value Targets', 'highval'),
                   ('dirlist', 'Directory Listings', 'dirlist'),
                   (None, 'Uncategorized', 'uncat'),
-                  ('cms', 'Content Management System (CMS)', 'cms'),
-                  ('idrac', 'IDRAC/ILo/Management Interfaces', 'idrac'),
-                  ('nas', 'Network Attached Storage (NAS)', 'nas'),
+                  ('cms', 'Content Management System', 'cms'),
+                  ('idrac', 'IDRAC or ILo Management Interfaces', 'idrac'),
+                  ('nas', 'Network Attached Storage', 'nas'),
                   ('construction', 'Under Construction', 'construction'),
                   ('netdev', 'Network Devices', 'netdev'),
-                  ('voip', 'Voice/Video over IP (VoIP)', 'voip'),
-                  ('unauth', '401/403 Unauthorized', 'unauth'),
+                  ('voip', 'Voice or Video over IP', 'voip'),
+                  ('unauth', '401 or 403 Unauthorized', 'unauth'),
                   ('notfound', '404 Not Found', 'notfound'),
                   ('crap', 'Splash Pages', 'crap'),
                   ('printer', 'Printers', 'printer'),
@@ -191,7 +191,7 @@ def sort_data_and_write(cli_parsed, data):
             cat_key = grouped[0]._category
 
             # Generate script code for the footer
-            footer_script += '\n\t\t\t$(\'#' + cat[1] + '-table\').DataTable( {\n'
+            footer_script += '\n\t\t\t$(\'#' + cat[1].replace(' ', '-') + '-table\').DataTable( {\n'
             footer_script += """\t\t\t\t\'searching\': true,
                 \'paging\': true,
                 \'info\': true,
@@ -205,13 +205,13 @@ def sort_data_and_write(cli_parsed, data):
 
             # build out link structure for top of report
             if cat[0] == cat_key:
-                html_report_output += '\n\t\t\t\t<a href=\"#' + cat[1] + '-header\">' + cat[1] + '</a><br />'
+                html_report_output += '\n\t\t\t\t<a href=\"#' + cat[1].replace(' ', '-') + '-header\">' + cat[1] + '</a><br />'
         
             # seems out of order, but I'm going to build out the html for each category here
             # Easiest rather than adding another loop. HTML will be reassembled in the proper order
             # further down in this function
-            category_table += '\n\t\t\t<table id=\"' + cat[1] + '-table\" class=\"table table-sm\" width=\"100%\">'
-            category_table += '\n\t\t\t\t<h3 id=\"' + cat[1] + '-header\" class=\"text-center\">' + cat[1] + '</h3>'
+            category_table += '\n\t\t\t<table id=\"' + cat[1].replace(' ', '-') + '-table\" class=\"table table-sm\" width=\"100%\">'
+            category_table += '\n\t\t\t\t<h3 id=\"' + cat[1].replace(' ', '-') + '-header\" class=\"text-center\">' + cat[1] + '</h3>'
             category_table += '\n\t\t\t\t<thead>'
             category_table += '\n\t\t\t\t\t<tr>'
             category_table += '\n\t\t\t\t\t\t<th>Request Information</th>'
@@ -284,7 +284,7 @@ def sort_data_and_write(cli_parsed, data):
             } );"""
 
         # Add error table to the end of the category table
-    
+
     # Close the div class for the table of contents
     html_report_output += '\n\t\t\t</div>'
 
