@@ -168,7 +168,7 @@ case ${osinfo} in
     pip install pyvirtualdisplay
     pip install beautifulsoup4
     pip install pytesseract
-    pip install enum43
+    pip install enum34
     pip install ipaddress
     pip install asn1crypto
     echo
