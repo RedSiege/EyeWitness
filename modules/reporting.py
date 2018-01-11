@@ -238,7 +238,7 @@ def sort_data_and_write(cli_parsed, data):
 
             # End the table
             category_table += '\n\t\t\t\t</tbody>'
-            category_table += '\n\t\t\t</table>'
+            category_table += '\n\t\t\t</table><br><br><hr align="center" color="#CC0000" width="75%"><br><br>\n'
 
     # Check if errors exist, if so, add to the end of TOC
     if len(errors) > 0:
