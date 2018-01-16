@@ -358,3 +358,23 @@ browsehappy;meta name="viewport" content;esxUiApp;$root.title;div ui-view|highva
 ATEN International Co Ltd;LANG_LOGIN_INVALID_USERNAME;LANG_LOGIN_INVALID_PASSWORD;form1.pwd.focus();LANG_LOGIN_PROMPT|netdev
 <title>Pure Storage Login</title>;pure-help;pure-header-links-action;type="password" style="float;groupOption|nas
 <title>Honeywell Building Control</title>;printCardholderManagementSection;message-install_silverlight;checkIfDotNetIsInstalled;HMIWeb Browser links|infrastructure
+Printer with Embedded Web Server;www.office.xerox.com;ColorQube 8580;LaunchDrivers()|printer
+<title>Brother QL-720;getCookie(key);/printer/ball.gif;Brother Industries, Ltd;END OFSELECT LANGUAGE|printer
+<title>Directory Listing --;<i>Directory Listing --|dirlist
+<title>Login - NetScout Systems, Inc;loadClientLocale();popUpBlockingActive();setPassword()|infrastructure
+ProCurve 6120XG Blade Switch;openRegistrationWindow();var dws = new Array()|infrastructure
+Hewlett-Packard Development Company;HP Virtual Connect Manager;<title>HP Virtual Connect Manager</title>|virtualization
+<title class="_ctxstxt_AppStore">;receiver/css/ctxs.no;aboutphoneBackBtn;citrixReceiverLogoAboutBox|virtualization
+<title>Welcome to Service Assistant</title>;var clusterAddressLabel;showIPDiv();svcProductMtm|nas
+<title>IBM HTTP Server 8.5.5</title>;COPYRIGHT International Business Machines Corporation;images/odot.gif|crap
+Micro Focus Enterprise Server Administration</title>;clearItemChanged();makeAlphaNumeric;setLHSmenu()|infrastructure
+<title>DataStax OpsCenter</title>;css/ripcord.css;parseAppParams();Function.prototype.bind|infrastructure
+<title>SevOne NMS - Network Manager</title>;isSevOneSecurityEnabled;initiateTitleBarCheck|infrastructure
+<title>Unisphere</title>;onload="init();Unisphere user name;BtnLoginStyle;buttonDivContainer|infrastructure
+<title>;Load Dynamix Enterprise;ember1218;home/whatsnew;apidocs;user_remember_me|infrastructure
+<title>RStudio Sign In</title>;function verifyMe();payload;submitRealForm()|netdev
+<title>SANscreen by NetApp</title>;/branding/logo_head_fill.png;common/menu.do|nas
+<title>Grafana</title>;grafana-app class="grafana-app";grafanaBootData;/dashboard/snapshots|infrastructure
+Management Console</title>;<title>Cloud;setGMToffset;updateGroupInput;groupid|nas
+<title>Identity Services Engine</title>;login_action;idSrcCkVal;onEnterSubmitUnPwd|infrastructure
+ExtraHop Login;/media/css/loginout.css;document.login.username.focus();loginContainer|infrastructure

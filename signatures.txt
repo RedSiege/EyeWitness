@@ -245,3 +245,19 @@ framebreakout;<title>Cisco Web Accessible Phone Settings</title>;sym_Password;sy
 ATEN International Co Ltd;LANG_LOGIN_INVALID_USERNAME;LANG_LOGIN_INVALID_PASSWORD;form1.pwd.focus();LANG_LOGIN_PROMPT|SuperMicro admin/admin
 <title>Pure Storage Login</title>;pure-help;pure-header-links-action;type="password" style="float;groupOption|PureStorage pureuser/pureuser
 <title>Honeywell Building Control</title>;printCardholderManagementSection;message-install_silverlight;checkIfDotNetIsInstalled;HMIWeb Browser links|HoneyWell HVAC honeywell/webs (passphrase is websn4)
+Printer with Embedded Web Server;www.office.xerox.com;ColorQube 8580;LaunchDrivers()|ColorQube 8580 <nouser or pass by default>
+<title>Brother QL-720;getCookie(key);/printer/ball.gif;Brother Industries, Ltd;END OFSELECT LANGUAGE|Brother QL-720 admin/access
+<title>Login - NetScout Systems, Inc;loadClientLocale();popUpBlockingActive();setPassword()|NetScout nGenius <password set at install>
+ProCurve 6120XG Blade Switch;openRegistrationWindow();var dws = new Array()|ProCurve 6120X Blade Switch <no password by default>
+Hewlett-Packard Development Company;HP Virtual Connect Manager;<title>HP Virtual Connect Manager</title>|HP Virtual Connect Manager <pass on label on physical device>
+<title class="_ctxstxt_AppStore">;receiver/css/ctxs.no;aboutphoneBackBtn;citrixReceiverLogoAboutBox|Citrix Receiver <Windows Auth most likely>
+<title>Welcome to Service Assistant</title>;var clusterAddressLabel;showIPDiv();svcProductMtm|IBM FlashSystem 900 passw0rd
+<title>SevOne NMS - Network Manager</title>;isSevOneSecurityEnabled;initiateTitleBarCheck|SecOne Admin/SevOne
+<title>Unisphere</title>;onload="init();Unisphere user name;BtnLoginStyle;buttonDivContainer|EMC Unisphere admin/Password123#
+<title>;Load Dynamix Enterprise;ember1218;home/whatsnew;apidocs;user_remember_me|Load Dynamix admin@example.com/welcome
+<title>RStudio Sign In</title>;function verifyMe();payload;submitRealForm()|RStudio IDE (local authentication)
+<title>SANscreen by NetApp</title>;/branding/logo_head_fill.png;common/menu.do|SANScreen admin/admin123
+<title>Grafana</title>;grafana-app class="grafana-app";grafanaBootData;/dashboard/snapshots|Grafana admin/admin
+Management Console</title>;<title>Cloud;setGMToffset;updateGroupInput;groupid|Cloudian admin/public
+<title>Identity Services Engine</title>;login_action;idSrcCkVal;onEnterSubmitUnPwd|Cisco Identity Services admin/<pass set on install>
+ExtraHop Login;/media/css/loginout.css;document.login.username.focus();loginContainer|ExtraHop (Physical Device - setup/<service tag>) or (Virtual Device - setup/default)

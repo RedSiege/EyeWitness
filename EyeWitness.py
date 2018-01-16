@@ -104,7 +104,7 @@ def create_cli_parser():
                                 help='Directory name for report output')
     report_options.add_argument('--results', metavar='Hosts Per Page',
                                 default=25, type=int, help='Number of Hosts per\
-                                 page of the report')
+                                 page of VNC or RDP report')
     report_options.add_argument('--no-prompt', default=False,
                                 action='store_true',
                                 help='Don\'t prompt to open the report')
