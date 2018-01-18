@@ -26,6 +26,9 @@ if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep
   osinfo="Kali2"
 fi
 
+# make sure we run from this directory
+pushd . > /dev/null && cd "$(dirname "$0")"
+
 # OS Specific Installation Statement
 case ${osinfo} in
   # Kali 2 dependency Install
@@ -209,6 +212,7 @@ case ${osinfo} in
       rpm -ivh ${eplpkg}
     else
       echo '[!] User Aborted EyeWitness Installation.'
+      popd > /dev/null
       exit 1
     fi
     echo '[*] Installing CentOS Dependencies'
@@ -256,9 +260,11 @@ case ${osinfo} in
   *)
     echo "[Error]: ${osinfo} is not supported by this setup script."
     echo
+    popd > /dev/null
     exit 1
 esac
 
 # Finish Message
+popd > /dev/null
 echo '[*] Setup script completed successfully, enjoy EyeWitness! :)'
 echo

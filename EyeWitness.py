@@ -256,7 +256,12 @@ def single_mode(cli_parsed):
             display = Display(visible=0, size=(1920, 1080))
             display.start()
     elif cli_parsed.headless:
-        if not os.path.isfile('./bin/phantomjs'):
+        if not os.path.isfile(
+            os.path.join(
+                os.path.dirname(
+                    os.path.realpath(__file__)
+                ), 'bin', 'phantomjs')
+        ):
             print(" [*] Error: You are missing your phantomjs binary!")
             print(" [*] Please run the setup script!")
             sys.exit(0)
@@ -315,7 +320,12 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
     elif cli_parsed.headless:
-        if not os.path.isfile('./bin/phantomjs'):
+        if not os.path.isfile(
+            os.path.join(
+                os.path.dirname(
+                    os.path.realpath(__file__)
+                ), 'bin', 'phantomjs')
+        ):
             print(" [*] Error: You are missing your phantomjs binary!")
             print(" [*] Please run the setup script!")
             sys.exit(0)
