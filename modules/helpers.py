@@ -377,12 +377,20 @@ def textfile_parser(file_to_parse, cli_obj):
         # else:
         for line in all_urls:
             line = line.strip()
+
+            # Account for odd case schemes and fix to lowercase for matching
+            scheme = urlparse(line)[0]
+            if scheme == 'http':
+                line = scheme + '://' + line[7:]
+            elif scheme == 'https':
+                line = scheme + '://' + line[8:]
+
             if not cli_obj.only_ports:
-                if line.startswith('http://') or line.startswith('https://'):
+                if scheme == 'http' or scheme == 'https':
                     urls.append(line)
-                elif line.startswith('rdp://'):
+                elif scheme == 'rdp':
                     rdp.append(line[6:])
-                elif line.startswith('vnc://'):
+                elif scheme == 'vnc':
                     vnc.append(line[6:])
                 else:
                     if cli_obj.rdp:
@@ -396,10 +404,11 @@ def textfile_parser(file_to_parse, cli_obj):
                         else:
                             urls.append(line)
             else:
-                if line.startswith('http://') or line.startswith('https://'):
+                if scheme == 'http' or scheme == 'https':
                     for port in cli_obj.only_ports:
                         urls.append(line + ':' + str(port))
                 else:
+
                     if cli_obj.web or cli_obj.headless:
                         if cli_obj.prepend_https:
                             for port in cli_obj.only_ports:
