@@ -22,7 +22,7 @@ if [ "${userid}" != '0' ]; then
   exit 1
 fi
 #Support for kali 2 and kali rolling
-if [[ `grep "Kali GNU/Linux.*\(2\|Rolling\)" /etc/issue` ]]; then
+if [[ `(lbs_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep "Kali GNU/Linux.*\(2\|Rolling\)"` ]]; then
   osinfo="Kali2"
 fi
 
