@@ -35,6 +35,9 @@ class XML_Parser(xml.sax.ContentHandler):
         self.get_ip = False
         self.service_detection = False
         self.out_file = file_out
+        self.analyze_plugin_output = False
+        self.read_plugin_output = False
+        self.plugin_output = ""
 
         self.http_ports = self.http_ports + class_cli_obj.add_http_ports
         self.https_ports = self.https_ports + class_cli_obj.add_https_ports
@@ -90,7 +93,13 @@ class XML_Parser(xml.sax.ContentHandler):
                     self.port_number = attributes['port']
 
                     service_name = attributes['svc_name']
-                    if service_name == 'https?' or self.port_number in self.https_ports:
+                    # pluginID 22964 is the Service Detection Plugin
+                    # But it uses www for the svc_name for both, http and https.
+                    # To differentiate we have to look at the plugin_output...
+                    if attributes['pluginID'] == "22964" and service_name == "www":
+                        self.protocol = "http"
+                        self.analyze_plugin_output = True
+                    elif service_name == 'https?' or self.port_number in self.https_ports:
                         self.protocol = "https"
                     elif service_name == "www" or service_name == "http?":
                         self.protocol = "http"
@@ -100,6 +109,10 @@ class XML_Parser(xml.sax.ContentHandler):
                         self.protocol = "vnc"
 
                     self.service_detection = True
+
+            elif tag == "plugin_output" and self.analyze_plugin_output:
+                self.read_plugin_output = True
+
         return
 
     def endElement(self, tag):
@@ -207,6 +220,17 @@ class XML_Parser(xml.sax.ContentHandler):
                             temp_vnc.write(vnc + '\n')
 
         elif self.nessus:
+            if tag == "plugin_output" and self.read_plugin_output:
+
+                # Use plugin_output to differentiate between http and https.
+                # "A web server is running on the remote host." indicates a http server
+                # "A web server is running on this port through ..." indicates a https server
+                if "A web server is running on this port through" in self.plugin_output:
+                    self.protocol = "https"
+
+                self.plugin_output = ""
+                self.read_plugin_output = False
+                self.analyze_plugin_output = False
             if tag == "ReportItem":
                 if not self.only_ports:
                     if (self.system_name is not None) and (self.protocol is not None) and self.service_detection:
@@ -256,8 +280,8 @@ class XML_Parser(xml.sax.ContentHandler):
                             temp_vnc.write(vnc + '\n')
 
     def characters(self, content):
-        return
-
+        if self.read_plugin_output:
+            self.plugin_output += content
 
 def duplicate_check(cli_object):
     # This is used for checking for duplicate images
