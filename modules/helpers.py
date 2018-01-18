@@ -96,11 +96,11 @@ class XML_Parser(xml.sax.ContentHandler):
                     # pluginID 22964 is the Service Detection Plugin
                     # But it uses www for the svc_name for both, http and https.
                     # To differentiate we have to look at the plugin_output...
-                    if attributes['pluginID'] == "22964" and service_name == "www":
+                    if service_name == 'https?' or self.port_number in self.https_ports:
+                        self.protocol = "https"
+                    elif attributes['pluginID'] == "22964" and service_name == "www":
                         self.protocol = "http"
                         self.analyze_plugin_output = True
-                    elif service_name == 'https?' or self.port_number in self.https_ports:
-                        self.protocol = "https"
                     elif service_name == "www" or service_name == "http?":
                         self.protocol = "http"
                     elif service_name == "msrdp":
