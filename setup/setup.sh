@@ -44,7 +44,7 @@ case ${osinfo} in
     rm -rf rdpy
     echo '[*] Installing Python Modules'
     pip install fuzzywuzzy
-    pip install selenium
+    pip install selenium==3.5.0
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
@@ -82,7 +82,7 @@ case ${osinfo} in
     rm -rf rdpy
     echo '[*] Installing Python Modules'
     pip install fuzzywuzzy
-    pip install selenium
+    pip install selenium==3.5.0
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
@@ -112,7 +112,7 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium
+    pip install selenium==3.5.0
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
@@ -165,7 +165,7 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium
+    pip install selenium==3.5.0
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
@@ -228,7 +228,7 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium
+    pip install selenium==3.5.0
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
