@@ -105,7 +105,7 @@ def create_cli_parser():
                                 help='Directory name for report output')
     report_options.add_argument('--results', metavar='Hosts Per Page',
                                 default=25, type=int, help='Number of Hosts per\
-                                 page of the report')
+                                 page of VNC or RDP report')
     report_options.add_argument('--no-prompt', default=False,
                                 action='store_true',
                                 help='Don\'t prompt to open the report')
@@ -154,6 +154,9 @@ def create_cli_parser():
     resume_options = parser.add_argument_group('Resume Options')
     resume_options.add_argument('--resume', metavar='ew.db',
                                 default=None, help='Path to db file if you want to resume')
+
+    rdp_options = parser.add_argument_group('RDP Options')
+    rdp_options.add_argument('--ocr', default=False, action='store_true', help='Use OCR to determine RDP usernames')
 
     args = parser.parse_args()
     args.date = time.strftime('%m/%d/%Y')
@@ -253,7 +256,12 @@ def single_mode(cli_parsed):
             display = Display(visible=0, size=(1920, 1080))
             display.start()
     elif cli_parsed.headless:
-        if not os.path.isfile('./bin/phantomjs'):
+        if not os.path.isfile(
+            os.path.join(
+                os.path.dirname(
+                    os.path.realpath(__file__)
+                ), 'bin', 'phantomjs')
+        ):
             print " [*] Error: You are missing your phantomjs binary!"
             print " [*] Please run the setup script!"
             sys.exit(0)
@@ -312,7 +320,12 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
     elif cli_parsed.headless:
-        if not os.path.isfile('./bin/phantomjs'):
+        if not os.path.isfile(
+            os.path.join(
+                os.path.dirname(
+                    os.path.realpath(__file__)
+                ), 'bin', 'phantomjs')
+        ):
             print " [*] Error: You are missing your phantomjs binary!"
             print " [*] Please run the setup script!"
             sys.exit(0)
@@ -399,6 +412,9 @@ def single_vnc_rdp(cli_parsed, engine):
         f.write(vnc_rdp_table_head())
         f.write(html)
         f.write("</table><br>")
+
+    if cli_parsed.ocr:
+        rdp_module.parse_screenshot(cli_parsed.d, obj)
 
 
 def multi_mode(cli_parsed):
@@ -544,6 +560,12 @@ def multi_mode(cli_parsed):
     manager.shutdown()
     write_vnc_rdp_data(cli_parsed, vnc_rdp)
     sort_data_and_write(cli_parsed, results)
+    if cli_parsed.ocr:
+        for target in targets:
+            try:
+                rdp_module.parse_screenshot(cli_parsed.d, target)
+            except IOError:
+                pass
 
 
 def multi_callback():

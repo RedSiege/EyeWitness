@@ -22,9 +22,12 @@ if [ "${userid}" != '0' ]; then
   exit 1
 fi
 #Support for kali 2 and kali rolling
-if [[ `grep "Kali GNU/Linux.*\(2\|Rolling\)" /etc/issue` ]]; then
+if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep "Kali GNU/Linux.*\(2\|Rolling\)"` ]]; then
   osinfo="Kali2"
 fi
+
+# make sure we run from this directory
+pushd . > /dev/null && cd "$(dirname "$0")"
 
 # OS Specific Installation Statement
 case ${osinfo} in
@@ -32,7 +35,7 @@ case ${osinfo} in
   Kali2)
     apt-get update
     echo '[*] Installing Kali2 Dependencies'
-    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -41,10 +44,11 @@ case ${osinfo} in
     rm -rf rdpy
     echo '[*] Installing Python Modules'
     pip install fuzzywuzzy
-    pip install selenium
+    pip install selenium==3.5.0
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
+    pip install pytesseract
     cd ../bin/
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
@@ -69,7 +73,7 @@ case ${osinfo} in
   Kali)
     apt-get update
     echo '[*] Installing Kali Dependencies'
-    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -78,10 +82,11 @@ case ${osinfo} in
     rm -rf rdpy
     echo '[*] Installing Python Modules'
     pip install fuzzywuzzy
-    pip install selenium
+    pip install selenium==3.5.0
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
+    pip install pytesseract
     cd ../bin/
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
@@ -96,7 +101,7 @@ case ${osinfo} in
   Debian)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -107,11 +112,12 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium
+    pip install selenium==3.5.0
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
     pip install beautifulsoup4
+    pip install pytesseract
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -148,7 +154,7 @@ case ${osinfo} in
   Ubuntu)
     apt-get update
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev
+    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -159,11 +165,15 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium
+    pip install selenium==3.5.0
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
     pip install beautifulsoup4
+    pip install pytesseract
+    pip install enum34
+    pip install ipaddress
+    pip install asn1crypto
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -202,11 +212,12 @@ case ${osinfo} in
       rpm -ivh ${eplpkg}
     else
       echo '[!] User Aborted EyeWitness Installation.'
+      popd > /dev/null
       exit 1
     fi
     echo '[*] Installing CentOS Dependencies'
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse xvfb python-netaddr python-dev
+                python-argparse xvfb python-netaddr python-dev tesseract-ocr
     echo
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
@@ -217,11 +228,12 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium
+    pip install selenium==3.5.0
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
     pip install beautifulsoup4
+    pip install pytesseract
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -248,9 +260,11 @@ case ${osinfo} in
   *)
     echo "[Error]: ${osinfo} is not supported by this setup script."
     echo
+    popd > /dev/null
     exit 1
 esac
 
 # Finish Message
+popd > /dev/null
 echo '[*] Setup script completed successfully, enjoy EyeWitness! :)'
 echo

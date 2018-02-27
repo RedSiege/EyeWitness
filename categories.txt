@@ -331,3 +331,50 @@ Management Studio - Redirection;Refresh;ManagementStudio|redirector
 <title>Log In - Juniper Web Device Manager</title>;document.getElementById("antiClickjack");Juniper Networks, Inc.;document.getElementById('errorMsgId')|infrastructure
 var pageRandom=new Date().getTime();var pageRandom=new Date().getTime();<span>Are you sure you want to email an emergency security code?</span>;<div class="qnap-link show">;<div class="qts-tooltip">|nas
 This can be refactored into waitWithCallback;function sendPost( reqUrl, postData, renderPageCallback );//var thisIDRACText = EntityDecode;sendLoginRequest;id="domainDisp" name="domainDisp"|highval
+<img src="images/cisco-meraki.png" width="120">;<a class="device_noun">access point;<label for="site_survey_select">|netdev
+var applicationLoadingMessage = function ();var applicationLoadingMessage = function ();var views = {};var panels = {}|nas
+<title>Lexmark MS312dn</title>;<frame name="Printer Information";<!-- Lexmark -->;This page uses frames|printer
+script type="text/JavaScript";location.href = "/sclogin.html;op.document.location.href = "/index.html;document.location.href = "/login.html|highval
+Polycom Web Configuration Utility;Welcome to Polycom Web Configuration Utility;Enter Login Information;submitLoginInfo()|voip
+loginHeader;Bricked AWS SCSH Appliance Pane;SteelConnect Manager;confirmPasswordField;currPasswordField;helpPaneCloseButtonContainer|infrastructure
+Polycom;Media Suite;You are using an;LOGIN.USER_ID;inputPassword3;LOGIN.PASSWORD|voip
+<title>GigaVUE-OS</title>;checkIfMasterIp;response.localClusterMode;encodeURIComponent;httpUserName;httpUserPwd|netdev
+<title>Log On</title>;<body id="logonbg" onload="placeFocus()">;User Name</dt>;<a href="http://www.apc.com"|infrastructure
+meta http-equiv="Content-Type" content="text/html;img src="iisstart.png" alt="IIS";<div id="container">|crap
+SteelHead WAN optimization;Bricked AWS SCSH Appliance Pane;rvbdLoginLogoContainer;usernameField|netdev
+login-container;form class="form-horizontal";CSRF_TOKEN;h4 class="title">Login</h4>;SpinetiX</a></div>|infrastructure
+<title>Avocent DSR8035 Explorer;iframe id="status-source";td class="app-title" id="app-title";setRootNavNode|infrastructure
+<title>;Web Image Monitor</title>;src="header.cgi";title="Header Area";src="topPage.cgi"|printer
+g_direction = "rtl";forceReloadNav;kAllowDirectHTMLFileAccess;getUTF8Name;hdaccelerator;sipuseadcred|voip
+siteAuthReqd;loginReqdChkd;loginFailed;getUnityInfo;updReturnPageChgMode;document.getElementById('loginMsg')|infrastructure
+<title>Webtools</title>;URL=wt2parser.cgi?home_en;selectedIndex;textsmall;name="inside" src="wt2parser.cgi?status_en.htm"|printer
+framebreakout;<title>Cisco Web Accessible Phone Settings</title>;sym_Password;sym_DPBPwd|voip
+<title>NETGEAR ReadyNAS</title>;fostmedm-webfont.eot;link_remote_access_policy;ExtJs|nas
+<title>Datamax-O'Neil Printer Page</title>;scrolling="auto" src="info.html">;meta name="ProgId"|printer
+Cisco Unified IP Phone CP-7970G;Device Information;Serviceability;device.statistics.streaming.1|voip
+secure/ltx_conf.htm;sTargetURL;window.location.href = sTargetURL;doRedirect|infrastructure
+browsehappy;meta name="viewport" content;esxUiApp;$root.title;div ui-view|highval
+<title>Forcepoint Appliance</title>;For assistance with specific CLI commands, see the;Use the Content Gateway Manager;prodSelect_button|infrastructure
+ATEN International Co Ltd;LANG_LOGIN_INVALID_USERNAME;LANG_LOGIN_INVALID_PASSWORD;form1.pwd.focus();LANG_LOGIN_PROMPT|netdev
+<title>Pure Storage Login</title>;pure-help;pure-header-links-action;type="password" style="float;groupOption|nas
+<title>Honeywell Building Control</title>;printCardholderManagementSection;message-install_silverlight;checkIfDotNetIsInstalled;HMIWeb Browser links|infrastructure
+Printer with Embedded Web Server;www.office.xerox.com;ColorQube 8580;LaunchDrivers()|printer
+<title>Brother QL-720;getCookie(key);/printer/ball.gif;Brother Industries, Ltd;END OFSELECT LANGUAGE|printer
+<title>Directory Listing --;<i>Directory Listing --|dirlist
+<title>Login - NetScout Systems, Inc;loadClientLocale();popUpBlockingActive();setPassword()|infrastructure
+ProCurve 6120XG Blade Switch;openRegistrationWindow();var dws = new Array()|infrastructure
+Hewlett-Packard Development Company;HP Virtual Connect Manager;<title>HP Virtual Connect Manager</title>|virtualization
+<title class="_ctxstxt_AppStore">;receiver/css/ctxs.no;aboutphoneBackBtn;citrixReceiverLogoAboutBox|virtualization
+<title>Welcome to Service Assistant</title>;var clusterAddressLabel;showIPDiv();svcProductMtm|nas
+<title>IBM HTTP Server 8.5.5</title>;COPYRIGHT International Business Machines Corporation;images/odot.gif|crap
+Micro Focus Enterprise Server Administration</title>;clearItemChanged();makeAlphaNumeric;setLHSmenu()|infrastructure
+<title>DataStax OpsCenter</title>;css/ripcord.css;parseAppParams();Function.prototype.bind|infrastructure
+<title>SevOne NMS - Network Manager</title>;isSevOneSecurityEnabled;initiateTitleBarCheck|infrastructure
+<title>Unisphere</title>;onload="init();Unisphere user name;BtnLoginStyle;buttonDivContainer|infrastructure
+<title>;Load Dynamix Enterprise;ember1218;home/whatsnew;apidocs;user_remember_me|infrastructure
+<title>RStudio Sign In</title>;function verifyMe();payload;submitRealForm()|netdev
+<title>SANscreen by NetApp</title>;/branding/logo_head_fill.png;common/menu.do|nas
+<title>Grafana</title>;grafana-app class="grafana-app";grafanaBootData;/dashboard/snapshots|infrastructure
+Management Console</title>;<title>Cloud;setGMToffset;updateGroupInput;groupid|nas
+<title>Identity Services Engine</title>;login_action;idSrcCkVal;onEnterSubmitUnPwd|infrastructure
+ExtraHop Login;/media/css/loginout.css;document.login.username.focus();loginContainer|infrastructure

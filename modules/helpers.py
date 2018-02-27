@@ -35,6 +35,9 @@ class XMLParser(xml.sax.ContentHandler):
         self.get_ip = False
         self.service_detection = False
         self.out_file = file_out
+        self.analyze_plugin_output = False
+        self.read_plugin_output = False
+        self.plugin_output = ""
 
         self.http_ports = self.http_ports + class_cli_obj.add_http_ports
         self.https_ports = self.https_ports + class_cli_obj.add_https_ports
@@ -90,8 +93,14 @@ class XMLParser(xml.sax.ContentHandler):
                     self.port_number = attrs['port']
 
                     service_name = attrs['svc_name']
+                    # pluginID 22964 is the Service Detection Plugin
+                    # But it uses www for the svc_name for both, http and https.
+                    # To differentiate we have to look at the plugin_output...
                     if service_name == 'https?' or self.port_number in self.https_ports:
                         self.protocol = "https"
+                    elif attributes['pluginID'] == "22964" and service_name == "www":
+                        self.protocol = "http"
+                        self.analyze_plugin_output = True
                     elif service_name == "www" or service_name == "http?":
                         self.protocol = "http"
                     elif service_name == "msrdp":
@@ -100,6 +109,10 @@ class XMLParser(xml.sax.ContentHandler):
                         self.protocol = "vnc"
 
                     self.service_detection = True
+
+            elif tag == "plugin_output" and self.analyze_plugin_output:
+                self.read_plugin_output = True
+
         return
 
     def endElement(self, name):
@@ -207,6 +220,17 @@ class XMLParser(xml.sax.ContentHandler):
                             temp_vnc.write(vnc + '\n')
 
         elif self.nessus:
+            if name == "plugin_output" and self.read_plugin_output:
+
+                # Use plugin_output to differentiate between http and https.
+                # "A web server is running on the remote host." indicates a http server
+                # "A web server is running on this port through ..." indicates a https server
+                if "A web server is running on this port through" in self.plugin_output:
+                    self.protocol = "https"
+
+                self.plugin_output = ""
+                self.read_plugin_output = False
+                self.analyze_plugin_output = False
             if name == "ReportItem":
                 if not self.only_ports:
                     if (self.system_name is not None) and (self.protocol is not None) and self.service_detection:
@@ -256,8 +280,8 @@ class XMLParser(xml.sax.ContentHandler):
                             temp_vnc.write(vnc + '\n')
 
     def characters(self, content):
-        return
-
+        if self.read_plugin_output:
+            self.plugin_output += content
 
 def duplicate_check(cli_object):
     # This is used for checking for duplicate images
@@ -340,6 +364,8 @@ def textfile_parser(file_to_parse, cli_obj):
     urls = []
     rdp = []
     vnc = []
+    openports = {}
+    complete_urls = []
 
     try:
         # Open the URL file and read all URLs, and reading again to catch
@@ -350,12 +376,20 @@ def textfile_parser(file_to_parse, cli_obj):
         # else:
         for line in all_urls:
             line = line.strip()
+
+            # Account for odd case schemes and fix to lowercase for matching
+            scheme = urlparse(line)[0]
+            if scheme == 'http':
+                line = scheme + '://' + line[7:]
+            elif scheme == 'https':
+                line = scheme + '://' + line[8:]
+
             if not cli_obj.only_ports:
-                if line.startswith('http://') or line.startswith('https://'):
+                if scheme == 'http' or scheme == 'https':
                     urls.append(line)
-                elif line.startswith('rdp://'):
+                elif scheme == 'rdp':
                     rdp.append(line[6:])
-                elif line.startswith('vnc://'):
+                elif scheme == 'vnc':
                     vnc.append(line[6:])
                 else:
                     if cli_obj.rdp:
@@ -369,10 +403,11 @@ def textfile_parser(file_to_parse, cli_obj):
                         else:
                             urls.append(line)
             else:
-                if line.startswith('http://') or line.startswith('https://'):
+                if scheme == 'http' or scheme == 'https':
                     for port in cli_obj.only_ports:
                         urls.append(line + ':' + str(port))
                 else:
+
                     if cli_obj.web or cli_obj.headless:
                         if cli_obj.prepend_https:
                             for port in cli_obj.only_ports:
@@ -381,6 +416,51 @@ def textfile_parser(file_to_parse, cli_obj):
                         else:
                             for port in cli_obj.only_ports:
                                 urls.append(line + ':' + str(port))
+        
+        # Look at URLs and make CSV output of open ports unless already parsed from XML output
+        # This parses the text file
+        for url_again in all_urls:
+            url_again = url_again.strip()
+            complete_urls.append(url_again)
+            if url_again.count(":") == 2:
+                port_number = int(url_again.split(":")[2].split("/")[0])
+                hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
+                if port_number in openports:
+                    openports[port_number] += "," + hostname_again
+                else:
+                    openports[port_number] = hostname_again
+            else:
+                if "https://" in url_again:
+                    if 443 in openports:
+                        openports[443] += "," + url_again
+                    else:
+                        openports[443] = url_again
+                else:
+                    if 80 in openports:
+                        openports[80] += "," + url_again
+                    else:
+                        openports[80] = url_again
+
+        # Start prepping to write out the CSV
+        csv_data = "URL"
+        ordered_ports = sorted(openports.iterkeys())
+        for opn_prt in ordered_ports:
+            csv_data += "," + str(opn_prt)
+
+        # Create the CSV data row by row
+        for ind_system in complete_urls:
+            # add new line and add hostname
+            csv_data += '\n'
+            csv_data += ind_system + ","
+            for test_for_port in ordered_ports:
+                if ind_system in openports[test_for_port]:
+                    csv_data += "X,"
+                else:
+                    csv_data += ","
+
+        # Write out CSV
+        with open(cli_obj.d + "/open_ports.csv", 'w') as csv_file_out:
+            csv_file_out.write(csv_data)
 
         return urls, rdp, vnc
 

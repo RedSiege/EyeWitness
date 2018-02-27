@@ -217,8 +217,47 @@ parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryStri
 <link rel="stylesheet" href="resources/webLogin-all.css">;<title>Polycom Login</title>;<meta http-equiv="X-UA-Compatible" content="IE=edge">;Password:</label></div></div></div>;type="text" role="textbox" size="1" name="userName" class="x-form-field x-form-text|Polycom Wireless Polycom/123 (user) Polycom/456 (admin)
 <title>WebTools | Home</title>;<td align="left" valign="middle" class="name">XeroxC70;set_status_refresh_interval|Xerox C70 Printer admin/1111
 <title>S2 Netbox Login</title>;<!--License IFRAME HERE GOES HERE-->;div id="headerframe"|S2 Netbox admin/admin
-<title>Remote Support Portal | Powered by BOMGAR</title>;exitSurveyBox;Show Representatives Help Window;/content/access_key_input.js|Bomgar Device admin/password
+<title>Remote Support Portal;Powered by BOMGAR</title>;exitSurveyBox;Show Representatives Help Window;/content/access_key_input.js|Bomgar Device admin/password
 <title>Pritunl</title>;<link rel="icon" type="image/x-icon" href;onSubmit();login-form;var duoUserInput = document.getElementById('duo-username')|Pritunl VPN pritunl/pritunl
 <title>Log In - Juniper Web Device Manager</title>;document.getElementById("antiClickjack");Juniper Networks, Inc.;document.getElementById('errorMsgId')|Juniper Web Device Manager root/<blank>
 var pageRandom=new Date().getTime();var pageRandom=new Date().getTime();<span>Are you sure you want to email an emergency security code?</span>;<div class="qnap-link show">;<div class="qts-tooltip">| QNAP Device admin/admin
 This can be refactored into waitWithCallback;function sendPost( reqUrl, postData, renderPageCallback );//var thisIDRACText = EntityDecode;sendLoginRequest;id="domainDisp" name="domainDisp"|Dell iDrac root/calvin
+<img src="images/cisco-meraki.png" width="120">;<a class="device_noun">access point;<label for="site_survey_select">|Cisco Meraki <SERIALNUMBER all uppercase with dashes>/<noPass>
+var applicationLoadingMessage = function ();var applicationLoadingMessage = function ();var views = {};var panels = {}|HP Storage Manager manage/!manage or monitor/!monitor
+<title>Lexmark MS312dn</title>;<frame name="Printer Information";<!-- Lexmark -->;This page uses frames|Lexmark Printer MS312dn <blank>/<blank>
+script type="text/JavaScript";location.href = "/sclogin.html;op.document.location.href = "/index.html;document.location.href = "/login.html|Dell iDrac root/calvin
+Polycom Web Configuration Utility;Welcome to Polycom Web Configuration Utility;Enter Login Information;submitLoginInfo()|Polycom SoundStructure admin/456 user/123
+loginHeader;Bricked AWS SCSH Appliance Pane;SteelConnect Manager;confirmPasswordField;currPasswordField;helpPaneCloseButtonContainer|Riverbed Steelhead admin/password
+Polycom;Media Suite;You are using an;LOGIN.USER_ID;inputPassword3;LOGIN.PASSWORD|Polycom RealPresence admin/<deviceserialnumberofgroupsystem>
+<title>GigaVUE-OS</title>;checkIfMasterIp;response.localClusterMode;encodeURIComponent;httpUserName;httpUserPwd|Gigavue-OS admin/admin123A!
+<title>Log On</title>;<body id="logonbg" onload="placeFocus()">;User Name</dt>;<a href="http://www.apc.com"|Schneider Electric UPS apc/apc
+SteelHead WAN optimization;Bricked AWS SCSH Appliance Pane;rvbdLoginLogoContainer;usernameField|Riverbed SteelHead admin/password
+login-container;form class="form-horizontal";CSRF_TOKEN;h4 class="title">Login</h4>;SpinetiX</a></div>|Spinetix admin/admin
+<title>Avocent DSR8035 Explorer;iframe id="status-source";td class="app-title" id="app-title";setRootNavNode|Avocent DSR8035 admin/<nopass>
+<title>;Web Image Monitor</title>;src="header.cgi";title="Header Area";src="topPage.cgi"|Ricoh Printer admin/<blank>
+g_direction = "rtl";forceReloadNav;kAllowDirectHTMLFileAccess;getUTF8Name;hdaccelerator;sipuseadcred|Polycom HDX password is 14 digit serial number
+siteAuthReqd;loginReqdChkd;loginFailed;getUnityInfo;updReturnPageChgMode;document.getElementById('loginMsg')|Emerson Network Power - (possibly admin/admin)
+<title>Webtools</title>;URL=wt2parser.cgi?home_en;selectedIndex;textsmall;name="inside" src="wt2parser.cgi?status_en.htm"|Fiery Printer admin/Fiery.1
+framebreakout;<title>Cisco Web Accessible Phone Settings</title>;sym_Password;sym_DPBPwd|Cisco 7936 Cisco IP Conference Station password **#
+<title>NETGEAR ReadyNAS</title>;fostmedm-webfont.eot;link_remote_access_policy;ExtJs|NETGEAR ReadyNAS admin/password
+<title>Datamax-O'Neil Printer Page</title>;scrolling="auto" src="info.html">;meta name="ProgId"|Datamax O'Neil Printer password is "sysadm", "system", or "access"
+<title>Forcepoint Appliance</title>;For assistance with specific CLI commands, see the;Use the Content Gateway Manager;prodSelect_button|WebSense Content Gateway admin/<passwordsetatinstall>
+ATEN International Co Ltd;LANG_LOGIN_INVALID_USERNAME;LANG_LOGIN_INVALID_PASSWORD;form1.pwd.focus();LANG_LOGIN_PROMPT|SuperMicro admin/admin
+<title>Pure Storage Login</title>;pure-help;pure-header-links-action;type="password" style="float;groupOption|PureStorage pureuser/pureuser
+<title>Honeywell Building Control</title>;printCardholderManagementSection;message-install_silverlight;checkIfDotNetIsInstalled;HMIWeb Browser links|HoneyWell HVAC honeywell/webs (passphrase is websn4)
+Printer with Embedded Web Server;www.office.xerox.com;ColorQube 8580;LaunchDrivers()|ColorQube 8580 <nouser or pass by default>
+<title>Brother QL-720;getCookie(key);/printer/ball.gif;Brother Industries, Ltd;END OFSELECT LANGUAGE|Brother QL-720 admin/access
+<title>Login - NetScout Systems, Inc;loadClientLocale();popUpBlockingActive();setPassword()|NetScout nGenius <password set at install>
+ProCurve 6120XG Blade Switch;openRegistrationWindow();var dws = new Array()|ProCurve 6120X Blade Switch <no password by default>
+Hewlett-Packard Development Company;HP Virtual Connect Manager;<title>HP Virtual Connect Manager</title>|HP Virtual Connect Manager <pass on label on physical device>
+<title class="_ctxstxt_AppStore">;receiver/css/ctxs.no;aboutphoneBackBtn;citrixReceiverLogoAboutBox|Citrix Receiver <Windows Auth most likely>
+<title>Welcome to Service Assistant</title>;var clusterAddressLabel;showIPDiv();svcProductMtm|IBM FlashSystem 900 passw0rd
+<title>SevOne NMS - Network Manager</title>;isSevOneSecurityEnabled;initiateTitleBarCheck|SecOne Admin/SevOne
+<title>Unisphere</title>;onload="init();Unisphere user name;BtnLoginStyle;buttonDivContainer|EMC Unisphere admin/Password123#
+<title>;Load Dynamix Enterprise;ember1218;home/whatsnew;apidocs;user_remember_me|Load Dynamix admin@example.com/welcome
+<title>RStudio Sign In</title>;function verifyMe();payload;submitRealForm()|RStudio IDE (local authentication)
+<title>SANscreen by NetApp</title>;/branding/logo_head_fill.png;common/menu.do|SANScreen admin/admin123
+<title>Grafana</title>;grafana-app class="grafana-app";grafanaBootData;/dashboard/snapshots|Grafana admin/admin
+Management Console</title>;<title>Cloud;setGMToffset;updateGroupInput;groupid|Cloudian admin/public
+<title>Identity Services Engine</title>;login_action;idSrcCkVal;onEnterSubmitUnPwd|Cisco Identity Services admin/<pass set on install>
+ExtraHop Login;/media/css/loginout.css;document.login.username.focus();loginContainer|ExtraHop (Physical Device - setup/<service tag>) or (Virtual Device - setup/default)
