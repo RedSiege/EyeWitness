@@ -2,7 +2,7 @@ import cgi
 import os
 import re
 
-from helpers import strip_nonalphanum
+from modules.helpers import strip_nonalphanum
 
 
 class HTTPTableObject(object):
@@ -18,6 +18,7 @@ class HTTPTableObject(object):
         self._remote_system = None
         self._remote_login = None
         self._source_path = None
+        self._headers = {}
         self._error_state = None
         self._blank = False
         self._active_scan = False
@@ -55,8 +56,8 @@ class HTTPTableObject(object):
         return self._id
 
     @id.setter
-    def id(self, id):
-        self._id = id
+    def id(self, id_):
+        self._id = id_
 
     @property
     def ua_left(self):
@@ -197,7 +198,7 @@ class HTTPTableObject(object):
     def ssl_error(self, ssl_error):
         self._ssl_error = ssl_error
 
-    def create_table_html(self):
+    def create_table_html(self, divid=None):
         scr_path = os.path.relpath(self.screenshot_path, self.root_path)
         src_path = os.path.relpath(self.source_path, self.root_path)
         html = u""
@@ -212,10 +213,10 @@ class HTTPTableObject(object):
             <a href=\"{address}\" target=\"_blank\">{address}</a><br>
             """).format(address=self.remote_system)
 
-        if self.resolved is not None and self.resolved is not 'Unknown':
+        if self.resolved is not None and self.resolved != 'Unknown':
             html += ("""<b>Resolved to:</b> {0}<br>""").format(self.resolved)
 
-        if len(self._uadata) > 0:
+        if self._uadata:
             html += ("""
                 <br><b>This is the baseline request.</b><br>
                 The browser type is: <b>Baseline</b><br><br>
@@ -224,7 +225,7 @@ class HTTPTableObject(object):
         if self.ssl_error:
             html += "<br><b>SSL Certificate error present on\
                      <a href=\"{0}\" target=\"_blank\">{0}</a></b><br>".format(
-                self.remote_system)
+                         self.remote_system)
 
         if self.default_creds is not None:
             html += "<br><b>Default credentials:</b> {0}<br>".format(
@@ -266,14 +267,14 @@ class HTTPTableObject(object):
                 <td><div id=\"screenshot\"><a href=\"{1}\"
                 target=\"_blank\"><img src=\"{1}\"
                 height=\"400\"></a></div></td></tr>""").format(
-                src_path, scr_path)
+                    src_path, scr_path)
 
-        if len(self._uadata) > 0:
+        if self._uadata:
             divid = strip_nonalphanum(self.remote_system)
             html += ("""<tr><td id={0} class="uabold" align="center" \
                 colspan="2" onclick="toggleUA('{0}', '{1}');">
                 Click to expand User Agents for {1}</td></tr>""").format(
-                divid, self.remote_system)
+                    divid, self.remote_system)
             for ua_obj in sorted(self._uadata, key=lambda x: x.difference):
                 html += ua_obj.create_table_html(divid)
             html += ("""<tr class="hide {0}"><td class="uared" align="center"\
@@ -344,8 +345,8 @@ class UAObject(HTTPTableObject):
         return self._id
 
     @id.setter
-    def id(self, id):
-        self._id = id
+    def id(self, id_):
+        self._id = id_
 
     @property
     def parent(self):
@@ -361,7 +362,7 @@ class UAObject(HTTPTableObject):
         self.parent = http_object.id
         super(UAObject, self).set_paths(self.root_path, self.browser)
 
-    def create_table_html(self, divid):
+    def create_table_html(self, divid=None):
         scr_path = os.path.relpath(self.screenshot_path, self.root_path)
         src_path = os.path.relpath(self.source_path, self.root_path)
         html = u""
@@ -381,7 +382,7 @@ class UAObject(HTTPTableObject):
         if self.ssl_error:
             html += "<br><b>SSL Certificate error present on\
                      <a href=\"{0}\" target=\"_blank\">{0}</a></b><br>".format(
-                self.remote_system)
+                         self.remote_system)
 
         if self.default_creds is not None:
             html += "<br><b>Default credentials:</b> {0}<br>".format(
@@ -410,7 +411,7 @@ class UAObject(HTTPTableObject):
                 <td><div id=\"screenshot\"><a href=\"{1}\"
                 target=\"_blank\"><img src=\"{1}\"
                 height=\"400\"></a></div></td></tr>""").format(
-                src_path, scr_path)
+                    src_path, scr_path)
         return html
 
 
@@ -440,8 +441,8 @@ class VNCRDPTableObject(object):
         return self._id
 
     @id.setter
-    def id(self, id):
-        self._id = id
+    def id(self, id_):
+        self._id = id_
 
     @property
     def screenshot_path(self):
@@ -479,8 +480,7 @@ class VNCRDPTableObject(object):
         if self._error_state:
             html = "<tr><td><b><center>{0}:{1}</center></b><br>".format(
                 self.remote_system, str(self.port))
-            html += ("<div id=\"screenshot\"><center>Unable to screenshot<center>"
-                     "</div></td></tr>").format(self._screenshot_path.split('/')[-2] + '/' + self._screenshot_path.split('/')[-1])
+            html += "<div id=\"screenshot\"><center>Unable to screenshot<center></div></td></tr>"
         else:
             html = "<tr><td><b><center>{0}:{1}</center></b><br>".format(
                 self.remote_system, str(self.port))

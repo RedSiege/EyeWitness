@@ -6,21 +6,20 @@ import sys
 import webbrowser
 
 from distutils.util import strtobool
-from modules.db_manager import DB_Manager
+from modules.db_manager import DBManager
 from modules.reporting import sort_data_and_write
 
 
 def open_file_input(cli_parsed):
     files = glob.glob(os.path.join(cli_parsed.d, 'report.html'))
-    if len(files) > 0:
+    if files:
         print 'Would you like to open the report now? [Y/n]',
         while True:
             try:
                 response = raw_input().lower()
-                if response is "":
+                if response == "":
                     return True
-                else:
-                    return strtobool(response)
+                return strtobool(response)
             except ValueError:
                 print "Please respond with y or n",
     else:
@@ -37,7 +36,7 @@ if __name__ == "__main__":
     if not os.path.isfile(db_path):
         print '[*] No valid db path provided'
         sys.exit()
-    dbm = DB_Manager(db_path)
+    dbm = DBManager(db_path)
     dbm.open_connection()
     cli_parsed = dbm.get_options()
     cli_parsed.d = os.path.dirname(db_path)

@@ -37,13 +37,13 @@ def process_group(
                         key=lambda (k): k.page_title)
 
     grouped_elements = []
-    if len(group_data) == 0:
+    if not group_data:
         return grouped_elements, html
 
     html += "<h2 id=\"{0}\">{1}</h2>".format(sectionid, section)
     unknowns = [x for x in group_data if x.page_title == 'Unknown']
     group_data = [x for x in group_data if x.page_title != 'Unknown']
-    while len(group_data) > 0:
+    while group_data:
         test_element = group_data.pop(0)
         temp = [x for x in group_data if fuzz.token_sort_ratio(
             test_element.page_title, x.page_title) >= 70]
@@ -70,7 +70,7 @@ def write_vnc_rdp_data(cli_parsed, data):
                       key=lambda v: v.error_state)
 
     for x in [x for x in [vncstuff, rdpstuff] if len(x) > 0]:
-        if len(x) == 0:
+        if not x:
             return
         pages = []
         html = u""
@@ -171,7 +171,7 @@ def sort_data_and_write(cli_parsed, data):
                   ('inerror', 'Internal Error', 'inerror'),
                   ('badreq', 'Bad Request', 'badreq'),
                   ('serviceunavailable', 'Service Unavailable', 'serviceunavailable'),
-                  ]
+                 ]
     if total_results == 0:
         return
     # Create the header HTML code
@@ -187,7 +187,7 @@ def sort_data_and_write(cli_parsed, data):
     for cat in categories:
         grouped, html = process_group(
             data, cat[0], cat[1], cat[2], html)
-        if len(grouped) > 0:
+        if grouped:
             cat_key = grouped[0]._category
 
             # Generate script code for the footer
@@ -241,7 +241,7 @@ def sort_data_and_write(cli_parsed, data):
             category_table += '\n\t\t\t</table><br><br><hr align="center" color="#CC0000" width="75%"><br><br>\n'
 
     # Check if errors exist, if so, add to the end of TOC
-    if len(errors) > 0:
+    if errors:
         html_report_output += '\n\t\t\t\t<a href=\"#error-header">Errors</a><br />'
         category_table += '\n\t\t\t<table id=\"error-table\" class=\"table table-sm\" width=\"100%\">'
         category_table += '\n\t\t\t\t<h3 id=\"error-header\" class=\"text-center\">' + cat[1] + '</h3>'
@@ -340,7 +340,7 @@ def create_web_index_head(date, time):
 
 
 def search_index_head():
-    return ("""<html>
+    return """<html>
         <head>
         <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
@@ -360,22 +360,22 @@ def search_index_head():
         </head>
         <body>
         <center>
-        """)
+        """
 
 
 def create_table_head():
-    return ("""<table border=\"1\">
+    return """<table border=\"1\">
         <tr>
         <th>Web Request Info</th>
         <th>Web Screenshot</th>
-        </tr>""")
+        </tr>"""
 
 
 def vnc_rdp_table_head():
-    return ("""<table border=\"1\" align=\"center\">
+    return """<table border=\"1\" align=\"center\">
     <tr>
     <th>IP / Screenshot</th>
-    </tr>""")
+    </tr>"""
 
 
 def vnc_rdp_header(date, time):
@@ -464,7 +464,7 @@ def search_report(cli_parsed, data, search_term):
                 'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
 
         # Write out our report to disk!
-        if len(pages) == 0:
+        if not pages:
             return
         with open(os.path.join(cli_parsed.d, 'search.html'), 'a') as f:
             f.write(pages[0])

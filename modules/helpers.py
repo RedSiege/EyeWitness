@@ -9,13 +9,13 @@ import xml.sax
 from distutils.util import strtobool
 import glob
 import socket
+from urlparse import urlparse
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
-from urlparse import urlparse
-from login_module import checkCreds
+from modules.login_module import check_creds
 
 
-class XML_Parser(xml.sax.ContentHandler):
+class XMLParser(xml.sax.ContentHandler):
 
     def __init__(self, file_out, class_cli_obj):
         self.system_name = None
@@ -44,55 +44,55 @@ class XML_Parser(xml.sax.ContentHandler):
         self.no_dns = class_cli_obj.no_dns
         self.only_ports = class_cli_obj.only_ports
 
-    def startElement(self, tag, attributes):
+    def startElement(self, name, attrs):
         # Determine the Scanner being used
-        if tag == "nmaprun" and attributes['scanner'] == "masscan":
+        if name == "nmaprun" and attrs['scanner'] == "masscan":
             self.masscan = True
-        elif tag == "nmaprun" and attributes['scanner'] == "nmap":
+        elif name == "nmaprun" and attrs['scanner'] == "nmap":
             self.nmap = True
-        elif tag == "NessusClientData_v2":
+        elif name == "NessusClientData_v2":
             self.nessus = True
 
         if self.masscan or self.nmap:
-            if tag == "address":
-                if attributes['addrtype'].lower() == "mac":
+            if name == "address":
+                if attrs['addrtype'].lower() == "mac":
                     pass
                 else:
-                    self.system_name = attributes['addr']
-            elif tag == "hostname":
+                    self.system_name = attrs['addr']
+            elif name == "hostname":
                 if not self.no_dns:
-                    if attributes['type'].lower() == "user":
-                        self.system_name = attributes['name']
-            elif tag == "port":
-                self.port_number = attributes['portid']
-            elif tag == "service":
-                if "ssl" in attributes['name'] or self.port_number in self.https_ports:
+                    if attrs['type'].lower() == "user":
+                        self.system_name = attrs['name']
+            elif name == "port":
+                self.port_number = attrs['portid']
+            elif name == "service":
+                if "ssl" in attrs['name'] or self.port_number in self.https_ports:
                     self.protocol = "https"
-                elif "http" == attributes['name'] or self.port_number in self.http_ports:
+                elif attrs['name'] == "http" or self.port_number in self.http_ports:
                     self.protocol = "http"
-                elif "http-alt" == attributes['name']:
+                elif attrs['name'] == "http-alt":
                     self.protocol = "http"
-                elif "tunnel" in attributes:
-                    if "ssl" in attributes['tunnel']:
+                elif "tunnel" in attrs:
+                    if "ssl" in attrs['tunnel']:
                         self.protocol = "https"
-                elif "vnc" in attributes['name']:
+                elif "vnc" in attrs['name']:
                     self.protocol = "vnc"
-                elif "ms-wbt-server" in attributes['name']:
+                elif "ms-wbt-server" in attrs['name']:
                     self.protocol = "rdp"
-            elif tag == "state":
-                if attributes['state'] == "open":
+            elif name == "state":
+                if attrs['state'] == "open":
                     self.port_open = True
 
         elif self.nessus:
-            if tag == "ReportHost":
-                if 'name' in attributes:
-                    self.system_name = attributes['name']
+            if name == "ReportHost":
+                if 'name' in attrs:
+                    self.system_name = attrs['name']
 
-            elif tag == "ReportItem":
-                if "port" in attributes and "svc_name" in attributes and "pluginName" in attributes:
-                    self.port_number = attributes['port']
+            elif name == "ReportItem":
+                if "port" in attrs and "svc_name" in attrs and "pluginName" in attrs:
+                    self.port_number = attrs['port']
 
-                    service_name = attributes['svc_name']
+                    service_name = attrs['svc_name']
                     # pluginID 22964 is the Service Detection Plugin
                     # But it uses www for the svc_name for both, http and https.
                     # To differentiate we have to look at the plugin_output...
@@ -115,9 +115,9 @@ class XML_Parser(xml.sax.ContentHandler):
 
         return
 
-    def endElement(self, tag):
+    def endElement(self, name):
         if self.masscan or self.nmap:
-            if tag == "service":
+            if name == "service":
                 if not self.only_ports:
                     if (self.system_name is not None) and (self.port_number is not None) and self.port_open:
                         if self.protocol == "http" or self.protocol == "https":
@@ -169,8 +169,8 @@ class XML_Parser(xml.sax.ContentHandler):
                 self.protocol = None
                 self.port_open = False
 
-            elif tag == "port":
-                if not self.only_ports and (self.protocol == None):
+            elif name == "port":
+                if not self.only_ports and (self.protocol is None):
                     if (self.port_number is not None) and self.port_open and (self.system_name is not None):
                         if self.port_number in self.http_ports:
                             self.protocol = 'http'
@@ -202,25 +202,25 @@ class XML_Parser(xml.sax.ContentHandler):
                 self.protocol = None
                 self.port_open = False
 
-            elif tag == "host":
+            elif name == "host":
                 self.system_name = None
 
-            elif tag == "nmaprun":
-                if len(self.url_list) > 0:
+            elif name == "nmaprun":
+                if self.url_list:
                     with open(self.out_file, 'a') as temp_web:
                         for url in self.url_list:
                             temp_web.write(url + '\n')
-                if len(self.rdp_list) > 0:
+                if self.rdp_list:
                     with open(self.out_file, 'a') as temp_rdp:
                         for rdp in self.rdp_list:
                             temp_rdp.write(rdp + '\n')
-                if len(self.vnc_list) > 0:
+                if self.vnc_list:
                     with open(self.out_file, 'a') as temp_vnc:
                         for vnc in self.vnc_list:
                             temp_vnc.write(vnc + '\n')
 
         elif self.nessus:
-            if tag == "plugin_output" and self.read_plugin_output:
+            if name == "plugin_output" and self.read_plugin_output:
 
                 # Use plugin_output to differentiate between http and https.
                 # "A web server is running on the remote host." indicates a http server
@@ -231,7 +231,7 @@ class XML_Parser(xml.sax.ContentHandler):
                 self.plugin_output = ""
                 self.read_plugin_output = False
                 self.analyze_plugin_output = False
-            if tag == "ReportItem":
+            if name == "ReportItem":
                 if not self.only_ports:
                     if (self.system_name is not None) and (self.protocol is not None) and self.service_detection:
                         if self.protocol == "http" or self.protocol == "https":
@@ -262,19 +262,19 @@ class XML_Parser(xml.sax.ContentHandler):
                 self.port_open = False
                 self.service_detection = False
 
-            elif tag == "ReportHost":
+            elif name == "ReportHost":
                 self.system_name = None
 
-            elif tag == "NessusClientData_v2":
-                if len(self.url_list) > 0:
+            elif name == "NessusClientData_v2":
+                if self.url_list:
                     with open(self.out_file, 'a') as temp_web:
                         for url in self.url_list:
                             temp_web.write(url + '\n')
-                if len(self.rdp_list) > 0:
+                if self.rdp_list:
                     with open(self.out_file, 'a') as temp_rdp:
                         for rdp in self.rdp_list:
                             temp_rdp.write(rdp + '\n')
-                if len(self.vnc_list) > 0:
+                if self.vnc_list:
                     with open(self.out_file, 'a') as temp_vnc:
                         for vnc in self.vnc_list:
                             temp_vnc.write(vnc + '\n')
@@ -303,7 +303,7 @@ def duplicate_check(cli_object):
     for html_file in glob.glob(cli_object.d + '/*.html'):
         report_files.append(html_file)
 
-    for hex_value, file_dict in hash_files.items():
+    for _, file_dict in hash_files.items():
         total_files = len(file_dict)
         if total_files > 1:
             original_pic_name = file_dict[0]
@@ -357,8 +357,7 @@ def find_file_name():
                 counter += 1
     if first_time:
         return file_name + ".txt"
-    else:
-        return file_name + str(counter) + ".txt"
+    return file_name + str(counter) + ".txt"
 
 
 def textfile_parser(file_to_parse, cli_obj):
@@ -496,8 +495,8 @@ def target_creator(command_line_object):
         # Turn off namespaces
         parser.setFeature(xml.sax.handler.feature_namespaces, 0)
         # Override the parser
-        Handler = XML_Parser(parsed_file_name, command_line_object)
-        parser.setContentHandler(Handler)
+        handler = XMLParser(parsed_file_name, command_line_object)
+        parser.setContentHandler(handler)
         # Parse the XML
 
         parser.parse(command_line_object.x)
@@ -623,11 +622,11 @@ def get_ua_values(cycle_value):
         return scanner_uagents
     elif cycle_value == "all":
         return all_combined_uagents
-    else:
-        print "[*] Error: You did not provide the type of user agents\
-         to cycle through!".replace('    ', '')
-        print "[*] Error: Defaulting to desktop browser user agents."
-        return desktop_uagents
+
+    print "[*] Error: You did not provide the type of user agents\
+     to cycle through!".replace('    ', '')
+    print "[*] Error: Defaulting to desktop browser user agents."
+    return desktop_uagents
 
 
 def title_screen():
@@ -642,7 +641,7 @@ def title_screen():
     print "#" * 80 + "\n"
 
     python_info = sys.version_info
-    if python_info[0] is not 2 or python_info[1] < 7:
+    if python_info[0] != 2 or python_info[1] < 7:
         print "[*] Error: Your version of python is not supported!"
         print "[*] Error: Please install Python 2.7.X"
         sys.exit()
@@ -819,11 +818,11 @@ def default_creds_category(http_object):
                     'Directory of /' in http_object.page_title):
                 http_object.category = 'dirlist'
             if '404 Not Found' in http_object.page_title:
-                http_object.category = 'notfound'        
+                http_object.category = 'notfound'
 
         #Performs login against host to see if it is a valid login
-        if http_object._active_scan:            
-            http_object = checkCreds(http_object)
+        if http_object._active_scan:
+            http_object = check_creds(http_object)
 
         return http_object
     except IOError:
@@ -835,17 +834,16 @@ def default_creds_category(http_object):
 
 def open_file_input(cli_parsed):
     files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
-    if len(files) > 0:
+    if files:
         print('\n[*] Done! Report written in the {0} folder!').format(
             cli_parsed.d)
         print 'Would you like to open the report now? [Y/n]',
         while True:
             try:
                 response = raw_input().lower()
-                if response is "":
+                if response == "":
                     return True
-                else:
-                    return strtobool(response)
+                return strtobool(response)
             except ValueError:
                 print "Please respond with y or n",
     else:

@@ -10,6 +10,10 @@ import sys
 import time
 import webbrowser
 
+from multiprocessing import Manager
+from multiprocessing import Process
+from multiprocessing import current_process
+
 from modules import db_manager
 from modules import objects
 from modules import phantomjs_module
@@ -31,9 +35,6 @@ from modules.reporting import sort_data_and_write
 from modules.reporting import vnc_rdp_header
 from modules.reporting import vnc_rdp_table_head
 from modules.reporting import write_vnc_rdp_data
-from multiprocessing import Manager
-from multiprocessing import Process
-from multiprocessing import current_process
 try:
     from pyvirtualdisplay import Display
     import rdpy.core.log as log
@@ -131,21 +132,21 @@ def create_cli_parser():
     http_options.add_argument('--resolve', default=False,
                               action='store_true', help=("Resolve IP/Hostname"
                                                          " for targets"))
-    http_options.add_argument('--add-http-ports', default=[], 
-                              type=lambda s:[str(i) for i in s.split(",")],
+    http_options.add_argument('--add-http-ports', default=[],
+                              type=lambda s: [str(i) for i in s.split(",")],
                               help=("Comma-seperated additional port(s) to assume "
-                              "are http (e.g. '8018,8028')"))
+                                    "are http (e.g. '8018,8028')"))
     http_options.add_argument('--add-https-ports', default=[],
-                              type=lambda s:[str(i) for i in s.split(",")],
+                              type=lambda s: [str(i) for i in s.split(",")],
                               help=("Comma-seperated additional port(s) to assume "
-                              "are https (e.g. '8018,8028')"))
+                                    "are https (e.g. '8018,8028')"))
     http_options.add_argument('--only-ports', default=[],
-                              type=lambda s:[int(i) for i in s.split(",")],
+                              type=lambda s: [int(i) for i in s.split(",")],
                               help=("Comma-seperated list of exclusive ports to "
-                              "use (e.g. '80,8080')"))
+                                    "use (e.g. '80,8080')"))
     http_options.add_argument('--prepend-https', default=False, action='store_true',
                               help='Prepend http:// and https:// to URLs without either')
-    http_options.add_argument('--vhost-name', default=None,metavar='hostname', help='Hostname to use in Host header (headless + single mode only)')
+    http_options.add_argument('--vhost-name', default=None, metavar='hostname', help='Hostname to use in Host header (headless + single mode only)')
     http_options.add_argument(
         '--active-scan', default=False, action='store_true',
         help='Perform live login attempts to identify credentials or login pages.')
@@ -189,7 +190,6 @@ def create_cli_parser():
                         sys.exit()
                     elif overwrite_dir == 'y':
                         shutil.rmtree(args.d)
-                        pass
                     else:
                         print('Quitting since you didn\'t provide '
                               'a valid response...')
@@ -235,7 +235,7 @@ def create_cli_parser():
 
     if args.resume:
         if not os.path.isfile(args.resume):
-            print(" [*] Error: No valid DB file provided for resume!")
+            print " [*] Error: No valid DB file provided for resume!"
             sys.exit()
 
     if args.all_protocols:
@@ -262,8 +262,8 @@ def single_mode(cli_parsed):
                     os.path.realpath(__file__)
                 ), 'bin', 'phantomjs')
         ):
-            print(" [*] Error: You are missing your phantomjs binary!")
-            print(" [*] Please run the setup script!")
+            print " [*] Error: You are missing your phantomjs binary!"
+            print " [*] Please run the setup script!"
             sys.exit(0)
         create_driver = phantomjs_module.create_driver
         capture_host = phantomjs_module.capture_host
@@ -313,7 +313,7 @@ def single_mode(cli_parsed):
 
 
 def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
-    manager = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
+    manager = db_manager.DBManager(cli_parsed.d + '/ew.db')
     manager.open_connection()
 
     if cli_parsed.web:
@@ -326,8 +326,8 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
                     os.path.realpath(__file__)
                 ), 'bin', 'phantomjs')
         ):
-            print(" [*] Error: You are missing your phantomjs binary!")
-            print(" [*] Please run the setup script!")
+            print " [*] Error: You are missing your phantomjs binary!"
+            print " [*] Please run the setup script!"
             sys.exit(0)
         create_driver = phantomjs_module.create_driver
         capture_host = phantomjs_module.capture_host
@@ -347,7 +347,7 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
                 if user_agent is None:
                     print 'Making baseline request for {0}'.format(http_object.remote_system)
                 else:
-                    browser_key, user_agent_str = user_agent
+                    browser_key, _ = user_agent
                     print 'Now making web request with: {0} for {1}'.format(
                         browser_key, http_object.remote_system)
             else:
@@ -418,15 +418,15 @@ def single_vnc_rdp(cli_parsed, engine):
 
 
 def multi_mode(cli_parsed):
-    dbm = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
+    dbm = db_manager.DBManager(cli_parsed.d + '/ew.db')
     dbm.open_connection()
     if not cli_parsed.resume:
         dbm.initialize_db()
     dbm.save_options(cli_parsed)
-    m = Manager()
-    targets = m.Queue()
-    lock = m.Lock()
-    multi_counter = m.Value('i', 0)
+    manager = Manager()
+    targets = manager.Queue()
+    lock = manager.Lock()
+    multi_counter = manager.Value('i', 0)
     display = None
 
     def exitsig(*args):
@@ -465,15 +465,15 @@ def multi_mode(cli_parsed):
             num_threads = multi_total
         else:
             num_threads = cli_parsed.threads
-        for i in xrange(num_threads):
+        for _ in xrange(num_threads):
             targets.put(None)
         try:
             workers = [Process(target=worker_thread, args=(
-                cli_parsed, targets, lock, (multi_counter, multi_total))) for i in xrange(num_threads)]
-            for w in workers:
-                w.start()
-            for w in workers:
-                w.join()
+                cli_parsed, targets, lock, (multi_counter, multi_total))) for _ in xrange(num_threads)]
+            for worker in workers:
+                worker.start()
+            for worker in workers:
+                worker.join()
         except Exception as e:
             print str(e)
 
@@ -493,7 +493,7 @@ def multi_mode(cli_parsed):
                 dbm.save_options(cli_parsed)
 
             for browser, ua in ua_dict.iteritems():
-                targets = m.Queue()
+                targets = manager.Queue()
                 multi_counter.value = 0
                 multi_total = dbm.get_incomplete_ua(targets, browser)
                 if multi_total > 0:
@@ -503,17 +503,17 @@ def multi_mode(cli_parsed):
                     num_threads = multi_total
                 else:
                     num_threads = cli_parsed.threads
-                for i in xrange(num_threads):
+                for _ in xrange(num_threads):
                     targets.put(None)
                 workers = [Process(target=worker_thread,
                                    args=(cli_parsed, targets, lock,
                                          (multi_counter, multi_total),
                                          (browser, ua)))
-                           for i in xrange(num_threads)]
-                for w in workers:
-                    w.start()
-                for w in workers:
-                    w.join()
+                           for _ in xrange(num_threads)]
+                for worker in workers:
+                    worker.start()
+                for worker in workers:
+                    worker.join()
 
     if any((cli_parsed.vnc, cli_parsed.rdp)):
         log._LOG_LEVEL = log.Level.ERROR
@@ -535,7 +535,7 @@ def multi_mode(cli_parsed):
             for target in targets:
                 if os.path.dirname(cli_parsed.d) != os.path.dirname(target.screenshot_path):
                     target.set_paths(cli_parsed.d)
-                tdbm = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
+                tdbm = db_manager.DBManager(cli_parsed.d + '/ew.db')
                 if target.proto == 'vnc':
                     reactor.connectTCP(
                         target.remote_system, target.port,
@@ -557,7 +557,7 @@ def multi_mode(cli_parsed):
     results = dbm.get_complete_http()
     vnc_rdp = dbm.get_complete_vnc_rdp()
     dbm.close()
-    m.shutdown()
+    manager.shutdown()
     write_vnc_rdp_data(cli_parsed, vnc_rdp)
     sort_data_and_write(cli_parsed, results)
     if cli_parsed.ocr:
@@ -568,7 +568,7 @@ def multi_mode(cli_parsed):
                 pass
 
 
-def multi_callback(x):
+def multi_callback():
     global multi_counter
     global multi_total
     multi_counter += 1
@@ -585,7 +585,7 @@ if __name__ == "__main__":
     if cli_parsed.resume:
         print '[*] Loading Resume Data...'
         temp = cli_parsed
-        dbm = db_manager.DB_Manager(cli_parsed.resume)
+        dbm = db_manager.DBManager(cli_parsed.resume)
         dbm.open_connection()
         cli_parsed = dbm.get_options()
         cli_parsed.d = os.path.dirname(temp.resume)

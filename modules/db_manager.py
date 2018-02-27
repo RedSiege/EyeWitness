@@ -1,18 +1,18 @@
 import pickle
 import sqlite3
 
-from objects import HTTPTableObject
-from objects import UAObject
-from objects import VNCRDPTableObject
-from helpers import default_creds_category
+from modules.objects import HTTPTableObject
+from modules.objects import UAObject
+from modules.objects import VNCRDPTableObject
+from modules.helpers import default_creds_category
 
 
-class DB_Manager(object):
+class DBManager(object):
 
-    """docstring for DB_Manager"""
+    """docstring for DBManager"""
 
     def __init__(self, dbpath):
-        super(DB_Manager, self).__init__()
+        super(DBManager, self).__init__()
         self._dbpath = dbpath
         self._connection = None
 
@@ -49,7 +49,7 @@ class DB_Manager(object):
         c = self.connection.cursor()
         obj = HTTPTableObject()
         obj.remote_system = remote_system
-        if cli_parsed.active_scan: 
+        if cli_parsed.active_scan:
             obj._active_scan = True
         obj.set_paths(
             cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
@@ -115,23 +115,23 @@ class DB_Manager(object):
         cli_parsed = pickle.loads(str(blob))
         return cli_parsed
 
-    def get_incomplete_http(self, q):
+    def get_incomplete_http(self, queue):
         count = 0
         c = self.connection.cursor()
         for row in c.execute("SELECT * FROM http WHERE complete=0"):
             o = pickle.loads(str(row['object']))
-            q.put(o)
+            queue.put(o)
             count += 1
         c.close()
         return count
 
-    def get_incomplete_ua(self, q, key):
+    def get_incomplete_ua(self, queue, key):
         count = 0
         c = self.connection.cursor()
         for row in c.execute("SELECT * FROM ua WHERE complete=? AND key=?",
                              (0, key)):
             o = pickle.loads(str(row['object']))
-            q.put(o)
+            queue.put(o)
             count += 1
         c.close()
         return count

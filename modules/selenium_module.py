@@ -12,7 +12,6 @@ except:
 
 try:
     from selenium import webdriver
-    from selenium.common.exceptions import NoAlertPresentException
     from selenium.common.exceptions import TimeoutException
     from selenium.common.exceptions import UnexpectedAlertPresentException
     from selenium.common.exceptions import WebDriverException
@@ -51,24 +50,23 @@ def create_driver(cli_parsed, user_agent=None):
 
     # Set up our proxy information directly in the firefox profile
     if cli_parsed.proxy_ip is not None and cli_parsed.proxy_port is not None:
-	profile.set_preference('network.proxy.type', 1)
+        profile.set_preference('network.proxy.type', 1)
         if "socks" in cli_parsed.proxy_type:
-	    profile.set_preference('network.proxy.socks', cli_parsed.proxy_ip)
-	    profile.set_preference('network.proxy.socks_port', cli_parsed.proxy_port)
-	    profile.set_preference('network.proxy.socks_remote_dns', True)
-	else:
-	    profile.set_preference('network.proxy.http', cli_parsed.proxy_ip)
-	    profile.set_preference(
-		'network.proxy.http_port', cli_parsed.proxy_port)
-	    profile.set_preference('network.proxy.ssl', cli_parsed.proxy_ip)
-	    profile.set_preference('network.proxy.ssl_port', cli_parsed.proxy_port)
+            profile.set_preference('network.proxy.socks', cli_parsed.proxy_ip)
+            profile.set_preference('network.proxy.socks_port', cli_parsed.proxy_port)
+            profile.set_preference('network.proxy.socks_remote_dns', True)
+        else:
+            profile.set_preference('network.proxy.http', cli_parsed.proxy_ip)
+            profile.set_preference('network.proxy.http_port', cli_parsed.proxy_port)
+            profile.set_preference('network.proxy.ssl', cli_parsed.proxy_ip)
+            profile.set_preference('network.proxy.ssl_port', cli_parsed.proxy_port)
 
     profile.set_preference('app.update.enabled', False)
     profile.set_preference('browser.search.update', False)
     profile.set_preference('extensions.update.enabled', False)
-    profile.set_preference('capability.policy.default.Window.alert', 'noAccess');
-    profile.set_preference('capability.policy.default.Window.confirm', 'noAccess');
-    profile.set_preference('capability.policy.default.Window.prompt', 'noAccess');
+    profile.set_preference('capability.policy.default.Window.alert', 'noAccess')
+    profile.set_preference('capability.policy.default.Window.confirm', 'noAccess')
+    profile.set_preference('capability.policy.default.Window.prompt', 'noAccess')
 
     try:
         capabilities = DesiredCapabilities.FIREFOX.copy()
@@ -188,7 +186,6 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         context.verify_mode = ssl.CERT_NONE
     except:
         context = None
-        pass
 
     try:
         tempua = driver.execute_script("return navigator.userAgent")
@@ -231,10 +228,9 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             headers = {'Error': 'SSL Handshake Error'}
             http_object.error_state = 'SSLHandshake'
             return http_object, driver
-        else:
-            headers = {'Error': 'HTTP Error...'}
-            http_object.error_state = 'BadStatus'
-            return http_object, driver
+        headers = {'Error': 'HTTP Error...'}
+        http_object.error_state = 'BadStatus'
+        return http_object, driver
     except socket.error as e:
         if e.errno == 104:
             headers = {'Error': 'Connection Reset'}
@@ -244,9 +240,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             headers = {'Error': 'Connection Reset'}
             http_object.error_state = 'ConnReset'
             return http_object, driver
-        else:
-            http_object.error_state = 'BadStatus'
-            return http_object, driver
+        http_object.error_state = 'BadStatus'
+        return http_object, driver
     except httplib.BadStatusLine:
         http_object.error_state = 'BadStatus'
         return http_object, driver
