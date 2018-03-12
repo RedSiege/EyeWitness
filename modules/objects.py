@@ -296,7 +296,7 @@ class HTTPTableObject(object):
         return html
 
     def sanitize(self, html):
-        return cgi.escape(html.decode('utf-8', errors='replace'), quote=True)
+        return cgi.escape(html.decode('utf-8', errors='backslashreplace'), quote=True)
 
     def add_ua_data(self, uaobject):
         difference = abs(len(self.source_code) - len(uaobject.source_code))
