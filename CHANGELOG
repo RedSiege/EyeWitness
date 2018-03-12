@@ -1,3 +1,6 @@
+[03.11.2018]
+	Modified..: Report output now includes Requests.csv which contains the status of the web requests made in the EyeWitness run
+
 [05.27.2017]
     Modified..: DB checks for user agent source code values to not be None prior to running source code comparison
 

@@ -1,5 +1,6 @@
 import os
 import sys
+import urlparse
 
 try:
     from fuzzywuzzy import fuzz
@@ -181,6 +182,30 @@ def sort_data_and_write(cli_parsed, data):
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
     table_head = create_table_head()
     counter = 1
+    csv_request_data = "Protocol,Port,Domain,Request Status,Screenshot Path, Source Path"
+
+    # Generate and write json log of requests
+    for json_request in data:
+        url = urlparse.urlparse(json_request._remote_system)
+
+        # Determine protocol
+        csv_request_data += "\n" + url.scheme + ","
+        if url.port is not None:
+            csv_request_data += str(url.port) + ","
+        elif url.scheme == 'http':
+            csv_request_data += "80,"
+        elif url.scheme == 'https':
+            csv_request_data += "443,"
+        csv_request_data += url.netloc + ","
+        if json_request._error_state == None:
+            csv_request_data += "Successful,"
+        else:
+            csv_request_data += json_request._error_state + ","
+        csv_request_data += json_request._screenshot_path + ","
+        csv_request_data += json_request._source_path
+
+    with open(os.path.join(cli_parsed.d, 'Requests.csv'), 'a') as f:
+        f.write(csv_request_data)
 
     # Pre-filter error entries
     errors = sorted([x for x in data if x.error_state is not None],
