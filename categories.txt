@@ -378,3 +378,10 @@ Micro Focus Enterprise Server Administration</title>;clearItemChanged();makeAlph
 Management Console</title>;<title>Cloud;setGMToffset;updateGroupInput;groupid|nas
 <title>Identity Services Engine</title>;login_action;idSrcCkVal;onEnterSubmitUnPwd|infrastructure
 ExtraHop Login;/media/css/loginout.css;document.login.username.focus();loginContainer|infrastructure
+<title>Centreon - IT;body onload="document.login.useralias.focus();input name="centreon_token" type="hidden"|infrastructure
+document.write("<link rel='stylesheet';Hikvision Digital Technology Co.;divAskAgain;laNoAskToChange|infrastructure
+ng-click="jfSidebar.pinMenu();-- end ngRepeat: item in jfSidebar.menuItems --;div id="home-disclaimer" class="ng-scope"|infrastructure
+<title>Brother QL-710W</title>;href="/printer/main.html?refresh=on;Network Firmware Version;name="webLang" onchange="changeLanguage()|printer
+fromWebChromeNACL;console.log(e.source);var g_ocx = 0;g_backIvs;g_busernameEncrypt|infrastructure
+<title>Welcome to ntopng</title;/js/rickshaw.js;container-narrow;form_add_user;makeUsernameLowercase|netdev
+<title>Login</title;label id="login-username-label";label id="login-password-label;/data/managedMode.json;id="devname">EAP110</span>|netdev

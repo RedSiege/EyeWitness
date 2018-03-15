@@ -261,3 +261,10 @@ Hewlett-Packard Development Company;HP Virtual Connect Manager;<title>HP Virtual
 Management Console</title>;<title>Cloud;setGMToffset;updateGroupInput;groupid|Cloudian admin/public
 <title>Identity Services Engine</title>;login_action;idSrcCkVal;onEnterSubmitUnPwd|Cisco Identity Services admin/<pass set on install>
 ExtraHop Login;/media/css/loginout.css;document.login.username.focus();loginContainer|ExtraHop (Physical Device - setup/<service tag>) or (Virtual Device - setup/default)
+<title>Centreon - IT;body onload="document.login.useralias.focus();input name="centreon_token" type="hidden"|Centreon admin/centreon
+document.write("<link rel='stylesheet';Hikvision Digital Technology Co.;divAskAgain;laNoAskToChange|Hikvision Camera firmware > 5.3.0 unique password, firmware < 5.3.0 admin/12345 - backdoor included - http://seclists.org/fulldisclosure/2017/Sep/23
+ng-click="jfSidebar.pinMenu();-- end ngRepeat: item in jfSidebar.menuItems --;div id="home-disclaimer" class="ng-scope"|JFrog Artifactory admin/password
+<title>Brother QL-710W</title>;href="/printer/main.html?refresh=on;Network Firmware Version;name="webLang" onchange="changeLanguage()|Brother QL-710W admin/access
+fromWebChromeNACL;console.log(e.source);var g_ocx = 0;g_backIvs;g_busernameEncrypt|Dahua IP Camera - New models require password at setup, old models admin/admin
+<title>Welcome to ntopng</title;/js/rickshaw.js;container-narrow;form_add_user;makeUsernameLowercase|ntopng admin/admin
+<title>Login</title;label id="login-username-label";label id="login-password-label;/data/managedMode.json;id="devname">EAP110</span>|TP-Link EAP100 admin/admin
