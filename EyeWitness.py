@@ -329,12 +329,12 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
             print(" [*] Error: You are missing your phantomjs binary!")
             print(" [*] Please run the setup script!")
             sys.exit(0)
-        create_driver = phantomjs_module.create_driver
-        capture_host = phantomjs_module.capture_host
-    with lock:
-        driver = create_driver(cli_parsed, user_agent)
     try:
         while True:
+            create_driver = phantomjs_module.create_driver
+            capture_host = phantomjs_module.capture_host
+            with lock:
+                driver = create_driver(cli_parsed, user_agent)
             http_object = targets.get()
             if http_object is None:
                 break
