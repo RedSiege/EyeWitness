@@ -73,7 +73,7 @@ class XML_Parser(xml.sax.ContentHandler):
                 elif "http-alt" == attributes['name']:
                     self.protocol = "http"
                 elif "tunnel" in attributes:
-                    if "ssl" in attributes['tunnel'] and not "smtp" in attributes['name']:
+                    if "ssl" in attributes['tunnel'] and not "smtp" in attributes['name'] and not "imap" in attributes['name'] and not "pop3" in attributes['name']:
                         self.protocol = "https"
                 elif "vnc" in attributes['name']:
                     self.protocol = "vnc"
