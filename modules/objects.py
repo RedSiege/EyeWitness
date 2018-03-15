@@ -233,7 +233,7 @@ class HTTPTableObject(object):
         if self.error_state is None:
             try:
                 html += "\n<br><b> Page Title: </b>{0}\n".format(
-                    self.sanitize(self.page_title))
+                    self.sanitize(self.page_title.encode()))
             except UnicodeDecodeError:
                 html += "\n<br><b> Page Title:</b>{0}\n".format(
                     'Unable to Display')
