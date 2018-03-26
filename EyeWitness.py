@@ -329,15 +329,27 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
             print(" [*] Error: You are missing your phantomjs binary!")
             print(" [*] Please run the setup script!")
             sys.exit(0)
+        create_driver = phantomjs_module.create_driver
+        capture_host = phantomjs_module.capture_host
+    with lock:
+        driver = create_driver(cli_parsed, user_agent)
     try:
         while True:
-            create_driver = phantomjs_module.create_driver
-            capture_host = phantomjs_module.capture_host
-            with lock:
-                driver = create_driver(cli_parsed, user_agent)
             http_object = targets.get()
             if http_object is None:
                 break
+            # Try to ensure object values are blank
+            http_object._category = None
+            http_object._default_creds = None
+            http_object._error_state = None
+            http_object._page_title = None
+            http_object._ssl_error = False
+            http_object.category = None
+            http_object.default_creds = None
+            http_object.error_state = None
+            http_object.page_title = None
+            http_object.resolved = None
+            http_object.source_code = None
             # Fix our directory if its resuming from a different path
             if os.path.dirname(cli_parsed.d) != os.path.dirname(http_object.screenshot_path):
                 http_object.set_paths(
