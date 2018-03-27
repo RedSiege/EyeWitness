@@ -386,3 +386,5 @@ fromWebChromeNACL;console.log(e.source);var g_ocx = 0;g_backIvs;g_busernameEncry
 <title>Welcome to ntopng</title;/js/rickshaw.js;container-narrow;form_add_user;makeUsernameLowercase|netdev
 <title>Login</title;label id="login-username-label";label id="login-password-label;/data/managedMode.json;id="devname">EAP110</span>|netdev
 <title>MiVoice Video Phone</title>;var productName = "MiVoice Conference Phone";$("title").text(productName|voip
+<title>Mitel Standard;var urlbits = window.location.href.;td class="inputLabel">Username:Mitel Networks Corporation|infrastructure
+<title ng-bind="manageCtrl.system.getName();UniFi'" class="ng-binding">UniFi</title>;translate="ACCOUNT_TITLE_HOTSPOT_MANAGER"|infrastructure
