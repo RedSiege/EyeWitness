@@ -385,3 +385,4 @@ ng-click="jfSidebar.pinMenu();-- end ngRepeat: item in jfSidebar.menuItems --;di
 fromWebChromeNACL;console.log(e.source);var g_ocx = 0;g_backIvs;g_busernameEncrypt|infrastructure
 <title>Welcome to ntopng</title;/js/rickshaw.js;container-narrow;form_add_user;makeUsernameLowercase|netdev
 <title>Login</title;label id="login-username-label";label id="login-password-label;/data/managedMode.json;id="devname">EAP110</span>|netdev
+<title>MiVoice Video Phone</title>;var productName = "MiVoice Conference Phone";$("title").text(productName|voip
