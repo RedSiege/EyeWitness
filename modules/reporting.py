@@ -490,7 +490,13 @@ def search_report(cli_parsed, data, search_term):
         if len(pages) == 0:
             return
         with open(os.path.join(cli_parsed.d, 'search.html'), 'a') as f:
-            f.write(pages[0])
+            try:
+                f.write(pages[0])
+            except UnicodeEncodeError:
+                f.write(pages[0].encode('utf-8'))
         for i in range(2, len(pages) + 1):
             with open(os.path.join(cli_parsed.d, 'search_page{0}.html'.format(str(i))), 'w') as f:
-                f.write(pages[i - 1])
+                try:
+                    f.write(pages[i - 1])
+                except UnicodeEncodeError:
+                    f.write(pages[i - 1].encode('utf-8'))
