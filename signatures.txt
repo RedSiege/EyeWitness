@@ -271,3 +271,8 @@ fromWebChromeNACL;console.log(e.source);var g_ocx = 0;g_backIvs;g_busernameEncry
 <title>MiVoice Video Phone</title>;var productName = "MiVoice Conference Phone";$("title").text(productName|MiVoice Conference Phone admin/admin
 <title>Mitel Standard;var urlbits = window.location.href.;td class="inputLabel">Username:Mitel Networks Corporation|Mitel Standard - admin/<setatinstall> or root/<setatinstall>
 <title ng-bind="manageCtrl.system.getName();UniFi'" class="ng-binding">UniFi</title>;translate="ACCOUNT_TITLE_HOTSPOT_MANAGER"|Ubiquity Unify - ubnt/ubnt
+<title>Dell OpenManage Switch Administrator</title>;window.top.location.href = "dell_login.html";login_text|Dell OpenManage Switch root / calvin
+WSMAN library is loaded here as;FRAMEHEADER;function loadFrames;top.remoteSelection = "radioJava";src="lib/eLang.js"|IBM Integrated Management Module USERID / PASSW0RD
+<title>Login</title>;label id="lausername" name="lausername";label id="lapassword" name="lapassword";label id="lapassword" name="lapassword"|Hikvision Digital Technology IP CCTV admin / 12345
+<title> SyncThru Web Service </title>;sws_loading_wait;<span>SyncThru Web Service</span>|Samsung Syncthrough Printer admin / sec00000
+<Title>ConfigSummary</Title>;<AuthUserName>Public</AuthUserName>;<ProductName>bizhub C368</ProductName>|Konica Minolta bizhub c368 default pass is either 12345678 or 1234567812345678
