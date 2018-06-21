@@ -639,6 +639,8 @@ def title_screen():
         os.system('clear')
     print "#" * 80
     print "#" + " " * 34 + "EyeWitness" + " " * 34 + "#"
+    print "#" * 80
+    print "#" + " " * 11 + "FortyNorth Security - https://www.fortynorthsecurity.com" + " " * 11 + "#"
     print "#" * 80 + "\n"
 
     python_info = sys.version_info
