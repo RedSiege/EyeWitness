@@ -316,6 +316,12 @@ def duplicate_check(cli_object):
                     with open(report_page, 'w') as report_out:
                         report_out.write(page_text)
                 os.remove(cli_object.d + '/' + next_filename)
+                with open(cli_object.d + "/Requests.csv", 'r') as csv_port_file:
+                    csv_lines = csv_port_file.read()
+                    if next_filename in csv_lines:
+                        csv_lines = csv_lines.replace(next_filename, original_pic_name)
+                with open(cli_object.d + "/Requests.csv", 'w') as csv_port_writer:
+                    csv_port_writer.write(csv_lines)
     return
 
 
