@@ -58,7 +58,7 @@ docker run \
     -it \
     -v ~/EyeWitness:/tmp/EyeWitness \
     eyewitness \
-    --single http://www.google.com
+    --single http://www.google.com \
     --headless
 ```
 
@@ -71,7 +71,7 @@ docker run \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v ~/EyeWitness:/tmp/EyeWitness \
     eyewitness \
-    -f /tmp/EyeWitness/urls.txt
+    -f /tmp/EyeWitness/urls.txt \
     --vnc
 ```
 
