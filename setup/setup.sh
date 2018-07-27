@@ -102,6 +102,8 @@ case ${osinfo} in
     apt-get update
     echo '[*] Installing Debian Dependencies'
     apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr
+    echo '[*] Upgrading paramiko'
+    pip install --upgrade paramiko
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -267,4 +269,6 @@ esac
 # Finish Message
 popd > /dev/null
 echo '[*] Setup script completed successfully, enjoy EyeWitness! :)'
+echo '[*] Be sure to check out FortyNorth Security!'
+echo '[*] https://www.fortynorthsecurity.com'
 echo
