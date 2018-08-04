@@ -35,7 +35,9 @@ case ${osinfo} in
   Kali2)
     apt-get update
     echo '[*] Installing Kali2 Dependencies'
-    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr
+    echo '[*] Upgrading paramiko'
+    pip install --upgrade paramiko
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -74,6 +76,8 @@ case ${osinfo} in
     apt-get update
     echo '[*] Installing Kali Dependencies'
     apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
+    echo '[*] Upgrading paramiko'
+    pip install --upgrade paramiko
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
