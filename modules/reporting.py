@@ -223,7 +223,7 @@ def sort_data_and_write(cli_parsed, data):
         for obj in grouped:
             pcount += 1
             html += obj.create_table_html()
-            if (counter % cli_parsed.results == 0):
+            if (counter % cli_parsed.results == 0) or (counter == (total_results) -1):
                 html = (web_index_head + "EW_REPLACEME" + html +
                         "</table><br>")
                 pages.append(html)
@@ -240,7 +240,7 @@ def sort_data_and_write(cli_parsed, data):
         html += table_head
         for obj in errors:
             html += obj.create_table_html()
-            if counter % cli_parsed.results == 0:
+            if (counter % cli_parsed.results == 0) or (counter == (total_results)):
                 html = (web_index_head + "EW_REPLACEME" + html +
                         "</table><br>")
                 pages.append(html)
