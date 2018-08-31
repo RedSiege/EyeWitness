@@ -134,7 +134,8 @@ class HTTPTableObject(object):
         if hasattr(self, '_headers'):
             return self._headers
         else:
-            return "No Data Collected"
+            missing = { "Missing Headers" : "No Headers found" }
+            return missing
 
     @headers.setter
     def headers(self, headers):
