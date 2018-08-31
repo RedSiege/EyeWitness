@@ -478,6 +478,11 @@ def textfile_parser(file_to_parse, cli_obj):
             print "ERROR: You didn't give me a valid file name! I need a valid file containing URLs!"
         sys.exit()
 
+    except ValueError:
+        print("ERROR: You likely passed an XML file into the plain text input parameter!")
+        print("ERROR: Please try again with the -x flag instead of -f!")
+        sys.exit()
+
 
 def target_creator(command_line_object):
     """Parses input files to create target lists
