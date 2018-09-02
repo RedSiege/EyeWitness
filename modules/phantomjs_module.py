@@ -244,6 +244,10 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     http_object.headers = headers
     http_object.source_code = driver.page_source.encode('utf-8')
 
-    with open(http_object.source_path, 'w') as f:
-        f.write(http_object.source_code)
+    try:
+        with open(http_object.source_path, 'w') as f:
+            f.write(http_object.source_code)
+    except IOError:
+        print("[*] ERROR: URL too long, surpasses max file length.")
+        print("[*] ERROR: Skipping: " + http_object.remote_system)
     return http_object, driver
