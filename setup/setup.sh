@@ -26,6 +26,10 @@ if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep
   osinfo="Kali2"
 fi
 
+if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep "Parrot GNU/Linux.*\(4\)"` ]]; then
+  osinfo="Parrot"
+fi
+
 # make sure we run from this directory
 pushd . > /dev/null && cd "$(dirname "$0")"
 
@@ -75,6 +79,36 @@ case ${osinfo} in
   Kali)
     apt-get update
     echo '[*] Installing Kali Dependencies'
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
+    echo '[*] Upgrading paramiko'
+    pip install --upgrade paramiko
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
+    python setup.py install
+    cd ..
+    rm -rf rdpy
+    echo '[*] Installing Python Modules'
+    pip install fuzzywuzzy
+    pip install selenium==3.5.0
+    pip install python-Levenshtein
+    pip install pyasn1 --upgrade
+    pip install pyvirtualdisplay
+    pip install pytesseract
+    cd ../bin/
+    MACHINE_TYPE=`uname -m`
+    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+      wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantomjs
+    else
+      wget -O phantomjs https://www.christophertruncer.com/InstallMe/kali32phantomjs
+    fi
+    chmod +x phantomjs
+    cd ..
+  ;;
+   # Parrot Dependency Installation
+  Parrot)
+    apt-get update
+    echo '[*] Installing Parrot Dependencies'
     apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
     echo '[*] Upgrading paramiko'
     pip install --upgrade paramiko
