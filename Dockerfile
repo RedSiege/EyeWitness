@@ -22,9 +22,9 @@ WORKDIR /home/$user/EyeWitness
 RUN cd setup && \
     ./setup.sh && \
     cd .. && \
-    chown -R $user:$user /home/$user/EyeWitness
+    chown -R $user:$user /home/$user/EyeWitness \
+    mkdir -p /tmp/EyeWitness
 
 USER $user
 
 ENTRYPOINT ["python", "EyeWitness.py", "-d", "/tmp/EyeWitness/results", "--no-prompt"]
-
