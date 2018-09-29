@@ -50,7 +50,7 @@ case ${osinfo} in
     rm -rf rdpy
     echo '[*] Installing Python Modules'
     pip install fuzzywuzzy
-    pip install selenium==3.5.0
+    pip install selenium --upgrade
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
@@ -59,17 +59,19 @@ case ${osinfo} in
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
       wget -O phantomjs https://www.christophertruncer.com/InstallMe/kali2phantomjs
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux64.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux64.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.22.0/geckodriver-v0.22.0-linux64.tar.gz
+      tar -xvf geckodriver-v0.22.0-linux64.tar.gz
+      rm geckodriver-v0.22.0-linux64.tar.gz
       mv geckodriver /usr/sbin
+      rm /usr/bin/geckodriver
       ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     else
       wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantom32kali2
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux32.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux32.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.22.0/geckodriver-v0.22.0-linux32.tar.gz
+      tar -xvf geckodriver-v0.22.0-linux32.tar.gz
+      rm geckodriver-v0.22.0-linux64.tar.gz
       mv geckodriver /usr/sbin
+      rm /usr/bin/geckodriver
       ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     fi
     chmod +x phantomjs
@@ -90,7 +92,7 @@ case ${osinfo} in
     rm -rf rdpy
     echo '[*] Installing Python Modules'
     pip install fuzzywuzzy
-    pip install selenium==3.5.0
+    pip install selenium --upgrade
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
@@ -120,7 +122,7 @@ case ${osinfo} in
     rm -rf rdpy
     echo '[*] Installing Python Modules'
     pip install fuzzywuzzy
-    pip install selenium==3.5.0
+    pip install selenium --upgrade
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
@@ -152,7 +154,7 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium==3.5.0
+    pip install selenium --upgrade
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
@@ -163,10 +165,11 @@ case ${osinfo} in
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
       wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux64.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux64.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.22.0/geckodriver-v0.22.0-linux64.tar.gz
+      tar -xvf geckodriver-v0.22.0-linux64.tar.gz
+      rm geckodriver-v0.22.0-linux64.tar.gz
       mv geckodriver /usr/sbin
+      rm /usr/bin/geckodriver
       ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
       tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
       cd phantomjs-2.1.1-linux-x86_64/bin/
@@ -176,10 +179,11 @@ case ${osinfo} in
       rm phantomjs-2.1.1-linux-x86_64.tar.bz2
     else
       wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux32.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux32.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.22.0/geckodriver-v0.22.0-linux32.tar.gz
+      tar -xvf geckodriver-v0.22.0-linux32.tar.gz
+      rm geckodriver-v0.22.0-linux64.tar.gz
       mv geckodriver /usr/sbin
+      rm /usr/bin/geckodriver
       ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
       tar -xvf phantomjs-2.1.1-linux-i686.tar.bz2
       cd phantomjs-2.1.1-linux-i686/bin/
@@ -205,7 +209,7 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium==3.5.0
+    pip install selenium --upgrade
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
@@ -219,9 +223,9 @@ case ${osinfo} in
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
       wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux64.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux64.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.22.0/geckodriver-v0.22.0-linux64.tar.gz
+      tar -xvf geckodriver-v0.22.0-linux64.tar.gz
+      rm geckodriver-v0.22.0-linux64.tar.gz
       mv geckodriver /usr/sbin
       tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
       cd phantomjs-2.1.1-linux-x86_64/bin/
@@ -231,9 +235,9 @@ case ${osinfo} in
       rm phantomjs-2.1.1-linux-x86_64.tar.bz2
     else
       wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux32.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux32.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.22.0/geckodriver-v0.22.0-linux32.tar.gz
+      tar -xvf geckodriver-v0.22.0-linux32.tar.gz
+      rm geckodriver-v0.22.0-linux64.tar.gz
       mv geckodriver /usr/sbin
       tar -xvf phantomjs-2.1.1-linux-i686.tar.bz2
       cd phantomjs-2.1.1-linux-i686/bin/
@@ -268,7 +272,7 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium==3.5.0
+    pip install selenium --upgrade
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay

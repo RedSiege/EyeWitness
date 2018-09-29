@@ -12,6 +12,7 @@ except:
 
 try:
     from selenium import webdriver
+    from selenium.webdriver.firefox.options import Options
     from selenium.common.exceptions import NoAlertPresentException
     from selenium.common.exceptions import TimeoutException
     from selenium.common.exceptions import UnexpectedAlertPresentException
@@ -73,7 +74,9 @@ def create_driver(cli_parsed, user_agent=None):
     try:
         capabilities = DesiredCapabilities.FIREFOX.copy()
         capabilities.update({'acceptInsecureCerts': True})
-        driver = webdriver.Firefox(profile, capabilities=capabilities)
+        options = Options()
+        options.add_argument("--headless")
+        driver = webdriver.Firefox(profile, capabilities=capabilities, firefox_options=options)
         driver.set_page_load_timeout(cli_parsed.timeout)
         return driver
     except Exception as e:
