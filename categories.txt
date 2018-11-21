@@ -395,3 +395,4 @@ WSMAN library is loaded here as;FRAMEHEADER;function loadFrames;top.remoteSelect
 <title> SyncThru Web Service </title>;sws_loading_wait;<span>SyncThru Web Service</span>|printer
 <Title>ConfigSummary</Title>;<AuthUserName>Public</AuthUserName>;<ProductName>bizhub C368</ProductName>|printer
 .titleciscolog;.titleciscouser;opener && opener.location.hostname == self.location.hostname;temp=String.fromCharCode(temp)|netdev
+body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;ng-app="esxUiApp"|highval
