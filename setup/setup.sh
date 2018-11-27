@@ -101,7 +101,7 @@ case ${osinfo} in
   Parrot)
     apt-get update
     echo '[*] Installing Parrot Dependencies'
-    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     pip install --upgrade paramiko
     echo '[*] Installing RDPY'
@@ -124,7 +124,7 @@ case ${osinfo} in
   Debian)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     pip install --upgrade paramiko
     echo '[*] Installing RDPY'
@@ -167,7 +167,7 @@ case ${osinfo} in
   Ubuntu)
     apt-get update
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr
+    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr firefox-esr
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -216,7 +216,7 @@ case ${osinfo} in
     fi
     echo '[*] Installing CentOS Dependencies'
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse xvfb python-netaddr python-dev tesseract-ocr
+                python-argparse xvfb python-netaddr python-dev tesseract-ocr firefox-esr
     echo
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
