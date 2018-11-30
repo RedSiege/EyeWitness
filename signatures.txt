@@ -277,3 +277,7 @@ WSMAN library is loaded here as;FRAMEHEADER;function loadFrames;top.remoteSelect
 <title> SyncThru Web Service </title>;sws_loading_wait;<span>SyncThru Web Service</span>|Samsung Syncthrough Printer admin / sec00000
 <Title>ConfigSummary</Title>;<AuthUserName>Public</AuthUserName>;<ProductName>bizhub C368</ProductName>|Konica Minolta bizhub c368 default pass is either 12345678 or 1234567812345678
 body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;ng-app="esxUiApp"|ESXi System pass set on install
+<head><title>Avaya B179</title>;<link href="css/b179.css";http-equiv="Content-Type"|Avaya B179 - Pin 0000
+<title id="titleLbl_id"></title>;var thisIDRACText = EntityDecode;var thisIDRACText;MAXUNLEN = 512|Dell iDrac root/calvin
+body onload="init('/wcd/system_device.xml','wcd',';href="/wcd/default.css">;FUNCVER|Konica Minolta - No Pass
+<title>KONICA MINOLTA bizhub 4702P</title>;role="heading">Embedded Web Server;label id="langlabel" aria-hidden="true"|Konica Minolta - No Pass
