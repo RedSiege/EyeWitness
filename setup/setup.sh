@@ -163,7 +163,7 @@ case ${osinfo} in
     fi
     cd ..
   ;;
-  # Ubuntu (tested in 13.10) Dependency Installation
+  # Ubuntu (tested in 16.04) Dependency Installation
   Ubuntu)
     apt-get update
     echo '[*] Installing Ubuntu Dependencies'
