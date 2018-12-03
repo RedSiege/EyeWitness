@@ -403,7 +403,7 @@ def textfile_parser(file_to_parse, cli_obj):
                         rdp.append(line)
                     if cli_obj.vnc:
                         vnc.append(line)
-                    if cli_obj.web or cli_obj.headless:
+                    if cli_obj.web:
                         if cli_obj.prepend_https:
                             urls.append("http://" + line)
                             urls.append("https://" + line)
@@ -415,7 +415,7 @@ def textfile_parser(file_to_parse, cli_obj):
                         urls.append(line + ':' + str(port))
                 else:
 
-                    if cli_obj.web or cli_obj.headless:
+                    if cli_obj.web:
                         if cli_obj.prepend_https:
                             for port in cli_obj.only_ports:
                                 urls.append("http://" + line + ':' + str(port))
