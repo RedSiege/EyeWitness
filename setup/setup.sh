@@ -168,6 +168,7 @@ case ${osinfo} in
     apt-get update
     echo '[*] Installing Ubuntu Dependencies'
     apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr firefox-esr
+    pip install cryptography --upgrade
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
