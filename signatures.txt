@@ -282,4 +282,4 @@ body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;
 body onload="init('/wcd/system_device.xml','wcd',';href="/wcd/default.css">;FUNCVER|Konica Minolta - No Pass
 <title>KONICA MINOLTA bizhub 4702P</title>;role="heading">Embedded Web Server;label id="langlabel" aria-hidden="true"|Konica Minolta - No Pass
 <title>HD-MD4x1-4K-E</title>| Crestron admin/admin
-PRTG Network Monitor| PRTG Network Monitor ptrgadmin/ ptrgadmin
+PRTG Network Monitor| PRTG Network Monitor ptrgadmin/ptrgadmin
