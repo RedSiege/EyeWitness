@@ -58,8 +58,8 @@ docker run \
     -it \
     -v ~/EyeWitness:/tmp/EyeWitness \
     eyewitness \
-    --single http://www.google.com \
-    --headless
+    --web \
+    --single http://www.google.com
 ```
 
 ##### Example #2 - vnc capturing
