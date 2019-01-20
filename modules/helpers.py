@@ -430,7 +430,12 @@ def textfile_parser(file_to_parse, cli_obj):
             url_again = url_again.strip()
             complete_urls.append(url_again)
             if url_again.count(":") == 2:
-                port_number = int(url_again.split(":")[2].split("/")[0])
+            	try:
+                	port_number = int(url_again.split(":")[2].split("/")[0])
+                except ValueError:
+                	print("ERROR: You potentially provided an mal-formed URL!")
+                	print("ERROR: URL is - " + url_again)
+                	sys.exit()
                 hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
                 if port_number in openports:
                     openports[port_number] += "," + hostname_again
@@ -476,11 +481,6 @@ def textfile_parser(file_to_parse, cli_obj):
             print "ERROR: The XML file you provided does not have any active web servers!"
         else:
             print "ERROR: You didn't give me a valid file name! I need a valid file containing URLs!"
-        sys.exit()
-
-    except ValueError:
-        print("ERROR: You likely passed an XML file into the plain text input parameter!")
-        print("ERROR: Please try again with the -x flag instead of -f!")
         sys.exit()
 
 
