@@ -23,7 +23,8 @@ RUN cd setup && \
     ./setup.sh && \
     cd .. && \
     chown -R $user:$user /home/$user/EyeWitness && \
-    mkdir -p /tmp/EyeWitness
+    mkdir -p /tmp/EyeWitness && \
+    chown $user:$user /tmp/EyeWitness
 
 USER $user
 
