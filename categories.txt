@@ -400,3 +400,5 @@ body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;
 <title id="titleLbl_id"></title>;var thisIDRACText = EntityDecode;var thisIDRACText;MAXUNLEN = 512|highval
 body onload="init('/wcd/system_device.xml','wcd',';href="/wcd/default.css">;FUNCVER|printer
 <title>KONICA MINOLTA bizhub 4702P</title>;role="heading">Embedded Web Server;label id="langlabel" aria-hidden="true"|printer
+Virtual Appliance Management;VAMI.css;vmware.vami.CoreWrapper.nocache.js;gwt_historyFrame|virtualization
+SafeNet Sentinel ACC;hasplm1344441936;popHide;glbPageRefresh|infrastructure
