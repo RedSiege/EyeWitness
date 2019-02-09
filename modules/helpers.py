@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 import hashlib
 import os
 import platform
@@ -864,3 +865,31 @@ def open_file_input(cli_parsed):
     else:
         print '[*] No report files found to open, perhaps no hosts were successful'
         return False
+
+def class_info():
+    class_image = '''MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+M                                                                M
+M       .”cCCc”.                                                 M
+M      /cccccccc\\           Our Upcoming Trainings:              M
+M      §cccccccc|                                                M
+M      :ccccccccP           NOLACON  >> May 13-16 2019           M
+M      \\cccccccc()                      New Orleans              M
+M       \\ccccccccD                      www.nolacon.com          M
+M       |cccccccc\\       _                                       M
+M       |ccccccccc)     //  BLACKHAT >> August 3-6               M
+M       |cccccc|=      //               Las Vegas                M
+M      /°°°°°°”-.     (CCCC)            www.blackhat.com/us-19   M
+M      ;----._  _._   |cccc|                                     M
+M   .*°       °°   °. \\cccc/                                     M
+M  /  /       (      )/ccc/                                      M
+M  |_/        |    _.°cccc|                                      M
+M  |/         °^^^°ccccccc/                                      M
+M  /            \\cccccccc/                                       M
+M /              \\cccccc/                                        M
+M |                °*°                                           M
+M /                  \\      Psss. Follow us on >> Twitter        M
+M °*-.__________..-*°°                         >> Facebook       M
+M  \\WWWWWWWWWWWWWWWW/                          >> LinkedIn       M
+M   \\WWWWWWWWWWWWWW/                                             M
+MMMMM|WWWWWWWWWWWW|MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM'''
+    print(class_image)

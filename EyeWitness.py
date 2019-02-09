@@ -16,6 +16,7 @@ from modules import phantomjs_module
 from modules import rdp_module
 from modules import selenium_module
 from modules import vnc_module
+from modules.helpers import class_info
 from modules.helpers import create_folders_css
 from modules.helpers import default_creds_category
 from modules.helpers import do_jitter
@@ -602,7 +603,9 @@ if __name__ == "__main__":
                 files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
                 for f in files:
                     webbrowser.open(f)
+                    class_info()
                     sys.exit()
+        class_info()
         sys.exit()
 
     if cli_parsed.f is not None or cli_parsed.x is not None:
@@ -617,5 +620,7 @@ if __name__ == "__main__":
             files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
             for f in files:
                 webbrowser.open(f)
+                class_info()
                 sys.exit()
+        class_info()
         sys.exit()
