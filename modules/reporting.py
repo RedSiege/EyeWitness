@@ -196,7 +196,13 @@ def sort_data_and_write(cli_parsed, data):
             csv_request_data += "80,"
         elif url.scheme == 'https':
             csv_request_data += "443,"
-        csv_request_data += url.hostname + ","
+        try:
+            csv_request_data += url.hostname + ","
+        except TypeError:
+            print("Error when accessing a target's hostname (it's not existent)")
+            print("Possible bad url (improperly formatted) in the URL list.")
+            print("Fix your list and re-try. Killing EyeWitness....")
+            sys.exit(1)
         if json_request._error_state == None:
             csv_request_data += "Successful,"
         else:
