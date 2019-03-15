@@ -286,3 +286,4 @@ body onload="init('/wcd/system_device.xml','wcd',';href="/wcd/default.css">;FUNC
 Virtual Appliance Management;VAMI.css;vmware.vami.CoreWrapper.nocache.js;gwt_historyFrame|Avamar Virtual Machine Proxy root/avam@r
 <title>AR-M277</title>;src="link_user.html";src="link_user.html";<a href="link_user.html">|Sharp AR-M277 admin/Sharp
 <title>AR-M355N</title>;<frame src="link_user.html";main_user;link_user.html|Sharp AR-M355N admin/Sharp
+<title>AR-M550U</title>;frame SRC="link_user.html";frame SRC="logo.html";frame SRC="main_user.html"|Sharp AR-M550U admin/Sharp
