@@ -402,3 +402,4 @@ body onload="init('/wcd/system_device.xml','wcd',';href="/wcd/default.css">;FUNC
 <title>KONICA MINOLTA bizhub 4702P</title>;role="heading">Embedded Web Server;label id="langlabel" aria-hidden="true"|printer
 Virtual Appliance Management;VAMI.css;vmware.vami.CoreWrapper.nocache.js;gwt_historyFrame|virtualization
 SafeNet Sentinel ACC;hasplm1344441936;popHide;glbPageRefresh|infrastructure
+<title>AR-M277</title>;src="link_user.html";src="link_user.html";<a href="link_user.html">|printer
