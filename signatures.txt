@@ -287,3 +287,8 @@ Virtual Appliance Management;VAMI.css;vmware.vami.CoreWrapper.nocache.js;gwt_his
 <title>AR-M277</title>;src="link_user.html";src="link_user.html";<a href="link_user.html">|Sharp AR-M277 admin/Sharp
 <title>AR-M355N</title>;<frame src="link_user.html";main_user;link_user.html|Sharp AR-M355N admin/Sharp
 <title>AR-M550U</title>;frame SRC="link_user.html";frame SRC="logo.html";frame SRC="main_user.html"|Sharp AR-M550U admin/Sharp
+<title>Dell PowerVault TL4000 Tape Library</title>;"login_form" action="/RMULogin"|Dell PowerVault TL4000 admin/secure
+<title>Top Page - MX-4141N</title>;delta_close;mainwebchange;ggt_select(2)|Sharp MX-4141N administrator/admin
+/cmc/css/loginmaster;strMaxSessions;strNotLicensed;blackpage_button_emphasized|Dell CMC root/calvin
+<title>Grandstream Device Configuration</title>;/cgi-bin/dologin;loginForm|Grandstream Device Configuration administrator/admin
+HP Color LaserJet M553;DeviceStatus/Index;/hp/device/GeneralSecurity/Index|Dell M533 administrator/admin
