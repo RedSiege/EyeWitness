@@ -292,3 +292,6 @@ Virtual Appliance Management;VAMI.css;vmware.vami.CoreWrapper.nocache.js;gwt_his
 /cmc/css/loginmaster;strMaxSessions;strNotLicensed;blackpage_button_emphasized|Dell CMC root/calvin
 <title>Grandstream Device Configuration</title>;/cgi-bin/dologin;loginForm|Grandstream Device Configuration administrator/admin
 HP Color LaserJet M553;DeviceStatus/Index;/hp/device/GeneralSecurity/Index|Dell M533 administrator/admin
+img/ico/netbrain.ico;<title>Login - NetBrain IE</title>;netbrain-logo-transparent|NetBrain - admin/admin
+<title>MineMeld</title>;ng-app="minemeldWebui";ng-disabled="login.checking"|Minemeld admin/minemeld
+Red Gate Software Limited;/Content/Help/ConfigurePassword/GenericLogin.html;SQL Monitor|SQL Monitor (pass created at install)

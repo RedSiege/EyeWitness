@@ -410,3 +410,6 @@ SafeNet Sentinel ACC;hasplm1344441936;popHide;glbPageRefresh|infrastructure
 /cmc/css/loginmaster;strMaxSessions;strNotLicensed;blackpage_button_emphasized|infrastructure
 <title>Grandstream Device Configuration</title>;/cgi-bin/dologin;loginForm|infrastructure
 HP Color LaserJet M553;DeviceStatus/Index;/hp/device/GeneralSecurity/Index|printer
+img/ico/netbrain.ico;<title>Login - NetBrain IE</title>;netbrain-logo-transparent|infrastructure
+<title>MineMeld</title>;ng-app="minemeldWebui";ng-disabled="login.checking"|infrastructure
+Red Gate Software Limited;/Content/Help/ConfigurePassword/GenericLogin.html;SQL Monitor|infrastructure
