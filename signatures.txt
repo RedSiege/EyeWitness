@@ -295,3 +295,11 @@ HP Color LaserJet M553;DeviceStatus/Index;/hp/device/GeneralSecurity/Index|Dell 
 img/ico/netbrain.ico;<title>Login - NetBrain IE</title>;netbrain-logo-transparent|NetBrain - admin/admin
 <title>MineMeld</title>;ng-app="minemeldWebui";ng-disabled="login.checking"|Minemeld admin/minemeld
 Red Gate Software Limited;/Content/Help/ConfigurePassword/GenericLogin.html;SQL Monitor|SQL Monitor (pass created at install)
+<title>KACE Remote Site Appliance</title>;k-main k-main-collapsed;msg_chat_unavailable|KACE Remote Site Appliance admin/admin
+<title>Log In</title>;SendLoginXML();lblLoginErrMsg;checkURL();get_statusString|Dell R1 2401 root/calvin
+<title>Login</title>;name="GENERATOR";selectLanguage();/goform/WEB_UsrLoginProc|Linear IP Camera admin/admin
+<title>User Authentication;iR-ADV C3530;id="corporateBranding";canonlogo.gif|Cannon-iR-ADV-C3530 administrator/7654321
+<title>RNPE5AA81;webArch/topPage.cgi;header.cgi;name="work"|Ricoh-Aficio-MP-C6000 admin/<blank>
+isSignedIn;currentDecimalSeparator;currentThousandSeparator;HP Color LaserJet M653|HP Color LaserJet M653 administrator/<blank>
+HP LaserJet M506;HomeDeviceName;OpenFromUsb/Index;WelcomeHeader|HP LaserJet M506 administrator/<blank>
+isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|HP Color LaserJet E65050 administrator/<blank>

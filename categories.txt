@@ -413,3 +413,11 @@ HP Color LaserJet M553;DeviceStatus/Index;/hp/device/GeneralSecurity/Index|print
 img/ico/netbrain.ico;<title>Login - NetBrain IE</title>;netbrain-logo-transparent|infrastructure
 <title>MineMeld</title>;ng-app="minemeldWebui";ng-disabled="login.checking"|infrastructure
 Red Gate Software Limited;/Content/Help/ConfigurePassword/GenericLogin.html;SQL Monitor|infrastructure
+<title>KACE Remote Site Appliance</title>;k-main k-main-collapsed;msg_chat_unavailable|infrastructure
+<title>Log In</title>;SendLoginXML();lblLoginErrMsg;checkURL();get_statusString|netdev
+<title>Login</title>;name="GENERATOR";selectLanguage();/goform/WEB_UsrLoginProc|infrastructure
+<title>User Authentication;iR-ADV C3530;id="corporateBranding";canonlogo.gif|printer
+<title>RNPE5AA81;webArch/topPage.cgi;header.cgi;name="work"|printer
+isSignedIn;currentDecimalSeparator;currentThousandSeparator;HP Color LaserJet M653|printer
+HP LaserJet M506;HomeDeviceName;OpenFromUsb/Index;WelcomeHeader|printer
+isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|printer
