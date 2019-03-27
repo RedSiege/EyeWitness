@@ -421,3 +421,4 @@ Red Gate Software Limited;/Content/Help/ConfigurePassword/GenericLogin.html;SQL 
 isSignedIn;currentDecimalSeparator;currentThousandSeparator;HP Color LaserJet M653|printer
 HP LaserJet M506;HomeDeviceName;OpenFromUsb/Index;WelcomeHeader|printer
 isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|printer
+<title>Identity Services Engine</title>;class="fi-cisco-login";dojoattachpoint="userFormAP"|infrastructure

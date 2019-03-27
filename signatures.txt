@@ -303,3 +303,4 @@ Red Gate Software Limited;/Content/Help/ConfigurePassword/GenericLogin.html;SQL 
 isSignedIn;currentDecimalSeparator;currentThousandSeparator;HP Color LaserJet M653|HP Color LaserJet M653 administrator/<blank>
 HP LaserJet M506;HomeDeviceName;OpenFromUsb/Index;WelcomeHeader|HP LaserJet M506 administrator/<blank>
 isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|HP Color LaserJet E65050 administrator/<blank>
+<title>Identity Services Engine</title>;class="fi-cisco-login";dojoattachpoint="userFormAP"|Cisco Identify Services admin/admin or admin/{null}
