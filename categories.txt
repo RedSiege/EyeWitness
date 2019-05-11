@@ -422,3 +422,6 @@ isSignedIn;currentDecimalSeparator;currentThousandSeparator;HP Color LaserJet M6
 HP LaserJet M506;HomeDeviceName;OpenFromUsb/Index;WelcomeHeader|printer
 isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|printer
 <title>Identity Services Engine</title>;class="fi-cisco-login";dojoattachpoint="userFormAP"|infrastructure
+<title>APC | Log On</title>;function placeFocus();images/smAPC.gif|infrastructure
+Hewlett Packard Enterprise Development;client_cert_present;AirWave Wireless nor Aruba Networks;<title>AirWave Management Platform|infrastructure
+<title>vRealize Operations Manager</title>;clarity-light;lib/clarity/clarity-icons|infrastructure
