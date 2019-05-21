@@ -425,3 +425,5 @@ isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|printer
 <title>APC | Log On</title>;function placeFocus();images/smAPC.gif|infrastructure
 Hewlett Packard Enterprise Development;client_cert_present;AirWave Wireless nor Aruba Networks;<title>AirWave Management Platform|infrastructure
 <title>vRealize Operations Manager</title>;clarity-light;lib/clarity/clarity-icons|infrastructure
+<title>BIG-I;meta name="description";fail(function(reason);!isSupportedBrowser()|infrastructure
+<title>Portals Tracker</title>;authenticity_token;keepAnchorOnSignIn(this)|infrastructure

@@ -307,3 +307,5 @@ isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|HP Colo
 <title>APC | Log On</title>;function placeFocus();images/smAPC.gif|APC Power Management apc/apc
 Hewlett Packard Enterprise Development;client_cert_present;AirWave Wireless nor Aruba Networks;<title>AirWave Management Platform|Aruba Airwave admin/admin
 <title>vRealize Operations Manager</title>;clarity-light;lib/clarity/clarity-icons|VMWare vRealize Operations Manager admin@local / admin
+<title>BIG-I;meta name="description";fail(function(reason);!isSupportedBrowser()|Big-IQ admin/admin
+<title>Portals Tracker</title>;authenticity_token;keepAnchorOnSignIn(this)|Redmine admin/admin
