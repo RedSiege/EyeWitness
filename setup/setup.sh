@@ -237,7 +237,7 @@ case ${osinfo} in
     fi
     echo '[*] Installing CentOS Dependencies'
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse xvfb python-netaddr python-dev tesseract-ocr firefox-esr python-devel
+                python-argparse xvfb python-netaddr python-devel tesseract-ocr firefox-esr
     echo
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
