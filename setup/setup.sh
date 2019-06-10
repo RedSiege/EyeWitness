@@ -30,6 +30,14 @@ if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep
   osinfo="Parrot"
 fi
 
+# Centos detection
+if grep -q -i "CentOS" /etc/redhat-release
+then
+  osinfo="centos"
+  echo "[*] Centos detected"
+fi
+
+
 # make sure we run from this directory
 pushd . > /dev/null && cd "$(dirname "$0")"
 
@@ -217,7 +225,7 @@ case ${osinfo} in
     cd ..
   ;;
   # CentOS 6.5+ Dependency Installation
-  CentOS)
+  centos)
     echo '[Warning]: EyeWitness on CentOS Requires EPEL Repository!'
     read -p '[?] Install and Enable EPEL Repository? (y/n): ' epel
     if [ "${epel}" == 'y' ]; then
