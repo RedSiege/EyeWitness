@@ -139,8 +139,9 @@ case ${osinfo} in
     apt-get update
     echo '[*] Installing Debian Dependencies'
     apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr firefox-esr
-    echo '[*] Upgrading paramiko'
+    echo '[*] Upgrading paramiko and pyopenssl'
     pip install --upgrade paramiko
+    pip install -U pyopenssl
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
