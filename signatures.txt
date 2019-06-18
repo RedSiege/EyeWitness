@@ -311,3 +311,4 @@ Hewlett Packard Enterprise Development;client_cert_present;AirWave Wireless nor 
 <title>Portals Tracker</title>;authenticity_token;keepAnchorOnSignIn(this)|Redmine admin/admin
 <title>BIG-IP;F5 Networks, Inc., Seattle, Washington;content="F5 Networks, Inc.">|F5 BigIP admin/default
 <title>ClearPass - Aruba Networks</title>;ClearPass Insight;nwaCommandLinkHover|Aruba Networks Clearpass admin/eTIPS123
+Welcome - Nexus Repository Manager;content="Nexus;progressMessage(msg);title="Browse|Nexus Repository Manager admin/admin123

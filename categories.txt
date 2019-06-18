@@ -429,3 +429,4 @@ Hewlett Packard Enterprise Development;client_cert_present;AirWave Wireless nor 
 <title>Portals Tracker</title>;authenticity_token;keepAnchorOnSignIn(this)|infrastructure
 <title>BIG-IP;F5 Networks, Inc., Seattle, Washington;content="F5 Networks, Inc.">|infrastructure
 <title>ClearPass - Aruba Networks</title>;ClearPass Insight;nwaCommandLinkHover|netdev
+Welcome - Nexus Repository Manager;content="Nexus;progressMessage(msg);title="Browse|infrastructure
