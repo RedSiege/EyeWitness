@@ -201,17 +201,17 @@ case ${osinfo} in
     rm -rf rdpy
     echo
     echo '[*] Installing Python Modules'
-    pip install python_qt_binding
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1
-    pip install pyvirtualdisplay
-    pip install beautifulsoup4
-    pip install pytesseract
-    pip install enum34
-    pip install ipaddress
-    pip install asn1crypto
+    pip install --user python_qt_binding
+    pip install --user fuzzywuzzy
+    pip install --user selenium --upgrade
+    pip install --user python-Levenshtein
+    pip install --user pyasn1
+    pip install --user pyvirtualdisplay
+    pip install --user beautifulsoup4
+    pip install --user pytesseract
+    pip install --user enum34
+    pip install --user ipaddress
+    pip install --user asn1crypto
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
