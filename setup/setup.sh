@@ -37,6 +37,9 @@ then
   echo "[*] Centos detected"
 fi
 
+if [[ `(lsb_release -is) 2>/dev/null | grep "LinuxMint"` ]]; then
+    osinfo="LinuxMint"
+fi
 
 # make sure we run from this directory
 pushd . > /dev/null && cd "$(dirname "$0")"
@@ -209,6 +212,46 @@ case ${osinfo} in
     pip install enum34
     pip install ipaddress
     pip install asn1crypto
+    echo
+    cd ../bin/
+    MACHINE_TYPE=`uname -m`
+    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+      rm geckodriver-v0.24.0-linux64.tar.gz
+      mv geckodriver /usr/sbin
+    else
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux32.tar.gz
+      rm geckodriver-v0.24.0-linux32.tar.gz
+      mv geckodriver /usr/sbin
+    fi
+    cd ..
+  ;;
+  LinuxMint)
+    apt-get update
+    echo '[*] Installing LinuxMint Dependencies'
+    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr firefox
+    pip install cryptography --upgrade
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
+    python setup.py install
+    cd ..
+    rm -rf rdpy
+    echo
+    echo '[*] Installing Python Modules'
+    pip install --user python_qt_binding
+    pip install --user fuzzywuzzy
+    pip install --user selenium --upgrade
+    pip install --user python-Levenshtein
+    pip install --user pyasn1
+    pip install --user pyvirtualdisplay
+    pip install --user beautifulsoup4
+    pip install --user pytesseract
+    pip install --user enum34
+    pip install --user ipaddress
+    pip install --user asn1crypto
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
