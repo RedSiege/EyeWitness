@@ -12,7 +12,6 @@ import webbrowser
 
 from modules import db_manager
 from modules import objects
-from modules import phantomjs_module
 from modules import rdp_module
 from modules import selenium_module
 from modules import vnc_module

@@ -82,8 +82,7 @@ def create_driver(cli_parsed, user_agent=None):
     except Exception as e:
         if 'Failed to find firefox binary' in str(e):
             print 'Firefox not found!'
-            print 'You can fix this by installing Firefox/Iceweasel\
-             or using phantomjs/ghost'
+            print 'You can fix this by installing Firefox/Iceweasel'
         else:
             print e
         sys.exit()
