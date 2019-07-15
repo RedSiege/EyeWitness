@@ -285,13 +285,13 @@ class XML_Parser(xml.sax.ContentHandler):
             self.plugin_output += content
 
 def duplicate_check(cli_object):
+    print "[*] Removing duplicate screenshots..."
     # This is used for checking for duplicate images
     # if it finds any, it removes them and uses a single image
     # reducing file size for output
     # dict = {sha1hash: [pic1, pic2]}
-    hash_files = {}
-    report_files = []
 
+    hash_files = {}
     for name in glob.glob(cli_object.d + '/screens/*.png'):
         with open(name, 'rb') as screenshot:
             pic_data = screenshot.read()
@@ -301,8 +301,14 @@ def duplicate_check(cli_object):
         else:
             hash_files[md5_hash] = [name.split('/')[-2] + '/' + name.split('/')[-1]]
 
+    report_files = []
     for html_file in glob.glob(cli_object.d + '/*.html'):
-        report_files.append(html_file)
+        with open(html_file, 'r') as report:
+            page_text = report.read()
+            report_files.append({"name": html_file, "content": page_text})
+
+    with open(cli_object.d + "/Requests.csv", 'r') as csv_port_file:
+        requests_file = csv_port_file.read()
 
     for hex_value, file_dict in hash_files.items():
         total_files = len(file_dict)
@@ -310,19 +316,18 @@ def duplicate_check(cli_object):
             original_pic_name = file_dict[0]
             for num in xrange(1, total_files):
                 next_filename = file_dict[num]
-                for report_page in report_files:
-                    with open(report_page, 'r') as report:
-                        page_text = report.read()
-                    page_text = page_text.replace(next_filename, original_pic_name)
-                    with open(report_page, 'w') as report_out:
-                        report_out.write(page_text)
+                for report in report_files:
+                    if next_filename in report["content"]:
+                        report["content"] = report["content"].replace(next_filename, original_pic_name)
+                        with open(report["name"], 'w') as report_out:
+                            report_out.write(report["content"])
+
+                if next_filename in requests_file:
+                    requests_file = requests_file.replace(next_filename, original_pic_name)
+                    with open(cli_object.d + "/Requests.csv", 'w') as csv_port_writer:
+                        csv_port_writer.write(requests_file)
+
                 os.remove(cli_object.d + '/' + next_filename)
-                with open(cli_object.d + "/Requests.csv", 'r') as csv_port_file:
-                    csv_lines = csv_port_file.read()
-                    if next_filename in csv_lines:
-                        csv_lines = csv_lines.replace(next_filename, original_pic_name)
-                with open(cli_object.d + "/Requests.csv", 'w') as csv_port_writer:
-                    csv_port_writer.write(csv_lines)
     return
 
 
