@@ -285,7 +285,6 @@ class XML_Parser(xml.sax.ContentHandler):
             self.plugin_output += content
 
 def duplicate_check(cli_object):
-    print "[*] Removing duplicate screenshots..."
     # This is used for checking for duplicate images
     # if it finds any, it removes them and uses a single image
     # reducing file size for output
