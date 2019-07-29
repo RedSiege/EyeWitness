@@ -876,9 +876,9 @@ M                                                                M
 M       .”cCCc”.                                                 M
 M      /cccccccc\\           Our Upcoming Trainings:              M
 M      §cccccccc|                                                M
-M      :ccccccccP           NOLACON  >> May 13-16 2019           M
-M      \\cccccccc()                      New Orleans              M
-M       \\ccccccccD                      www.nolacon.com          M
+M      :ccccccccP        BSidesAugusta  >> Sep 30- Oct 3 2019    M
+M      \\cccccccc()                      Augusta, GA              M
+M       \\ccccccccD            www.bsidesaugusta.org/training     M
 M       |cccccccc\\       _                                       M
 M       |ccccccccc)     //  BLACKHAT >> August 3-6               M
 M       |cccccc|=      //               Las Vegas                M
