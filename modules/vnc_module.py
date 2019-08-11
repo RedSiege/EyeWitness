@@ -2,9 +2,9 @@ import rdpy.core.log as log
 import sys
 
 try:
-    from PyQt4 import QtGui
+    from PyQt5 import QtGui
     from rdpy.protocol.rfb import rfb
-    from rdpy.ui.qt4 import qtImageFormatFromRFBPixelFormat
+    from rdpy.ui.qt5 import qtImageFormatFromRFBPixelFormat
 except ImportError:
     print '[*] VNC Libraries not found.'
     print '[*] Please run the script in the setup directory!'
