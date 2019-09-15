@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import glob
@@ -12,9 +12,7 @@ import webbrowser
 
 from modules import db_manager
 from modules import objects
-from modules import rdp_module
 from modules import selenium_module
-from modules import vnc_module
 from modules.helpers import class_info
 from modules.helpers import create_folders_css
 from modules.helpers import default_creds_category
@@ -28,24 +26,16 @@ from modules.helpers import duplicate_check
 from modules.reporting import create_table_head
 from modules.reporting import create_web_index_head
 from modules.reporting import sort_data_and_write
-from modules.reporting import vnc_rdp_header
-from modules.reporting import vnc_rdp_table_head
-from modules.reporting import write_vnc_rdp_data
 from multiprocessing import Manager
 from multiprocessing import Process
 from multiprocessing import current_process
 try:
     from pyvirtualdisplay import Display
-    import rdpy.core.log as log
-    from PyQt4 import QtGui
-    from PyQt4.QtCore import QTimer
 except ImportError:
-    print '[*] pyvirtualdisplay not found.'
-    print '[*] Please run the script in the setup directory!'
+    print('[*] pyvirtualdisplay not found.')
+    print('[*] Please run the script in the setup directory!')
     sys.exit()
 
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 multi_counter = 0
 multi_total = 0
@@ -61,14 +51,6 @@ def create_cli_parser():
     protocols = parser.add_argument_group('Protocols')
     protocols.add_argument('--web', default=False, action='store_true',
                            help='HTTP Screenshot using Selenium')
-    protocols.add_argument('--rdp', default=False, action='store_true',
-                           help='Screenshot RDP Services')
-    protocols.add_argument('--vnc', default=False, action='store_true',
-                           help='Screenshot Authless VNC services')
-    protocols.add_argument('--all-protocols', default=False,
-                           action='store_true',
-                           help='Screenshot all supported protocols, \
-                           using Selenium for HTTP')
 
     input_options = parser.add_argument_group('Input Options')
     input_options.add_argument('-f', metavar='Filename', default=None,
@@ -102,7 +84,7 @@ def create_cli_parser():
                                 help='Directory name for report output')
     report_options.add_argument('--results', metavar='Hosts Per Page',
                                 default=25, type=int, help='Number of Hosts per\
-                                 page of VNC or RDP report')
+                                 page of report')
     report_options.add_argument('--no-prompt', default=False,
                                 action='store_true',
                                 help='Don\'t prompt to open the report')
@@ -118,12 +100,6 @@ def create_cli_parser():
                               default=50, type=int, help='Difference threshold\
                                when determining if user agent requests are\
                                 close \"enough\" (Default: 50)')
-    http_options.add_argument('--proxy-ip', metavar='127.0.0.1', default=None,
-                              help='IP of web proxy to go through')
-    http_options.add_argument('--proxy-port', metavar='8080', default=None,
-                              type=int, help='Port of web proxy to go through')
-    http_options.add_argument('--proxy-type', metavar='socks5', default="http",
-                              help='Proxy type (socks5/http)')
     http_options.add_argument('--show-selenium', default=False,
                               action='store_true', help='Show display for selenium')
     http_options.add_argument('--resolve', default=False,
@@ -143,9 +119,6 @@ def create_cli_parser():
                               "use (e.g. '80,8080')"))
     http_options.add_argument('--prepend-https', default=False, action='store_true',
                               help='Prepend http:// and https:// to URLs without either')
-    http_options.add_argument(
-        '--active-scan', default=False, action='store_true',
-        help='Perform live login attempts to identify credentials or login pages.')
 
     resume_options = parser.add_argument_group('Resume Options')
     resume_options.add_argument('--resume', metavar='ew.db',
@@ -171,7 +144,7 @@ def create_cli_parser():
             args.d = os.path.join(os.getcwd(), args.d)
 
         if not os.access(os.path.dirname(args.d), os.W_OK):
-            print '[*] Error: Please provide a valid folder name/path'
+            print('[*] Error: Please provide a valid folder name/path')
             parser.print_help()
             sys.exit()
         else:
@@ -205,19 +178,9 @@ def create_cli_parser():
         parser.print_help()
         sys.exit()
 
-    if not any((args.resume, args.web, args.vnc, args.rdp, args.all_protocols)):
-        print "[*] Error: You didn't give me an action to perform."
-        print "[*] Error: Please use --web, --rdp, or --vnc!\n"
-        parser.print_help()
-        sys.exit()
-
-    if args.proxy_ip is not None and args.proxy_port is None:
-        print "[*] Error: Please provide a port for the proxy!"
-        parser.print_help()
-        sys.exit()
-
-    if args.proxy_port is not None and args.proxy_ip is None:
-        print "[*] Error: Please provide an IP for the proxy!"
+    if not any((args.resume, args.web)):
+        print("[*] Error: You didn't give me an action to perform.")
+        print("[*] Error: Please use --web!\n")
         parser.print_help()
         sys.exit()
 
@@ -225,11 +188,6 @@ def create_cli_parser():
         if not os.path.isfile(args.resume):
             print(" [*] Error: No valid DB file provided for resume!")
             sys.exit()
-
-    if args.all_protocols:
-        args.web = True
-        args.vnc = True
-        args.rdp = True
 
     args.ua_init = False
     return args
@@ -246,20 +204,16 @@ def single_mode(cli_parsed):
 
     url = cli_parsed.single
     http_object = objects.HTTPTableObject()
-    if cli_parsed.active_scan:
-        http_object._active_scan = True
     http_object.remote_system = url
     http_object.set_paths(
         cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
-    if cli_parsed.active_scan:
-        http_object._active_scan = True
 
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
     if cli_parsed.cycle is not None:
-        print 'Making baseline request for {0}'.format(http_object.remote_system)
+        print('Making baseline request for {0}'.format(http_object.remote_system))
     else:
-        print 'Attempting to screenshot {0}'.format(http_object.remote_system)
+        print('Attempting to screenshot {0}'.format(http_object.remote_system))
     driver = create_driver(cli_parsed)
     result, driver = capture_host(cli_parsed, http_object, driver)
     result = default_creds_category(result)
@@ -269,8 +223,8 @@ def single_mode(cli_parsed):
     if cli_parsed.cycle is not None and result.error_state is None:
         ua_dict = get_ua_values(cli_parsed.cycle)
         for browser_key, user_agent_value in ua_dict.iteritems():
-            print 'Now making web request with: {0} for {1}'.format(
-                browser_key, result.remote_system)
+            print('Now making web request with: {0} for {1}'.format(
+                browser_key, result.remote_system))
             ua_object = objects.UAObject(browser_key, user_agent_value)
             ua_object.copy_data(result)
             driver = create_driver(cli_parsed, user_agent_value)
@@ -322,13 +276,13 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
 
             if cli_parsed.cycle is not None:
                 if user_agent is None:
-                    print 'Making baseline request for {0}'.format(http_object.remote_system)
+                    print('Making baseline request for {0}'.format(http_object.remote_system))
                 else:
                     browser_key, user_agent_str = user_agent
-                    print 'Now making web request with: {0} for {1}'.format(
-                        browser_key, http_object.remote_system)
+                    print('Now making web request with: {0} for {1}'.format(
+                        browser_key, http_object.remote_system))
             else:
-                print 'Attempting to screenshot {0}'.format(http_object.remote_system)
+                print('Attempting to screenshot {0}'.format(http_object.remote_system))
 
             http_object.resolved = resolve_host(http_object.remote_system)
             if user_agent is None:
@@ -346,52 +300,12 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
 
             counter[0].value += 1
             if counter[0].value % 15 == 0:
-                print '\x1b[32m[*] Completed {0} out of {1} services\x1b[0m'.format(counter[0].value, counter[1])
+                print('\x1b[32m[*] Completed {0} out of {1} services\x1b[0m'.format(counter[0].value, counter[1]))
             do_jitter(cli_parsed)
     except KeyboardInterrupt:
         pass
     manager.close()
     driver.quit()
-
-
-def single_vnc_rdp(cli_parsed, engine):
-    url = cli_parsed.single
-    if engine == 'vnc':
-        capture_host = vnc_module.capture_host
-
-        if ':' in url:
-            ip, port = url.split(':')
-            port = int(port)
-        else:
-            ip, port = url, 5900
-
-        obj = objects.VNCRDPTableObject('vnc')
-    else:
-        capture_host = rdp_module.capture_host
-
-        if ':' in url:
-            ip, port = url.split(':')
-            port = int(port)
-        else:
-            ip, port = url, 3389
-
-        obj = objects.VNCRDPTableObject('rdp')
-
-    obj.remote_system = ip
-    obj.port = port
-    obj.set_paths(cli_parsed.d)
-
-    capture_host(cli_parsed, obj)
-
-    html = obj.create_table_html()
-    with open(os.path.join(cli_parsed.d, engine + '_report.html'), 'w') as f:
-        f.write(vnc_rdp_header(cli_parsed.date, cli_parsed.time))
-        f.write(vnc_rdp_table_head())
-        f.write(html)
-        f.write("</table><br>")
-
-    if cli_parsed.ocr:
-        rdp_module.parse_screenshot(cli_parsed.d, obj)
 
 
 def multi_mode(cli_parsed):
@@ -409,22 +323,18 @@ def multi_mode(cli_parsed):
     def exitsig(*args):
         dbm.close()
         if current_process().name == 'MainProcess':
-            print ''
-            print 'Resume using ./EyeWitness.py --resume {0}'.format(cli_parsed.d + '/ew.db')
+            print('')
+            print('Resume using ./EyeWitness.py --resume {0}'.format(cli_parsed.d + '/ew.db'))
         os._exit(1)
 
     signal.signal(signal.SIGINT, exitsig)
     if cli_parsed.resume:
         pass
     else:
-        url_list, rdp_list, vnc_list = target_creator(cli_parsed)
+        url_list = target_creator(cli_parsed)
         if cli_parsed.web:
             for url in url_list:
                 dbm.create_http_object(url, cli_parsed)
-        for rdp in rdp_list:
-            dbm.create_vnc_rdp_object('rdp', rdp, cli_parsed)
-        for vnc in vnc_list:
-            dbm.create_vnc_rdp_object('vnc', vnc, cli_parsed)
 
     if cli_parsed.web:
         if cli_parsed.web and not cli_parsed.show_selenium:
@@ -434,25 +344,25 @@ def multi_mode(cli_parsed):
         multi_total = dbm.get_incomplete_http(targets)
         if multi_total > 0:
             if cli_parsed.resume:
-                print 'Resuming Web Scan ({0} Hosts Remaining)'.format(str(multi_total))
+                print('Resuming Web Scan ({0} Hosts Remaining)'.format(str(multi_total)))
             else:
-                print 'Starting Web Requests ({0} Hosts)'.format(str(multi_total))
+                print('Starting Web Requests ({0} Hosts)'.format(str(multi_total)))
 
         if multi_total < cli_parsed.threads:
             num_threads = multi_total
         else:
             num_threads = cli_parsed.threads
-        for i in xrange(num_threads):
+        for i in range(num_threads):
             targets.put(None)
         try:
             workers = [Process(target=worker_thread, args=(
-                cli_parsed, targets, lock, (multi_counter, multi_total))) for i in xrange(num_threads)]
+                cli_parsed, targets, lock, (multi_counter, multi_total))) for i in range(num_threads)]
             for w in workers:
                 w.start()
             for w in workers:
                 w.join()
         except Exception as e:
-            print str(e)
+            print(str(e))
 
         # Set up UA table here
         if cli_parsed.cycle is not None:
@@ -480,69 +390,24 @@ def multi_mode(cli_parsed):
                     num_threads = multi_total
                 else:
                     num_threads = cli_parsed.threads
-                for i in xrange(num_threads):
+                for i in range(num_threads):
                     targets.put(None)
                 workers = [Process(target=worker_thread,
                                    args=(cli_parsed, targets, lock,
                                          (multi_counter, multi_total),
                                          (browser, ua)))
-                           for i in xrange(num_threads)]
+                           for i in range(num_threads)]
                 for w in workers:
                     w.start()
                 for w in workers:
                     w.join()
 
-    if any((cli_parsed.vnc, cli_parsed.rdp)):
-        log._LOG_LEVEL = log.Level.ERROR
-        multi_total, targets = dbm.get_incomplete_vnc_rdp()
-        if multi_total > 0:
-            print ''
-            print 'Starting VNC/RDP Requests ({0} Hosts)'.format(str(multi_total))
-
-            app = QtGui.QApplication(sys.argv)
-            timer = QTimer()
-            timer.start(10)
-            timer.timeout.connect(lambda: None)
-
-            # add qt4 reactor
-            import qt4reactor
-            qt4reactor.install()
-            from twisted.internet import reactor
-
-            for target in targets:
-                if os.path.dirname(cli_parsed.d) != os.path.dirname(target.screenshot_path):
-                    target.set_paths(cli_parsed.d)
-                tdbm = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
-                if target.proto == 'vnc':
-                    reactor.connectTCP(
-                        target.remote_system, target.port,
-                        vnc_module.RFBScreenShotFactory(
-                            target.screenshot_path, reactor, app,
-                            target, tdbm))
-                else:
-                    reactor.connectTCP(
-                        target.remote_system, int(target.port),
-                        rdp_module.RDPScreenShotFactory(
-                            reactor, app, 1200, 800,
-                            target.screenshot_path, cli_parsed.timeout,
-                            target, tdbm))
-            reactor.runReturn()
-            app.exec_()
-
     if display is not None:
         display.stop()
     results = dbm.get_complete_http()
-    vnc_rdp = dbm.get_complete_vnc_rdp()
     dbm.close()
     m.shutdown()
-    write_vnc_rdp_data(cli_parsed, vnc_rdp)
     sort_data_and_write(cli_parsed, results)
-    if cli_parsed.ocr:
-        for target in targets:
-            try:
-                rdp_module.parse_screenshot(cli_parsed.d, target)
-            except IOError:
-                pass
 
 
 def multi_callback(x):
@@ -551,7 +416,7 @@ def multi_callback(x):
     multi_counter += 1
 
     if multi_counter % 15 == 0:
-        print '\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(multi_counter, multi_total)
+        print('\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(multi_counter, multi_total))
 
 
 if __name__ == "__main__":
@@ -560,7 +425,7 @@ if __name__ == "__main__":
     start_time = time.time()
 
     if cli_parsed.resume:
-        print '[*] Loading Resume Data...'
+        print('[*] Loading Resume Data...')
         temp = cli_parsed
         dbm = db_manager.DB_Manager(cli_parsed.resume)
         dbm.open_connection()
@@ -571,31 +436,23 @@ if __name__ == "__main__":
             cli_parsed.results = temp.results
         dbm.close()
 
-        print 'Loaded Resume Data with the following options:'
+        print('Loaded Resume Data with the following options:')
         engines = []
         if cli_parsed.web:
             engines.append('Firefox')
-        if cli_parsed.vnc:
-            engines.append('VNC')
-        if cli_parsed.rdp:
-            engines.append('RDP')
-        print ''
-        print 'Input File: {0}'.format(cli_parsed.f)
-        print 'Engine(s): {0}'.format(','.join(engines))
-        print 'Threads: {0}'.format(cli_parsed.threads)
-        print 'Output Directory: {0}'.format(cli_parsed.d)
-        print 'Timeout: {0}'.format(cli_parsed.timeout)
-        print ''
+        print('')
+        print('Input File: {0}'.format(cli_parsed.f))
+        print('Engine(s): {0}'.format(','.join(engines)))
+        print('Threads: {0}'.format(cli_parsed.threads))
+        print('Output Directory: {0}'.format(cli_parsed.d))
+        print('Timeout: {0}'.format(cli_parsed.timeout))
+        print('')
     else:
         create_folders_css(cli_parsed)
 
     if cli_parsed.single:
         if cli_parsed.web:
             single_mode(cli_parsed)
-        elif cli_parsed.rdp:
-            single_vnc_rdp(cli_parsed, 'rdp')
-        elif cli_parsed.vnc:
-            single_vnc_rdp(cli_parsed, 'vnc')
         if not cli_parsed.no_prompt:
             open_file = open_file_input(cli_parsed)
             if open_file:
@@ -611,7 +468,7 @@ if __name__ == "__main__":
         multi_mode(cli_parsed)
         duplicate_check(cli_parsed)
 
-    print 'Finished in {0} seconds'.format(time.time() - start_time)
+    print('Finished in {0} seconds'.format(time.time() - start_time))
 
     if not cli_parsed.no_prompt:
         open_file = open_file_input(cli_parsed)
