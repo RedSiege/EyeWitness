@@ -1,7 +1,7 @@
 EyeWitness
 ======
 
-EyeWitness is designed to take screenshots of websites, RDP services, and open VNC servers, provide some server header info, and identify default credentials if known.
+EyeWitness is designed to take screenshots of websites provide some server header info, and identify default credentials if known.
 
 EyeWitness is designed to run on Kali Linux. It will auto detect the file you give it with the -f flag as either being a text file with URLs on each new line, nmap xml output, or nessus xml output. The --timeout flag is completely optional, and lets you provide the max time to wait when trying to render and screenshot a web page.
 
@@ -27,8 +27,6 @@ A complete usage guide which documents EyeWitness features and its typical use c
 ./EyeWitness -f urls.txt --web
 
 ./EyeWitness -x urls.xml --timeout 8 --headless
-
-./EyeWitness -f rdp.txt --rdp
 ```
 
 ### Docker
@@ -59,19 +57,6 @@ docker run \
     eyewitness \
     --web \
     --single http://www.google.com
-```
-
-##### Example #2 - vnc capturing
-```bash
-docker run \
-    --rm \
-    -it \
-    -e DISPLAY=$DISPLAY \
-    -v /tmp/.X11-unix:/tmp/.X11-unix \
-    -v ~/EyeWitness:/tmp/EyeWitness \
-    eyewitness \
-    -f /tmp/EyeWitness/urls.txt \
-    --vnc
 ```
 
 ###### Call to Action:
