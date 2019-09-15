@@ -30,6 +30,14 @@ if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep
   osinfo="Parrot"
 fi
 
+# Centos detection
+if grep -q -i "CentOS" /etc/redhat-release
+then
+  osinfo="centos"
+  echo "[*] Centos detected"
+fi
+
+
 # make sure we run from this directory
 pushd . > /dev/null && cd "$(dirname "$0")"
 
@@ -130,19 +138,26 @@ case ${osinfo} in
   Debian)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python3 xvfb python-qt4 python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
-    echo '[*] Upgrading paramiko'
-    python3 -m pip install --upgrade paramiko
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr firefox-esr
+    echo '[*] Upgrading paramiko and pyopenssl'
+    pip install --upgrade paramiko
+    pip install -U pyopenssl
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
+    python setup.py install
+    cd ..
+    rm -rf rdpy
     echo
     echo '[*] Installing Python Modules'
-    python3 -m pip install python_qt_binding
-    python3 -m pip install fuzzywuzzy
-    python3 -m pip install selenium --upgrade
-    python3 -m pip install python-Levenshtein
-    python3 -m pip install pyasn1
-    python3 -m pip install pyvirtualdisplay
-    python3 -m pip install beautifulsoup4
-    python3 -m pip install pytesseract
+    pip install python_qt_binding
+    pip install fuzzywuzzy
+    pip install selenium --upgrade
+    pip install python-Levenshtein
+    pip install pyasn1
+    pip install pyvirtualdisplay
+    pip install beautifulsoup4
+    pip install pytesseract
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -211,7 +226,7 @@ case ${osinfo} in
     cd ..
   ;;
   # CentOS 6.5+ Dependency Installation
-  CentOS)
+  centos)
     echo '[Warning]: EyeWitness on CentOS Requires EPEL Repository!'
     read -p '[?] Install and Enable EPEL Repository? (y/n): ' epel
     if [ "${epel}" == 'y' ]; then
@@ -223,7 +238,7 @@ case ${osinfo} in
     fi
     echo '[*] Installing CentOS Dependencies'
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse xvfb python-netaddr python-dev tesseract-ocr firefox-esr
+                python-argparse xorg-x11-server-Xvfb python-netaddr python-devel tesseract firefox
     echo
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git

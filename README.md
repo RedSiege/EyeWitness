@@ -1,15 +1,16 @@
 EyeWitness
 ======
 
-EyeWitness is designed to take screenshots of websites, RDP services, and open VNC servers, provide some server header info, and identify default credentials if known.
+EyeWitness is designed to take screenshots of websites, RDP services, and open VNC servers, provide some server header info, and identify default credentials if possible.
 
-EyeWitness is designed to run on Kali Linux. It will auto detect the file you give it with the -f flag as either being a text file with URLs on each new line, nmap xml output, or nessus xml output. The --timeout flag is completely optional, and lets you provide the max time to wait when trying to render and screenshot a web page.
+EyeWitness is designed to run on Kali Linux. It will auto detect the file you give it with the -f flag as either being a text file with URLs on each new line, nmap xml output, or nessus xml output.  The --timeout flag is completely optional, and lets you provide the max time to wait when trying to render and screenshot a web page.
 
 A complete usage guide which documents EyeWitness features and its typical use cases is available here - https://www.christophertruncer.com/eyewitness-usage-guide/
 
 ###### Supported Linux Distros:
 * Kali Linux
 * Debian 7+ (at least stable, looking into testing) (Thanks to @themightyshiv)
+
 
 **E-Mail:** EyeWitness [@] christophertruncer [dot] com
 

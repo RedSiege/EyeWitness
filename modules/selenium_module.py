@@ -1,9 +1,8 @@
-import http.client
+import httplib
 import os
 import socket
 import sys
-import urllib.request
-import urllib.error
+import urllib2
 import ssl
 
 try:
@@ -20,8 +19,8 @@ try:
     from selenium.common.exceptions import WebDriverException
     from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 except ImportError:
-    print('[*] Selenium not found.')
-    print('[*] Please run the script in the setup directory!')
+    print '[*] Selenium not found.'
+    print '[*] Please run the script in the setup directory!'
     sys.exit()
 
 
@@ -46,31 +45,46 @@ def create_driver(cli_parsed, user_agent=None):
     if cli_parsed.user_agent is not None:
         profile.set_preference(
             'general.useragent.override', cli_parsed.user_agent)
-    
+
     # This user agent case should only be hit when cycling
     if user_agent is not None:
         profile.set_preference('general.useragent.override', user_agent)
 
+    # Set up our proxy information directly in the firefox profile
+    if cli_parsed.proxy_ip is not None and cli_parsed.proxy_port is not None:
+	profile.set_preference('network.proxy.type', 1)
+        if "socks" in cli_parsed.proxy_type:
+	    profile.set_preference('network.proxy.socks', cli_parsed.proxy_ip)
+	    profile.set_preference('network.proxy.socks_port', cli_parsed.proxy_port)
+	    profile.set_preference('network.proxy.socks_remote_dns', True)
+	else:
+	    profile.set_preference('network.proxy.http', cli_parsed.proxy_ip)
+	    profile.set_preference(
+		'network.proxy.http_port', cli_parsed.proxy_port)
+	    profile.set_preference('network.proxy.ssl', cli_parsed.proxy_ip)
+	    profile.set_preference('network.proxy.ssl_port', cli_parsed.proxy_port)
+
     profile.set_preference('app.update.enabled', False)
     profile.set_preference('browser.search.update', False)
     profile.set_preference('extensions.update.enabled', False)
+    profile.set_preference('capability.policy.default.Window.alert', 'noAccess');
+    profile.set_preference('capability.policy.default.Window.confirm', 'noAccess');
+    profile.set_preference('capability.policy.default.Window.prompt', 'noAccess');
 
     try:
         capabilities = DesiredCapabilities.FIREFOX.copy()
         capabilities.update({'acceptInsecureCerts': True})
         options = Options()
         options.add_argument("--headless")
-        profile.update_preferences()
         driver = webdriver.Firefox(profile, capabilities=capabilities, firefox_options=options)
         driver.set_page_load_timeout(cli_parsed.timeout)
         return driver
     except Exception as e:
         if 'Failed to find firefox binary' in str(e):
-            print('Firefox not found!')
-            print('You can fix this by installing Firefox/Iceweasel\
-             or using phantomjs/ghost')
+            print 'Firefox not found!'
+            print 'You can fix this by installing Firefox/Iceweasel'
         else:
-            print(e)
+            print e
         sys.exit()
 
 
@@ -92,20 +106,20 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     try:
         driver.get(http_object.remote_system)
     except KeyboardInterrupt:
-        print('[*] Skipping: {0}'.format(http_object.remote_system))
+        print '[*] Skipping: {0}'.format(http_object.remote_system)
         http_object.error_state = 'Skipped'
         http_object.page_title = 'Page Skipped by User'
     except TimeoutException:
-        print('[*] Hit timeout limit when connecting to {0}, retrying'.format(http_object.remote_system))
+        print '[*] Hit timeout limit when connecting to {0}, retrying'.format(http_object.remote_system)
         driver.quit()
         driver = create_driver(cli_parsed, ua)
         http_object.error_state = 'Timeout'
     except httplib.BadStatusLine:
-        print('[*] Bad status line when connecting to {0}'.format(http_object.remote_system))
+        print '[*] Bad status line when connecting to {0}'.format(http_object.remote_system)
         http_object.error_state = 'BadStatus'
         return http_object, driver
     except WebDriverException:
-        print('[*] WebDriverError when connecting to {0}'.format(http_object.remote_system))
+        print '[*] WebDriverError when connecting to {0}'.format(http_object.remote_system)
         http_object.error_state = 'BadStatus'
         return http_object, driver
 
@@ -128,7 +142,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
                 break
             except TimeoutException:
                 # Another timeout results in an error state and a return
-                print('[*] Hit timeout limit when connecting to {0}'.format(http_object.remote_system))
+                print '[*] Hit timeout limit when connecting to {0}'.format(http_object.remote_system)
                 http_object.error_state = 'Timeout'
                 http_object.page_title = 'Timeout Limit Reached'
                 http_object.headers = {}
@@ -136,17 +150,17 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
                 driver = create_driver(cli_parsed, ua)
                 return_status = True
             except KeyboardInterrupt:
-                print('[*] Skipping: {0}'.format(http_object.remote_system))
+                print '[*] Skipping: {0}'.format(http_object.remote_system)
                 http_object.error_state = 'Skipped'
                 http_object.page_title = 'Page Skipped by User'
                 break
             except httplib.BadStatusLine:
-                print('[*] Bad status line when connecting to {0}'.format(http_object.remote_system))
+                print '[*] Bad status line when connecting to {0}'.format(http_object.remote_system)
                 http_object.error_state = 'BadStatus'
                 return_status = True
                 break
             except WebDriverException:
-                print('[*] WebDriverError when connecting to {0}'.format(http_object.remote_system))
+                print '[*] WebDriverError when connecting to {0}'.format(http_object.remote_system)
                 http_object.error_state = 'BadStatus'
                 return_status = True
                 break
@@ -168,7 +182,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         print('[*] Error saving web page screenshot'
               ' for ' + http_object.remote_system)
 
-    # Get our headers using urllib
+    # Get our headers using urllib2
     context = None
     try:
         context = ssl.create_default_context()
@@ -183,14 +197,14 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     except:
         tempua = ''
     try:
-        req = urllib.request.Request(http_object.remote_system, headers={'User-Agent': tempua})
+        req = urllib2.Request(http_object.remote_system, headers={'User-Agent': tempua})
         if context is None:
-            opened = urllib.request.urlopen(req)
+            opened = urllib2.urlopen(req)
         else:
-            opened = urllib.request.urlopen(req, context=context)
+            opened = urllib2.urlopen(req, context=context)
         headers = dict(opened.info())
         headers['Response Code'] = str(opened.getcode())
-    except urllib.error.HTTPError as e:
+    except urllib2.HTTPError as e:
         responsecode = e.code
         if responsecode == 404:
             http_object.category = 'notfound'
@@ -202,7 +216,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.category = 'badreq'
         headers = dict(e.headers)
         headers['Response Code'] = str(e.code)
-    except urllib.error.URLError as e:
+    except urllib2.URLError as e:
         if '104' in str(e.reason):
             headers = {'Error': 'Connection Reset'}
             http_object.error_state = 'ConnReset'
@@ -235,7 +249,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         else:
             http_object.error_state = 'BadStatus'
             return http_object, driver
-    except http.client.BadStatusLine:
+    except httplib.BadStatusLine:
         http_object.error_state = 'BadStatus'
         return http_object, driver
     except sslerr:
@@ -252,7 +266,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         http_object.headers = headers
         http_object.source_code = driver.page_source.encode('utf-8')
         with open(http_object.source_path, 'w') as f:
-            f.write(http_object.source_code.decode())
+            f.write(http_object.source_code)
     except UnexpectedAlertPresentException:
         with open(http_object.source_path, 'w') as f:
             f.write('Cannot render webpage')

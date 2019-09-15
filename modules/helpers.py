@@ -12,7 +12,8 @@ import glob
 import socket
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
-from urllib.parse import urlparse
+from urlparse import urlparse
+from login_module import checkCreds
 
 
 class XML_Parser(xml.sax.ContentHandler):
@@ -26,6 +27,8 @@ class XML_Parser(xml.sax.ContentHandler):
         self.nessus = False
         self.url_list = []
         self.port_open = False
+        self.rdp_list = []
+        self.vnc_list = []
         self.http_ports = ['80', '8080']
         self.https_ports = ['443', '8443']
         self.num_urls = 0
@@ -73,6 +76,10 @@ class XML_Parser(xml.sax.ContentHandler):
                 elif "tunnel" in attributes:
                     if "ssl" in attributes['tunnel'] and not "smtp" in attributes['name'] and not "imap" in attributes['name'] and not "pop3" in attributes['name']:
                         self.protocol = "https"
+                elif "vnc" in attributes['name']:
+                    self.protocol = "vnc"
+                elif "ms-wbt-server" in attributes['name']:
+                    self.protocol = "rdp"
             elif tag == "state":
                 if attributes['state'] == "open":
                     self.port_open = True
@@ -97,6 +104,10 @@ class XML_Parser(xml.sax.ContentHandler):
                         self.analyze_plugin_output = True
                     elif service_name == "www" or service_name == "http?":
                         self.protocol = "http"
+                    elif service_name == "msrdp":
+                        self.protocol = "rdp"
+                    elif service_name == "vnc":
+                        self.protocol = "vnc"
 
                     self.service_detection = True
 
@@ -125,7 +136,12 @@ class XML_Parser(xml.sax.ContentHandler):
                             if built_url not in self.url_list:
                                 self.url_list.append(built_url)
                                 self.num_urls += 1
-
+                        elif self.protocol == "vnc":
+                            if self.system_name not in self.vnc_list:
+                                self.vnc_list.append(self.system_name)
+                        elif self.port_number == "3389":
+                            if self.system_name not in self.rdp_list:
+                                self.rdp_list.append(self.system_name)
                 else:
                     if (self.system_name is not None) and (self.port_number is not None) and self.port_open and int(self.port_number.encode('utf-8')) in self.only_ports:
                         if self.protocol == "http" or self.protocol == "https":
@@ -143,6 +159,12 @@ class XML_Parser(xml.sax.ContentHandler):
                             if built_url not in self.url_list:
                                 self.url_list.append(built_url)
                                 self.num_urls += 1
+                        elif self.protocol == "vnc":
+                            if self.system_name not in self.vnc_list:
+                                self.vnc_list.append(self.system_name)
+                        elif self.port_number == "3389":
+                            if self.system_name not in self.rdp_list:
+                                self.rdp_list.append(self.system_name)
 
                 self.port_number = None
                 self.protocol = None
@@ -189,6 +211,14 @@ class XML_Parser(xml.sax.ContentHandler):
                     with open(self.out_file, 'a') as temp_web:
                         for url in self.url_list:
                             temp_web.write(url + '\n')
+                if len(self.rdp_list) > 0:
+                    with open(self.out_file, 'a') as temp_rdp:
+                        for rdp in self.rdp_list:
+                            temp_rdp.write(rdp + '\n')
+                if len(self.vnc_list) > 0:
+                    with open(self.out_file, 'a') as temp_vnc:
+                        for vnc in self.vnc_list:
+                            temp_vnc.write(vnc + '\n')
 
         elif self.nessus:
             if tag == "plugin_output" and self.read_plugin_output:
@@ -209,13 +239,24 @@ class XML_Parser(xml.sax.ContentHandler):
                             built_url = self.protocol + "://" + self.system_name + ":" + self.port_number
                             if built_url not in self.url_list:
                                 self.url_list.append(built_url)
-
+                        elif self.protocol == "vnc":
+                            if self.system_name not in self.vnc_list:
+                                self.vnc_list.append(self.system_name)
+                        elif self.protocol == "rdp":
+                            if self.system_name not in self.rdp_list:
+                                self.rdp_list.append(self.system_name)
                 else:
                     if (self.system_name is not None) and (self.protocol is not None) and self.service_detection and int(self.port_number.encode('utf-8')) in self.only_ports:
                         if self.protocol == "http" or self.protocol == "https":
                             built_url = self.protocol + "://" + self.system_name + ":" + self.port_number
                             if built_url not in self.url_list:
                                 self.url_list.append(built_url)
+                        elif self.protocol == "vnc":
+                            if self.system_name not in self.vnc_list:
+                                self.vnc_list.append(self.system_name)
+                        elif self.protocol == "rdp":
+                            if self.system_name not in self.rdp_list:
+                                self.rdp_list.append(self.system_name)
 
                 self.port_number = None
                 self.protocol = None
@@ -230,6 +271,14 @@ class XML_Parser(xml.sax.ContentHandler):
                     with open(self.out_file, 'a') as temp_web:
                         for url in self.url_list:
                             temp_web.write(url + '\n')
+                if len(self.rdp_list) > 0:
+                    with open(self.out_file, 'a') as temp_rdp:
+                        for rdp in self.rdp_list:
+                            temp_rdp.write(rdp + '\n')
+                if len(self.vnc_list) > 0:
+                    with open(self.out_file, 'a') as temp_vnc:
+                        for vnc in self.vnc_list:
+                            temp_vnc.write(vnc + '\n')
 
     def characters(self, content):
         if self.read_plugin_output:
@@ -240,9 +289,8 @@ def duplicate_check(cli_object):
     # if it finds any, it removes them and uses a single image
     # reducing file size for output
     # dict = {sha1hash: [pic1, pic2]}
-    hash_files = {}
-    report_files = []
 
+    hash_files = {}
     for name in glob.glob(cli_object.d + '/screens/*.png'):
         with open(name, 'rb') as screenshot:
             pic_data = screenshot.read()
@@ -252,8 +300,14 @@ def duplicate_check(cli_object):
         else:
             hash_files[md5_hash] = [name.split('/')[-2] + '/' + name.split('/')[-1]]
 
+    report_files = []
     for html_file in glob.glob(cli_object.d + '/*.html'):
-        report_files.append(html_file)
+        with open(html_file, 'r') as report:
+            page_text = report.read()
+            report_files.append({"name": html_file, "content": page_text})
+
+    with open(cli_object.d + "/Requests.csv", 'r') as csv_port_file:
+        requests_file = csv_port_file.read()
 
     for hex_value, file_dict in hash_files.items():
         total_files = len(file_dict)
@@ -261,19 +315,18 @@ def duplicate_check(cli_object):
             original_pic_name = file_dict[0]
             for num in xrange(1, total_files):
                 next_filename = file_dict[num]
-                for report_page in report_files:
-                    with open(report_page, 'r') as report:
-                        page_text = report.read()
-                    page_text = page_text.replace(next_filename, original_pic_name)
-                    with open(report_page, 'w') as report_out:
-                        report_out.write(page_text)
+                for report in report_files:
+                    if next_filename in report["content"]:
+                        report["content"] = report["content"].replace(next_filename, original_pic_name)
+                        with open(report["name"], 'w') as report_out:
+                            report_out.write(report["content"])
+
+                if next_filename in requests_file:
+                    requests_file = requests_file.replace(next_filename, original_pic_name)
+                    with open(cli_object.d + "/Requests.csv", 'w') as csv_port_writer:
+                        csv_port_writer.write(requests_file)
+
                 os.remove(cli_object.d + '/' + next_filename)
-                with open(cli_object.d + "/Requests.csv", 'r') as csv_port_file:
-                    csv_lines = csv_port_file.read()
-                    if next_filename in csv_lines:
-                        csv_lines = csv_lines.replace(next_filename, original_pic_name)
-                with open(cli_object.d + "/Requests.csv", 'w') as csv_port_writer:
-                    csv_port_writer.write(csv_lines)
     return
 
 
@@ -321,6 +374,8 @@ def find_file_name():
 
 def textfile_parser(file_to_parse, cli_obj):
     urls = []
+    rdp = []
+    vnc = []
     openports = {}
     complete_urls = []
 
@@ -344,7 +399,15 @@ def textfile_parser(file_to_parse, cli_obj):
             if not cli_obj.only_ports:
                 if scheme == 'http' or scheme == 'https':
                     urls.append(line)
+                elif scheme == 'rdp':
+                    rdp.append(line[6:])
+                elif scheme == 'vnc':
+                    vnc.append(line[6:])
                 else:
+                    if cli_obj.rdp:
+                        rdp.append(line)
+                    if cli_obj.vnc:
+                        vnc.append(line)
                     if cli_obj.web:
                         if cli_obj.prepend_https:
                             urls.append("http://" + line)
@@ -372,12 +435,12 @@ def textfile_parser(file_to_parse, cli_obj):
             url_again = url_again.strip()
             complete_urls.append(url_again)
             if url_again.count(":") == 2:
-                try:
-                    port_number = int(url_again.split(":")[2].split("/")[0])
+            	try:
+                	port_number = int(url_again.split(":")[2].split("/")[0])
                 except ValueError:
-                    print("ERROR: You potentially provided an mal-formed URL!")
-                    print("ERROR: URL is - " + url_again)
-                    sys.exit()
+                	print("ERROR: You potentially provided an mal-formed URL!")
+                	print("ERROR: URL is - " + url_again)
+                	sys.exit()
                 hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
                 if port_number in openports:
                     openports[port_number] += "," + hostname_again
@@ -397,7 +460,7 @@ def textfile_parser(file_to_parse, cli_obj):
 
         # Start prepping to write out the CSV
         csv_data = "URL"
-        ordered_ports = sorted(openports.keys())
+        ordered_ports = sorted(openports.iterkeys())
         for opn_prt in ordered_ports:
             csv_data += "," + str(opn_prt)
 
@@ -416,13 +479,13 @@ def textfile_parser(file_to_parse, cli_obj):
         with open(cli_obj.d + "/open_ports.csv", 'w') as csv_file_out:
             csv_file_out.write(csv_data)
 
-        return urls
+        return urls, rdp, vnc
 
     except IOError:
         if cli_obj.x is not None:
-            print("ERROR: The XML file you provided does not have any active web servers!")
+            print "ERROR: The XML file you provided does not have any active web servers!"
         else:
-            print("ERROR: You didn't give me a valid file name! I need a valid file containing URLs!")
+            print "ERROR: You didn't give me a valid file name! I need a valid file containing URLs!"
         sys.exit()
 
 
@@ -434,6 +497,8 @@ def target_creator(command_line_object):
 
     Returns:
         List: URLs detected for http
+        List: Hosts detected for RDP
+        List: Hosts detected for VNC
     """
 
     if command_line_object.x is not None:
@@ -453,15 +518,15 @@ def target_creator(command_line_object):
 
         parser.parse(command_line_object.x)
 
-        out_urls = textfile_parser(
+        out_urls, out_rdp, out_vnc = textfile_parser(
             parsed_file_name, command_line_object)
-        return out_urls
+        return out_urls, out_rdp, out_vnc
 
     elif command_line_object.f is not None:
 
-        file_urls = textfile_parser(
+        file_urls, file_rdp, file_vnc = textfile_parser(
             command_line_object.f, command_line_object)
-        return file_urls
+        return file_urls, file_rdp, file_vnc
 
 
 def get_ua_values(cycle_value):
@@ -575,9 +640,9 @@ def get_ua_values(cycle_value):
     elif cycle_value == "all":
         return all_combined_uagents
     else:
-        print("[*] Error: You did not provide the type of user agents\
-         to cycle through!".replace('    ', ''))
-        print("[*] Error: Defaulting to desktop browser user agents.")
+        print "[*] Error: You did not provide the type of user agents\
+         to cycle through!".replace('    ', '')
+        print "[*] Error: Defaulting to desktop browser user agents."
         return desktop_uagents
 
 
@@ -588,16 +653,16 @@ def title_screen():
         os.system('cls')
     else:
         os.system('clear')
-    print("#" * 80)
-    print("#" + " " * 34 + "EyeWitness" + " " * 34 + "#")
-    print("#" * 80)
-    print("#" + " " * 11 + "FortyNorth Security - https://www.fortynorthsecurity.com" + " " * 11 + "#")
-    print("#" * 80 + "\n")
+    print "#" * 80
+    print "#" + " " * 34 + "EyeWitness" + " " * 34 + "#"
+    print "#" * 80
+    print "#" + " " * 11 + "FortyNorth Security - https://www.fortynorthsecurity.com" + " " * 11 + "#"
+    print "#" * 80 + "\n"
 
     python_info = sys.version_info
-    if python_info[0] is not 3:
-        print("[*] Error: Your version of python is not supported!")
-        print("[*] Error: Please install Python 3.X.X")
+    if python_info[0] is not 2 or python_info[1] < 7:
+        print "[*] Error: Your version of python is not supported!"
+        print "[*] Error: Please install Python 2.7.X"
         sys.exit()
     else:
         pass
@@ -631,7 +696,7 @@ def do_jitter(cli_parsed):
         sleep_value = sleep_value * .01
         sleep_value = 1 - sleep_value
         sleep_value = sleep_value * cli_parsed.jitter
-        print("[*] Sleeping for " + str(sleep_value) + " seconds..")
+        print "[*] Sleeping for " + str(sleep_value) + " seconds.."
         try:
             time.sleep(sleep_value)
         except KeyboardInterrupt:
@@ -739,7 +804,7 @@ def default_creds_category(http_object):
                 # This is used if there is more than one "part" of the
                 # web page needed to make a signature Delimete the "signature"
                 # by ";" before the "|", and then have the creds after the "|"
-                if all([x.lower() in http_object.source_code.decode().lower() for x in page_sig]):
+                if all([x.lower() in http_object.source_code.lower() for x in page_sig]):
                     if http_object.default_creds is None:
                         http_object.default_creds = cred_info
                     else:
@@ -760,44 +825,49 @@ def default_creds_category(http_object):
                 # This is used if there is more than one "part" of the
                 # web page needed to make a signature Delimete the "signature"
                 # by ";" before the "|", and then have the creds after the "|"
-                if all([x.lower() in http_object.source_code.decode().lower() for x in cat_sig]):
+                if all([x.lower() in http_object.source_code.lower() for x in cat_sig]):
                     http_object.category = cat_name.strip()
                     break
 
         if http_object.page_title is not None:
-            if '403 Forbidden' in http_object.page_title.decode() or '401 Unauthorized' in http_object.page_title.decode():
+            if '403 Forbidden' in http_object.page_title or '401 Unauthorized' in http_object.page_title:
                 http_object.category = 'unauth'
-            if ('Index of /' in http_object.page_title.decode() or
-                    'Directory Listing For /' in http_object.page_title.decode() or
-                    'Directory of /' in http_object.page_title.decode()):
+            if ('Index of /' in http_object.page_title or
+                    'Directory Listing For /' in http_object.page_title or
+                    'Directory of /' in http_object.page_title):
                 http_object.category = 'dirlist'
-            if '404 Not Found' in http_object.page_title.decode():
+            if '404 Not Found' in http_object.page_title:
                 http_object.category = 'notfound'        
+
+        #Performs login against host to see if it is a valid login
+        if http_object._active_scan:            
+            http_object = checkCreds(http_object)
 
         return http_object
     except IOError:
         print("[*] WARNING: Credentials file not in the same directory"
               " as EyeWitness")
-        print('[*] Skipping credential check')
+        print '[*] Skipping credential check'
         return http_object
 
 
 def open_file_input(cli_parsed):
     files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
     if len(files) > 0:
-        print('\n[*] Done! Report written in the ' + cli_parsed.d + ' folder!')
-        print('Would you like to open the report now? [Y/n]')
+        print('\n[*] Done! Report written in the {0} folder!').format(
+            cli_parsed.d)
+        print 'Would you like to open the report now? [Y/n]',
         while True:
             try:
-                response = input().lower()
+                response = raw_input().lower()
                 if response is "":
                     return True
                 else:
                     return strtobool(response)
             except ValueError:
-                print("Please respond with y or n")
+                print "Please respond with y or n",
     else:
-        print('[*] No report files found to open, perhaps no hosts were successful')
+        print '[*] No report files found to open, perhaps no hosts were successful'
         return False
 
 def class_info():
@@ -806,13 +876,13 @@ M                                                                M
 M       .”cCCc”.                                                 M
 M      /cccccccc\\           Our Upcoming Trainings:              M
 M      §cccccccc|                                                M
-M      :ccccccccP      BSidesAugusta >> Sep 30-Oct 3 2019        M
+M      :ccccccccP        BSidesAugusta  >> Sep 30- Oct 3 2019    M
 M      \\cccccccc()                      Augusta, GA              M
-M       \\ccccccccD              http://bsidesaugusta.org          M
+M       \\ccccccccD            www.bsidesaugusta.org/training     M
 M       |cccccccc\\       _                                       M
-M       |ccccccccc)     //    Charlotte >> August 3-6             M
-M       |cccccc|=      //               Charlotte, NC            M
-M      /°°°°°°”-.     (CCCC)                                     M
+M       |ccccccccc)     //  BLACKHAT >> August 3-6               M
+M       |cccccc|=      //               Las Vegas                M
+M      /°°°°°°”-.     (CCCC)            www.blackhat.com/us-19   M
 M      ;----._  _._   |cccc|                                     M
 M   .*°       °°   °. \\cccc/                                     M
 M  /  /       (      )/ccc/                                      M
