@@ -808,9 +808,9 @@ M      /cccccccc\\           Our Upcoming Trainings:              M
 M      §cccccccc|                                                M
 M      :ccccccccP      BSidesAugusta >> Sep 30-Oct 3 2019        M
 M      \\cccccccc()                      Augusta, GA              M
-M       \\ccccccccD              http://bsidesaugusta.org          M
+M       \\ccccccccD              http://bsidesaugusta.org         M
 M       |cccccccc\\       _                                       M
-M       |ccccccccc)     //    Charlotte >> August 3-6             M
+M       |ccccccccc)     //    Charlotte >> August 3-6            M
 M       |cccccc|=      //               Charlotte, NC            M
 M      /°°°°°°”-.     (CCCC)                                     M
 M      ;----._  _._   |cccc|                                     M
