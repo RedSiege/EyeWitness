@@ -52,6 +52,7 @@ case ${osinfo} in
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install beautifulsoup4
     python3 -m pip install pytesseract
+    python3 -m pip install netaddr
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -95,6 +96,7 @@ case ${osinfo} in
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install beautifulsoup4
     python3 -m pip install pytesseract
+    python3 -m pip install netaddr
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -138,6 +140,7 @@ case ${osinfo} in
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install beautifulsoup4
     python3 -m pip install pytesseract
+    python3 -m pip install netaddr
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -181,6 +184,7 @@ case ${osinfo} in
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install beautifulsoup4
     python3 -m pip install pytesseract
+    python3 -m pip install netaddr
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -224,6 +228,7 @@ case ${osinfo} in
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install beautifulsoup4
     python3 -m pip install pytesseract
+    python3 -m pip install netaddr
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
