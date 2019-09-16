@@ -259,7 +259,7 @@ def duplicate_check(cli_object):
         total_files = len(file_dict)
         if total_files > 1:
             original_pic_name = file_dict[0]
-            for num in xrange(1, total_files):
+            for num in range(1, total_files):
                 next_filename = file_dict[num]
                 for report_page in report_files:
                     with open(report_page, 'r') as report:
