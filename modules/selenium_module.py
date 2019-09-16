@@ -100,7 +100,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         driver.quit()
         driver = create_driver(cli_parsed, ua)
         http_object.error_state = 'Timeout'
-    except httplib.BadStatusLine:
+    except http.client.BadStatusLine:
         print('[*] Bad status line when connecting to {0}'.format(http_object.remote_system))
         http_object.error_state = 'BadStatus'
         return http_object, driver
@@ -140,7 +140,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
                 http_object.error_state = 'Skipped'
                 http_object.page_title = 'Page Skipped by User'
                 break
-            except httplib.BadStatusLine:
+            except http.client.BadStatusLine:
                 print('[*] Bad status line when connecting to {0}'.format(http_object.remote_system))
                 http_object.error_state = 'BadStatus'
                 return_status = True
