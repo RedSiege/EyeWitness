@@ -26,6 +26,12 @@ RUN cd setup && \
     mkdir -p /tmp/EyeWitness && \
     chown $user:$user /tmp/EyeWitness
 
+RUN apt-get install -y python3-setuptools
+
+RUN easy_install3 pip
+
+RUN pip3 install netaddr
+
 USER $user
 
 ENTRYPOINT ["python", "EyeWitness.py", "-d", "/tmp/EyeWitness/results", "--no-prompt"]
