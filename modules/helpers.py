@@ -765,14 +765,24 @@ def default_creds_category(http_object):
                     break
 
         if http_object.page_title is not None:
-            if '403 Forbidden' in http_object.page_title.decode() or '401 Unauthorized' in http_object.page_title.decode():
-                http_object.category = 'unauth'
-            if ('Index of /' in http_object.page_title.decode() or
-                    'Directory Listing For /' in http_object.page_title.decode() or
-                    'Directory of /' in http_object.page_title.decode()):
-                http_object.category = 'dirlist'
-            if '404 Not Found' in http_object.page_title.decode():
-                http_object.category = 'notfound'        
+            if (type(http_object.page_title)) == bytes:
+                if '403 Forbidden'.encode() in http_object.page_title or '401 Unauthorized'.encode() in http_object.page_title:
+                    http_object.category = 'unauth'
+                if ('Index of /'.encode() in http_object.page_title or
+                        'Directory Listing For /'.encode() in http_object.page_title or
+                        'Directory of /'.encode() in http_object.page_title):
+                    http_object.category = 'dirlist'
+                if '404 Not Found'.encode() in http_object.page_title:
+                    http_object.category = 'notfound'
+            else:
+                if '403 Forbidden' in http_object.page_title or '401 Unauthorized' in http_object.page_title:
+                    http_object.category = 'unauth'
+                if ('Index of /' in http_object.page_title or
+                        'Directory Listing For /' in http_object.page_title or
+                        'Directory of /' in http_object.page_title):
+                    http_object.category = 'dirlist'
+                if '404 Not Found' in http_object.page_title:
+                    http_object.category = 'notfound'
 
         return http_object
     except IOError:

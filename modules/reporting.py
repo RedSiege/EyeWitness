@@ -31,7 +31,7 @@ def process_group(
         String: HTML representing ToC Table
         String: HTML representing current report page
     """
-    group_data = sorted([x for x in data if x.category == group], key=lambda k: k.page_title)
+    group_data = sorted([x for x in data if x.category == group], key=lambda k: str(k.page_title))
 
     grouped_elements = []
     if len(group_data) == 0:
@@ -216,7 +216,7 @@ def sort_data_and_write(cli_parsed, data):
     errors = sorted([x for x in data if x.error_state is not None],
                     key=lambda k: (k.error_state, k.page_title))
     data[:] = [x for x in data if x.error_state is None]
-    data = sorted(data, key=lambda k: k.page_title)
+    data = sorted(data, key=lambda k: str(k.page_title))
     html = u""
     # Loop over our categories and populate HTML
     for cat in categories:
