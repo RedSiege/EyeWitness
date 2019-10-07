@@ -765,13 +765,13 @@ def default_creds_category(http_object):
                     break
 
         if http_object.page_title is not None:
-            if '403 Forbidden' in http_object.page_title or '401 Unauthorized' in http_object.page_title:
+            if '403 Forbidden' in http_object.page_title.decode() or '401 Unauthorized' in http_object.page_title.decode():
                 http_object.category = 'unauth'
-            if ('Index of /' in http_object.page_title or
-                    'Directory Listing For /' in http_object.page_title or
-                    'Directory of /' in http_object.page_title.):
+            if ('Index of /' in http_object.page_title.decode() or
+                    'Directory Listing For /' in http_object.page_title.decode() or
+                    'Directory of /' in http_object.page_title.decode()):
                 http_object.category = 'dirlist'
-            if '404 Not Found' in http_object.page_title:
+            if '404 Not Found' in http_object.page_title.decode():
                 http_object.category = 'notfound'        
 
         return http_object
@@ -806,9 +806,9 @@ M                                                                M
 M       .”cCCc”.                                                 M
 M      /cccccccc\\           Our Upcoming Trainings:              M
 M      §cccccccc|                                                M
-M      :ccccccccP      BSidesAugusta >> Sep 30-Oct 3 2019        M
-M      \\cccccccc()                      Augusta, GA              M
-M       \\ccccccccD              http://bsidesaugusta.org         M
+M      :ccccccccP       44Con >> Dec 02- Dec 05 2019             M
+M      \\cccccccc()                 London, England               M
+M       \\ccccccccD              http://44con.com                 M
 M       |cccccccc\\       _                                       M
 M       |ccccccccc)     //    Charlotte >> August 3-6            M
 M       |cccccc|=      //               Charlotte, NC            M
