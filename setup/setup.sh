@@ -30,15 +30,6 @@ if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep
   osinfo="Parrot"
 fi
 
-# Centos detection
-if test -f /etc/redhat-release; then
-  if grep -q -i "CentOS" /etc/redhat-release
-  then
-    osinfo="centos"
-    echo "[*] Centos detected"
-  fi
-fi
-
 # make sure we run from this directory
 pushd . > /dev/null && cd "$(dirname "$0")"
 
@@ -47,23 +38,22 @@ case ${osinfo} in
   # Kali 2 dependency Install
   Kali2)
     apt-get update
-    echo '[*] Installing Kali2 Dependencies'
-    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr
+    echo '[*] Installing Debian Dependencies'
+    apt-get install -y cmake qt4-qmake python3 xvfb python-qt4 python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
-    pip install --upgrade paramiko
-    echo '[*] Installing RDPY'
-    git clone https://github.com/ChrisTruncer/rdpy.git
-    cd rdpy
-    python setup.py install
-    cd ..
-    rm -rf rdpy
+    python3 -m pip install --upgrade paramiko
+    echo
     echo '[*] Installing Python Modules'
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1 --upgrade
-    pip install pyvirtualdisplay
-    pip install pytesseract
+    python3 -m pip install python_qt_binding
+    python3 -m pip install fuzzywuzzy
+    python3 -m pip install selenium --upgrade
+    python3 -m pip install python-Levenshtein
+    python3 -m pip install pyasn1
+    python3 -m pip install pyvirtualdisplay
+    python3 -m pip install beautifulsoup4
+    python3 -m pip install pytesseract
+    python3 -m pip install netaddr
+    echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
@@ -92,73 +82,109 @@ case ${osinfo} in
   # Kali Dependency Installation
   Kali)
     apt-get update
-    echo '[*] Installing Kali Dependencies'
-    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
+    echo '[*] Installing Debian Dependencies'
+    apt-get install -y cmake qt4-qmake python3 xvfb python-qt4 python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
-    pip install --upgrade paramiko
-    echo '[*] Installing RDPY'
-    git clone https://github.com/ChrisTruncer/rdpy.git
-    cd rdpy
-    python setup.py install
-    cd ..
-    rm -rf rdpy
+    python3 -m pip install --upgrade paramiko
+    echo
     echo '[*] Installing Python Modules'
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1 --upgrade
-    pip install pyvirtualdisplay
-    pip install pytesseract
+    python3 -m pip install python_qt_binding
+    python3 -m pip install fuzzywuzzy
+    python3 -m pip install selenium --upgrade
+    python3 -m pip install python-Levenshtein
+    python3 -m pip install pyasn1
+    python3 -m pip install pyvirtualdisplay
+    python3 -m pip install beautifulsoup4
+    python3 -m pip install pytesseract
+    python3 -m pip install netaddr
+    echo
     cd ../bin/
+    MACHINE_TYPE=`uname -m`
+    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+      rm geckodriver-v0.24.0-linux64.tar.gz
+      mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    else
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux32.tar.gz
+      rm geckodriver-v0.24.0-linux32.tar.gz
+      mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    fi
     cd ..
   ;;
    # Parrot Dependency Installation
   Parrot)
     apt-get update
-    echo '[*] Installing Parrot Dependencies'
-    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr firefox-esr
+    echo '[*] Installing Debian Dependencies'
+    apt-get install -y cmake qt4-qmake python3 xvfb python-qt4 python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
-    pip install --upgrade paramiko
-    echo '[*] Installing RDPY'
-    git clone https://github.com/ChrisTruncer/rdpy.git
-    cd rdpy
-    python setup.py install
-    cd ..
-    rm -rf rdpy
+    python3 -m pip install --upgrade paramiko
+    echo
     echo '[*] Installing Python Modules'
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1 --upgrade
-    pip install pyvirtualdisplay
-    pip install pytesseract
+    python3 -m pip install python_qt_binding
+    python3 -m pip install fuzzywuzzy
+    python3 -m pip install selenium --upgrade
+    python3 -m pip install python-Levenshtein
+    python3 -m pip install pyasn1
+    python3 -m pip install pyvirtualdisplay
+    python3 -m pip install beautifulsoup4
+    python3 -m pip install pytesseract
+    python3 -m pip install netaddr
+    echo
     cd ../bin/
+    MACHINE_TYPE=`uname -m`
+    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+      rm geckodriver-v0.24.0-linux64.tar.gz
+      mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    else
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux32.tar.gz
+      rm geckodriver-v0.24.0-linux32.tar.gz
+      mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    fi
     cd ..
   ;;
   # Debian 7+ Dependency Installation
   Debian)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr firefox-esr
-    echo '[*] Upgrading paramiko and pyopenssl'
-    pip install --upgrade paramiko
-    pip install -U pyopenssl
-    echo '[*] Installing RDPY'
-    git clone https://github.com/ChrisTruncer/rdpy.git
-    cd rdpy
-    python setup.py install
-    cd ..
-    rm -rf rdpy
+    apt-get install -y cmake qt4-qmake python3 xvfb python-qt4 python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
+    echo '[*] Upgrading paramiko'
+    python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
-    pip install python_qt_binding
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1
-    pip install pyvirtualdisplay
-    pip install beautifulsoup4
-    pip install pytesseract
+    python3 -m pip install python_qt_binding
+    python3 -m pip install fuzzywuzzy
+    python3 -m pip install selenium --upgrade
+    python3 -m pip install python-Levenshtein
+    python3 -m pip install pyasn1
+    python3 -m pip install pyvirtualdisplay
+    python3 -m pip install beautifulsoup4
+    python3 -m pip install pytesseract
+    python3 -m pip install netaddr
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -188,28 +214,21 @@ case ${osinfo} in
   # Ubuntu (tested in 13.10) Dependency Installation
   Ubuntu)
     apt-get update
-    echo '[*] Installing Ubuntu Dependencies'
-    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr firefox
-    pip install cryptography --upgrade
-    echo '[*] Installing RDPY'
-    git clone https://github.com/ChrisTruncer/rdpy.git
-    cd rdpy
-    python setup.py install
-    cd ..
-    rm -rf rdpy
+    echo '[*] Installing Debian Dependencies'
+    apt-get install -y cmake qt4-qmake python3 xvfb python-qt4 python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
+    echo '[*] Upgrading paramiko'
+    python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
-    pip install python_qt_binding
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1
-    pip install pyvirtualdisplay
-    pip install beautifulsoup4
-    pip install pytesseract
-    pip install enum34
-    pip install ipaddress
-    pip install asn1crypto
+    python3 -m pip install python_qt_binding
+    python3 -m pip install fuzzywuzzy
+    python3 -m pip install selenium --upgrade
+    python3 -m pip install python-Levenshtein
+    python3 -m pip install pyasn1
+    python3 -m pip install pyvirtualdisplay
+    python3 -m pip install beautifulsoup4
+    python3 -m pip install pytesseract
+    python3 -m pip install netaddr
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -218,16 +237,26 @@ case ${osinfo} in
       tar -xvf geckodriver-v0.24.0-linux64.tar.gz
       rm geckodriver-v0.24.0-linux64.tar.gz
       mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     else
       wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
       tar -xvf geckodriver-v0.24.0-linux32.tar.gz
       rm geckodriver-v0.24.0-linux32.tar.gz
       mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     fi
     cd ..
   ;;
   # CentOS 6.5+ Dependency Installation
-  centos)
+  CentOS)
     echo '[Warning]: EyeWitness on CentOS Requires EPEL Repository!'
     read -p '[?] Install and Enable EPEL Repository? (y/n): ' epel
     if [ "${epel}" == 'y' ]; then
@@ -239,7 +268,7 @@ case ${osinfo} in
     fi
     echo '[*] Installing CentOS Dependencies'
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse xorg-x11-server-Xvfb python-netaddr python-devel tesseract firefox
+                python-argparse xvfb python-netaddr python-dev tesseract-ocr firefox-esr
     echo
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git

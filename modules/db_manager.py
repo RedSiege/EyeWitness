@@ -1,10 +1,10 @@
 import pickle
 import sqlite3
 
-from objects import HTTPTableObject
-from objects import UAObject
-from objects import VNCRDPTableObject
-from helpers import default_creds_category
+from modules.objects import HTTPTableObject
+from modules.objects import UAObject
+from modules.objects import VNCRDPTableObject
+from modules.helpers import default_creds_category
 
 
 class DB_Manager(object):
@@ -49,8 +49,6 @@ class DB_Manager(object):
         c = self.connection.cursor()
         obj = HTTPTableObject()
         obj.remote_system = remote_system
-        if cli_parsed.active_scan: 
-            obj._active_scan = True
         obj.set_paths(
             cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
         obj.max_difference = cli_parsed.difference
@@ -112,14 +110,14 @@ class DB_Manager(object):
         c = self.connection.cursor()
         c.execute("SELECT * FROM opts")
         blob = c.fetchone()['object']
-        cli_parsed = pickle.loads(str(blob))
+        cli_parsed = pickle.loads(blob)
         return cli_parsed
 
     def get_incomplete_http(self, q):
         count = 0
         c = self.connection.cursor()
         for row in c.execute("SELECT * FROM http WHERE complete=0"):
-            o = pickle.loads(str(row['object']))
+            o = pickle.loads(row['object'])
             q.put(o)
             count += 1
         c.close()
@@ -130,7 +128,7 @@ class DB_Manager(object):
         c = self.connection.cursor()
         for row in c.execute("SELECT * FROM ua WHERE complete=? AND key=?",
                              (0, key)):
-            o = pickle.loads(str(row['object']))
+            o = pickle.loads(row['object'])
             q.put(o)
             count += 1
         c.close()
@@ -141,11 +139,11 @@ class DB_Manager(object):
         c = self.connection.cursor()
         rows = c.execute("SELECT * FROM http WHERE complete=1").fetchall()
         for row in rows:
-            o = pickle.loads(str(row['object']))
+            o = pickle.loads(row['object'])
             uadat = c.execute("SELECT * FROM ua WHERE parent_id=?",
                               (o.id,)).fetchall()
             for ua in uadat:
-                uao = pickle.loads(str(ua['object']))
+                uao = pickle.loads(ua['object'])
                 if uao is not None and uao.source_code is not None and o.source_code:
                     o.add_ua_data(uao)
             finished.append(o)
@@ -196,7 +194,7 @@ class DB_Manager(object):
         count = 0
         c = self.connection.cursor()
         for row in c.execute("SELECT * FROM rdpvnc WHERE complete=0",):
-            o = pickle.loads(str(row['object']))
+            o = pickle.loads(row['object'])
             targets.append(o)
             count += 1
         c.close()
@@ -207,7 +205,7 @@ class DB_Manager(object):
         c = self.connection.cursor()
         rows = c.execute("SELECT * FROM rdpvnc WHERE complete=1").fetchall()
         for row in rows:
-            o = pickle.loads(str(row['object']))
+            o = pickle.loads(row['object'])
             finished.append(o)
         c.close()
         return finished
@@ -231,21 +229,21 @@ class DB_Manager(object):
         rows = c.execute("SELECT * FROM http WHERE complete=1").fetchall()
         total = len(rows)
         for row in rows:
-            o = pickle.loads(str(row['object']))
+            o = pickle.loads(row['object'])
             uadat = c.execute("SELECT * FROM ua WHERE parent_id=?",
                               (o.id,)).fetchall()
             for ua in uadat:
-                uao = pickle.loads(str(ua['object']))
+                uao = pickle.loads(ua['object'])
                 if uao is not None:
                     o.add_ua_data(uao)
             if o.category != 'unauth' and o.category != 'notfound':
                 t = o.category
                 o = default_creds_category(o)
                 if o.category != t:
-                    print '{0} changed to {1}'.format(t, o.category)
+                    print('{0} changed to {1}'.format(t, o.category))
             counter += 1
             if counter % 10 == 0:
-                print '{0}/{1}'.format(counter, total)
+                print('{0}/{1}'.format(counter, total))
             finished.append(o)
         c.close()
         return finished
@@ -255,11 +253,11 @@ class DB_Manager(object):
         c = self.connection.cursor()
         rows = c.execute("SELECT * FROM http WHERE complete=1").fetchall()
         for row in rows:
-            o = pickle.loads(str(row['object']))
+            o = pickle.loads(row['object'])
             uadat = c.execute("SELECT * FROM ua WHERE parent_id=?",
                               (o.id,)).fetchall()
             for ua in uadat:
-                uao = pickle.loads(str(ua['object']))
+                uao = pickle.loads(ua['object'])
                 if uao is not None:
                     o.add_ua_data(uao)
             if o.error_state is None:
@@ -273,7 +271,7 @@ class DB_Manager(object):
         c = self.connection.cursor()
         rows = c.execute("SELECT * FROM http WHERE complete=1").fetchall()
         for row in rows:
-            o = pickle.loads(str(row['object']))
+            o = pickle.loads(row['object'])
             if o.error_state is None and (o.category == 'notfound'
                                           or o.category == 'crap'):
                 results.append(o)

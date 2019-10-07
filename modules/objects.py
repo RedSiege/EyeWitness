@@ -1,8 +1,8 @@
-import cgi
+import html
 import os
 import re
 
-from helpers import strip_nonalphanum
+from modules.helpers import strip_nonalphanum
 
 
 class HTTPTableObject(object):
@@ -20,7 +20,6 @@ class HTTPTableObject(object):
         self._source_path = None
         self._error_state = None
         self._blank = False
-        self._active_scan = False
         self._uadata = []
         self._source_code = None
         self._max_difference = None
@@ -238,7 +237,7 @@ class HTTPTableObject(object):
         if self.error_state is None:
             try:
                 html += "\n<br><b> Page Title: </b>{0}\n".format(
-                    self.sanitize(self.page_title.encode()))
+                    self.sanitize(self.page_title))
             except UnicodeDecodeError:
                 html += "\n<br><b> Page Title:</b>{0}\n".format(
                     'Unable to Display')
@@ -296,8 +295,12 @@ class HTTPTableObject(object):
         </div>""")
         return html
 
-    def sanitize(self, html):
-        return cgi.escape(html.decode('utf-8', errors='replace'), quote=True)
+    def sanitize(self, incoming_html):
+        if type(incoming_html) == bytes:
+            pass
+        else:
+            incoming_html = incoming_html.encode()
+        return html.escape(incoming_html.decode(), quote=True)
 
     def add_ua_data(self, uaobject):
         difference = abs(len(self.source_code) - len(uaobject.source_code))

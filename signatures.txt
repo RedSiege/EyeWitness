@@ -303,12 +303,10 @@ Red Gate Software Limited;/Content/Help/ConfigurePassword/GenericLogin.html;SQL 
 isSignedIn;currentDecimalSeparator;currentThousandSeparator;HP Color LaserJet M653|HP Color LaserJet M653 administrator/<blank>
 HP LaserJet M506;HomeDeviceName;OpenFromUsb/Index;WelcomeHeader|HP LaserJet M506 administrator/<blank>
 isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|HP Color LaserJet E65050 administrator/<blank>
-<title>Identity Services Engine</title>;class="fi-cisco-login";dojoattachpoint="userFormAP"|Cisco Identify Services admin/admin or admin/{null}
-<title>APC | Log On</title>;function placeFocus();images/smAPC.gif|APC Power Management apc/apc
-Hewlett Packard Enterprise Development;client_cert_present;AirWave Wireless nor Aruba Networks;<title>AirWave Management Platform|Aruba Airwave admin/admin
-<title>vRealize Operations Manager</title>;clarity-light;lib/clarity/clarity-icons|VMWare vRealize Operations Manager admin@local / admin
-<title>BIG-I;meta name="description";fail(function(reason);!isSupportedBrowser()|Big-IQ admin/admin
-<title>Portals Tracker</title>;authenticity_token;keepAnchorOnSignIn(this)|Redmine admin/admin
-<title>BIG-IP;F5 Networks, Inc., Seattle, Washington;content="F5 Networks, Inc.">|F5 BigIP admin/default
-<title>ClearPass - Aruba Networks</title>;ClearPass Insight;nwaCommandLinkHover|Aruba Networks Clearpass admin/eTIPS123
-Welcome - Nexus Repository Manager;content="Nexus;progressMessage(msg);title="Browse|Nexus Repository Manager admin/admin123
+<title>EpsonNet Config Rev.1.0</title>;CHelp.htm#Help_op">See Help;body id="menuResult"|Epson Printer epson/epson
+<title>Lexmark MS321dn</title>;class="popup-modal-container";data-init="initPage(this)|Lexmark MS321dn no default creds
+<title>Lexmark CX410de</title>;cgi-bin/dynamic/printer/langbar.html;frame name="Directory"|Lexmark CX410de <nousermane>/00000
+<title>Visionect Software Suite</title>;<input name="username";css/font-awesome.css|Visionect Software Suite admin/admin123
+script language="JavaScript" src="readCookie.js;script language="JavaScript" src="readCookie.js|Xerox 3100 Administrator/Fiery.1
+<title>MiVoice Business</title>;/uwi/stylesheets/uwi_ICP_style.css;common/cmn_DetectBrowser.js|Mitel MiVoice Business admin/admin
+Internet Services;window.document.body.scrollTop;href="JavaScript:parent.fflip;parseInt(chkBrowserVersion("MSIE"))|HPE StoreEver MSL4048 Tape Library /00000000
