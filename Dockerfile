@@ -34,4 +34,4 @@ RUN pip3 install netaddr
 
 USER $user
 
-ENTRYPOINT ["python333", "EyeWitness.py", "-d", "/tmp/EyeWitness/results", "--no-prompt"]
+ENTRYPOINT ["python3", "EyeWitness.py", "-d", "/tmp/EyeWitness/results", "--no-prompt"]
