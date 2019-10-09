@@ -250,6 +250,49 @@ case ${osinfo} in
     fi
     cd ..
   ;;
+  # Arch or Manjaro Dependency Installation
+  Arch | Manjaro)
+    pacman -Syu
+    echo '[*] Installing Arch Dependencies'
+    pacman -S cmake python3 python-xvfbwrapper python-pip python-netaddr firefox
+    echo '[*] Upgrading paramiko'
+    python3 -m pip install --upgrade paramiko
+    echo
+    echo '[*] Installing Python Modules'
+    python3 -m pip install fuzzywuzzy
+    python3 -m pip install selenium --upgrade
+    python3 -m pip install python-Levenshtein
+    python3 -m pip install pyasn1
+    python3 -m pip install pyvirtualdisplay
+    python3 -m pip install beautifulsoup4
+    python3 -m pip install pytesseract
+    python3 -m pip install netaddr
+    echo
+    cd ../bin/
+    MACHINE_TYPE=`uname -m`
+    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+      rm geckodriver-v0.24.0-linux64.tar.gz
+      mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    else
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux32.tar.gz
+      rm geckodriver-v0.24.0-linux32.tar.gz
+      mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    fi
+    cd ..
+  ;;
   # Notify Manual Installation Requirement And Exit
   *)
     echo "[Error]: ${osinfo} is not supported by this setup script."
