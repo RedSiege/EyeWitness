@@ -39,12 +39,11 @@ case ${osinfo} in
   Kali2)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python3 xvfb python-qt4 python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
-    python3 -m pip install python_qt_binding
     python3 -m pip install fuzzywuzzy
     python3 -m pip install selenium --upgrade
     python3 -m pip install python-Levenshtein
@@ -83,12 +82,11 @@ case ${osinfo} in
   Kali)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python3 xvfb python-qt4 python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
-    python3 -m pip install python_qt_binding
     python3 -m pip install fuzzywuzzy
     python3 -m pip install selenium --upgrade
     python3 -m pip install python-Levenshtein
@@ -127,12 +125,11 @@ case ${osinfo} in
   Parrot)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python3 xvfb python-qt4 python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
-    python3 -m pip install python_qt_binding
     python3 -m pip install fuzzywuzzy
     python3 -m pip install selenium --upgrade
     python3 -m pip install python-Levenshtein
@@ -171,12 +168,11 @@ case ${osinfo} in
   Debian)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python3 xvfb python-qt4 python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
-    python3 -m pip install python_qt_binding
     python3 -m pip install fuzzywuzzy
     python3 -m pip install selenium --upgrade
     python3 -m pip install python-Levenshtein
@@ -215,12 +211,11 @@ case ${osinfo} in
   Ubuntu)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python3 xvfb python-qt4 python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
-    python3 -m pip install python_qt_binding
     python3 -m pip install fuzzywuzzy
     python3 -m pip install selenium --upgrade
     python3 -m pip install python-Levenshtein
@@ -253,40 +248,6 @@ case ${osinfo} in
       fi
       ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     fi
-    cd ..
-  ;;
-  # CentOS 6.5+ Dependency Installation
-  CentOS)
-    echo '[Warning]: EyeWitness on CentOS Requires EPEL Repository!'
-    read -p '[?] Install and Enable EPEL Repository? (y/n): ' epel
-    if [ "${epel}" == 'y' ]; then
-      rpm -ivh ${eplpkg}
-    else
-      echo '[!] User Aborted EyeWitness Installation.'
-      popd > /dev/null
-      exit 1
-    fi
-    echo '[*] Installing CentOS Dependencies'
-    yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse xvfb python-netaddr python-dev tesseract-ocr firefox-esr
-    echo
-    echo '[*] Installing RDPY'
-    git clone https://github.com/ChrisTruncer/rdpy.git
-    cd rdpy
-    python setup.py install
-    cd ..
-    rm -rf rdpy
-    echo '[*] Installing Python Modules'
-    pip install python_qt_binding
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1
-    pip install pyvirtualdisplay
-    pip install beautifulsoup4
-    pip install pytesseract
-    echo
-    cd ../bin/
     cd ..
   ;;
   # Notify Manual Installation Requirement And Exit
