@@ -232,9 +232,9 @@ case ${osinfo} in
     cd ../bin/
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-      tar -xvf geckodriver-v0.24.0-linux64.tar.gz
-      rm geckodriver-v0.24.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz
+      tar -xvf geckodriver-v0.26.0-linux64.tar.gz
+      rm geckodriver-v0.26.0-linux64.tar.gz
       mv geckodriver /usr/sbin
       if [ -e /usr/bin/geckodriver ]
       then
@@ -242,9 +242,9 @@ case ${osinfo} in
       fi
       ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     else
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
-      tar -xvf geckodriver-v0.24.0-linux32.tar.gz
-      rm geckodriver-v0.24.0-linux32.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux32.tar.gz
+      tar -xvf geckodriver-v0.26.0-linux32.tar.gz
+      rm geckodriver-v0.26.0-linux32.tar.gz
       mv geckodriver /usr/sbin
       if [ -e /usr/bin/geckodriver ]
       then
