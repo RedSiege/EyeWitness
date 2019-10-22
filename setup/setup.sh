@@ -5,6 +5,9 @@ userid=`id -u`
 osinfo=`cat /etc/issue|cut -d" " -f1|head -n1`
 eplpkg='http://linux.mirrors.es.net/fedora-epel/6/i386/epel-release-6-8.noarch.rpm'
 
+# Setting environment variables
+export TERM=linux
+
 # Clear Terminal (For Prettyness)
 clear
 
