@@ -310,3 +310,4 @@ isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|HP Colo
 script language="JavaScript" src="readCookie.js;script language="JavaScript" src="readCookie.js|Xerox 3100 Administrator/Fiery.1
 <title>MiVoice Business</title>;/uwi/stylesheets/uwi_ICP_style.css;common/cmn_DetectBrowser.js|Mitel MiVoice Business admin/admin
 Internet Services;window.document.body.scrollTop;href="JavaScript:parent.fflip;parseInt(chkBrowserVersion("MSIE"))|HPE StoreEver MSL4048 Tape Library /00000000
+<title>Altova LicenseServer</title>;<span>Please wait...</span>;<div id="statusErrorMessage";<p class="legalese">|Altova License Server <nousername>/default
