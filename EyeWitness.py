@@ -119,6 +119,9 @@ def create_cli_parser():
                               "use (e.g. '80,8080')"))
     http_options.add_argument('--prepend-https', default=False, action='store_true',
                               help='Prepend http:// and https:// to URLs without either')
+    http_options.add_argument('--size', default=False, action='store_true',
+                                help='Return the default size of the browser\
+                                 used to do the screenshot')
     http_options.add_argument('--width', metavar='# width pixel size', default=0,
                                 type=int, help='width size use for the web\
                                  browser in order to take the screenshot')
@@ -196,6 +199,12 @@ def create_cli_parser():
             sys.exit()
 
     args.ua_init = False
+
+    if args.size:
+        create_driver = selenium_module.create_driver(args)
+        selenium_module.get_driver_size(create_driver)
+        sys.exit()
+    
     return args
 
 

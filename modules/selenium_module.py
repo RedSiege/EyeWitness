@@ -78,6 +78,12 @@ def create_driver(cli_parsed, user_agent=None):
         sys.exit()
 
 
+def get_driver_size(driver):
+    size=driver.get_window_size()
+    print("The web windows default size is width: "+str(size['width'])+\
+    "px, and height:"+str(size['height'])+"px")
+
+
 def capture_host(cli_parsed, http_object, driver, ua=None):
     """Screenshots a single host, saves information, and returns
     a complete HTTP Object
