@@ -24,6 +24,7 @@ except ImportError:
     print('[*] Please run the script in the setup directory!')
     sys.exit()
 
+from modules.helpers import do_delay
 
 def create_driver(cli_parsed, user_agent=None):
     """Creates a selenium FirefoxDriver
@@ -167,6 +168,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     except WebDriverException as e:
         print('[*] Error saving web page screenshot'
               ' for ' + http_object.remote_system)
+
+    do_delay(cli_parsed)
 
     # Get our headers using urllib
     context = None

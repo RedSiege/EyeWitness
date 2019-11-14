@@ -637,6 +637,22 @@ def do_jitter(cli_parsed):
         except KeyboardInterrupt:
             pass
 
+def do_delay(cli_parsed):
+    """Delay between the opening of the navigator and taking the screenshot
+
+    Args:
+        cli_parsed (ArgumentParser): CLI Object
+
+    Returns:
+        TYPE: Description
+    """
+    if cli_parsed.delay is not 0:
+        sleep_value = cli_parsed.delay
+        print("[*] Sleeping for " + str(sleep_value) + " seconds before taking the screenshot")
+        try:
+            time.sleep(sleep_value)
+        except KeyboardInterrupt:
+            pass
 
 def create_folders_css(cli_parsed):
     """Writes out the CSS file and generates folders for output

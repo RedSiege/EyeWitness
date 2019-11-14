@@ -71,6 +71,8 @@ def create_cli_parser():
     timing_options.add_argument('--jitter', metavar='# of Seconds', default=0,
                                 type=int, help='Randomize URLs and add a random\
                                  delay between requests')
+    timing_options.add_argument('--delay', metavar='# of Seconds', default=0,
+                                type=int, help='Delay between the opening of the navigator and taking the screenshot')
     timing_options.add_argument('--threads', metavar='# of Threads', default=10,
                                 type=int, help='Number of threads to use while using\
                                 file based input')
