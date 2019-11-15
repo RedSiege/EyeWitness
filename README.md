@@ -27,6 +27,8 @@ A complete usage guide which documents EyeWitness features and its typical use c
 ./EyeWitness -f urls.txt --web
 
 ./EyeWitness -x urls.xml --timeout 8 --headless
+
+./EyeWitness.py -f urls.txt --web --proxy-ip 127.0.0.1 --proxy-port 8080 --proxy-type socks5 --timeout 120
 ```
 
 ### Docker

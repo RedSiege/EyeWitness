@@ -100,6 +100,12 @@ def create_cli_parser():
                               default=50, type=int, help='Difference threshold\
                                when determining if user agent requests are\
                                 close \"enough\" (Default: 50)')
+    http_options.add_argument('--proxy-ip', metavar='127.0.0.1', default=None,
+                              help='IP of web proxy to go through')
+    http_options.add_argument('--proxy-port', metavar='8080', default=None,
+                              type=int, help='Port of web proxy to go through')
+    http_options.add_argument('--proxy-type', metavar='socks5', default="http",
+                              help='Proxy type (socks5/http)')
     http_options.add_argument('--show-selenium', default=False,
                               action='store_true', help='Show display for selenium')
     http_options.add_argument('--resolve', default=False,
@@ -197,6 +203,16 @@ def create_cli_parser():
         if not os.path.isfile(args.resume):
             print(" [*] Error: No valid DB file provided for resume!")
             sys.exit()
+
+    if args.proxy_ip is not None and args.proxy_port is None:
+        print("[*] Error: Please provide a port for the proxy!")
+        parser.print_help()
+        sys.exit()
+
+    if args.proxy_port is not None and args.proxy_ip is None:
+        print("[*] Error: Please provide an IP for the proxy!")
+        parser.print_help()
+        sys.exit()
 
     args.ua_init = False
 
