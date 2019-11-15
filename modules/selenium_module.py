@@ -162,14 +162,15 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             alert.dismiss()
         except Exception as e:
             pass
+
+    do_delay(cli_parsed)
+
     # Save our screenshot to the specified directory
     try:
         driver.save_screenshot(http_object.screenshot_path)
     except WebDriverException as e:
         print('[*] Error saving web page screenshot'
               ' for ' + http_object.remote_system)
-
-    do_delay(cli_parsed)
 
     # Get our headers using urllib
     context = None
