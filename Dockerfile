@@ -28,4 +28,4 @@ RUN cd setup && \
 
 USER $user
 
-ENTRYPOINT ["python", "EyeWitness.py", "-d", "/tmp/EyeWitness/results", "--no-prompt"]
+ENTRYPOINT ["python3", "EyeWitness.py", "-d", "/tmp/EyeWitness/results", "--no-prompt"]
