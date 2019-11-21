@@ -49,7 +49,7 @@ def create_cli_parser():
                         '--help', action="store_true", help=argparse.SUPPRESS)
 
     protocols = parser.add_argument_group('Protocols')
-    protocols.add_argument('--web', default=False, action='store_true',
+    protocols.add_argument('--web', default=True, action='store_true',
                            help='HTTP Screenshot using Selenium')
 
     input_options = parser.add_argument_group('Input Options')
