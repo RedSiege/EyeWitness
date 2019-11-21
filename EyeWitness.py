@@ -54,7 +54,7 @@ def create_cli_parser():
 
     input_options = parser.add_argument_group('Input Options')
     input_options.add_argument('-f', metavar='Filename', default=None,
-                               help='Line seperated file containing URLs to \
+                               help='Line-separated file containing URLs to \
                                 capture')
     input_options.add_argument('-x', metavar='Filename.xml', default=None,
                                help='Nmap XML or .Nessus file')
@@ -113,15 +113,15 @@ def create_cli_parser():
                                                          " for targets"))
     http_options.add_argument('--add-http-ports', default=[], 
                               type=lambda s:[str(i) for i in s.split(",")],
-                              help=("Comma-seperated additional port(s) to assume "
+                              help=("Comma-separated additional port(s) to assume "
                               "are http (e.g. '8018,8028')"))
     http_options.add_argument('--add-https-ports', default=[],
                               type=lambda s:[str(i) for i in s.split(",")],
-                              help=("Comma-seperated additional port(s) to assume "
+                              help=("Comma-separated additional port(s) to assume "
                               "are https (e.g. '8018,8028')"))
     http_options.add_argument('--only-ports', default=[],
                               type=lambda s:[int(i) for i in s.split(",")],
-                              help=("Comma-seperated list of exclusive ports to "
+                              help=("Comma-separated list of exclusive ports to "
                               "use (e.g. '80,8080')"))
     http_options.add_argument('--prepend-https', default=False, action='store_true',
                               help='Prepend http:// and https:// to URLs without either')
