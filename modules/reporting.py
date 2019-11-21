@@ -294,22 +294,22 @@ def sort_data_and_write(cli_parsed, data):
         for i in range(0, amount):
             headfoot = "<center>"
             if i == 0:
-                headfoot += ("<a href=\"report_page2.html\"> Next Page "
+                headfoot += ("<a href=\"report_page2.html\" id=\"next\"> Next Page "
                              "</a></center>")
             elif i == amount - 1:
                 if i == 1:
-                    headfoot += ("<a href=\"report.html\"> Previous Page "
+                    headfoot += ("<a href=\"report.html\" id=\"previous\"> Previous Page "
                                  "</a></center>")
                 else:
-                    headfoot += ("<a href=\"report_page{0}.html\"> Previous Page "
+                    headfoot += ("<a href=\"report_page{0}.html\" id=\"previous\"> Previous Page "
                                  "</a></center>").format(str(i))
             elif i == 1:
-                headfoot += ("<a href=\"report.html\">Previous Page</a>&nbsp"
-                             "<a href=\"report_page{0}.html\"> Next Page"
+                headfoot += ("<a href=\"report.html\" id=\"previous\">Previous Page</a>&nbsp"
+                             "<a href=\"report_page{0}.html\" id=\"next\"> Next Page"
                              "</a></center>").format(str(i+2))
             else:
-                headfoot += ("<a href=\"report_page{0}.html\">Previous Page</a>"
-                             "&nbsp<a href=\"report_page{1}.html\"> Next Page"
+                headfoot += ("<a href=\"report_page{0}.html\" id=\"previous\">Previous Page</a>"
+                             "&nbsp<a href=\"report_page{1}.html\" id=\"next\"> Next Page"
                              "</a></center>").format(str(i), str(i+2))
             # Finalize our pages by replacing placeholder stuff and writing out
             # the headers/footers
@@ -359,6 +359,27 @@ def create_web_index_head(date, time):
             change.innerHTML = "Click to expand User Agents for " + url;
         }}
         }}
+
+        document.onkeydown = function(event){{
+            event = event || window.event;
+            switch (event.keyCode){{
+                case 37:
+                    leftArrow();
+                    break;
+                case 39:
+                    rightArrow();
+                    break;
+            }}
+        }};
+                
+        function leftArrow(){{
+            $('#previous')[0].click();
+        }};
+
+        function rightArrow(){{
+            $('#next')[0].click();
+        }};
+
         </script>
         </head>
         <body>

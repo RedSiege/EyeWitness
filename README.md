@@ -19,7 +19,7 @@ A complete usage guide which documents EyeWitness features and its typical use c
 
 ### Usage:
 ```bash
-./EyeWitness.py -f filename --timeout optionaltimeout --open (Optional)
+./EyeWitness.py -f filename --timeout optionaltimeout
 ```
 
 ### Examples:
