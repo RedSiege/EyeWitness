@@ -832,11 +832,11 @@ M                                                                M
 M       .”cCCc”.                                                 M
 M      /cccccccc\\           Our Upcoming Trainings:              M
 M      §cccccccc|                                                M
-M      :ccccccccP       44Con >> Dec 02- Dec 05 2019             M
-M      \\cccccccc()                 London, England               M
-M       \\ccccccccD              http://44con.com                 M
+M      :ccccccccP       BlackHat Asia >> Mar 31 - Apr 03 2020    M
+M      \\cccccccc()                 Singapore                     M
+M       \\ccccccccD         https://www.blackhat.com              M
 M       |cccccccc\\       _                                       M
-M       |ccccccccc)     //    Charlotte >> August 3-6            M
+M       |ccccccccc)     //    Charlotte  >>  Jan 13-16 2020      M
 M       |cccccc|=      //               Charlotte, NC            M
 M      /°°°°°°”-.     (CCCC)                                     M
 M      ;----._  _._   |cccc|                                     M
