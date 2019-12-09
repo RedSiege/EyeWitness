@@ -429,3 +429,8 @@ script language="JavaScript" src="readCookie.js;script language="JavaScript" src
 <title>MiVoice Business</title>;/uwi/stylesheets/uwi_ICP_style.css;common/cmn_DetectBrowser.js|voip
 Internet Services;window.document.body.scrollTop;href="JavaScript:parent.fflip;parseInt(chkBrowserVersion("MSIE"))|netdev
 <title>Altova LicenseServer</title>;<span>Please wait...</span>;<div id="statusErrorMessage";<p class="legalese">|infrastructure
+Nimble Storage;/assets/vendor;/oem/settings.js;<!-- Username field -->;data-ember-modal-dialog-overlay|netdev
+<title>Welcome to JBoss™</title>;JBoss Online Resources;<h3>JBoss Management</h3>;href="/status">Tomcat status</a>|highval
+<title>APC | Log On</title>;function isValidBrowser();class="applyCancel"|infrastructure
+<head><title>U</title></head>;client-side JavaScript client sniff;client-side JavaScript client sniff|voip
+<title>Liebert IntelliSlot Web Card</title>;var appObj = new Object();document.appObj= appObj|infrastructure

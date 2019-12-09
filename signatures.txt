@@ -311,3 +311,8 @@ script language="JavaScript" src="readCookie.js;script language="JavaScript" src
 <title>MiVoice Business</title>;/uwi/stylesheets/uwi_ICP_style.css;common/cmn_DetectBrowser.js|Mitel MiVoice Business admin/admin
 Internet Services;window.document.body.scrollTop;href="JavaScript:parent.fflip;parseInt(chkBrowserVersion("MSIE"))|HPE StoreEver MSL4048 Tape Library /00000000
 <title>Altova LicenseServer</title>;<span>Please wait...</span>;<div id="statusErrorMessage";<p class="legalese">|Altova License Server <nousername>/default
+Nimble Storage;/assets/vendor;/oem/settings.js;<!-- Username field -->;data-ember-modal-dialog-overlay|Nimble Storage admin/admin
+<title>Welcome to JBoss™</title>;JBoss Online Resources;<h3>JBoss Management</h3>;href="/status">Tomcat status</a>|JBOSS JMX Console superadmin/superadmin
+<title>APC | Log On</title>;function isValidBrowser();class="applyCancel"|APC Smart UPS readonly/apc
+<head><title>U</title></head>;client-side JavaScript client sniff;client-side JavaScript client sniff|Sensaphone IMS-4000 admin/ims1k
+<title>Liebert IntelliSlot Web Card</title>;var appObj = new Object();document.appObj= appObj|Liebert IntelliSlot Web Card Liebert/Liebert
