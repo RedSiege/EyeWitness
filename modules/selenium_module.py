@@ -24,6 +24,7 @@ except ImportError:
     print('[*] Please run the script in the setup directory!')
     sys.exit()
 
+from modules.helpers import do_delay
 
 def create_driver(cli_parsed, user_agent=None):
     """Creates a selenium FirefoxDriver
@@ -174,6 +175,9 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             alert.dismiss()
         except Exception as e:
             pass
+
+    do_delay(cli_parsed)
+
     # Save our screenshot to the specified directory
     try:
         driver.save_screenshot(http_object.screenshot_path)
