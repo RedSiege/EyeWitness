@@ -50,7 +50,7 @@ class DB_Manager(object):
         obj = HTTPTableObject()
         obj.remote_system = remote_system
         obj.set_paths(
-            cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
+            cli_parsed.d, None)
         obj.max_difference = cli_parsed.difference
         c.execute("SELECT MAX(id) FROM http")
         rowid = c.fetchone()[0]

@@ -95,9 +95,6 @@ def create_cli_parser():
     http_options.add_argument('--user-agent', metavar='User Agent',
                               default=None, help='User Agent to use for all\
                                requests')
-    http_options.add_argument('--cycle', metavar='User Agent Type',
-                              default=None, help='User Agent Type (Browser, \
-                                Mobile, Crawler, Scanner, Misc, All')
     http_options.add_argument('--difference', metavar='Difference Threshold',
                               default=50, type=int, help='Difference threshold\
                                when determining if user agent requests are\
@@ -224,32 +221,17 @@ def single_mode(cli_parsed):
     http_object = objects.HTTPTableObject()
     http_object.remote_system = url
     http_object.set_paths(
-        cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
+        cli_parsed.d, None)
 
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
-    if cli_parsed.cycle is not None:
-        print('Making baseline request for {0}'.format(http_object.remote_system))
-    else:
-        print('Attempting to screenshot {0}'.format(http_object.remote_system))
+    print('Attempting to screenshot {0}'.format(http_object.remote_system))
     driver = create_driver(cli_parsed)
     result, driver = capture_host(cli_parsed, http_object, driver)
     result = default_creds_category(result)
     if cli_parsed.resolve:
         result.resolved = resolve_host(result.remote_system)
     driver.quit()
-    if cli_parsed.cycle is not None and result.error_state is None:
-        ua_dict = get_ua_values(cli_parsed.cycle)
-        for browser_key, user_agent_value in ua_dict.iteritems():
-            print('Now making web request with: {0} for {1}'.format(
-                browser_key, result.remote_system))
-            ua_object = objects.UAObject(browser_key, user_agent_value)
-            ua_object.copy_data(result)
-            driver = create_driver(cli_parsed, user_agent_value)
-            ua_object, driver = capture_host(cli_parsed, ua_object, driver)
-            ua_object = default_creds_category(ua_object)
-            result.add_ua_data(ua_object)
-            driver.quit()
     if display is not None:
         display.stop()
     html = result.create_table_html()
@@ -290,17 +272,9 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
             # Fix our directory if its resuming from a different path
             if os.path.dirname(cli_parsed.d) != os.path.dirname(http_object.screenshot_path):
                 http_object.set_paths(
-                    cli_parsed.d, 'baseline' if cli_parsed.cycle is not None else None)
+                    cli_parsed.d, None)
 
-            if cli_parsed.cycle is not None:
-                if user_agent is None:
-                    print('Making baseline request for {0}'.format(http_object.remote_system))
-                else:
-                    browser_key, user_agent_str = user_agent
-                    print('Now making web request with: {0} for {1}'.format(
-                        browser_key, http_object.remote_system))
-            else:
-                print('Attempting to screenshot {0}'.format(http_object.remote_system))
+            print('Attempting to screenshot {0}'.format(http_object.remote_system))
 
             http_object.resolved = resolve_host(http_object.remote_system)
             if user_agent is None:
@@ -381,44 +355,6 @@ def multi_mode(cli_parsed):
                 w.join()
         except Exception as e:
             print(str(e))
-
-        # Set up UA table here
-        if cli_parsed.cycle is not None:
-            ua_dict = get_ua_values(cli_parsed.cycle)
-            if not cli_parsed.ua_init:
-                dbm.clear_table("ua")
-                completed = dbm.get_complete_http()
-                completed[:] = [x for x in completed if x.error_state is None]
-                for item in completed:
-                    for browser, ua in ua_dict.iteritems():
-                        dbm.create_ua_object(item, browser, ua)
-
-                cli_parsed.ua_init = True
-                dbm.clear_table("opts")
-                dbm.save_options(cli_parsed)
-
-            for browser, ua in ua_dict.iteritems():
-                targets = m.Queue()
-                multi_counter.value = 0
-                multi_total = dbm.get_incomplete_ua(targets, browser)
-                if multi_total > 0:
-                    print("[*] Starting requests for User Agent {0}"
-                          " ({1} Hosts)").format(browser, str(multi_total))
-                if multi_total < cli_parsed.threads:
-                    num_threads = multi_total
-                else:
-                    num_threads = cli_parsed.threads
-                for i in range(num_threads):
-                    targets.put(None)
-                workers = [Process(target=worker_thread,
-                                   args=(cli_parsed, targets, lock,
-                                         (multi_counter, multi_total),
-                                         (browser, ua)))
-                           for i in range(num_threads)]
-                for w in workers:
-                    w.start()
-                for w in workers:
-                    w.join()
 
     if display is not None:
         display.stop()
