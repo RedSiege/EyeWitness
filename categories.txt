@@ -434,3 +434,5 @@ Nimble Storage;/assets/vendor;/oem/settings.js;<!-- Username field -->;data-embe
 <title>APC | Log On</title>;function isValidBrowser();class="applyCancel"|infrastructure
 <head><title>U</title></head>;client-side JavaScript client sniff;client-side JavaScript client sniff|voip
 <title>Liebert IntelliSlot Web Card</title>;var appObj = new Object();document.appObj= appObj|infrastructure
+<title>Lexmark CS725</title>;<img src="/images/printer_logo.png";role="heading">Embedded Web Server</div>|printer
+<title>SyncThru Web Service</title>;var autoLogoutTimeReNewSec=0;pOverLayZIndex = Number(overlayZidx) + 10|printer
