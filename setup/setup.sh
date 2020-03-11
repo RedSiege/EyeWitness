@@ -47,9 +47,9 @@ case ${osinfo} in
   Kali2)
     apt-get update
     echo '[*] Installing Kali2 Dependencies'
-    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-python2 -m pip python-netaddr python-dev tesseract-ocr
     echo '[*] Upgrading paramiko'
-    pip install --upgrade paramiko
+    python2 -m pip install --upgrade paramiko
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -57,12 +57,13 @@ case ${osinfo} in
     cd ..
     rm -rf rdpy
     echo '[*] Installing Python Modules'
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1 --upgrade
-    pip install pyvirtualdisplay
-    pip install pytesseract
+    python2 -m pip install fuzzywuzzy
+    python2 -m pip install selenium --upgrade
+    python2 -m pip install python-Levenshtein
+    python2 -m pip install pyasn1 --upgrade
+    python2 -m pip install pyvirtualdisplay
+    python2 -m pip install pytesseract
+    python2 -m pip install Pillow
     cd ../bin/
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
@@ -92,9 +93,9 @@ case ${osinfo} in
   Kali)
     apt-get update
     echo '[*] Installing Kali Dependencies'
-    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
+    apt-get install -y python-qt4 python-python2 -m pip xvfb python-netaddr python-dev tesseract-ocr
     echo '[*] Upgrading paramiko'
-    pip install --upgrade paramiko
+    python2 -m pip install --upgrade paramiko
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -102,12 +103,12 @@ case ${osinfo} in
     cd ..
     rm -rf rdpy
     echo '[*] Installing Python Modules'
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1 --upgrade
-    pip install pyvirtualdisplay
-    pip install pytesseract
+    python2 -m pip install fuzzywuzzy
+    python2 -m pip install selenium --upgrade
+    python2 -m pip install python-Levenshtein
+    python2 -m pip install pyasn1 --upgrade
+    python2 -m pip install pyvirtualdisplay
+    python2 -m pip install pytesseract
     cd ../bin/
     cd ..
   ;;
@@ -115,9 +116,9 @@ case ${osinfo} in
   Parrot)
     apt-get update
     echo '[*] Installing Parrot Dependencies'
-    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr firefox-esr
+    apt-get install -y python-qt4 python-python2 -m pip xvfb python-netaddr python-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
-    pip install --upgrade paramiko
+    python2 -m pip install --upgrade paramiko
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -125,12 +126,12 @@ case ${osinfo} in
     cd ..
     rm -rf rdpy
     echo '[*] Installing Python Modules'
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1 --upgrade
-    pip install pyvirtualdisplay
-    pip install pytesseract
+    python2 -m pip install fuzzywuzzy
+    python2 -m pip install selenium --upgrade
+    python2 -m pip install python-Levenshtein
+    python2 -m pip install pyasn1 --upgrade
+    python2 -m pip install pyvirtualdisplay
+    python2 -m pip install pytesseract
     cd ../bin/
     cd ..
   ;;
@@ -138,10 +139,10 @@ case ${osinfo} in
   Debian)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr firefox-esr
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-python2 -m pip python-netaddr python-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko and pyopenssl'
-    pip install --upgrade paramiko
-    pip install -U pyopenssl
+    python2 -m pip install --upgrade paramiko
+    python2 -m pip install -U pyopenssl
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -150,14 +151,14 @@ case ${osinfo} in
     rm -rf rdpy
     echo
     echo '[*] Installing Python Modules'
-    pip install python_qt_binding
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1
-    pip install pyvirtualdisplay
-    pip install beautifulsoup4
-    pip install pytesseract
+    python2 -m pip install python_qt_binding
+    python2 -m pip install fuzzywuzzy
+    python2 -m pip install selenium --upgrade
+    python2 -m pip install python-Levenshtein
+    python2 -m pip install pyasn1
+    python2 -m pip install pyvirtualdisplay
+    python2 -m pip install beautifulsoup4
+    python2 -m pip install pytesseract
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -188,8 +189,8 @@ case ${osinfo} in
   Ubuntu)
     apt-get update
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr firefox
-    pip install cryptography --upgrade
+    apt-get install -y cmake qt4-qmake python python-qt4 python-python2 -m pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr firefox
+    python2 -m pip install cryptography --upgrade
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -198,17 +199,17 @@ case ${osinfo} in
     rm -rf rdpy
     echo
     echo '[*] Installing Python Modules'
-    pip install python_qt_binding
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1
-    pip install pyvirtualdisplay
-    pip install beautifulsoup4
-    pip install pytesseract
-    pip install enum34
-    pip install ipaddress
-    pip install asn1crypto
+    python2 -m pip install python_qt_binding
+    python2 -m pip install fuzzywuzzy
+    python2 -m pip install selenium --upgrade
+    python2 -m pip install python-Levenshtein
+    python2 -m pip install pyasn1
+    python2 -m pip install pyvirtualdisplay
+    python2 -m pip install beautifulsoup4
+    python2 -m pip install pytesseract
+    python2 -m pip install enum34
+    python2 -m pip install ipaddress
+    python2 -m pip install asn1crypto
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -237,7 +238,7 @@ case ${osinfo} in
       exit 1
     fi
     echo '[*] Installing CentOS Dependencies'
-    yum install cmake python python-pip PyQt4 PyQt4-webkit \
+    yum install cmake python python-python2 -m pip PyQt4 PyQt4-webkit \
                 python-argparse xorg-x11-server-Xvfb python-netaddr python-devel tesseract firefox
     echo
     echo '[*] Installing RDPY'
@@ -247,14 +248,14 @@ case ${osinfo} in
     cd ..
     rm -rf rdpy
     echo '[*] Installing Python Modules'
-    pip install python_qt_binding
-    pip install fuzzywuzzy
-    pip install selenium --upgrade
-    pip install python-Levenshtein
-    pip install pyasn1
-    pip install pyvirtualdisplay
-    pip install beautifulsoup4
-    pip install pytesseract
+    python2 -m pip install python_qt_binding
+    python2 -m pip install fuzzywuzzy
+    python2 -m pip install selenium --upgrade
+    python2 -m pip install python-Levenshtein
+    python2 -m pip install pyasn1
+    python2 -m pip install pyvirtualdisplay
+    python2 -m pip install beautifulsoup4
+    python2 -m pip install pytesseract
     echo
     cd ../bin/
     cd ..
