@@ -47,7 +47,7 @@ case ${osinfo} in
   Kali2)
     apt-get update
     echo '[*] Installing Kali2 Dependencies'
-    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-python2 -m pip python-netaddr python-dev tesseract-ocr
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr
     echo '[*] Upgrading paramiko'
     python2 -m pip install --upgrade paramiko
     echo '[*] Installing RDPY'
@@ -93,7 +93,7 @@ case ${osinfo} in
   Kali)
     apt-get update
     echo '[*] Installing Kali Dependencies'
-    apt-get install -y python-qt4 python-python2 -m pip xvfb python-netaddr python-dev tesseract-ocr
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
     echo '[*] Upgrading paramiko'
     python2 -m pip install --upgrade paramiko
     echo '[*] Installing RDPY'
@@ -116,7 +116,7 @@ case ${osinfo} in
   Parrot)
     apt-get update
     echo '[*] Installing Parrot Dependencies'
-    apt-get install -y python-qt4 python-python2 -m pip xvfb python-netaddr python-dev tesseract-ocr firefox-esr
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     python2 -m pip install --upgrade paramiko
     echo '[*] Installing RDPY'
@@ -139,7 +139,7 @@ case ${osinfo} in
   Debian)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-python2 -m pip python-netaddr python-dev tesseract-ocr firefox-esr
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko and pyopenssl'
     python2 -m pip install --upgrade paramiko
     python2 -m pip install -U pyopenssl
@@ -189,7 +189,7 @@ case ${osinfo} in
   Ubuntu)
     apt-get update
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install -y cmake qt4-qmake python python-qt4 python-python2 -m pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr firefox
+    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr firefox
     python2 -m pip install cryptography --upgrade
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
@@ -238,7 +238,7 @@ case ${osinfo} in
       exit 1
     fi
     echo '[*] Installing CentOS Dependencies'
-    yum install cmake python python-python2 -m pip PyQt4 PyQt4-webkit \
+    yum install cmake python python-pip PyQt4 PyQt4-webkit \
                 python-argparse xorg-x11-server-Xvfb python-netaddr python-devel tesseract firefox
     echo
     echo '[*] Installing RDPY'
