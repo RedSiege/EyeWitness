@@ -318,3 +318,6 @@ Nimble Storage;/assets/vendor;/oem/settings.js;<!-- Username field -->;data-embe
 <title>Liebert IntelliSlot Web Card</title>;var appObj = new Object();document.appObj= appObj|Liebert IntelliSlot Web Card Liebert/Liebert
 <title>Lexmark CS725</title>;<img src="/images/printer_logo.png";role="heading">Embedded Web Server</div>|Lexmark CS725 <nousername>/00000
 <title>SyncThru Web Service</title>;var autoLogoutTimeReNewSec=0;pOverLayZIndex = Number(overlayZidx) + 10|Panasonic SyncThrough Web Service admin/sec00000
+<title>Data Center Network Manager</title>;.loadingStatusErrorParent;var h = document.getElementsByTagName("head")[0]|Cisco Data Center Network Management admin/admin
+<title>Data Center Network Manager</title>;<div class="userFormContainer">;<div class="middleContent" dojoattachpoint="containerNode">|Cisco Data Center Network Management admin/admin
+<title>Identity Services Engine</title>;Cisco Systems,Inc. Cisco, Cisco Systems;for(key in localStorage){|Cisco Identity Services Engine admin/<passwordsetatinstall>
