@@ -14,8 +14,8 @@ namespace EyeWitness
         public static string catCode = "";
         public static string sigCode = "";
         public static string reportHtml = "";
-        static string catURL = "https://raw.githubusercontent.com/FortyNorthSecurity/EyeWitness/master/categories.txt";
-        static string sigURL = "https://raw.githubusercontent.com/FortyNorthSecurity/EyeWitness/master/signatures.txt";
+        static string catURL = "https://raw.githubusercontent.com/FortyNorthSecurity/EyeWitness/master/Python/categories.txt";
+        static string sigURL = "https://raw.githubusercontent.com/FortyNorthSecurity/EyeWitness/master/Python/signatures.txt";
         public static Dictionary<string, string> categoryDict = new Dictionary<string, string>();
         public static Dictionary<string, string> signatureDict = new Dictionary<string, string>();
         public static Dictionary<string, object[]> categoryRankDict = new Dictionary<string, object[]>();
