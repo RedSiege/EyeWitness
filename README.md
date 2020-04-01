@@ -7,6 +7,9 @@ EyeWitness is designed to run on Kali Linux. It will auto detect the file you gi
 
 A complete usage guide which documents EyeWitness features and its typical use cases is available here - https://www.christophertruncer.com/eyewitness-usage-guide/
 
+### Windows
+FortyNorth Security has created a Windows client (thanks to the massive help of Matt Grandy (@Matt_Grandy_) with the stability fixes). All you need to do is build it locally (or check the releases), and then provide a path to a file containing the URLs you want scanned! EyeWitness will generate the report within your "AppData\Roaming" directory.
+
 ###### Supported Linux Distros:
 * Kali Linux
 * Debian 7+ (at least stable, looking into testing) (Thanks to @themightyshiv)
@@ -20,6 +23,10 @@ A complete usage guide which documents EyeWitness features and its typical use c
 ### Usage:
 ```bash
 ./EyeWitness.py -f filename --timeout optionaltimeout
+```
+
+```bash
+EyeWitness.exe C:\Path\to\urls.txt
 ```
 
 ### Examples:
