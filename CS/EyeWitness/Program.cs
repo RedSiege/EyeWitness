@@ -283,12 +283,11 @@ namespace EyeWitness
             }
             else
             {
-                allUrls = System.IO.File.ReadAllLines(@"c:\Users\commandovm\desktop\eyewitness\urls1.txt");
                 Console.WriteLine("\n[*] ERROR: Please specify a URL file to use\n");
                 Console.WriteLine("\n\n[++] Usage: EyeWitness.exe c:\\Path\\To\\URLs.txt [Timeout] (ex. 10000 = 10 seconds)");
                 Console.WriteLine("[++] EyeWitness.exe c:\\users\\test\\urls.txt");
                 Console.WriteLine("[++] EyeWitness.exe c:\\users\\test\\urls.txt 20000");
-                //return;
+                System.Environment.Exit(1);
             }
 
             // build an array containing all the web server objects
