@@ -42,10 +42,6 @@ EyeWitness.exe C:\Path\to\urls.txt [timeout in milliseconds]
 ./EyeWitness.py -f filename --timeout optionaltimeout
 ```
 
-```bash
-EyeWitness.exe C:\Path\to\urls.txt
-```
-
 ### Examples:
 ```bash
 ./EyeWitness -f urls.txt --web
