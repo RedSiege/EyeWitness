@@ -17,12 +17,9 @@ FortyNorth Security has created a Windows client (thanks to the massive help of 
 
 ### Usage:
 ```bash
-EyeWitness.exe C:\Path\to\urls.txt
-```
-
-Soon to be implimented:
-```bash
-EyeWitness.exe C:\Path\to\urls.txt [timeout in milliseconds]
+EyeWitness.exe --help
+EyeWitness.exe -f C:\Path\to\urls.txt
+EyeWitness.exe -f C:\Path\to\urls.txt -d [timeout in seconds] -c
 ```
 
 ## Linux
