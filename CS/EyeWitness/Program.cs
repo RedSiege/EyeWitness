@@ -5,6 +5,9 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using CommandLine;
+using CommandLine.Text;
+using System.IO.Compression;
 
 namespace EyeWitness
 {
@@ -22,6 +25,37 @@ namespace EyeWitness
         private static Semaphore _pool = new Semaphore(1,1);
         //private static SemaphoreSlim _pool = new SemaphoreSlim(2);
         private static SemaphoreSlim _Sourcepool = new SemaphoreSlim(10);
+
+        public class Options
+        {
+            public static Options Instance { get; set; }
+
+            // Command line options
+            [Option('v', "verbose", Required = false, HelpText = "Set output to verbose")]
+            public bool Verbose { get; set; }
+
+            [Option('f', "file", Required = true, HelpText = "Specify a new-line separated file of URLs", Default = null)]
+            public string File { get; set; }
+
+            [Option('d', "delay", Required = false, HelpText = "Specify a delay to use before cancelling a single URL request", Default = 30)]
+            public int Delay { get; set; }
+
+            [Option('c', "compress", Required = false, HelpText = "Compress output directory", Default = false)]
+            public bool Compress { get; set; }
+        }
+
+        static void DisplayHelp<T>(ParserResult<T> result, IEnumerable<Error> errs)
+        {
+            var helpText = HelpText.AutoBuild(result, h =>
+            {
+                h.AdditionalNewLineAfterOption = false;
+                h.Heading = "EyeWitness C# Version 1.0"; //change header
+                h.Copyright = ""; //change copyright text
+                return HelpText.DefaultParsingErrorsHandler(result, h);
+            }, e => e);
+            Console.WriteLine(helpText);
+            System.Environment.Exit(1);
+        }
 
 
         // The main program will handle determining where the output is saved to, it's not the requirement of the object
@@ -111,18 +145,16 @@ namespace EyeWitness
         private static async Task ScreenshotSender(WitnessedServer obj, int timeDelay)
         {
             //Cancel after 30s
-            var cts = new CancellationTokenSource(30000);
-            cts.CancelAfter(30000);
+            var cts = new CancellationTokenSource(timeDelay);
+            cts.CancelAfter(timeDelay);
             try
             {
                 //Keep it syncronous for this slow version
+                //Allow the thread to exit somewhat cleanly before exiting the semaphore
                 _pool.WaitOne(40000);
 
                 Console.WriteLine("Grabbing screenshot for: " + obj.remoteSystem);
-                //obj.RunWithTimeout(TimeSpan.FromMilliseconds(timeDelay));
                 var task = await obj.RunWithTimeoutCancellation(cts.Token);
-
-
 
                 _pool.Release();
             }
@@ -139,6 +171,7 @@ namespace EyeWitness
         private static async Task SourceSender(WitnessedServer obj)
         {
             //Cancel after 10s
+            //This cancellation time isn't as important as the screenshot one so we can hard code it
             var cts = new CancellationTokenSource(10000);
             cts.CancelAfter(10000);
 
@@ -234,67 +267,63 @@ namespace EyeWitness
                 reportHtml += "</table>"; //close out the category table
                 Cronkite.FinalReporter(reportHtml, pages, allUrlArray.GetLength(0), witnessDir);
             }
-
         }
 
         static void Main(string[] args)
         {
-            Console.WriteLine("[+] Firing up EyeWitness...");
-            DirMaker();
-            DictMaker();
+            Console.WriteLine("[+] Firing up EyeWitness...\n");
             string[] allUrls = null;
             int delay = 30000;
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
 
+            //Parse arguments passed
+            var parser = new Parser(with =>
+            {
+                with.CaseInsensitiveEnumValues = true;
+                with.CaseSensitive = false;
+                with.HelpWriter = null;
+            });
 
-            // Read in URLs
-            //Account for 2 arguments - the first is the file of URLs the second is the timeout
-            if (args.Length == 2)
-            {
-                try
+            var parserResult = parser.ParseArguments<Options>(args);
+            parserResult.WithParsed<Options>(o =>
                 {
-                    allUrls = System.IO.File.ReadAllLines(args[0]);
-                    delay = Int32.Parse(args[1]);
-                }
-                catch (FileNotFoundException)
-                {
-                    Console.WriteLine("\n[*] ERROR: The file containing the URLS to scan does not exist!");
-                    Console.WriteLine("[*] ERROR: Please make sure you've provided the correct filepath and try again.");
-                    return;
-                }
-                catch
-                {
-                    Console.WriteLine("Invalid int for timeout, using the default of 30 seconds");
-                    delay = 30000; //Set the delay to default to 10s
-                }
-            }
-            else if (args.Length == 1)
-            {
-                try
-                {
-                    allUrls = System.IO.File.ReadAllLines(args[0]);
-                    Console.WriteLine("Using the default timeout of 10 seconds");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error when running. Error thrown: \n" + e);
-                }
-            }
-            else
-            {
-                Console.WriteLine("\n[*] ERROR: Please specify a URL file to use\n");
-                Console.WriteLine("\n\n[++] Usage: EyeWitness.exe c:\\Path\\To\\URLs.txt [Timeout] (ex. 10000 = 10 seconds)");
-                Console.WriteLine("[++] EyeWitness.exe c:\\users\\test\\urls.txt");
-                Console.WriteLine("[++] EyeWitness.exe c:\\users\\test\\urls.txt 20000");
-                System.Environment.Exit(1);
-            }
+                    if (o.Delay != 30)
+                    {
+                        Console.WriteLine("[+] Using a custom timeout of " + o.Delay + " seconds per URL thread");
+                        delay = o.Delay * 1000;
+                    }
+                    else
+                    {
+                        Console.WriteLine("[+] Using the default timeout of 30 seconds per URL thread");
+                    }
+
+                    if (o.Compress)
+                    {
+                        Console.WriteLine("[+] Compressing files afterwards\n");
+                    }
+
+                    try
+                    {
+                        allUrls = System.IO.File.ReadAllLines(o.File);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        Console.WriteLine("[-] ERROR: The file containing the URLS to scan does not exist!");
+                        Console.WriteLine("[-] ERROR: Please make sure you've provided the correct filepath and try again.");
+                        System.Environment.Exit(1);
+                    }
+                    Options.Instance = o;
+                })
+                .WithNotParsed(errs => DisplayHelp(parserResult, errs));
+
+            DirMaker();
+            DictMaker();
+            var options = Options.Instance;
 
             // build an array containing all the web server objects
             WitnessedServer[] serverArray = new WitnessedServer[allUrls.Length];
-
-            // Build an array containing the objects so we can easily loop over them
-            Console.WriteLine("[+] Using a delay of: " + delay + " (in milliseconds)");
+            
             //WitnessedServer.SetFeatureBrowserEmulation(); // enable HTML5
 
             List<Task> SourceTaskList = new List<Task>();
@@ -343,6 +372,22 @@ namespace EyeWitness
             Thread.Sleep(1000);
             watch.Stop();
             Console.WriteLine("Execution time: " + watch.ElapsedMilliseconds/1000 + " Seconds");
+            if (options.Compress)
+            {
+                Console.WriteLine("Compressing output directory...");
+                try
+                {
+                    string ZipFileName = witnessDir + ".zip";
+                    ZipFile.CreateFromDirectory(witnessDir, ZipFileName, CompressionLevel.Optimal, false);
+                    Directory.Delete(witnessDir, true);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[-] Error zipping file");
+                    Console.WriteLine(ex);
+                }
+
+            }
             Console.WriteLine("Finished! Exiting shortly...");
             Thread.Sleep(5000);
             return;
