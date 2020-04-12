@@ -19,7 +19,7 @@ RUN	git clone https://github.com/FortyNorthSecurity/EyeWitness.git
 
 WORKDIR /home/$user/EyeWitness
 
-RUN cd setup && \
+RUN cd Python/setup && \
     ./setup.sh && \
     cd .. && \
     chown -R $user:$user /home/$user/EyeWitness && \
@@ -28,4 +28,4 @@ RUN cd setup && \
 
 USER $user
 
-ENTRYPOINT ["python3", "EyeWitness.py", "-d", "/tmp/EyeWitness/results", "--no-prompt"]
+ENTRYPOINT ["python3", "Python/EyeWitness.py", "-d", "/tmp/EyeWitness/results", "--no-prompt"]
