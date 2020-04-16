@@ -59,7 +59,7 @@ Now you can execute EyeWitness in a docker container and prevent you from instal
 
 ##### Usage
 ```bash
-docker build --build-arg user=$USER --tag eyewitness .
+docker build --build-arg user=$USER --tag eyewitness --file ./Python/Dockerfile .
 docker run \
     --rm \
     -it \
