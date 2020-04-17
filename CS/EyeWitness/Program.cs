@@ -36,7 +36,7 @@ namespace EyeWitness
             [Option('v', "verbose", Required = false, HelpText = "Set output to verbose")]
             public bool Verbose { get; set; }
 
-            [Option('s', "favorites", Group = "Input Source", HelpText = "Searches for favorites files, parses them, and adds them to the list of screenshot URLs")]
+            [Option('b', "bookmarks", Group = "Input Source", HelpText = "Searches for bookmark files for IE/Chrome, parses them, and adds them to the list of screenshot URLs")]
             public bool Favorites { get; set; }
 
             [Option('f', "file", Group = "Input Source", HelpText = "Specify a new-line separated file of URLs", Default = null)]
