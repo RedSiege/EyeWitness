@@ -19,7 +19,7 @@ RUN	git clone https://github.com/FortyNorthSecurity/EyeWitness.git
 
 WORKDIR /home/$user/EyeWitness
 
-RUN cd setup && \
+RUN cd Python/setup && \
     ./setup.sh && \
     cd .. && \
     chown -R $user:$user /home/$user/EyeWitness && \
