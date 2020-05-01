@@ -45,7 +45,7 @@ case ${osinfo} in
   Kali2)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake python3 xvfb python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
     echo
@@ -88,7 +88,7 @@ case ${osinfo} in
   Kali)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake python3 xvfb python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
     echo
@@ -131,7 +131,7 @@ case ${osinfo} in
   Parrot)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake python3 xvfb python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
     echo
@@ -174,7 +174,7 @@ case ${osinfo} in
   Debian)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake python3 xvfb python3-pip python-netaddr python3-dev tesseract-ocr firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox-esr
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
     echo
@@ -217,7 +217,7 @@ case ${osinfo} in
   Ubuntu)
     apt-get update
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install -y cmake python3 xvfb python3-pip python-netaddr python3-dev tesseract-ocr firefox x11-utils
+    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox x11-utils
     pip3 install --upgrade pip
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
@@ -261,7 +261,7 @@ case ${osinfo} in
   Arch | Manjaro)
     pacman -Syu
     echo '[*] Installing Arch Dependencies'
-    pacman -S cmake python3 python-xvfbwrapper python-pip python-netaddr firefox
+    pacman -S cmake python3 python-xvfbwrapper python-pip python3-netaddr firefox
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
     echo
@@ -307,7 +307,7 @@ case ${osinfo} in
     Mint)
       apt-get update
       echo '[*] Installing Mint Dependencies'
-      apt-get install -y cmake python3 xvfb python3-pip python-netaddr python3-dev tesseract-ocr firefox x11-utils
+      apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox x11-utils
       pip3 install --upgrade pip
       echo '[*] Upgrading paramiko'
       python3 -m pip install --upgrade paramiko
