@@ -212,7 +212,7 @@ class HTTPTableObject(object):
             <a href=\"{address}\" target=\"_blank\">{address}</a><br>
             """).format(address=self.remote_system)
 
-        if self.resolved is not None and self.resolved is not 'Unknown':
+        if self.resolved != None and self.resolved != 'Unknown':
             html += ("""<b>Resolved to:</b> {0}<br>""").format(self.resolved)
 
         if len(self._uadata) > 0:

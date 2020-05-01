@@ -595,7 +595,7 @@ def title_screen():
     print("#" * 80 + "\n")
 
     python_info = sys.version_info
-    if python_info[0] is not 3:
+    if python_info[0] != 3:
         print("[*] Error: Your version of python is not supported!")
         print("[*] Error: Please install Python 3.X.X")
         sys.exit()
@@ -626,7 +626,7 @@ def do_jitter(cli_parsed):
     Returns:
         TYPE: Description
     """
-    if cli_parsed.jitter is not 0:
+    if cli_parsed.jitter != 0:
         sleep_value = random.randint(0, 30)
         sleep_value = sleep_value * .01
         sleep_value = 1 - sleep_value
@@ -646,7 +646,7 @@ def do_delay(cli_parsed):
     Returns:
         TYPE: Description
     """
-    if cli_parsed.delay is not 0:
+    if cli_parsed.delay != 0:
         sleep_value = cli_parsed.delay
         print("[*] Sleeping for " + str(sleep_value) + " seconds before taking the screenshot")
         try:
@@ -816,7 +816,7 @@ def open_file_input(cli_parsed):
         while True:
             try:
                 response = input().lower()
-                if response is "":
+                if response == "":
                     return True
                 else:
                     return strtobool(response)
