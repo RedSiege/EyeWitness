@@ -75,7 +75,7 @@ def create_driver(cli_parsed, user_agent=None):
         options = Options()
         options.add_argument("--headless")
         profile.update_preferences()
-        driver = webdriver.Firefox(profile, capabilities=capabilities, firefox_options=options)
+        driver = webdriver.Firefox(profile, capabilities=capabilities, firefox_options=options, service_log_path=cli_parsed.selenium_log_path)
         driver.set_page_load_timeout(cli_parsed.timeout)
         return driver
     except Exception as e:
