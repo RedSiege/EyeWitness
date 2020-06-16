@@ -832,12 +832,12 @@ M                                                                M
 M       .”cCCc”.                                                 M
 M      /cccccccc\\           Our Upcoming Trainings:              M
 M      §cccccccc|                                                M
-M      :ccccccccP       BlackHat Asia >> Mar 31 - Apr 03 2020    M
-M      \\cccccccc()                 Singapore                     M
+M      :ccccccccP       BlackHat USA  >> Aug 1  -  Aug 4 2020    M
+M      \\cccccccc()                 Virtual                       M
 M       \\ccccccccD         https://www.blackhat.com              M
 M       |cccccccc\\       _                                       M
-M       |ccccccccc)     //    Charlotte  >>  Jan 13-16 2020      M
-M       |cccccc|=      //               Charlotte, NC            M
+M       |ccccccccc)     //    BH ASIA  >>  Sep 28 - Oct 2 2020   M
+M       |cccccc|=      //               Singapore                M
 M      /°°°°°°”-.     (CCCC)                                     M
 M      ;----._  _._   |cccc|                                     M
 M   .*°       °°   °. \\cccc/                                     M
