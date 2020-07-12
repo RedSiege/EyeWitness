@@ -202,8 +202,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     try:
         req = urllib.request.Request(http_object.remote_system, headers={'User-Agent': tempua})
         if cli_parsed.proxy_ip is not None:
-            req.set_proxy(cli_parsed.proxy_ip + ':' + cli_parsed.proxy_port, 'http')
-            req.set_proxy(cli_parsed.proxy_ip + ':' + cli_parsed.proxy_port, 'https')
+            req.set_proxy(str(cli_parsed.proxy_ip) + ':' + str(cli_parsed.proxy_port), 'http')
+            req.set_proxy(str(cli_parsed.proxy_ip) + ':' + str(cli_parsed.proxy_port), 'https')
         if context is None:
             opened = urllib.request.urlopen(req)
         else:
