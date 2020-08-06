@@ -95,7 +95,7 @@ Cisco Systems, Inc. IP Phone CP-7960G;<title>Cisco Systems, Inc.</title>;<img a=
 <strong>Cisco IP Conference Station CP-7937G</strong>;<img border="0" align="bottom" hspace="0" alt="Cisco Systems, Inc." src="/Logo" />;<a href="localmenus.cgi?func=604">|voip
 <p align="center"><b><font color="#FFFFFF" size="4">Cisco Unified IP Phone CP-7962G;<a href="/CGI/Java/Serviceability?|voip
 <p align="center"><b><font size="4" color="#FFFFFF">Cisco Unified IP Phone CP-7975G;/CGI/Java/Serviceability?adapter|voip
-<div id="product"><span>Xirrus XN8 WiFi Array;<div onclick="window.open('http://www.xirrus.com/feedback')";if ( key_code &lt; 0x20 | key_code &gt; 0x7E)<meta content="Splunk Inc." name="author" />;MRSPARKLE;<p><span>First time logging in?</span> Splunk's default credentials are|highval
+<div id="product"><span>Xirrus XN8 WiFi Array;<div onclick="window.open('http://www.xirrus.com/feedback')";if ( key_code &lt; 0x20 | key_code &gt|highval
 <p>If you've forgotten your username or password, please contact your Splunk administrator.<br /><br />username <span>admin</span><br />password <span>changeme</span></p><p></p>;MRSPARKLE;<meta content="Splunk Inc." name="author" />|highval
 dummyActiveXObject = new ActiveXObject('Msxml2.XMLHTTP');<td class="mastheadTitle">HP Designjet T1200</td>|printer
 <strong class="product">HP LaserJet 600 M602</strong>;<link href="/hp/device/theme/onevoice/;action="/hp/device/DeviceStatus/Save">|printer
