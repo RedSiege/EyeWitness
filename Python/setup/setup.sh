@@ -54,7 +54,6 @@ case ${osinfo} in
     python3 -m pip install selenium --upgrade
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
-    python3 -m pip install beautifulsoup4
     python3 -m pip install netaddr
     echo
     cd ../bin/
@@ -95,7 +94,6 @@ case ${osinfo} in
     python3 -m pip install selenium --upgrade
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
-    python3 -m pip install beautifulsoup4
     python3 -m pip install netaddr
     echo
     cd ../bin/
@@ -136,7 +134,6 @@ case ${osinfo} in
     python3 -m pip install selenium --upgrade
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
-    python3 -m pip install beautifulsoup4
     python3 -m pip install netaddr
     echo
     cd ../bin/
@@ -177,7 +174,6 @@ case ${osinfo} in
     python3 -m pip install selenium --upgrade
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
-    python3 -m pip install beautifulsoup4
     python3 -m pip install netaddr
     echo
     cd ../bin/
@@ -219,7 +215,6 @@ case ${osinfo} in
     python3 -m pip install selenium --upgrade
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
-    python3 -m pip install beautifulsoup4
     python3 -m pip install netaddr
     echo
     cd ../bin/
@@ -260,7 +255,6 @@ case ${osinfo} in
     python3 -m pip install selenium --upgrade
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
-    python3 -m pip install beautifulsoup4
     python3 -m pip install netaddr
     echo
     cd ../bin/
@@ -305,7 +299,6 @@ case ${osinfo} in
       python3 -m pip install selenium --upgrade
       python3 -m pip install python-Levenshtein
       python3 -m pip install pyvirtualdisplay
-      python3 -m pip install beautifulsoup4
       python3 -m pip install netaddr
       echo
       cd ../bin/
