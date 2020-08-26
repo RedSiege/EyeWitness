@@ -62,84 +62,6 @@ def process_group(
     return grouped_elements, toc, toc_table, html
 
 
-def write_vnc_rdp_data(cli_parsed, data):
-    """Writes the reports for VNC and RDP hosts
-
-    Args:
-        cli_parsed (ArgumentParser): CLI Options
-        data (TYPE): Full set of VNC/RDP data
-    """
-    vncstuff = sorted([x for x in data if x.proto == 'vnc'],
-                      key=lambda v: v.error_state)
-    rdpstuff = sorted([x for x in data if x.proto == 'rdp'],
-                      key=lambda v: v.error_state)
-
-    for x in [x for x in [vncstuff, rdpstuff] if len(x) > 0]:
-        if len(x) == 0:
-            return
-        pages = []
-        html = u""
-        counter = 1
-        proto = x[0].proto
-        header = vnc_rdp_header(cli_parsed.date, cli_parsed.time)
-        table_head = vnc_rdp_table_head()
-        for y in x:
-            html += y.create_table_html()
-            if counter % cli_parsed.results == 0:
-                html = (header + "EW_REPLACEME" + table_head + html +
-                        "</table><br>")
-                pages.append(html)
-                html = u""
-            counter += 1
-
-        if html != u"":
-            html = (header + "EW_REPLACEME" + table_head + html +
-                    "</table><br>")
-            pages.append(html)
-
-        if len(pages) == 1:
-            with open(os.path.join(cli_parsed.d, proto + '_report.html'), 'a') as f:
-                f.write(pages[0].replace('EW_REPLACEME', ''))
-                f.write("</body>\n</html>")
-        else:
-            num_pages = len(pages) + 1
-            bottom_text = "\n<center><br>"
-            bottom_text += (
-                "<a href=\"{0}_report.html\"> Page 1</a>").format(proto)
-            for i in range(2, num_pages):
-                bottom_text += ("<a href=\"{0}_report_page{1}.html\"> Page {1}</a>").format(proto,
-                                                                                            str(i))
-            bottom_text += "</center>\n"
-            top_text = bottom_text
-            for i in range(0, len(pages)):
-                headfoot = "<center>"
-                if i == 0:
-                    headfoot += ("<a href=\"{0}_report_page2.html\"> Next Page "
-                                 "</a></center>").format(proto)
-                elif i == len(pages) - 1:
-                    if i == 1:
-                        headfoot += ("<a href=\"{0}_report.html\">Previous Page"
-                                     "</a>&nbsp</center>").format(proto)
-                    else:
-                        headfoot += ("<a href=\"{0}_report_page{1}.html\"> Previous Page "
-                                     "</a></center>").format(proto, str(i))
-                elif i == 1:
-                    headfoot += ("<a href=\"{0}_report.html\">Previous Page</a>&nbsp"
-                                 "<a href=\"{0}_report_page{1}.html\"> Next Page"
-                                 "</a></center>").format(proto, str(i+2))
-                else:
-                    headfoot += ("<a href=\"{0}_report_page{1}.html\">Previous Page</a>"
-                                 "&nbsp<a href=\"{0}_report_page{2}.html\"> Next Page"
-                                 "</a></center>").format(proto, str(i), str(i+2))
-                pages[i] = pages[i].replace(
-                    'EW_REPLACEME', headfoot + top_text) + bottom_text + '<br>' + headfoot + '</body></html>'
-
-            with open(os.path.join(cli_parsed.d, proto + '_report.html'), 'a') as f:
-                f.write(pages[0])
-            for i in range(2, len(pages) + 1):
-                with open(os.path.join(cli_parsed.d, proto + '_report_page{0}.html'.format(str(i))), 'w') as f:
-                    f.write(pages[i - 1])
-
 
 def sort_data_and_write(cli_parsed, data):
     """Writes out reports for HTTP objects
@@ -425,25 +347,6 @@ def create_report_toc_head(date, time):
         <title>EyeWitness Report Table of Contents</title>
         </head>
         <h2>Table of Contents</h2>""")
-
-
-def vnc_rdp_table_head():
-    return ("""<table border=\"1\" align=\"center\">
-    <tr>
-    <th>IP / Screenshot</th>
-    </tr>""")
-
-
-def vnc_rdp_header(date, time):
-    web_index_head = ("""<html>
-    <head>
-    <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
-    <title>EyeWitness Report</title>
-    </head>
-    <body>
-    <center>Report Generated on {0} at {1}</center>
-    <br>""").format(date, time)
-    return web_index_head
 
 
 def search_report(cli_parsed, data, search_term):

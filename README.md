@@ -63,8 +63,6 @@ docker build --build-arg user=$USER --tag eyewitness --file ./Python/Dockerfile 
 docker run \
     --rm \
     -it \
-    -e DISPLAY=$DISPLAY \                   # optional flag in order to use vnc protocol
-    -v /tmp/.X11-unix:/tmp/.X11-unix \      # optional flag in order to use vnc protocol
     -v /path/to/results:/tmp/EyeWitness \
     eyewitness \
     EyeWitness_flags_and_input
