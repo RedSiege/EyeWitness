@@ -46,8 +46,6 @@ case ${osinfo} in
     apt-get update
     echo '[*] Installing Debian Dependencies'
     apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox-esr
-    echo '[*] Upgrading paramiko'
-    python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
@@ -89,8 +87,6 @@ case ${osinfo} in
     apt-get update
     echo '[*] Installing Debian Dependencies'
     apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox-esr
-    echo '[*] Upgrading paramiko'
-    python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
@@ -132,8 +128,6 @@ case ${osinfo} in
     apt-get update
     echo '[*] Installing Debian Dependencies'
     apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox-esr
-    echo '[*] Upgrading paramiko'
-    python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
@@ -175,8 +169,6 @@ case ${osinfo} in
     apt-get update
     echo '[*] Installing Debian Dependencies'
     apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox-esr
-    echo '[*] Upgrading paramiko'
-    python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
@@ -219,8 +211,6 @@ case ${osinfo} in
     echo '[*] Installing Ubuntu Dependencies'
     apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox x11-utils
     pip3 install --upgrade pip
-    echo '[*] Upgrading paramiko'
-    python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
@@ -262,8 +252,6 @@ case ${osinfo} in
     pacman -Syu
     echo '[*] Installing Arch Dependencies'
     pacman -S cmake python3 python-xvfbwrapper python-pip python3-netaddr firefox
-    echo '[*] Upgrading paramiko'
-    python3 -m pip install --upgrade paramiko
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
@@ -309,8 +297,6 @@ case ${osinfo} in
       echo '[*] Installing Mint Dependencies'
       apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev tesseract-ocr firefox x11-utils
       pip3 install --upgrade pip
-      echo '[*] Upgrading paramiko'
-      python3 -m pip install --upgrade paramiko
       echo
       echo '[*] Installing Python Modules'
       python3 -m pip install fuzzywuzzy
