@@ -32,7 +32,7 @@ EyeWitness.exe --file C:\Path\to\urls.txt --delay [timeout in seconds] --compres
 **E-Mail:** EyeWitness [@] christophertruncer [dot] com
 
 ### Setup:
-1. Navigate into the setup directory
+1. Navigate into the Python/setup directory
 2. Run the setup.sh script
 
 ### Usage:
