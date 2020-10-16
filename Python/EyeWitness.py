@@ -135,7 +135,7 @@ def create_cli_parser():
     rdp_options.add_argument('--ocr', default=False, action='store_true', help='Use OCR to determine RDP usernames')
 
     args = parser.parse_args()
-    args.date = time.strftime('%m/%d/%Y')
+    args.date = time.strftime('%Y/%m/%d')
     args.time = time.strftime('%H:%M:%S')
 
     if args.h:
@@ -174,7 +174,7 @@ def create_cli_parser():
 
     else:
         output_folder = args.date.replace(
-            '/', '') + '_' + args.time.replace(':', '')
+            '/', '-') + '_' + args.time.replace(':', '')
         args.d = os.path.join(os.getcwd(), output_folder)
 
     args.log_file_path = os.path.join(args.d, 'logfile.log')

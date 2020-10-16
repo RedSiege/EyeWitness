@@ -321,3 +321,7 @@ Nimble Storage;/assets/vendor;/oem/settings.js;<!-- Username field -->;data-embe
 <title>Data Center Network Manager</title>;.loadingStatusErrorParent;var h = document.getElementsByTagName("head")[0]|Cisco Data Center Network Management admin/admin
 <title>Data Center Network Manager</title>;<div class="userFormContainer">;<div class="middleContent" dojoattachpoint="containerNode">|Cisco Data Center Network Management admin/admin
 <title>Identity Services Engine</title>;Cisco Systems,Inc. Cisco, Cisco Systems;for(key in localStorage){|Cisco Identity Services Engine admin/<passwordsetatinstall>
+var InternalSessionTimeout = 1 * 60 * 1000;theForm.__EVENTTARGET.value = eventTarget;ctl00_MyHeader_Label1|Bosch Security Camera user1/8088
+var helpTip = new Tooltip("signin-help");var helpTip = new Tooltip("signin-help");form action="/content/login.php"|Pelco IP110 admin/admin
+function changeMyPage(val);MX-M5070;var elemLi = document.createElement('li')|Sharp MX 5070 administrator/admin
+<title>Netgear Prosafe Plus Switch</title>;var productName = sysGeneInfor.split|NetGear GS116ev2 <nousername>/password
