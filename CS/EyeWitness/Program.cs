@@ -66,7 +66,7 @@ namespace EyeWitness
         static void DirMaker()
         {
             string witnessPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            witnessDir = witnessPath + "\\EyeWitness_" + DateTime.Now.ToString("MM.dd.yy.HH.mm.ss");
+            witnessDir = witnessPath + "\\EyeWitness_" + DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
             Directory.CreateDirectory(witnessDir + "\\src");
             Directory.CreateDirectory(witnessDir + "\\images");
             Directory.CreateDirectory(witnessDir + "\\headers");
