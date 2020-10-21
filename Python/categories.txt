@@ -443,3 +443,5 @@ var InternalSessionTimeout = 1 * 60 * 1000;theForm.__EVENTTARGET.value = eventTa
 var helpTip = new Tooltip("signin-help");var helpTip = new Tooltip("signin-help");form action="/content/login.php"|netdev
 function changeMyPage(val);MX-M5070;var elemLi = document.createElement('li')|printer
 <title>Netgear Prosafe Plus Switch</title>;var productName = sysGeneInfor.split|netdev
+<title>Default Authentication : iR-ADV C5030;Check the System Manager ID and System PIN.;dept_id = document.login.deptid.value|printer
+var jumpProt = jumpURL.substr(0,6).toLowerCase();var argc = setCookie.arguments.length;class="popup_error_bg" topmargin="0"|infrastructure

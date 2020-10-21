@@ -325,3 +325,5 @@ var InternalSessionTimeout = 1 * 60 * 1000;theForm.__EVENTTARGET.value = eventTa
 var helpTip = new Tooltip("signin-help");var helpTip = new Tooltip("signin-help");form action="/content/login.php"|Pelco IP110 admin/admin
 function changeMyPage(val);MX-M5070;var elemLi = document.createElement('li')|Sharp MX 5070 administrator/admin
 <title>Netgear Prosafe Plus Switch</title>;var productName = sysGeneInfor.split|NetGear GS116ev2 <nousername>/password
+<title>Default Authentication : iR-ADV C5030;Check the System Manager ID and System PIN.;dept_id = document.login.deptid.value|Canon iR-ADC C5030 7654321/7654321
+var jumpProt = jumpURL.substr(0,6).toLowerCase();var argc = setCookie.arguments.length;class="popup_error_bg" topmargin="0"|Sonicwall Network Security Applicance admin/password
