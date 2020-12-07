@@ -451,7 +451,17 @@ def target_creator(command_line_object):
         parser.setContentHandler(Handler)
         # Parse the XML
 
-        parser.parse(command_line_object.x)
+        # Check if path exists
+        if os.path.exists(command_line_object.x):
+            # Check if it is a file
+            if os.path.isfile(command_line_object.x):
+                parser.parse(command_line_object.x)
+            else:
+                print("ERROR: The path you provided does not point to a file!")
+                sys.exit()
+        else:
+            print("ERROR: The path you provided does not exist!")
+            sys.exit()
 
         out_urls = textfile_parser(
             parsed_file_name, command_line_object)
