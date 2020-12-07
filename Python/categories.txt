@@ -445,3 +445,9 @@ function changeMyPage(val);MX-M5070;var elemLi = document.createElement('li')|pr
 <title>Netgear Prosafe Plus Switch</title>;var productName = sysGeneInfor.split|netdev
 <title>Default Authentication : iR-ADV C5030;Check the System Manager ID and System PIN.;dept_id = document.login.deptid.value|printer
 var jumpProt = jumpURL.substr(0,6).toLowerCase();var argc = setCookie.arguments.length;class="popup_error_bg" topmargin="0"|infrastructure
+<title>TheClimate CM-2 - Sensors</title>;<div class="status"><div class="allswell_ok">;<span class="msel"><a href="dyn_sensors.htm"|infrastructure
+<title>ClickShare Configurator</title>;id="login-form" class="form-horizontal";<div class="barco-logo">|infrastructure
+<html dir="ltr"><head>;<script src="../js/lib/knockout-2.3.0.js"></script>;<script src="../js/jssrc/base.js"></script>;<frame name="wlmframe" src="../startwlm/Start_Wlm.htm?arg11=">|printer
+<title>Printer Manager</title>;<div id="headerPage" class="ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-top">;<option value="WebUser">WebUser</option>|printer
+<title>Netman 204 login</title>;<form id="login" action="cgi-bin/login.cgi";onsubmit="this.submit.disabled='disabled';action="cgi-bin/view.cgi"|infrastructure
+<title>DS-510</title>;<frameset rows="90,*" frameborder="0" framespacing="0" border="0">;<frameset rows="90,*" frameborder="0" framespacing="0" border="0">;<frame src="/en/top.htm" name="top" noresize="" scrolling="no">|printer
