@@ -213,8 +213,14 @@ def sort_data_and_write(cli_parsed, data):
         f.write(csv_request_data)
 
     # Pre-filter error entries
-    errors = sorted([x for x in data if x.error_state is not None],
-                    key=lambda k: (k.error_state, k.page_title))
+    def key_lambda(k):
+        if k.error_state is None:
+            k.error_state = str(k.error_state)
+        if k.page_title is None:
+            k.page_title = str(k.page_title)
+        return (k.error_state, k.page_title)
+    errors = sorted([x for x in data if (x is not None) and (x.error_state is not None)],
+                     key=key_lambda)
     data[:] = [x for x in data if x.error_state is None]
     data = sorted(data, key=lambda k: str(k.page_title))
     html = u""
