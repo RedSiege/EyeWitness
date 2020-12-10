@@ -66,13 +66,13 @@ class XML_Parser(xml.sax.ContentHandler):
             elif tag == "service":
                 if "ssl" in attributes['name'] or self.port_number in self.https_ports:
                     self.protocol = "https"
+                elif "tunnel" in attributes:
+                    if "ssl" in attributes['tunnel'] and not "smtp" in attributes['name'] and not "imap" in attributes['name'] and not "pop3" in attributes['name']:
+                        self.protocol = "https"
                 elif "http" == attributes['name'] or self.port_number in self.http_ports:
                     self.protocol = "http"
                 elif "http-alt" == attributes['name']:
                     self.protocol = "http"
-                elif "tunnel" in attributes:
-                    if "ssl" in attributes['tunnel'] and not "smtp" in attributes['name'] and not "imap" in attributes['name'] and not "pop3" in attributes['name']:
-                        self.protocol = "https"
             elif tag == "state":
                 if attributes['state'] == "open":
                     self.port_open = True
