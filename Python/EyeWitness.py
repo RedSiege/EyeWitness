@@ -131,9 +131,6 @@ def create_cli_parser():
     resume_options.add_argument('--resume', metavar='ew.db',
                                 default=None, help='Path to db file if you want to resume')
 
-    rdp_options = parser.add_argument_group('RDP Options')
-    rdp_options.add_argument('--ocr', default=False, action='store_true', help='Use OCR to determine RDP usernames')
-
     args = parser.parse_args()
     args.date = time.strftime('%Y/%m/%d')
     args.time = time.strftime('%H:%M:%S')
