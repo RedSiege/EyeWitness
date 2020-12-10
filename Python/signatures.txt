@@ -1,6 +1,6 @@
 Integrated Dell Remote Access Controller|(Dell iDRAC) root/calvin
 ACE 4710 Device Manager;Cisco|(ACE 4710 Device Manager) admin/admin
-ATutor;form_login_action;/gad_search.php|(ATutor Web CMS) admin/admin or instructor:instructor
+ATutor;form_login_action;/gad_search.php|(ATutor Web CMS) admin/admin or instructor/instructor
 Apache Lenya;lenya.action=introspect|(Apache Lenya) admin/levi
 Polycom RSS 2000|(Polycom RSS 2000) Administrator/polycom
 Polycom;HDX 8000 HD|(Polycom HDX 8000) admin/<SerialNumberofDevice>
