@@ -261,7 +261,9 @@ case ${osinfo} in
   Arch | Manjaro)
     pacman -Syu
     echo '[*] Installing Arch Dependencies'
-    pacman -S cmake python3 python-xvfbwrapper python-pip python3-netaddr firefox
+    for pkg_name in cmake python3 python-xvfbwrapper python-pip python-netaddr firefox; do
+        pacman -S --noconfirm "${pkg_name}"
+    done
     echo '[*] Upgrading paramiko'
     python3 -m pip install --upgrade paramiko
     echo
@@ -281,22 +283,12 @@ case ${osinfo} in
       wget ${geckodriver_x86_64}
       tar -xvf geckodriver-v0.26.0-linux64.tar.gz
       rm geckodriver-v0.26.0-linux64.tar.gz
-      mv geckodriver /usr/sbin
-      if [ -e /usr/bin/geckodriver ]
-      then
-      	rm /usr/bin/geckodriver
-      fi
-      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+      mv geckodriver /usr/bin
     else
       wget ${geckodriver_x86_32}
       tar -xvf geckodriver-v0.26.0-linux32.tar.gz
       rm geckodriver-v0.26.0-linux32.tar.gz
-      mv geckodriver /usr/sbin
-      if [ -e /usr/bin/geckodriver ]
-      then
-      	rm /usr/bin/geckodriver
-      fi
-      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+      mv geckodriver /usr/bin
     fi
     cd ..
   ;;
