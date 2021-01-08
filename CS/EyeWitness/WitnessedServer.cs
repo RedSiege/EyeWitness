@@ -249,7 +249,7 @@ namespace EyeWitness
             await Task.Run(() =>
             {
                 workerThread.Start();
-                bool finished = workerThread.Join(30000);
+                bool finished = workerThread.Join(Timeout.Infinite);
                 if (!finished)
                     try
                     {
