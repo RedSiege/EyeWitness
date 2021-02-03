@@ -147,53 +147,53 @@ namespace EyeWitness
 
         private static async Task ScreenshotSender(WitnessedServer obj, int timeDelay)
         {
-            //Cancel after 30s
-            var cts = new CancellationTokenSource(timeDelay);
-            cts.CancelAfter(timeDelay);
             try
             {
                 //Keep it syncronous for this slow version
                 //Allow the thread to exit somewhat cleanly before exiting the semaphore
-                _pool.WaitOne(40000);
-
+                _pool.WaitOne();
+                //Cancel after timeDelay
+                var cts = new CancellationTokenSource(timeDelay);
                 Console.WriteLine("Grabbing screenshot for: " + obj.remoteSystem);
                 var task = await obj.RunWithTimeoutCancellation(cts.Token);
-
-                _pool.Release();
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException e)
             {
-                Console.WriteLine("[-] Thread aborted while grabbing screenshot for: " + obj.remoteSystem);
+                Console.WriteLine($"[-] Thread aborted while grabbing screenshot for: {obj.remoteSystem} - {e.Message}");
             }
             catch (SemaphoreFullException)
             {
                 //return;
+            }
+            finally
+            {
+                _pool.Release();
             }
         }
 
         private static async Task SourceSender(WitnessedServer obj)
         {
-            //Cancel after 10s
-            //This cancellation time isn't as important as the screenshot one so we can hard code it
-            var cts = new CancellationTokenSource(10000);
-            cts.CancelAfter(10000);
-
             try
             {
-                await _Sourcepool.WaitAsync(10000);
+                await _Sourcepool.WaitAsync();
+                //Cancel after 10s
+                //This cancellation time isn't as important as the screenshot one so we can hard code it
+                var cts = new CancellationTokenSource(10000);
                 Console.WriteLine("Grabbing source of: " + obj.remoteSystem);
                 await obj.SourcerAsync(cts.Token);
                 obj.CheckCreds(categoryDict, signatureDict);
-
-                _Sourcepool.Release();
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException e)
             {
-                Console.WriteLine("[-] Thread aborted while grabbing source for: " + obj.remoteSystem);
+                Console.WriteLine($"[-] Thread aborted while grabbing source for: {obj.remoteSystem} - {e.Message}");
             }
             catch (SemaphoreFullException)
             {
                 //return;
+            }
+            finally
+            {
+                _Sourcepool.Release();
             }
         }
 
@@ -205,7 +205,7 @@ namespace EyeWitness
                 if (categoryRankDict.ContainsKey(urlObject.systemCategory))
                 {
                     categoryRankDict[urlObject.systemCategory][1] = (int)categoryRankDict[urlObject.systemCategory][1] + 1;
-                }               
+                }
             }
         }
 
@@ -469,7 +469,13 @@ namespace EyeWitness
             int arrayPosition = 0;
             foreach (var url in allUrls)
             {
-                WitnessedServer singleSite = new WitnessedServer(url);
+                Uri uriResult;
+                if(!(Uri.TryCreate(url, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)))
+                {
+                    Uri.TryCreate($"http://{url}", UriKind.Absolute, out uriResult);
+                }
+
+                WitnessedServer singleSite = new WitnessedServer(uriResult.AbsoluteUri);
                 serverArray[arrayPosition] = singleSite;
                 arrayPosition++;
 

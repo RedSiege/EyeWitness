@@ -8,7 +8,6 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Security;
-using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace EyeWitness
@@ -112,7 +111,6 @@ namespace EyeWitness
             catch(ThreadAbortException)
             {
                 Console.WriteLine("Error aborting thread, returning");
-                browser.Dispose();
                 return;
             }
             finally
@@ -209,49 +207,49 @@ namespace EyeWitness
 
             Thread workerThread = new Thread(delegate ()
             {
-                try
-                {
-                    //Create bounds the same size as the screen
-                    Rectangle bounds = Screen.PrimaryScreen.Bounds;
+                //Create bounds the same size as the screen
+                Rectangle bounds = Screen.PrimaryScreen.Bounds;
 
-                    //Don't care about TLS issues
-                    ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback
-                    (
-                        delegate { return true; }
-                    );
-                    using (WebBrowser br = new WebBrowser())
+                //Don't care about TLS issues
+                ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback
+                (
+                    delegate { return true; }
+                );
+                using (WebBrowser br = new WebBrowser())
+                {
+                    try
                     {
                         br.Width = bounds.Width;
                         br.Height = bounds.Height;
                         br.ScriptErrorsSuppressed = true;
                         br.ScrollBarsEnabled = false;
-
-
-                        br.Navigate(remoteSystem);
-
                         br.Visible = false;
                         br.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(DocumentCompleted);
                         br.NewWindow += new System.ComponentModel.CancelEventHandler(WinFormBrowser_NewWindow);
-
+                        
+                        br.Navigate(remoteSystem);
 
                         while (br.ReadyState != WebBrowserReadyState.Complete)
                         {
                             System.Windows.Forms.Application.DoEvents();
-                            //Application.Run();
+                            cancellationToken.ThrowIfCancellationRequested();
+                        }
+                    }
+                    catch { }
+                    finally
+                    {
+                        if(!br.IsDisposed)
+                        {
+                            br.Dispose();
                         }
                     }
                 }
-                catch
-                {
-                    return;
-                }
-
             });
             workerThread.SetApartmentState(ApartmentState.STA);
             await Task.Run(() =>
             {
                 workerThread.Start();
-                bool finished = workerThread.Join(30000);
+                bool finished = workerThread.Join(Timeout.Infinite);
                 if (!finished)
                     try
                     {
@@ -282,14 +280,11 @@ namespace EyeWitness
             // Capture source code and headers
             ServicePointManager.Expect100Continue = true;
             // fix for allowing tls12
-            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             await Task.Run(async() =>
             {
                 using (WebClient witnessClient = new WebClient())
                 {
-                    // Instantiate the CancellationTokenSource.
-                    //var taskCompletionSource = new TaskCompletionSource<bool>();
-                    //cts.CancelAfter(20000);
 
                     try
                     {
@@ -298,25 +293,27 @@ namespace EyeWitness
                                 delegate { return true; }
                             );
                         // Uri test = Uri.Parse(remoteSystem);
-                        sourceCode = witnessClient.DownloadString(remoteSystem);
+                        cancellationToken.Register(witnessClient.CancelAsync);
+                        sourceCode = await witnessClient.DownloadStringTaskAsync(remoteSystem);
+                        cancellationToken.ThrowIfCancellationRequested();
                         headers = witnessClient.ResponseHeaders.ToString();
                         webpageTitle = Regex.Match(sourceCode, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>",
                                        RegexOptions.IgnoreCase).Groups["Title"].Value;
                         File.WriteAllText(Program.witnessDir + "\\src\\" + urlSaveName + ".txt", sourceCode);
                         File.WriteAllText(Program.witnessDir + "\\headers\\" + urlSaveName + ".txt", headers);
-                        witnessClient.Dispose();
-                        return;
                     }
-
                     catch (Exception e)
                     {
                         //Console.WriteLine(e);
-                        Console.WriteLine("[*] Offline Server - " + remoteSystem);
+                        Console.WriteLine($"[*] Offline Server - {remoteSystem} - {e.Message}");
                         errorState = "offline";
                         systemCategory = "offline";
                         webpageTitle = "Server Offline";
                         headers = "Server Offline";
-                        return;
+                    }
+                    finally
+                    {
+                        witnessClient.Dispose();
                     }
                 }
             }, cancellationToken);
