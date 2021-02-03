@@ -470,7 +470,7 @@ namespace EyeWitness
             foreach (var url in allUrls)
             {
                 Uri uriResult;
-                if(!(Uri.TryCreate(url, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttp))
+                if(!(Uri.TryCreate(url, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)))
                 {
                     Uri.TryCreate($"http://{url}", UriKind.Absolute, out uriResult);
                 }
