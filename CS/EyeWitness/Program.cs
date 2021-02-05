@@ -76,6 +76,9 @@ namespace EyeWitness
         {
             // Capture category and signature codes
             // Grab here so we only have to do it once and iterate through URLs in Main
+            // Set TLS v1.2
+			      ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             WebClient witnessClient = new WebClient();
             try
             {
@@ -83,10 +86,11 @@ namespace EyeWitness
                 sigCode = witnessClient.DownloadString(SigUrl);
             }
 
-            catch
+            catch(Exception ex)
             {
                 Console.WriteLine("[*]ERROR: Could not obtain categories and signatures from Github!");
                 Console.WriteLine("[*]ERROR: Try again, or see if Github is blocked?");
+                Console.WriteLine(ex.Message);
                 System.Environment.Exit(1);
             }
 
