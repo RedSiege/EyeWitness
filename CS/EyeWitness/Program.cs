@@ -3,6 +3,8 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Linq;
 using CommandLine;
@@ -19,23 +21,20 @@ namespace EyeWitness
         public static string catCode = "";
         public static string sigCode = "";
         public static string reportHtml = "";
-        static string catURL = "https://raw.githubusercontent.com/FortyNorthSecurity/EyeWitness/master/Python/categories.txt";
-        static string sigURL = "https://raw.githubusercontent.com/FortyNorthSecurity/EyeWitness/master/Python/signatures.txt";
+        private const string CatUrl = "https://raw.githubusercontent.com/FortyNorthSecurity/EyeWitness/master/Python/categories.txt";
+        private const string SigUrl = "https://raw.githubusercontent.com/FortyNorthSecurity/EyeWitness/master/Python/signatures.txt";
         public static Dictionary<string, string> categoryDict = new Dictionary<string, string>();
         public static Dictionary<string, string> signatureDict = new Dictionary<string, string>();
         public static Dictionary<string, object[]> categoryRankDict = new Dictionary<string, object[]>();
-        private static Semaphore _pool = new Semaphore(1,1);
+        private static readonly Semaphore Pool = new Semaphore(2,2);
         //private static SemaphoreSlim _pool = new SemaphoreSlim(2);
-        private static SemaphoreSlim _Sourcepool = new SemaphoreSlim(10);
+        private static readonly SemaphoreSlim Sourcepool = new SemaphoreSlim(10);
 
         public class Options
         {
             public static Options Instance { get; set; }
 
             // Command line options
-            [Option('v', "verbose", Required = false, HelpText = "Set output to verbose")]
-            public bool Verbose { get; set; }
-
             [Option('b', "bookmarks", Group = "Input Source", HelpText = "Searches for bookmark files for IE/Chrome, parses them, and adds them to the list of screenshot URLs")]
             public bool Favorites { get; set; }
 
@@ -49,7 +48,7 @@ namespace EyeWitness
             public bool Compress { get; set; }
         }
 
-        static void DisplayHelp<T>(ParserResult<T> result, IEnumerable<Error> errs)
+        static void DisplayHelp<T>(ParserResult<T> result)
         {
             var helpText = HelpText.AutoBuild(result, h =>
             {
@@ -61,31 +60,32 @@ namespace EyeWitness
             Console.WriteLine(helpText);
             System.Environment.Exit(1);
         }
+
         // The main program will handle determining where the output is saved to, it's not the requirement of the object
         // the object will look up the location where everything should be saved and write to there accordingly
-        static void DirMaker()
+        private static void DirMaker()
         {
             string witnessPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             witnessDir = witnessPath + "\\EyeWitness_" + DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
             Directory.CreateDirectory(witnessDir + "\\src");
             Directory.CreateDirectory(witnessDir + "\\images");
             Directory.CreateDirectory(witnessDir + "\\headers");
-            return;
         }
 
-        static void DictMaker()
+        private static void DictMaker()
         {
             // Capture category and signature codes
             // Grab here so we only have to do it once and iterate through URLs in Main
             // Set TLS v1.2
-			ServicePointManager.Expect100Continue = true;
+			      ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             WebClient witnessClient = new WebClient();
             try
             {
-                catCode = witnessClient.DownloadString(catURL);
-                sigCode = witnessClient.DownloadString(sigURL);
+                catCode = witnessClient.DownloadString(CatUrl);
+                sigCode = witnessClient.DownloadString(SigUrl);
             }
+
             catch(Exception ex)
             {
                 Console.WriteLine("[*]ERROR: Could not obtain categories and signatures from Github!");
@@ -119,7 +119,7 @@ namespace EyeWitness
             categoryRankDict.Add("serviceunavailable", new object[] { "Service Unavailable", 0 });
 
 
-            // Add files to cagegory dictionary
+            // Add files to category dictionary
             foreach (string line in catCode.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None))
             {
                 try
@@ -127,6 +127,7 @@ namespace EyeWitness
                     string[] splitLine = line.Split('|');
                     categoryDict.Add(splitLine[0], splitLine[1]);
                 }
+
                 catch
                 {
                     // line doesn't work, but continue anyway
@@ -141,12 +142,12 @@ namespace EyeWitness
                     string[] splitLine = line.Split('|');
                     signatureDict.Add(splitLine[0], splitLine[1]);
                 }
+
                 catch
                 {
                     // line doesn't work, but continue anyway
                 }
             }
-            return;
         }
 
         private static async Task ScreenshotSender(WitnessedServer obj, int timeDelay)
@@ -155,23 +156,38 @@ namespace EyeWitness
             {
                 //Keep it syncronous for this slow version
                 //Allow the thread to exit somewhat cleanly before exiting the semaphore
-                _pool.WaitOne();
-                //Cancel after timeDelay
-                var cts = new CancellationTokenSource(timeDelay);
+                Pool.WaitOne();
                 Console.WriteLine("Grabbing screenshot for: " + obj.remoteSystem);
-                var task = await obj.RunWithTimeoutCancellation(cts.Token);
+
+                WebsiteSnapshot websiteSnapshot = new WebsiteSnapshot(obj.remoteSystem);
+
+                try
+                {
+                    using (Bitmap bitMap = websiteSnapshot.GenerateWebSiteImage(timeDelay))
+                    {
+                        bitMap?.Save(obj.imgPath);
+                    }
+                }
+                catch (AccessViolationException e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
             }
+
             catch (OperationCanceledException e)
             {
                 Console.WriteLine($"[-] Thread aborted while grabbing screenshot for: {obj.remoteSystem} - {e.Message}");
             }
+
             catch (SemaphoreFullException)
             {
                 //return;
             }
+
             finally
             {
-                _pool.Release();
+                Pool?.Release();
             }
         }
 
@@ -179,37 +195,38 @@ namespace EyeWitness
         {
             try
             {
-                await _Sourcepool.WaitAsync();
+                await Sourcepool.WaitAsync();
                 //Cancel after 10s
                 //This cancellation time isn't as important as the screenshot one so we can hard code it
-                var cts = new CancellationTokenSource(10000);
+                CancellationTokenSource cts = new CancellationTokenSource(15000);
                 Console.WriteLine("Grabbing source of: " + obj.remoteSystem);
                 await obj.SourcerAsync(cts.Token);
                 obj.CheckCreds(categoryDict, signatureDict);
             }
+
             catch (OperationCanceledException e)
             {
                 Console.WriteLine($"[-] Thread aborted while grabbing source for: {obj.remoteSystem} - {e.Message}");
             }
+
             catch (SemaphoreFullException)
             {
                 //return;
             }
+
             finally
             {
-                _Sourcepool.Release();
+                Sourcepool?.Release();
             }
         }
 
         public static void CategoryCounter(WitnessedServer[] urlArray, Dictionary<string, string> catDict)
         {
             //Count how many URLs are in each category
-            foreach (var urlObject in urlArray)
+            foreach (WitnessedServer urlObject in urlArray)
             {
                 if (categoryRankDict.ContainsKey(urlObject.systemCategory))
-                {
                     categoryRankDict[urlObject.systemCategory][1] = (int)categoryRankDict[urlObject.systemCategory][1] + 1;
-                }
             }
         }
 
@@ -219,18 +236,18 @@ namespace EyeWitness
             int urlCounter = 0;
             int pages = 0;
 
-            Console.WriteLine("[*] Writing the reports so you can view as screenshots are taken");
-            Journalist Cronkite = new Journalist();
+            Console.WriteLine("\n[*] Writing the reports so you can view as screenshots are taken\n");
+            Journalist cronkite = new Journalist();
 
             // If it's the first page, do something different
-            reportHtml = Cronkite.InitialReporter(pages, categoryRankDict, allUrlArray.GetLength(0));
+            reportHtml = cronkite.InitialReporter(pages, categoryRankDict, allUrlArray.GetLength(0));
 
-            // Iterate throught all objects in the array and build the report; taking into account categories
+            // Iterate through all objects in the array and build the report; taking into account categories
             foreach (KeyValuePair<string, object[]> entry in categoryRankDict)
             {
                 int categoryCounter = 0;
 
-                foreach (var witnessedObject in urlArray)
+                foreach (WitnessedServer witnessedObject in urlArray)
                 {
                     try
                     {
@@ -239,10 +256,10 @@ namespace EyeWitness
                             // If this is the first instance of the category, create the HTML table
                             if (categoryCounter == 0)
                             {
-                                reportHtml += Cronkite.CategorizeInitial((string)entry.Value.ElementAt(0), witnessedObject);
+                                reportHtml += cronkite.CategorizeInitial((string)entry.Value.ElementAt(0), witnessedObject);
                                 categoryCounter++;
                             }
-                            reportHtml += Cronkite.Reporter(witnessedObject);
+                            reportHtml += cronkite.Reporter(witnessedObject);
                             urlCounter++;
 
                             if (urlCounter == 25)
@@ -250,9 +267,9 @@ namespace EyeWitness
                                 urlCounter = 0;
                                 pages++;
                                 reportHtml += "</table>"; //close out the category table
-                                Cronkite.FinalReporter(reportHtml, pages, allUrlArray.GetLength(0), witnessDir);
+                                cronkite.FinalReporter(reportHtml, pages, allUrlArray.GetLength(0), witnessDir);
                                 reportHtml = "";
-                                reportHtml = Cronkite.InitialReporter(pages, categoryRankDict, allUrlArray.GetLength(0));
+                                reportHtml = cronkite.InitialReporter(pages, categoryRankDict, allUrlArray.GetLength(0));
                                 categoryCounter = 0;
                             }
                         }
@@ -268,18 +285,19 @@ namespace EyeWitness
             {
                 //pass since the report was already written and finalized
             }
+
             else
             {
                 pages++; //need to increase before final write (takes into account 0 pages from above block
                 reportHtml += "</table>"; //close out the category table
-                Cronkite.FinalReporter(reportHtml, pages, allUrlArray.GetLength(0), witnessDir);
+                cronkite.FinalReporter(reportHtml, pages, allUrlArray.GetLength(0), witnessDir);
             }
         }
 
         public static List<string> FavoritesParser()
         {
             //Check for favorites files and if they exist parse and add them to the URL array
-            List<string> faveURLs = new List<string>();
+            List<string> faveUrls = new List<string>();
             List<string> faves = new List<string>();
             string[] ieFaves = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.Favorites), "*.*", SearchOption.AllDirectories);
             string chromePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Google\\Chrome\\User Data\\Default\\Bookmarks";
@@ -288,10 +306,10 @@ namespace EyeWitness
             {
                 faves.AddRange(ieFaves);
             }
+
             catch
             {
                 Console.WriteLine("[-] Error adding IE favorites, moving on");
-                //pass
             }
 
             if (faves.Count > 0)
@@ -301,18 +319,16 @@ namespace EyeWitness
                     using (StreamReader rdr = new StreamReader(file))
                     {
                         string line;
-                        string url;
                         while ((line = rdr.ReadLine()) != null)
                         {
                             if (line.StartsWith("URL=", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 if (line.Length > 4)
                                 {
-                                    url = line.Substring(4);
-                                    faveURLs.Add(url);
+                                    string url = line.Substring(4);
+                                    faveUrls.Add(url);
                                 }
                                 else
-                                    //pass
                                     break;
                             }
                         }
@@ -328,46 +344,49 @@ namespace EyeWitness
                 using (JsonReader jsonReader = new JsonTextReader(reader))
                 {
                     JsonSerializer serializer = new JsonSerializer();
-                    var o = (JToken)serializer.Deserialize(jsonReader);
-                    var allChildrens = o["roots"]["bookmark_bar"]["children"];
-
-                    try
+                    JToken o = (JToken)serializer.Deserialize(jsonReader);
+                    if (o != null)
                     {
-                        foreach (var folder in allChildrens)
+                        JToken allChildrens = o["roots"]?["bookmark_bar"]?["children"];
+
+                        try
                         {
-                            // This loop represents items in the bookmark bar
-                            // Have to check for null values first before adding to list
-                            if (folder["url"] != null)
-                                faveURLs.Add(folder["url"].ToString());
-                            if (folder["children"] != null)
-                            {
-                                // This loop represents items in a folder within the bookmark par
-                                foreach (var item in folder["children"])
+                            if (allChildrens != null)
+                                foreach (JToken folder in allChildrens)
                                 {
-                                    if (item["url"] != null)
-                                        faveURLs.Add(item["url"].ToString());
-                                    if (item["children"] != null)
+                                    // This loop represents items in the bookmark bar
+                                    // Have to check for null values first before adding to list
+                                    if (folder["url"] != null)
+                                        faveUrls.Add(folder["url"].ToString());
+                                    if (folder["children"] != null)
                                     {
-                                        // This loop represents a nested folder within a folder on the bookmarks bar
-                                        foreach (var subItem in item["children"])
+                                        // This loop represents items in a folder within the bookmark par
+                                        foreach (JToken item in folder["children"])
                                         {
-                                            if (subItem["url"] != null)
-                                                faveURLs.Add(subItem["url"].ToString());
+                                            if (item["url"] != null)
+                                                faveUrls.Add(item["url"].ToString());
+                                            if (item["children"] != null)
+                                            {
+                                                // This loop represents a nested folder within a folder on the bookmarks bar
+                                                foreach (JToken subItem in item["children"])
+                                                {
+                                                    if (subItem["url"] != null)
+                                                        faveUrls.Add(subItem["url"].ToString());
+                                                }
+                                            }
                                         }
                                     }
                                 }
-                            }
+                        }
+                        catch
+                        {
+                            Console.WriteLine("[-] Error parsing Google Chrome's bookmarks, moving on");
                         }
                     }
-                    catch
-                    {
-                        Console.WriteLine("[-] Error parsing Google Chrome's bookmarks, moving on");
-                        //pass
-                    }      
                 }
             }
 
-            return faveURLs;
+            return faveUrls;
         }
 
         static void Main(string[] args)
@@ -376,34 +395,31 @@ namespace EyeWitness
             string[] allUrls = null;
             List<string> faveUrls = null;
             int delay = 30000;
-            var watch = new System.Diagnostics.Stopwatch();
+            Stopwatch watch = new Stopwatch();
             watch.Start();
 
             //Parse arguments passed
-            var parser = new Parser(with =>
+            Parser parser = new Parser(with =>
             {
                 with.CaseInsensitiveEnumValues = true;
                 with.CaseSensitive = false;
                 with.HelpWriter = null;
             });
 
-            var parserResult = parser.ParseArguments<Options>(args);
-            parserResult.WithParsed<Options>(o =>
+            ParserResult<Options> parserResult = parser.ParseArguments<Options>(args);
+            parserResult.WithParsed(o =>
                 {
                     if (o.Delay != 30)
                     {
                         Console.WriteLine("[+] Using a custom timeout of " + o.Delay + " seconds per URL thread");
                         delay = o.Delay * 1000;
                     }
+
                     else
-                    {
                         Console.WriteLine("[+] Using the default timeout of 30 seconds per URL thread");
-                    }
 
                     if (o.Compress)
-                    {
                         Console.WriteLine("[+] Compressing files afterwards\n");
-                    }
 
                     if(o.Favorites)
                     {
@@ -412,13 +428,14 @@ namespace EyeWitness
                         faveUrls = FavoritesParser();
                     }
 
-                    if(o.Favorites == true && o.File == null)
+                    if(o.Favorites && o.File == null)
                     {
                         Console.WriteLine("[+] No input file, only using parsed favorites (if any)");
                         try
                         {
-                            allUrls = faveUrls.ToArray();
+                            if (faveUrls != null) allUrls = faveUrls.ToArray();
                         }
+
                         catch(NullReferenceException)
                         {
                             Console.WriteLine("[-] No favorites or bookmarks found, please try specifying a URL file instead");
@@ -434,14 +451,18 @@ namespace EyeWitness
                             {
                                 Console.WriteLine("[+] Combining parsed favorites and input file and using that array...");
                                 //Combine favorites array and input URLs
-                                string[] allUrlsTemp = System.IO.File.ReadAllLines(o.File);
-                                string[] faveUrlsArray = faveUrls.ToArray();
-                                allUrls = allUrlsTemp.Concat(faveUrlsArray).ToArray();
+                                string[] allUrlsTemp = File.ReadAllLines(o.File);
+                                if (faveUrls != null)
+                                {
+                                    string[] faveUrlsArray = faveUrls.ToArray();
+                                    allUrls = allUrlsTemp.Concat(faveUrlsArray).ToArray();
+                                }
                             }
+
                             else
                             {
                                 Console.WriteLine("[+] Using input text file");
-                                allUrls = System.IO.File.ReadAllLines(o.File);
+                                allUrls = File.ReadAllLines(o.File);
                             }
                         }
                         catch (FileNotFoundException)
@@ -454,11 +475,11 @@ namespace EyeWitness
 
                     Options.Instance = o;
                 })
-                .WithNotParsed(errs => DisplayHelp(parserResult, errs));
+                .WithNotParsed(errs => DisplayHelp(parserResult));
 
             DirMaker();
             DictMaker();
-            var options = Options.Instance;
+            Options options = Options.Instance;
             Console.WriteLine("\n");
             // Check for favorites flag and if so add the URLs to the list
 
@@ -467,14 +488,13 @@ namespace EyeWitness
             
             //WitnessedServer.SetFeatureBrowserEmulation(); // enable HTML5
 
-            List<Task> SourceTaskList = new List<Task>();
-            List<Task> ScreenshotTaskList = new List<Task>();
+            List<Task> sourceTaskList = new List<Task>();
+            List<Task> screenshotTaskList = new List<Task>();
 
             int arrayPosition = 0;
             foreach (var url in allUrls)
             {
-                Uri uriResult;
-                if(!(Uri.TryCreate(url, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)))
+                if(!(Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)))
                 {
                     Uri.TryCreate($"http://{url}", UriKind.Absolute, out uriResult);
                 }
@@ -483,61 +503,63 @@ namespace EyeWitness
                 serverArray[arrayPosition] = singleSite;
                 arrayPosition++;
 
-                SourceTaskList.Add(Task.Run(async () =>
+                sourceTaskList.Add(Task.Run(async () =>
                 {
                     try
                     {
                         await SourceSender(singleSite);
                     }
+
                     finally
                     {
-                        _Sourcepool.Release();
+                        Sourcepool.Release();
                     }
                 }));
             }
-            Task.WaitAll(SourceTaskList.ToArray());
+            Task.WaitAll(sourceTaskList.ToArray());
 
             CategoryCounter(serverArray, categoryDict); //Get a list of how many of each category there are
-
             Writer(serverArray, allUrls); //Write the reportz
 
-            foreach (var entry in serverArray)
+            foreach (WitnessedServer entry in serverArray)
             {
                 // Grab screenshots separately
                 try
                 {
-                    ScreenshotTaskList.Add(ScreenshotSender(entry, delay));
+                    screenshotTaskList.Add(ScreenshotSender(entry, delay));
                 }
                 catch
                 {
                     Console.WriteLine("Error starting runwithouttimeout on url: " + entry.remoteSystem);
                 }
             }
+
             Thread.Sleep(1000);
-            Task.WaitAll(ScreenshotTaskList.ToArray());
+            Task.WaitAll(screenshotTaskList.ToArray());
 
             Thread.Sleep(1000);
             watch.Stop();
             Console.WriteLine("Execution time: " + watch.ElapsedMilliseconds/1000 + " Seconds");
+            
             if (options.Compress)
             {
                 Console.WriteLine("Compressing output directory...");
                 try
                 {
-                    string ZipFileName = witnessDir + ".zip";
-                    ZipFile.CreateFromDirectory(witnessDir, ZipFileName, CompressionLevel.Optimal, false);
+                    string zipFileName = witnessDir + ".zip";
+                    ZipFile.CreateFromDirectory(witnessDir, zipFileName, CompressionLevel.Optimal, false);
                     Directory.Delete(witnessDir, true);
                 }
+
                 catch (Exception ex)
                 {
                     Console.WriteLine("[-] Error zipping file");
                     Console.WriteLine(ex);
                 }
-
             }
+
             Console.WriteLine("Finished! Exiting shortly...");
             Thread.Sleep(5000);
-            return;
         }
     }
 }
