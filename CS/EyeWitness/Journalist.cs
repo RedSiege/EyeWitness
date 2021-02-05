@@ -7,7 +7,7 @@ using System.Security;
 
 namespace EyeWitness
 {
-    class Journalist
+    internal class Journalist
     {
         public string InitialReporter(int page, Dictionary<string, object[]> catDict, int totalPages)
         {
@@ -23,13 +23,10 @@ namespace EyeWitness
 
                 html += "<table cellpadding=\"10\" border=1><center>";
 
-
-                foreach (var entry in catDict)
+                foreach (KeyValuePair<string, object[]> entry in catDict)
                 {
                     if((int)entry.Value.ElementAt(1) != 0)
-                    {
                         html += "<tr><td style=\"padding: 5px;\">" + (string)entry.Value.ElementAt(0) + " </td><td style=\"padding: 5px;\"> " + (int)entry.Value.ElementAt(1) + "</td></tr>";
-                    }
                 }
                 html += "<tr><td style =\"padding: 5px;\">" + "Total Pages Screenshotted" + "</td ><td style =\"padding: 5px;\">" + totalPages + "</td></tr>";
 
@@ -38,6 +35,7 @@ namespace EyeWitness
 
     ";
             }
+
             else
             {
                 html += @"<html>
@@ -54,11 +52,11 @@ namespace EyeWitness
 
         public string Reporter(WitnessedServer incomingServer)
         {
-            string tempHTMLOutput = "";
-            tempHTMLOutput += "<td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">";
-            tempHTMLOutput += "<a href=\"" + incomingServer.remoteSystem + "\" target=\"_blank\">" + incomingServer.remoteSystem + "</a>\n<br><br>";
-            tempHTMLOutput += "<br><b>Page Title: </b>" + incomingServer.webpageTitle + "<br>\n\n";
-            tempHTMLOutput += "<br><b>Headers: </b>\n\n";
+            string tempHtmlOutput = "";
+            tempHtmlOutput += "<td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">";
+            tempHtmlOutput += "<a href=\"" + incomingServer.remoteSystem + "\" target=\"_blank\">" + incomingServer.remoteSystem + "</a>\n<br><br>";
+            tempHtmlOutput += "<br><b>Page Title: </b>" + incomingServer.webpageTitle + "<br>\n\n";
+            tempHtmlOutput += "<br><b>Headers: </b>\n\n";
 
             // Split the header string into lines and make the variable bold
             foreach (string line in incomingServer.headers.Split(new[] { Environment.NewLine }, StringSplitOptions.None))
@@ -67,43 +65,40 @@ namespace EyeWitness
                 {
                     string[] element = line.Split(new[] { ':' }, 2, StringSplitOptions.None);
                     //Escape any bad chars passed as a header
-                    tempHTMLOutput += "<br> <b>" + SecurityElement.Escape(element[0]) + "</b>: " + SecurityElement.Escape(element[1]);
-                }
-                else
-                {
-                    //pass
+                    tempHtmlOutput += "<br> <b>" + SecurityElement.Escape(element[0]) + "</b>: " + SecurityElement.Escape(element[1]);
                 }
             }
 
             if (incomingServer.defaultCreds != null)
             {
-                tempHTMLOutput += "<br>" + incomingServer.defaultCreds;
+                tempHtmlOutput += "<br>" + incomingServer.defaultCreds;
             }
 
-            tempHTMLOutput += "<br><br> <a href=\"src\\" + incomingServer.urlSaveName + ".txt\" ";
-            tempHTMLOutput += "target=\"_blank\">Source Code</a></div></td><br>\n";
-            tempHTMLOutput += "<td><div id=\"screenshot\"><a href=\"images\\" + incomingServer.urlSaveName + ".bmp\" ";
-            tempHTMLOutput += "target=\"_blank\"><img src=\"images\\" + incomingServer.urlSaveName + ".bmp\" ";
-            tempHTMLOutput += "height=\"400\"></a></div></td></tr><tr>\n\n";
+            tempHtmlOutput += "<br><br> <a href=\"src\\" + incomingServer.urlSaveName + ".txt\" ";
+            tempHtmlOutput += "target=\"_blank\">Source Code</a></div></td><br>\n";
+            tempHtmlOutput += "<td><div id=\"screenshot\"><a href=\"images\\" + incomingServer.urlSaveName + ".bmp\" ";
+            tempHtmlOutput += "target=\"_blank\"><img src=\"images\\" + incomingServer.urlSaveName + ".bmp\" ";
+            tempHtmlOutput += "height=\"400\"></a></div></td></tr><tr>\n\n";
 
-            return tempHTMLOutput;
+            return tempHtmlOutput;
         }
 
         public string CategorizeInitial(string category, WitnessedServer incomingServer)
         {
-            string tempHTMLOutput = "";
+            string tempHtmlOutput = "";
 
             if (incomingServer.systemCategory != null)
             {
-                tempHTMLOutput += "<table><div align=\"left\"><tr><th><h2>" + category + "</h2></tr></th></div>";
-                tempHTMLOutput += "<table border=\"1\">";
-                tempHTMLOutput += @"
+                tempHtmlOutput += "<table><div align=\"left\"><tr><th><h2>" + category + "</h2></tr></th></div>";
+                tempHtmlOutput += "<table border=\"1\">";
+                tempHtmlOutput += @"
             <tr>
             <th>Web Request Info</th>
             <th>Web Screenshot</th></tr>
             <tr>";
             }
-            return tempHTMLOutput;
+
+            return tempHtmlOutput;
         }
 
         public void FinalReporter(string html, int pageNumber, int pageNumbersTotal, string witnessDir)
@@ -111,16 +106,17 @@ namespace EyeWitness
             //string html = "";
 
             html += "</table><br>"; //close out the category table and the screenshot/source table
+            
             if (pageNumber == 0)
             {
                 //pass
             }
+
             else
             {
                 html += BuildPages(pageNumbersTotal);
             }
             File.WriteAllText(witnessDir + "\\report_page" + pageNumber + ".html", html);
-            return;
         }
 
         public string BuildPages(int totalPageNumbers)
@@ -129,10 +125,10 @@ namespace EyeWitness
             int pageNumbers = (int)Math.Ceiling((double)totalPageNumbers / 25);
 
             htmlForPages += "<center><br><a href=\"report_page1.html\">Page 1</a>";
+            
             for (int page = 2; page <= pageNumbers; page++)
-            {
                 htmlForPages += " <a href=\"report_page" + page + ".html\">Page " + page + "</a> ";
-            }
+           
             htmlForPages += "\n<br><br></center></body><html>";
             return htmlForPages;
         }

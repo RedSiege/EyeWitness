@@ -1,0 +1,25 @@
+﻿<Properties StartupConfiguration="{162F9754-3644-46F1-A061-61DE163BFECC}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="EyeWitness/Program.cs">
+    <Files>
+      <File FileName="EyeWitness/Program.cs" Line="165" Column="14" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="EyeWitness" expanded="True">
+            <Node name="EyeWitness" expanded="True">
+              <Node name="Program.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.EyeWitness PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
