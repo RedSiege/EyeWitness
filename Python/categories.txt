@@ -452,3 +452,5 @@ var jumpProt = jumpURL.substr(0,6).toLowerCase();var argc = setCookie.arguments.
 <title>Netman 204 login</title>;<form id="login" action="cgi-bin/login.cgi";onsubmit="this.submit.disabled='disabled';action="cgi-bin/view.cgi"|infrastructure
 <title>DS-510</title>;<frameset rows="90,*" frameborder="0" framespacing="0" border="0">;<frameset rows="90,*" frameborder="0" framespacing="0" border="0">;<frame src="/en/top.htm" name="top" noresize="" scrolling="no">|printer
 <title>AlienVault OSSIM;<title>AlienVault OSSIM;form name="f_login" id="f_login" method="POST"|infrastructure
+<base href="/sysmgr/">;nwf-loading-indicator class="nwf-loading";upport-href="{{ 'supportHref' | Vendorizer }}|infrastructure
+<h1>Welcome to nginx!</h1>;<title>Welcome to nginx!</title>;<p>For online documentation and support please refer|crap
