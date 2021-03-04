@@ -335,3 +335,7 @@ var jumpProt = jumpURL.substr(0,6).toLowerCase();var argc = setCookie.arguments.
 <title>DS-510</title>;<frameset rows="90,*" frameborder="0" framespacing="0" border="0">;<frameset rows="90,*" frameborder="0" framespacing="0" border="0">;<frame src="/en/top.htm" name="top" noresize="" scrolling="no">|Silex Print Server root/<nopassword>
 <title>AlienVault OSSIM;<title>AlienVault OSSIM;form name="f_login" id="f_login" method="POST"|Alienvault admin/admin
 <base href="/sysmgr/">;nwf-loading-indicator class="nwf-loading";upport-href="{{ 'supportHref' | Vendorizer }}|NetApp OnCommand System Manager admin/admin123
+<title>IBM TS7700</title>;<div class="deviceImage"></div>;"productnameLabelSpan">Storage Management|IBM TS7700 admin/admin
+<title>Login</title>;function initDHTMLAPI() {;var cacUserName = "";hideElement("trInitName", "trInitPwd");name="login_saml" id="login_saml_form"|Palo Alto Firewall dmin/admin
+<title>NETGEAR ProSAFE Plus Switch</title>;<div id="mainArea" class="mainArea";<a id="loginBtn" class="loginBtnStyle"|NetGear Switch nousername/password
+<title>Poly - Configuration Utility</title>;<span id="headerLabel">Poly Web Configuration Utility</span>;<div id="security-popup">|Polycom Web Configuration Utility user/123 admin/456
