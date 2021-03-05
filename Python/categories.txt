@@ -458,3 +458,5 @@ var jumpProt = jumpURL.substr(0,6).toLowerCase();var argc = setCookie.arguments.
 <title>Login</title>;function initDHTMLAPI() {;var cacUserName = "";hideElement("trInitName", "trInitPwd");name="login_saml" id="login_saml_form"|netdev
 <title>NETGEAR ProSAFE Plus Switch</title>;<div id="mainArea" class="mainArea";<a id="loginBtn" class="loginBtnStyle"|netdev
 <title>Poly - Configuration Utility</title>;<span id="headerLabel">Poly Web Configuration Utility</span>;<div id="security-popup">|netdev
+ng-controller="AppCtrl as AppCtrl";{'fullscreen': AppCtrl.FULLSCREEN};div class="loading-overlay-text"|nas
+placeholder="Username";id="username" name="ipamusername";class="login form-control input-sm"|infrastructure
