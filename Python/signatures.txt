@@ -340,3 +340,5 @@ var jumpProt = jumpURL.substr(0,6).toLowerCase();var argc = setCookie.arguments.
 <title>NETGEAR ProSAFE Plus Switch</title>;<div id="mainArea" class="mainArea";<a id="loginBtn" class="loginBtnStyle"|NetGear Switch nousername/password
 <title>Poly - Configuration Utility</title>;<span id="headerLabel">Poly Web Configuration Utility</span>;<div id="security-popup">|Polycom Web Configuration Utility user/123 admin/456
 placeholder="Username";id="username" name="ipamusername";class="login form-control input-sm"|phpIPAM Admin / ipamadmin
+<title>Brother TD-4100N</title>;Brother Industries, Ltd;/printer/ball.gif|Brother TD-4100N admin/access
+<strong class="product">HP PageWide Color E55650</strong>;class="ip-address" id="HomeDeviceIp;DeviceStatus/Save|HP PageWide Color E55650 administrator:<nopassword>

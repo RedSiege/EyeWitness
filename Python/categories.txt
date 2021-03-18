@@ -460,3 +460,5 @@ var jumpProt = jumpURL.substr(0,6).toLowerCase();var argc = setCookie.arguments.
 <title>Poly - Configuration Utility</title>;<span id="headerLabel">Poly Web Configuration Utility</span>;<div id="security-popup">|netdev
 ng-controller="AppCtrl as AppCtrl";{'fullscreen': AppCtrl.FULLSCREEN};div class="loading-overlay-text"|nas
 placeholder="Username";id="username" name="ipamusername";class="login form-control input-sm"|infrastructure
+<title>Brother TD-4100N</title>;Brother Industries, Ltd;/printer/ball.gif|printer
+<strong class="product">HP PageWide Color E55650</strong>;class="ip-address" id="HomeDeviceIp;DeviceStatus/Save|printer
