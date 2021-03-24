@@ -36,6 +36,10 @@ if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep
   osinfo="Parrot"
 fi
 
+if [[ `cat /etc/issue | cut -d" " -f3 | head -n1 | grep "Alpine"` ]]; then
+  osinfo="Alpine"
+fi
+
 # make sure we run from this directory
 pushd . > /dev/null && cd "$(dirname "$0")"
 
@@ -259,6 +263,43 @@ case ${osinfo} in
       tar -xvf geckodriver-v0.26.0-linux32.tar.gz
       rm geckodriver-v0.26.0-linux32.tar.gz
       mv geckodriver /usr/bin
+    fi
+    cd ..
+  ;;
+  # Alpine Dependency Installation
+  Alpine)
+    apk update
+    echo '[*] Installing Alpine Dependencies'
+    apk add cmake python3 xvfb py-pip py-netaddr python3-dev firefox
+    echo
+    echo '[*] Installing Python Modules'
+    python3 -m pip install fuzzywuzzy
+    python3 -m pip install selenium --upgrade
+    python3 -m pip install python-Levenshtein
+    python3 -m pip install pyvirtualdisplay
+    python3 -m pip install netaddr
+    echo
+    # from https://stackoverflow.com/questions/58738920/running-geckodriver-in-an-alpine-docker-container
+    # Get all the prereqs
+    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-2.30-r0.apk
+    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-bin-2.30-r0.apk
+    apk add glibc-2.30-r0.apk
+    apk add glibc-bin-2.30-r0.apk
+
+    # And of course we need Firefox if we actually want to *use* GeckoDriver
+    apk add firefox-esr=60.9.0-r0
+
+    cd ../bin/
+    MACHINE_TYPE=`uname -m`
+    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+      wget ${geckodriver_x86_64}
+      tar -xvf geckodriver-v0.26.0-linux64.tar.gz -C /usr/bin
+      rm geckodriver-v0.26.0-linux64.tar.gz
+    else
+      wget ${geckodriver_x86_32}
+      tar -xvf geckodriver-v0.26.0-linux32.tar.gz -C /usr/bin
+      rm geckodriver-v0.26.0-linux32.tar.gz
     fi
     cd ..
   ;;
