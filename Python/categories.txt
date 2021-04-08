@@ -462,3 +462,5 @@ ng-controller="AppCtrl as AppCtrl";{'fullscreen': AppCtrl.FULLSCREEN};div class=
 placeholder="Username";id="username" name="ipamusername";class="login form-control input-sm"|infrastructure
 <title>Brother TD-4100N</title>;Brother Industries, Ltd;/printer/ball.gif|printer
 <strong class="product">HP PageWide Color E55650</strong>;class="ip-address" id="HomeDeviceIp;DeviceStatus/Save|printer
+meta name="vizportal-config";div class="tb-app" ng-app="VizPortalRun";api/tableau|netdev
+img src="iisstart.png";div id="container";<title>IIS Windows Server</title>|crap
