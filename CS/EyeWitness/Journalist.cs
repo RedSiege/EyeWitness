@@ -26,7 +26,8 @@ namespace EyeWitness
                 foreach (KeyValuePair<string, object[]> entry in catDict)
                 {
                     if((int)entry.Value.ElementAt(1) != 0)
-                        html += "<tr><td style=\"padding: 5px;\">" + (string)entry.Value.ElementAt(0) + " </td><td style=\"padding: 5px;\"> " + (int)entry.Value.ElementAt(1) + "</td></tr>";
+                        html += "<tr><td style=\"padding: 5px;\">" + (string)entry.Value.ElementAt(0) + 
+                                " </td><td style=\"padding: 5px;\"> " + (int)entry.Value.ElementAt(1) + "</td></tr>";
                 }
                 html += "<tr><td style =\"padding: 5px;\">" + "Total Pages Screenshotted" + "</td ><td style =\"padding: 5px;\">" + totalPages + "</td></tr>";
 
@@ -46,6 +47,7 @@ namespace EyeWitness
 
             html += "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/><br>";
             html += "<center>Report generated on " + DateTime.Now.ToString("MM-dd-yy @ HH:mm:ss") + "</center>\n";
+            html += "<center>" + BuildPages(totalPages) + "</center>\n";
 
             return html;
         }
@@ -107,15 +109,9 @@ namespace EyeWitness
 
             html += "</table><br>"; //close out the category table and the screenshot/source table
             
-            if (pageNumber == 0)
-            {
-                //pass
-            }
-
-            else
-            {
+            if (pageNumber != 0)
                 html += BuildPages(pageNumbersTotal);
-            }
+
             File.WriteAllText(witnessDir + "\\report_page" + pageNumber + ".html", html);
         }
 

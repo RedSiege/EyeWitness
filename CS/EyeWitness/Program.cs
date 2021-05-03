@@ -41,11 +41,20 @@ namespace EyeWitness
             [Option('f', "file", Group = "Input Source", HelpText = "Specify a new-line separated file of URLs", Default = null)]
             public string File { get; set; }
 
+            [Option('o', "output", Required = false, HelpText = "Specify an output directory (one will be created if non-existent)", Default = null)]
+            public string Output { get; set; }
+
             [Option('d', "delay", Required = false, HelpText = "Specify a delay to use before cancelling a single URL request", Default = 30)]
             public int Delay { get; set; }
 
             [Option('c', "compress", Required = false, HelpText = "Compress output directory", Default = false)]
             public bool Compress { get; set; }
+
+            [Option("http", Required = false, HelpText = "Prepend http:// to all URLs", Default = false)]
+            public bool http { get; set; }
+
+            [Option( "https", Required = false, HelpText = "Prepend https:// to all URLs", Default = false)]
+            public bool https { get; set; }
         }
 
         static void DisplayHelp<T>(ParserResult<T> result)
@@ -53,7 +62,7 @@ namespace EyeWitness
             var helpText = HelpText.AutoBuild(result, h =>
             {
                 h.AdditionalNewLineAfterOption = false;
-                h.Heading = "EyeWitness C# Version 1.0"; //change header
+                h.Heading = "EyeWitness C# Version 1.1"; //change header
                 h.Copyright = ""; //change copyright text
                 return HelpText.DefaultParsingErrorsHandler(result, h);
             }, e => e);
@@ -63,9 +72,35 @@ namespace EyeWitness
 
         // The main program will handle determining where the output is saved to, it's not the requirement of the object
         // the object will look up the location where everything should be saved and write to there accordingly
-        private static void DirMaker()
+        private static void DirMaker(string output)
         {
-            string witnessPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string witnessPath = null;
+
+            if (output == null)
+                witnessPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            else
+            {
+                witnessPath = Path.GetFullPath(output);
+
+                if (File.Exists(witnessPath))
+                {
+                    Console.WriteLine("Output path already exists, using default location");
+                    witnessPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                }
+
+                if (!Directory.Exists(witnessPath))
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(witnessPath);
+                    }
+                    catch 
+                    {
+                        witnessPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                    }
+                }
+            }
+            
             witnessDir = witnessPath + "\\EyeWitness_" + DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
             Directory.CreateDirectory(witnessDir + "\\src");
             Directory.CreateDirectory(witnessDir + "\\images");
@@ -77,9 +112,10 @@ namespace EyeWitness
             // Capture category and signature codes
             // Grab here so we only have to do it once and iterate through URLs in Main
             // Set TLS v1.2
-			      ServicePointManager.Expect100Continue = true;
+            ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             WebClient witnessClient = new WebClient();
+
             try
             {
                 catCode = witnessClient.DownloadString(CatUrl);
@@ -171,7 +207,6 @@ namespace EyeWitness
                 catch (AccessViolationException e)
                 {
                     Console.WriteLine(e);
-                    throw;
                 }
             }
 
@@ -454,15 +489,15 @@ namespace EyeWitness
                                 string[] allUrlsTemp = File.ReadAllLines(o.File);
                                 if (faveUrls != null)
                                 {
-                                    string[] faveUrlsArray = faveUrls.ToArray();
-                                    allUrls = allUrlsTemp.Concat(faveUrlsArray).ToArray();
+                                    string[] faveUrlsArray = faveUrls.Distinct().ToArray();
+                                    allUrls = allUrlsTemp.Concat(faveUrlsArray).Distinct().ToArray();
                                 }
                             }
 
                             else
                             {
                                 Console.WriteLine("[+] Using input text file");
-                                allUrls = File.ReadAllLines(o.File);
+                                allUrls = File.ReadAllLines(o.File).Distinct().ToArray();
                             }
                         }
                         catch (FileNotFoundException)
@@ -477,7 +512,7 @@ namespace EyeWitness
                 })
                 .WithNotParsed(errs => DisplayHelp(parserResult));
 
-            DirMaker();
+            DirMaker(Options.Instance.Output);
             DictMaker();
             Options options = Options.Instance;
             Console.WriteLine("\n");
@@ -485,18 +520,25 @@ namespace EyeWitness
 
             // build an array containing all the web server objects
             WitnessedServer[] serverArray = new WitnessedServer[allUrls.Length];
-            
+
             //WitnessedServer.SetFeatureBrowserEmulation(); // enable HTML5
 
             List<Task> sourceTaskList = new List<Task>();
             List<Task> screenshotTaskList = new List<Task>();
 
             int arrayPosition = 0;
+
             foreach (var url in allUrls)
             {
                 if(!(Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)))
                 {
-                    Uri.TryCreate($"http://{url}", UriKind.Absolute, out uriResult);
+                    if (options.http)
+                        Uri.TryCreate($"http://{url}", UriKind.Absolute, out uriResult);
+
+                    else if (options.https)
+                        Uri.TryCreate($"https://{url}", UriKind.Absolute, out uriResult);
+                    else
+                        Uri.TryCreate($"http://{url}", UriKind.Absolute, out uriResult);
                 }
 
                 WitnessedServer singleSite = new WitnessedServer(uriResult.AbsoluteUri);
@@ -559,7 +601,7 @@ namespace EyeWitness
             }
 
             Console.WriteLine("Finished! Exiting shortly...");
-            Thread.Sleep(5000);
+            //Thread.Sleep(5000);
         }
     }
 }

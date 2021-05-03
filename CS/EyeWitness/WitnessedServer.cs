@@ -84,6 +84,8 @@ namespace EyeWitness
             //Save the URL as a variable
             string nameUrl = remoteSystem.Replace("/", ".");
             nameUrl = nameUrl.Replace(":", ".");
+            nameUrl = nameUrl.Replace("?", ".");
+            nameUrl = nameUrl.Replace("&", ".");
             urlSaveName = nameUrl.EndsWith("/") ? nameUrl.Remove(nameUrl.Length - 1, 1) : nameUrl;
 
             // Define the paths where everything will be saved

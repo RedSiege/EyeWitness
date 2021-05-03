@@ -36,19 +36,19 @@ namespace EyeWitness
 
         public Bitmap GenerateWebSiteImage(int timeout = 30000)
         {
-            Thread thread = new Thread(delegate()
-            {
-                _GenerateWebSiteImage();
-            });
-            thread.SetApartmentState(ApartmentState.STA);
+            Thread thread = null;
             try
             {
+                thread = new Thread(_GenerateWebSiteImage);
+                thread.SetApartmentState(ApartmentState.STA);
+            
                 thread.Start();
                 thread.Join(timeout);
             }
             catch (AccessViolationException)
             {
-                thread.Abort();
+                Console.WriteLine("[-] Issue with thread, aborting...");
+                thread?.Abort();
             }
             
             
@@ -65,9 +65,34 @@ namespace EyeWitness
                 webBrowser.ScrollBarsEnabled = false;
                 try
                 {
+                    //webBrowser.Navigate(Url, "_self");
+                    //webBrowser.DocumentCompleted += WebBrowserDocumentCompleted;
+                    //Thread.Sleep(1000);
+                    //while (webBrowser.ReadyState != WebBrowserReadyState.Complete)
+                    //{
+                    //    try
+                    //    {
+                    //        Application.DoEvents();
+                    //        ct.ThrowIfCancellationRequested();
+                    //    }
+                    //    catch (Exception e)
+                    //    {
+                    //        Console.WriteLine(e);
+                    //        throw;
+                    //    }
+                    //}
+
+
+
+
+                    // Add an event handler that prints the document after it loads.
+                    //webBrowser.DocumentCompleted += SaveBitmap;
                     webBrowser.Navigate(Url, "_self");
+                    Thread.Sleep(1000);
                     webBrowser.DocumentCompleted += WebBrowserDocumentCompleted;
+
                     while (webBrowser.ReadyState != WebBrowserReadyState.Complete)
+                    //while (true)
                     {
                         try
                         {
@@ -82,7 +107,7 @@ namespace EyeWitness
                     }
                 }
 
-                catch (AccessViolationException)
+                catch
                 {
                     //just pass
                 }
@@ -92,6 +117,16 @@ namespace EyeWitness
                     if (!webBrowser.IsDisposed)
                         webBrowser.Dispose();
                 }
+            }
+        }
+
+        private void SaveBitmap(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            if (sender is WebBrowser webBrowser)
+            {
+                Bitmap = new Bitmap(webBrowser.Bounds.Width, webBrowser.Bounds.Height);
+                //webBrowser.BringToFront();
+                webBrowser?.DrawToBitmap(Bitmap, webBrowser.Bounds);
             }
         }
 
@@ -121,6 +156,8 @@ namespace EyeWitness
                 //webBrowser.BringToFront();
                 webBrowser?.DrawToBitmap(Bitmap, webBrowser.Bounds);
             }
+
+            webBrowser?.Dispose();
         }
     }
 }
