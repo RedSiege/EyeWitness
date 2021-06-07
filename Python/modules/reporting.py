@@ -220,7 +220,8 @@ def sort_data_and_write(cli_parsed, data):
         else:
             amount = len(pages)
         for i in range(0, amount):
-            headfoot = "<center>"
+            headfoot = "<h3>Page {0}</h3>".format(str(i+1))
+            headfoot += "<center>"
             if i == 0:
                 headfoot += ("<a href=\"report_page2.html\" id=\"next\"> Next Page "
                              "</a></center>")
