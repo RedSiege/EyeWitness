@@ -52,6 +52,38 @@ EyeWitness.exe --file C:\Path\to\urls.txt --delay [timeout in seconds] --compres
 ### Proxy Usage
 The best guide for proxying EyeWitness through a socks proxy was made by @raikia and is available here - https://github.com/FortyNorthSecurity/EyeWitness/issues/458
 
+To install EyeWitness from a system while needing to go through a proxy, the following commands (thanks to @digininja) can be used.
+
+```bash
+APT
+-------
+/etc/apt/apt.conf.d/70proxy
+
+$ cat /etc/apt/apt.conf.d/70proxy
+Acquire::http::proxy "http://localhost:3128";
+Acquire::https::proxy "https://localhost:3128";
+
+Git
+-----------------
+$ cat ~/.gitconfig
+[http]
+proxy = http://localhost:3128
+
+Wget
+---------------------
+$ cat ~/.wgetrc or /etc/wgetrc
+
+use_proxy=yes
+http_proxy=127.0.0.1:3128
+https_proxy=127.0.0.1:3128
+
+General system proxy
+--------------------------------
+
+export HTTP_PROXY=http://localhost:3128
+export HTTPS_PROXY=http://localhost:3128
+```
+
 ### Docker
 Now you can execute EyeWitness in a docker container and prevent you from install unnecessary dependencies in your host machine.
 
