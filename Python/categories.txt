@@ -464,3 +464,12 @@ placeholder="Username";id="username" name="ipamusername";class="login form-contr
 <strong class="product">HP PageWide Color E55650</strong>;class="ip-address" id="HomeDeviceIp;DeviceStatus/Save|printer
 meta name="vizportal-config";div class="tb-app" ng-app="VizPortalRun";api/tableau|netdev
 img src="iisstart.png";div id="container";<title>IIS Windows Server</title>|crap
+var cssfile=document.createElement(;getElementById("LOGIN_VALUE_1";d="msglbl">Please log in|infrastructure
+function openSMH(targetURL);var page = getAltModePage();jQuery.existsNonNull(data.event)|infrastructure
+<title>OneView</title>;id="hp-font-css" href;class="hp-spinner-image"></div|infrastructure
+<title>StoreServ Management Console</title>;id="hp-session-lost";#/virtual-machines">Virtual Machines</a>|nas
+<title>Login</title>;<style type="text/css">.ReactPasswordStrength {;<strong>Welcome to Foreman</strong>|infrastructure
+<title>Fabric Insight Portal</title>;src:url(data:application/x-font;<meta charset="UTF-8" http-equiv="expires" content="0"|nas
+<title>Move</title>;placeholder="nutanix" disabled="" value="nutanix"|infrastructure
+<title>ManageEngine ServiceDesk Plus</title>;var logged_domain = "null";body onload="setSelect2()|infrastructure
+<title>Login</title>;function focusUsername();var hash = window.location.hash|netdev

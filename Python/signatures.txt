@@ -342,3 +342,12 @@ var jumpProt = jumpURL.substr(0,6).toLowerCase();var argc = setCookie.arguments.
 placeholder="Username";id="username" name="ipamusername";class="login form-control input-sm"|phpIPAM Admin / ipamadmin
 <title>Brother TD-4100N</title>;Brother Industries, Ltd;/printer/ball.gif|Brother TD-4100N admin/access
 <strong class="product">HP PageWide Color E55650</strong>;class="ip-address" id="HomeDeviceIp;DeviceStatus/Save|HP PageWide Color E55650 administrator:<nopassword>
+var cssfile=document.createElement(;getElementById("LOGIN_VALUE_1";d="msglbl">Please log in|Veritas Remote Management sysadmin/P@ssw0rd
+function openSMH(targetURL);var page = getAltModePage();jQuery.existsNonNull(data.event)|HP iLO 5 no default password
+<title>OneView</title>;id="hp-font-css" href;class="hp-spinner-image"></div|HP OneView Administrator/admin
+<title>StoreServ Management Console</title>;id="hp-session-lost";#/virtual-machines">Virtual Machines</a>|HP 3PAR StoreServ admin / 3parInServ
+<title>Login</title>;<style type="text/css">.ReactPasswordStrength {;<strong>Welcome to Foreman</strong>|Foreman admin / changeme (new systems might have random pass)
+<title>Fabric Insight Portal</title>;src:url(data:application/x-font;<meta charset="UTF-8" http-equiv="expires" content="0"|Fabric Insight Portal Administrator / password
+<title>Move</title>;placeholder="nutanix" disabled="" value="nutanix"|Nutanix Move admin / admin
+<title>ManageEngine ServiceDesk Plus</title>;var logged_domain = "null";body onload="setSelect2()|Help Desk Software by ManageEngine ServiceDesk Plus administrator / administrator
+<title>Login</title>;function focusUsername();var hash = window.location.hash|Cisco Firepower admin / Admin123
