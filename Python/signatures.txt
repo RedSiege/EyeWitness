@@ -351,3 +351,6 @@ function openSMH(targetURL);var page = getAltModePage();jQuery.existsNonNull(dat
 <title>Move</title>;placeholder="nutanix" disabled="" value="nutanix"|Nutanix Move admin / admin
 <title>ManageEngine ServiceDesk Plus</title>;var logged_domain = "null";body onload="setSelect2()|Help Desk Software by ManageEngine ServiceDesk Plus administrator / administrator
 <title>Login</title>;function focusUsername();var hash = window.location.hash|Cisco Firepower admin / Admin123
+navigator.appVersion.charAt(0);navigator.appName.charAt(0);function OpenAlertWindow(url);BROTHER|Brother Printer admin/access
+var bannerEntryCounter = 0;parent.location.href = location.href;getServerResponse("GET","./device/wcd?{EncryptionSetting}|Cisco Switch cisco/cisco
+ZebraNet PrintServer</h1>;href="/server/CANCLJOB.htm;Factory Print Server Settings|Zebra PrintServer admin / 1234

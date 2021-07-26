@@ -473,3 +473,6 @@ function openSMH(targetURL);var page = getAltModePage();jQuery.existsNonNull(dat
 <title>Move</title>;placeholder="nutanix" disabled="" value="nutanix"|infrastructure
 <title>ManageEngine ServiceDesk Plus</title>;var logged_domain = "null";body onload="setSelect2()|infrastructure
 <title>Login</title>;function focusUsername();var hash = window.location.hash|netdev
+var bannerEntryCounter = 0;parent.location.href = location.href;getServerResponse("GET","./device/wcd?{EncryptionSetting}|netdev
+ZebraNet PrintServer</h1>;href="/server/CANCLJOB.htm;Factory Print Server Settings|printer
+<title>HP Color LaserJet MFP;href="/hp/device/defaultnew.css;addSetupManageLinks()|printer
