@@ -476,3 +476,4 @@ function openSMH(targetURL);var page = getAltModePage();jQuery.existsNonNull(dat
 var bannerEntryCounter = 0;parent.location.href = location.href;getServerResponse("GET","./device/wcd?{EncryptionSetting}|netdev
 ZebraNet PrintServer</h1>;href="/server/CANCLJOB.htm;Factory Print Server Settings|printer
 <title>HP Color LaserJet MFP;href="/hp/device/defaultnew.css;addSetupManageLinks()|printer
+UPS Remote Management;Login;Cyber Power Systems;td class="loginLb"|infrastructure
