@@ -13,9 +13,7 @@ RUN export uid=1000 gid=1000 && \
     echo "$user:x:${uid}:" >> /etc/group && \
     chown ${uid}:${gid} -R /home/$user
 
-WORKDIR /home/$user
-
-RUN	git clone https://github.com/FortyNorthSecurity/EyeWitness.git
+RUN	git clone --depth 1 https://github.com/FortyNorthSecurity/EyeWitness.git /home/$user/EyeWitness
 
 WORKDIR /home/$user/EyeWitness
 
