@@ -357,3 +357,4 @@ ZebraNet PrintServer</h1>;href="/server/CANCLJOB.htm;Factory Print Server Settin
 UPS Remote Management;Login;Cyber Power Systems;td class="loginLb"|Cyber Power UPS Remote Management cyber / cyber or device / cyber
 F5 Networks, Inc., Seattle, Washington. All rights reserved.;"author" content="F5 Networks, Inc.";Configuration Utility|F5 BIG-IP admin/admin
 body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;ng-app="esxUiApp"|VmWare ESXi (creds set at install)
+SSMC</title>;<script src="libs/globalize/globalize.js"></script>;<header id="hp-banner-container" class="hp-menu-boundary">|HPE SSMC ssmcadmin / ssmcadmin
