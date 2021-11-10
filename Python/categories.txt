@@ -483,4 +483,6 @@ SSMC</title>;<script src="libs/globalize/globalize.js"></script>;<header id="hp-
 <title>Poly</title>;http-equiv="X-UA-Compatible";mat-form-field class=|voip
 DRV5000 - Log in -;IBM Storwize V5000;lib-prod/evo/images/status_sprites.png;dojoConfig = {|nas
 - Log in -;IBM Storwize V7000;lib-prod/aspen/Aspen-Login.css|nas
-IBM FlashSystem 900;lib-prod/evo/images/status_sprites.png;guifeatures;|nas
+IBM FlashSystem 900;lib-prod/evo/images/status_sprites.png;guifeatures|nas
+<title>Storage</title>;meta name="viewport" content="width=device-width, initial-scale=1.0,;Hewlett Packard Enterprise Development LP|nas
+td id="login_prompt_td" colspan="3" class="login_title";Insyde Software;input type="hidden" name="encodedpwd"|infrastructure

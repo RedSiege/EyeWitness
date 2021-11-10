@@ -362,3 +362,5 @@ SSMC</title>;<script src="libs/globalize/globalize.js"></script>;<header id="hp-
 - Log in -;IBM Storwize V5000;lib-prod/evo/images/status_sprites.png;dojoConfig = {|IBM Storwize v5000 superadmin / passw0rd
 - Log in -;IBM Storwize V7000;lib-prod/aspen/Aspen-Login.css|IBM Storwize v7000 superadmin / passw0rd
 IBM FlashSystem 900;lib-prod/evo/images/status_sprites.png;guifeatures;|IBM FlashSystem 900 superadmin / passw0rd
+<title>Storage</title>;meta name="viewport" content="width=device-width, initial-scale=1.0,;Hewlett Packard Enterprise Development LP|HPE Primera root or admin / ChangeMe123!
+td id="login_prompt_td" colspan="3" class="login_title";Insyde Software;input type="hidden" name="encodedpwd"|Veritas Remote Management sysadmin / Passw0rd
