@@ -367,3 +367,5 @@ td id="login_prompt_td" colspan="3" class="login_title";Insyde Software;input ty
 <title>Login Incorrect</title>;Firstly locate the reset button on the rear panel;<div id="errorbody">|TP-Link TL-WA801ND admin/admin, admin/ttnet, admin/2011
 <title>NETGEAR GS728TP</title>;var cookie_value;var expire_date = new Date();alertMessage+="1) There|Netgear GS728TP <nousername>/password
 var deviceName = "Baseline Switch 2948-SFP Plus";document.title = deviceName;function onEnterSub(e)|Baseline Switch 2948-SFP Plus admin/<blank>
+<title>Nutanix Web Console</title>;Customized CSS with Nutanix Flavor;once AppView is loaded.|Nutanix Web Console admin / admin, admin / Nutanix/4u
+<title>HYCU for Enterprise Clouds</title>;!-- ngIf: !$ctrl.showLogin --;div class="pre-custom-loader"|Nutanix HYCU admin / admin
