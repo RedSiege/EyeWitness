@@ -238,6 +238,9 @@ class HTTPTableObject(object):
             try:
                 html += "\n<br><b> Page Title: </b>{0}\n".format(
                     self.sanitize(self.page_title))
+            except AttributeError:
+                html += "\n<br><b> Page Title:</b>{0}\n".format(
+                    'Unable to Display')
             except UnicodeDecodeError:
                 html += "\n<br><b> Page Title:</b>{0}\n".format(
                     'Unable to Display')
@@ -408,6 +411,9 @@ class UAObject(HTTPTableObject):
         try:
             html += "\n<br><b> Page Title: </b>{0}\n".format(
                 self.sanitize(self.page_title))
+        except AttributeError:
+            html += "\n<br><b> Page Title:</b>{0}\n".format(
+                'Unable to Display')
         except UnicodeDecodeError:
             html += "\n<br><b> Page Title:</b>{0}\n".format(
                 'Unable to Display')
