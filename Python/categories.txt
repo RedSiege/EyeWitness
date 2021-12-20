@@ -491,3 +491,4 @@ td id="login_prompt_td" colspan="3" class="login_title";Insyde Software;input ty
 var deviceName = "Baseline Switch 2948-SFP Plus";document.title = deviceName;function onEnterSub(e)|netdev
 <title>Nutanix Web Console</title>;Customized CSS with Nutanix Flavor;once AppView is loaded.|infrastructure
 <title>HYCU for Enterprise Clouds</title>;!-- ngIf: !$ctrl.showLogin --;div class="pre-custom-loader"|infrastructure
+CRM Call Center Portal;placeholder="Password";section class="panel-section" id="contact"|infrastructure
