@@ -370,3 +370,5 @@ var deviceName = "Baseline Switch 2948-SFP Plus";document.title = deviceName;fun
 <title>Nutanix Web Console</title>;Customized CSS with Nutanix Flavor;once AppView is loaded.|Nutanix Web Console admin / admin, admin / Nutanix/4u
 <title>HYCU for Enterprise Clouds</title>;!-- ngIf: !$ctrl.showLogin --;div class="pre-custom-loader"|Nutanix HYCU admin / admin
 CRM Call Center Portal;placeholder="Password";section class="panel-section" id="contact"|CRM Call Center Portal administrator / pass@word1
+uiApp" ng-controller="GlobalCtrl";Unitrends + Page.title();initial-scale=|Kaseya Unitrends root / unitrends1
+<title>Digi AnywhereUSB 2 Plus;span id="index_mac";index_model" style="display|Digi AnywhereUSB 2 Plus root / dbps
