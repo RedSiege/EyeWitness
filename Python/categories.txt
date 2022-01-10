@@ -494,3 +494,4 @@ var deviceName = "Baseline Switch 2948-SFP Plus";document.title = deviceName;fun
 CRM Call Center Portal;placeholder="Password";section class="panel-section" id="contact"|infrastructure
 uiApp" ng-controller="GlobalCtrl";Unitrends + Page.title();initial-scale=|infrastructure
 <title>Digi AnywhereUSB 2 Plus;span id="index_mac";index_model" style="display|infrastructure
+<title>Web UI</title>;Hewlett Packard;asp.arubanetworks.com;label for="login-username"|infrastructure
