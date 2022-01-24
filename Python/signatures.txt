@@ -372,3 +372,5 @@ var deviceName = "Baseline Switch 2948-SFP Plus";document.title = deviceName;fun
 CRM Call Center Portal;placeholder="Password";section class="panel-section" id="contact"|CRM Call Center Portal administrator / pass@word1
 uiApp" ng-controller="GlobalCtrl";Unitrends + Page.title();initial-scale=|Kaseya Unitrends root / unitrends1
 <title>Digi AnywhereUSB 2 Plus;span id="index_mac";index_model" style="display|Digi AnywhereUSB 2 Plus root / dbps
+<title>Ansible AWX </title>;ng-transclude=;systemAdminOnly;layoutVm.isSuperUser|Ansible AWX admin / password
+<title>Login</title>;STACK_SERIAL_NO;NETWORK_CONFIG_HOST;NETWORK_STATUS_IPV4_ADDRESS;logAdminPwd|HPE StoreEver Device administrator / 00000000

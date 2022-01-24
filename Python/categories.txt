@@ -495,3 +495,5 @@ CRM Call Center Portal;placeholder="Password";section class="panel-section" id="
 uiApp" ng-controller="GlobalCtrl";Unitrends + Page.title();initial-scale=|infrastructure
 <title>Digi AnywhereUSB 2 Plus;span id="index_mac";index_model" style="display|infrastructure
 <title>Web UI</title>;Hewlett Packard;asp.arubanetworks.com;label for="login-username"|infrastructure
+<title>Ansible AWX </title>;ng-transclude=;systemAdminOnly;layoutVm.isSuperUser|infrastructure
+<title>Login</title>;STACK_SERIAL_NO;NETWORK_CONFIG_HOST;NETWORK_STATUS_IPV4_ADDRESS;logAdminPwd|infrastructure
