@@ -670,45 +670,6 @@ def create_folders_css(cli_parsed):
     Args:
         cli_parsed (ArgumentParser): CLI Object
     """
-    css_page = """img {
-    max-width:100%;
-    height:auto;
-    }
-    #screenshot{
-    max-width: 850px;
-    max-height: 550px;
-    display: inline-block;
-    width: 850px;
-    overflow:scroll;
-    }
-    .hide{
-    display:none;
-    }
-    .uabold{
-    font-weight:bold;
-    cursor:pointer;
-    background-color:green;
-    }
-    .uared{
-    font-weight:bold;
-    cursor:pointer;
-    background-color:red;
-    }
-    table.toc_table{
-    border-collapse: collapse;
-    border: 1px solid black;
-    }
-    table.toc_table td{
-    border: 1px solid black;
-    padding: 3px 8px 3px 8px;
-    }
-    table.toc_table th{
-    border: 1px solid black;
-    text-align: left;
-    padding: 3px 8px 3px 8px;
-    }
-    """
-
     # Create output directories
     if os.path.exists(cli_parsed.d):
         shutil.rmtree(cli_parsed.d)
@@ -716,13 +677,11 @@ def create_folders_css(cli_parsed):
     os.makedirs(os.path.join(cli_parsed.d, 'screens'))
     os.makedirs(os.path.join(cli_parsed.d, 'source'))
     local_path = os.path.dirname(os.path.realpath(__file__))
-    # Move our jquery file to the local directory
+    # Move our jquery & css files to the local directory
     shutil.copy2(
         os.path.join(local_path, '..', 'bin', 'jquery-1.11.3.min.js'), cli_parsed.d)
-
-    # Write our stylesheet to disk
-    with open(os.path.join(cli_parsed.d, 'style.css'), 'w') as f:
-        f.write(css_page)
+    shutil.copy2(
+        os.path.join(local_path, '..', 'bin', 'style.css'), cli_parsed.d)
 
 
 def default_creds_category(http_object):
