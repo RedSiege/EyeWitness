@@ -28,6 +28,8 @@ EyeWitness.exe --file C:\Path\to\urls.txt --delay [timeout in seconds] --compres
 ###### Supported Linux Distros:
 * Kali Linux
 * Debian 7+ (at least stable, looking into testing) (Thanks to @themightyshiv)
+* CentOS 7
+* Rocky Linux 8
 
 **E-Mail:** EyeWitness [@] christophertruncer [dot] com
 
