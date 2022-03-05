@@ -40,6 +40,14 @@ if [[ `cat /etc/issue | cut -d" " -f3 | head -n1 | grep "Alpine"` ]]; then
   osinfo="Alpine"
 fi
 
+if [[ `cat /etc/redhat-release | grep "CentOS Linux release 7\.[0-9]\.[0-9]\+ (Core)"` ]]; then
+  osinfo="CentOS7"
+fi
+
+if [[ `cat /etc/redhat-release | grep "Rocky Linux release 8\.[0-9]"` ]]; then
+  osinfo="RockyLinux8"
+fi
+
 # make sure we run from this directory
 pushd . > /dev/null && cd "$(dirname "$0")"
 
@@ -301,6 +309,107 @@ case ${osinfo} in
       tar -xvf geckodriver-v0.30.0-linux32.tar.gz -C /usr/bin
       rm geckodriver-v0.30.0-linux32.tar.gz
     fi
+    cd ..
+  ;;
+  # CentOS 7 Dependency Installation
+  CentOS7)
+    echo '[*] Installing Centos 7 Dependencies'
+    yum install -y python3 xorg-x11-server-Xvfb python3-pip firefox
+    echo
+    echo '[*] Installing Centos 7 Build Dependencies'
+    build_pkg=
+    for pkg_name in gcc cmake python3-devel; do
+      yum list installed 2>/dev/null | grep -q "^${pkg_name}\."
+      if [ $? -eq 1 ]; then
+        yum install -y ${pkg_name}
+        build_pkg="${build_pkg} $pkg_name"
+      fi
+    done
+    echo
+    echo '[*] Installing Python Modules'
+    python3 -m pip install fuzzywuzzy
+    python3 -m pip install selenium --upgrade
+    python3 -m pip install python-Levenshtein
+    python3 -m pip install pyvirtualdisplay
+    python3 -m pip install netaddr
+    echo
+    cd ../bin/
+    MACHINE_TYPE=`uname -m`
+    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+      #curl because wget is not installed by default
+      curl ${geckodriver_x86_64} -LO
+      tar -xvf geckodriver-v0.30.0-linux64.tar.gz
+      rm -f geckodriver-v0.30.0-linux64.tar.gz
+      mv -f geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+        rm -f /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    else
+      curl ${geckodriver_x86_32} -LO
+      tar -xvf geckodriver-v0.30.0-linux32.tar.gz
+      rm -f geckodriver-v0.30.0-linux32.tar.gz
+      mv -f geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+        rm -f /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    fi
+    echo
+    echo '[*] Clean Centos 7 Install Dependencies'
+    yum remove -y ${build_pkg}
+    cd ..
+  ;;
+  # Rocky Linux 8 Dependency Installation
+  RockyLinux8)
+    echo '[*] Installing Rocky Linux 8 Dependencies'
+    dnf install -y python3 xorg-x11-server-Xvfb python3-pip python3-netaddr firefox
+    echo
+    echo '[*] Installing Rocky Linux 8 Build Dependencies'
+    build_pkg=
+    for pkg_name in gcc cmake python3-devel; do
+      dnf list installed 2>/dev/null | grep -q "^${pkg_name}\."
+      if [ $? -eq 1 ]; then
+        dnf install -y ${pkg_name}
+        build_pkg="${build_pkg} $pkg_name"
+      fi
+    done
+    echo
+    echo '[*] Installing Python Modules'
+    python3 -m pip install fuzzywuzzy
+    python3 -m pip install selenium --upgrade
+    python3 -m pip install python-Levenshtein
+    python3 -m pip install pyvirtualdisplay
+    echo
+    cd ../bin/
+    MACHINE_TYPE=`uname -m`
+    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+      #curl because wget is not installed by default
+      curl ${geckodriver_x86_64} -LO
+      tar -xvf geckodriver-v0.30.0-linux64.tar.gz
+      rm -f geckodriver-v0.30.0-linux64.tar.gz
+      mv -f geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+        rm -f /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    else
+      curl ${geckodriver_x86_32} -LO
+      tar -xvf geckodriver-v0.30.0-linux32.tar.gz
+      rm -f geckodriver-v0.30.0-linux32.tar.gz
+      mv -f geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+        rm -f /usr/bin/geckodriver
+      fi
+      ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    fi
+    echo
+    echo '[*] Clean Rocky Linux 8 Install Dependencies'
+    dnf remove -y ${build_pkg}
     cd ..
   ;;
   # Notify Manual Installation Requirement And Exit
