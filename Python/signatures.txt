@@ -374,3 +374,4 @@ uiApp" ng-controller="GlobalCtrl";Unitrends + Page.title();initial-scale=|Kaseya
 <title>Digi AnywhereUSB 2 Plus;span id="index_mac";index_model" style="display|Digi AnywhereUSB 2 Plus root / dbps
 <title>Ansible AWX </title>;ng-transclude=;systemAdminOnly;layoutVm.isSuperUser|Ansible AWX admin / password
 <title>Login</title>;STACK_SERIAL_NO;NETWORK_CONFIG_HOST;NETWORK_STATUS_IPV4_ADDRESS;logAdminPwd|HPE StoreEver Device administrator / 00000000
+<title>YPI Zabbix: Zabbix</title>;Remember me for 30 days;var PHP_TZ_OFFSET| Zabbix Admin/zabbix

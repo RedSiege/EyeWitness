@@ -497,3 +497,4 @@ uiApp" ng-controller="GlobalCtrl";Unitrends + Page.title();initial-scale=|infras
 <title>Web UI</title>;Hewlett Packard;asp.arubanetworks.com;label for="login-username"|infrastructure
 <title>Ansible AWX </title>;ng-transclude=;systemAdminOnly;layoutVm.isSuperUser|infrastructure
 <title>Login</title>;STACK_SERIAL_NO;NETWORK_CONFIG_HOST;NETWORK_STATUS_IPV4_ADDRESS;logAdminPwd|infrastructure
+<title>YPI Zabbix: Zabbix</title>;Remember me for 30 days;var PHP_TZ_OFFSET|infrastructure
