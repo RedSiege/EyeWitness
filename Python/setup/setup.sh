@@ -36,16 +36,22 @@ if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep
   osinfo="Parrot"
 fi
 
-if [[ `cat /etc/issue | cut -d" " -f3 | head -n1 | grep "Alpine"` ]]; then
-  osinfo="Alpine"
+if [ -f /etc/issue ];
+then
+  if [[ `cat /etc/issue | cut -d" " -f3 | head -n1 | grep "Alpine"` ]]; then
+    osinfo="Alpine"
+  fi
 fi
 
-if [[ `cat /etc/redhat-release | grep "CentOS Linux release 7\.[0-9]\.[0-9]\+ (Core)"` ]]; then
-  osinfo="CentOS7"
-fi
+if [ -f /etc/redhat-release ];
+then
+  if [[ `cat /etc/redhat-release | grep "CentOS Linux release 7\.[0-9]\.[0-9]\+ (Core)"` ]]; then
+    osinfo="CentOS7"
+  fi
 
-if [[ `cat /etc/redhat-release | grep "Rocky Linux release 8\.[0-9]"` ]]; then
-  osinfo="RockyLinux8"
+  if [[ `cat /etc/redhat-release | grep "Rocky Linux release 8\.[0-9]"` ]]; then
+    osinfo="RockyLinux8"
+  fi
 fi
 
 # make sure we run from this directory
