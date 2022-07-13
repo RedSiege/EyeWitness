@@ -195,10 +195,13 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         context = None
         pass
 
-    try:
-        tempua = driver.execute_script("return navigator.userAgent")
-    except:
-        tempua = ''
+    if cli_parsed.user_agent:
+        tempua = cli_parsed.user_agent
+    else:
+        try:
+            tempua = driver.execute_script("return navigator.userAgent")
+        except:
+            tempua = ''
     try:
         req = urllib.request.Request(http_object.remote_system, headers={'User-Agent': tempua})
         if cli_parsed.proxy_ip is not None:
