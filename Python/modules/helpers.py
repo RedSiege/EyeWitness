@@ -840,14 +840,14 @@ def class_info():
     class_image = '''MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 M                                                                M
 M       .”cCCc”.                                                 M
-M      /cccccccc\\           Our Upcoming Trainings:              M
-M      §cccccccc|                                                M
-M      :ccccccccP       BlackHat USA  >> Aug 1  -  Aug 4 2020    M
-M      \\cccccccc()                 Virtual                       M
-M       \\ccccccccD         https://www.blackhat.com              M
-M       |cccccccc\\       _                                       M
-M       |ccccccccc)     //    BH ASIA  >>  Sep 28 - Oct 2 2020   M
-M       |cccccc|=      //               Singapore                M
+M      /cccccccc\\                                                M
+M      §cccccccc|            Check Back Soon For                 M
+M      :ccccccccP                 Upcoming Training              M
+M      \\cccccccc()                                               M
+M       \\ccccccccD                                               M
+M       |cccccccc\\        _                                      M
+M       |ccccccccc)     //                                       M
+M       |cccccc|=      //                                        M
 M      /°°°°°°”-.     (CCCC)                                     M
 M      ;----._  _._   |cccc|                                     M
 M   .*°       °°   °. \\cccc/                                     M
