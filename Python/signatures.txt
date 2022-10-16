@@ -375,3 +375,23 @@ uiApp" ng-controller="GlobalCtrl";Unitrends + Page.title();initial-scale=|Kaseya
 <title>Ansible AWX </title>;ng-transclude=;systemAdminOnly;layoutVm.isSuperUser|Ansible AWX admin / password
 <title>Login</title>;STACK_SERIAL_NO;NETWORK_CONFIG_HOST;NETWORK_STATUS_IPV4_ADDRESS;logAdminPwd|HPE StoreEver Device administrator / 00000000
 <title>YPI Zabbix: Zabbix</title>;Remember me for 30 days;var PHP_TZ_OFFSET| Zabbix Admin/zabbix
+Lenovo Storage V3700 V2;dojoConfig;aspenSdlLogin| superuser / passw0rd
+div id="pmcHeaderLogo" class="pmcHeaderLogo";customMessage;pmcFormLabel| hscroot / abc123
+<title>Netgear</title>;mainFrameset;login_header.php;thirdMenu.html| admin / password
+<title>NetMan 204</title>;webgl no-touch geolocation;reboot-info| admin / admin
+IBM FlashSystem 5000;com.ibm.svc.gui.rpc.dependencies;VOLUME_GROUP_ID| superuser / passw0rd
+<title>ManageEngine ServiceDesk Plus</title>;var isMSP =;OUTPUTENCODING| administrator / administrator
+<title>ManageEngine - ADManager Plus</title>;adsf/js/common/jquery;showDefaultLogin| admin / admin
+<title>Log In</title>;<h1><img src="/shared/ibmbch.png" alt="IBM BladeCenter H Advanced
+Management Module| USERID / PASSW0RD
+<title>Login</title>;var caution = false;SaveData;document.form1.RememberID.checked| admin / admin or 0000  / 0000 or admin  / 0000
+<title>Login</title>;aspireLogin.png;User Name</td>;type="password| ASPIRE / 12345678
+<title>Login</title>;seajsnode;Enable Signal;oWifi.bSupportWifiRegion| admin / 12345 or admin / 123456 or admin / admin
+<title>EMC Unisphere</title>;LoginPage;LoginVersionAndProduct| admin / 123#
+iR-ADV C3725</title>;show_alert_dialog;show_max_dialog;alt="CANON"| administrator / 7654321
+<title>Data Domain System Manager</title>;SYSTEM_MANAGER;loginTitle;placeholder="Password"| sysadmin / Idpa_1234
+<title>CS141 Webmanager</title>;clickmenu;CS141TThide| admin / cs141-snmp or engineer / engineer or guest / guest
+<title>Avery Dennison Web Interface</title>;frameset| operator / 0000 or manager / abcd or admin / 1234
+<title>ArcSight</title>;function refresh;window.location.replace("/arcsight/")| root / arcsight
+Digi Connect ME;Configuration and Management;initPage;err.clearErrors()| root / dbps
+<title>Advanced System Management</title>;banner_frame;toc_frame;form_frame| admin / admin or general / general
