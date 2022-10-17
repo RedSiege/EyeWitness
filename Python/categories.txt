@@ -521,3 +521,8 @@ iR-ADV C3725</title>;show_alert_dialog;show_max_dialog;alt="CANON"|printer
 <title>ArcSight</title>;function refresh;window.location.replace("/arcsight/")|infrastructure
 Digi Connect ME;Configuration and Management;initPage;err.clearErrors()|infrastructure
 <title>Advanced System Management</title>;banner_frame;toc_frame;form_frame|infrastructure
+<title>Integrated Lights Out 2;setTimeout;redirectFnc;Hewlett Packard|highval
+img src="./tipsImage.png";SSOV1;parse device info error;oInfo.DeviceInfo.ip|crap
+<title>iRMC S4;Checkbox2id;PRIMERGY;LanguageSeparator|infrastructure
+g_strLanguage;g_bHasNote;g_strFirmware;<title>Yealink;loginbox|voip
+<title id="main-page-title">TrueNAS;apple-touch-icon;msapplication|nas

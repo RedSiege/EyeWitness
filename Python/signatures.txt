@@ -395,3 +395,7 @@ iR-ADV C3725</title>;show_alert_dialog;show_max_dialog;alt="CANON"| administrato
 <title>ArcSight</title>;function refresh;window.location.replace("/arcsight/")| root / arcsight
 Digi Connect ME;Configuration and Management;initPage;err.clearErrors()| root / dbps
 <title>Advanced System Management</title>;banner_frame;toc_frame;form_frame| admin / admin or general / general
+<title>Integrated Lights Out 2;setTimeout;redirectFnc;Hewlett Packard| Admin / Admin or Oper / Oper
+<title>iRMC S4;Checkbox2id;PRIMERGY;LanguageSeparator| admin / admin
+g_strLanguage;g_bHasNote;g_strFirmware;<title>Yealink;loginbox| admin / admin
+<title id="main-page-title">TrueNAS;apple-touch-icon;msapplication| root / abcd1234
