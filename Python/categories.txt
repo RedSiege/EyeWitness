@@ -506,8 +506,7 @@ IBM FlashSystem 5000;com.ibm.svc.gui.rpc.dependencies;VOLUME_GROUP_ID|nas
 <title>ManageEngine ServiceDesk Plus</title>;var isMSP =;OUTPUTENCODING|infrastructure
 <title>ManageEngine - ADManager Plus</title>;adsf/js/common/jquery;showDefaultLogin|infrastructure
 <title>Microsoft Internet Information Services 8</title>;<div id="branding">;class="hero">|crap
-<title>Log In</title>;<h1><img src="/shared/ibmbch.png" alt="IBM BladeCenter H Advanced
-Management Module|infrastructure
+<title>Log In</title>;<h1><img src="/shared/ibmbch.png" alt="IBM BladeCenter H Advanced Management Module|infrastructure
 <title>Login</title>;var caution = false;SaveData;document.form1.RememberID.checked|voip
 <title>Login</title>;aspireLogin.png;User Name</td>;type="password|netdev
 <title>Login</title>;seajsnode;Enable Signal;oWifi.bSupportWifiRegion|netdev

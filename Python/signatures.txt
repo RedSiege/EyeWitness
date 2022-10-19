@@ -382,8 +382,7 @@ div id="pmcHeaderLogo" class="pmcHeaderLogo";customMessage;pmcFormLabel| hscroot
 IBM FlashSystem 5000;com.ibm.svc.gui.rpc.dependencies;VOLUME_GROUP_ID| superuser / passw0rd
 <title>ManageEngine ServiceDesk Plus</title>;var isMSP =;OUTPUTENCODING| administrator / administrator
 <title>ManageEngine - ADManager Plus</title>;adsf/js/common/jquery;showDefaultLogin| admin / admin
-<title>Log In</title>;<h1><img src="/shared/ibmbch.png" alt="IBM BladeCenter H Advanced
-Management Module| USERID / PASSW0RD
+<title>Log In</title>;<h1><img src="/shared/ibmbch.png" alt="IBM BladeCenter H Advanced Management Module| USERID / PASSW0RD
 <title>Login</title>;var caution = false;SaveData;document.form1.RememberID.checked| admin / admin or 0000  / 0000 or admin  / 0000
 <title>Login</title>;aspireLogin.png;User Name</td>;type="password| ASPIRE / 12345678
 <title>Login</title>;seajsnode;Enable Signal;oWifi.bSupportWifiRegion| admin / 12345 or admin / 123456 or admin / admin
