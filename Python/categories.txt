@@ -525,3 +525,5 @@ img src="./tipsImage.png";SSOV1;parse device info error;oInfo.DeviceInfo.ip|crap
 <title>iRMC S4;Checkbox2id;PRIMERGY;LanguageSeparator|infrastructure
 g_strLanguage;g_bHasNote;g_strFirmware;<title>Yealink;loginbox|voip
 <title id="main-page-title">TrueNAS;apple-touch-icon;msapplication|nas
+IBM FlashSystem 5200;lib-prod/assets/css/Aspen;FlashCopyMappingsSnapshot|nas
+<title>Welcome to Service Assistant</title>;svg focusable;mg alt="Java"|nas

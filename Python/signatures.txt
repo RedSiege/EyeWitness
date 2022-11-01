@@ -398,3 +398,5 @@ Digi Connect ME;Configuration and Management;initPage;err.clearErrors()| root / 
 <title>iRMC S4;Checkbox2id;PRIMERGY;LanguageSeparator| admin / admin
 g_strLanguage;g_bHasNote;g_strFirmware;<title>Yealink;loginbox| admin / admin
 <title id="main-page-title">TrueNAS;apple-touch-icon;msapplication| root / abcd1234
+IBM FlashSystem 5200;lib-prod/assets/css/Aspen;FlashCopyMappingsSnapshot| superuser / passw0rd
+<title>Welcome to Service Assistant</title>;svg focusable;mg alt="Java"| superuser / passw0rd
