@@ -42,6 +42,7 @@ def create_driver(cli_parsed, user_agent=None):
         os.path.dirname(os.path.realpath(__file__)),
         '..', 'bin', 'dismissauth.xpi')
     profile.add_extension(extension_path)
+    profile.accept_untrusted_certs = True
 
     # This user agent case covers a user provided one
     if cli_parsed.user_agent is not None:
