@@ -400,3 +400,5 @@ g_strLanguage;g_bHasNote;g_strFirmware;<title>Yealink;loginbox| admin / admin
 <title id="main-page-title">TrueNAS;apple-touch-icon;msapplication| root / abcd1234
 IBM FlashSystem 5200;lib-prod/assets/css/Aspen;FlashCopyMappingsSnapshot| superuser / passw0rd
 <title>Welcome to Service Assistant</title>;svg focusable;mg alt="Java"| superuser / passw0rd
+<title>Top Page - MX-M453N</title>;function loginSubmit(mode);class="invisible"| administrator / admin
+<title>KONICA MINOLTA PageScope Web Connection</title>;popupCopyright;index.cgi| 12345678
