@@ -7,7 +7,6 @@ import shutil
 import sys
 import time
 import xml.sax
-from distutils.util import strtobool
 import glob
 import socket
 from netaddr import IPAddress
@@ -835,6 +834,23 @@ def open_file_input(cli_parsed):
     else:
         print('[*] No report files found to open, perhaps no hosts were successful')
         return False
+
+
+def strtobool(value, raise_exc=False):
+
+    str2b_true = {'yes', 'true', 't', 'y', '1'}
+    str2b_false = {'no', 'false', 'f', 'n', '0'}
+
+    if isinstance(value, str) or sys.version_info[0] < 3 and isinstance(value, basestring):
+        value = value.lower()
+        if value in str2b_true:
+            return True
+        if value in str2b_false:
+            return False
+
+    if raise_exc:
+        raise ValueError('Expected "%s"' % '", "'.join(str2b_true | str2b_false))
+    return None
 
 def class_info():
     class_image = '''MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
