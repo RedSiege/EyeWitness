@@ -402,3 +402,6 @@ IBM FlashSystem 5200;lib-prod/assets/css/Aspen;FlashCopyMappingsSnapshot| superu
 <title>Welcome to Service Assistant</title>;svg focusable;mg alt="Java"| superuser / passw0rd
 <title>Top Page - MX-M453N</title>;function loginSubmit(mode);class="invisible"| administrator / admin
 <title>KONICA MINOLTA PageScope Web Connection</title>;popupCopyright;index.cgi| 12345678
+<title>windows_exporter</title></head>;<a href="/metrics">| Prometheus Metrics no auth /metrics
+www.solarwinds.com/documentation/dpa;action="login.iwc"| Solar Winds Database Performance Analyzer / admin / blank
+<title>RabbitMQ Management| guest /guest - admin / changeme
