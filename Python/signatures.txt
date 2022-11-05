@@ -215,7 +215,7 @@ parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryStri
 <title>Log In</title>;title="Go to CA Network Flow Analysis" class="login-page-logo";Network Flow Analysis</span>|CA Network Flow Analysis admin/admin
 <p id="powered">Powered by <a href="http://www.ruckuswireless.com">Ruckus Wireless</a></p>;<tr><th>Admin Name</th><td><input class="login_input";<tr><th>Password</th><td><input class="login_input";<title>Log In</title>|Ruckus Wireless admin/password or super/sp-admin
 <link rel="stylesheet" href="resources/webLogin-all.css">;<title>Polycom Login</title>;<meta http-equiv="X-UA-Compatible" content="IE=edge">;Password:</label></div></div></div>;type="text" role="textbox" size="1" name="userName" class="x-form-field x-form-text|Polycom Wireless Polycom/123 (user) Polycom/456 (admin)
-<title>WebTools | Home</title>;<td align="left" valign="middle" class="name">XeroxC70;set_status_refresh_interval|Xerox C70 Printer admin/1111
+<title>WebTools;Home</title>;<td align="left" valign="middle" class="name">XeroxC70;set_status_refresh_interval|Xerox C70 Printer admin/1111
 <title>S2 Netbox Login</title>;<!--License IFRAME HERE GOES HERE-->;div id="headerframe"|S2 Netbox admin/admin
 <title>Remote Support Portal;Powered by BOMGAR</title>;exitSurveyBox;Show Representatives Help Window;/content/access_key_input.js|Bomgar Device admin/password
 <title>Pritunl</title>;<link rel="icon" type="image/x-icon" href;onSubmit();login-form;var duoUserInput = document.getElementById('duo-username')|Pritunl VPN pritunl/pritunl
@@ -313,7 +313,7 @@ Internet Services;window.document.body.scrollTop;href="JavaScript:parent.fflip;p
 <title>Altova LicenseServer</title>;<span>Please wait...</span>;<div id="statusErrorMessage";<p class="legalese">|Altova License Server <nousername>/default
 Nimble Storage;/assets/vendor;/oem/settings.js;<!-- Username field -->;data-ember-modal-dialog-overlay|Nimble Storage admin/admin
 <title>Welcome to JBoss™</title>;JBoss Online Resources;<h3>JBoss Management</h3>;href="/status">Tomcat status</a>|JBOSS JMX Console superadmin/superadmin
-<title>APC | Log On</title>;function isValidBrowser();class="applyCancel"|APC Smart UPS readonly/apc
+<title>APC;Log On</title>;function isValidBrowser();class="applyCancel"|APC Smart UPS readonly/apc
 <head><title>U</title></head>;client-side JavaScript client sniff;client-side JavaScript client sniff|Sensaphone IMS-4000 admin/ims1k
 <title>Liebert IntelliSlot Web Card</title>;var appObj = new Object();document.appObj= appObj|Liebert IntelliSlot Web Card Liebert/Liebert
 <title>Lexmark CS725</title>;<img src="/images/printer_logo.png";role="heading">Embedded Web Server</div>|Lexmark CS725 <nousername>/00000
@@ -334,7 +334,7 @@ var jumpProt = jumpURL.substr(0,6).toLowerCase();var argc = setCookie.arguments.
 <title>Netman 204 login</title>;<form id="login" action="cgi-bin/login.cgi";onsubmit="this.submit.disabled='disabled';action="cgi-bin/view.cgi"|NetMan 204 admin/admin fwupgrade/fwupgrade user/user
 <title>DS-510</title>;<frameset rows="90,*" frameborder="0" framespacing="0" border="0">;<frameset rows="90,*" frameborder="0" framespacing="0" border="0">;<frame src="/en/top.htm" name="top" noresize="" scrolling="no">|Silex Print Server root/<nopassword>
 <title>AlienVault OSSIM;<title>AlienVault OSSIM;form name="f_login" id="f_login" method="POST"|Alienvault admin/admin
-<base href="/sysmgr/">;nwf-loading-indicator class="nwf-loading";upport-href="{{ 'supportHref' | Vendorizer }}|NetApp OnCommand System Manager admin/admin123
+<base href="/sysmgr/">;nwf-loading-indicator class="nwf-loading";upport-href="{{ 'supportHref'|NetApp OnCommand System Manager admin/admin123
 <title>IBM TS7700</title>;<div class="deviceImage"></div>;"productnameLabelSpan">Storage Management|IBM TS7700 admin/admin
 <title>Login</title>;function initDHTMLAPI() {;var cacUserName = "";hideElement("trInitName", "trInitPwd");name="login_saml" id="login_saml_form"|Palo Alto Firewall admin/admin
 <title>NETGEAR ProSAFE Plus Switch</title>;<div id="mainArea" class="mainArea";<a id="loginBtn" class="loginBtnStyle"|NetGear Switch nousername/password
