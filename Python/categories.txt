@@ -85,8 +85,8 @@ Grandstream Device Configuration;form action="/cgi-bin/dologin" method="post" na
 HP Color LaserJet CP3505;input name="btnContinue"  type="image";img class="hpPageImage" src="images/question.gif" alt="On-line help|printer
 Welcome to the Web-Based Configurator;function str2blks_MD5(str);loginPassword.value = "ZyXEL ZyWALL Series";Prestige_Login" value="Login"|netdev
 var slControl = new ActiveXObject('AgControl.AgControl');form name="Form1" method="post" action="Default.aspx" id="Form1";<title>AxisTV</title>|voip
-If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;<a href="mailto:users@tomcat.apache.org">users@tomcat.apache.org|highval
-<h2>If you're seeing this, you've successfully installed Tomcat. Congratulations!</h2>;<p>In Tomcat 7.0 access to the manager application is split between;<li id="list-announce"><strong><a href="mailto:announce-subscribe@tomcat.apache.org">|highval
+If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;<a href="mailto:users@tomcat.apache.org">users@tomcat.apache.org|appops
+<h2>If you're seeing this, you've successfully installed Tomcat. Congratulations!</h2>;<p>In Tomcat 7.0 access to the manager application is split between;<li id="list-announce"><strong><a href="mailto:announce-subscribe@tomcat.apache.org">|appops
 ilo.ico;SetCookie('hp-iLO-Login';<title>HP Integrated Lights-Out 2 Login</title>|idrac
 <span class="login_server_type" id="login_server_type_id">M1000e;img.src='/cmc/images/login_progress.14824.gif';<img src="/cmc/images/cmc_title.14824.png"|idrac
 <span class="loginTitle">Integrated Lights-Out 2 <span class="advanced">Advanced</span></span>;<!-- Masterhead Start -->|idrac
@@ -107,7 +107,7 @@ var thisIDRACText = " This iDRAC";// Return true if value contains only printabl
 Teradata Viewpoint V14.10.00.05-b47;if (new Date().getTime() - loginRenderMillis|nas
 Cisco Unified IP Phone Cisco Communicator;<img src="/FS/Logo.png";/CGI/Java/Serviceability|voip
 <title>IIS7</title>;<img width="571" height="411" alt="IIS7" src="welcome.png"|crap
-<p>In Tomcat 8.0 access to the manager application is split between;<title>Apache Tomcat/;<pre>$CATALINA_HOME/RUNNING.txt</pre>|highval
+<p>In Tomcat 8.0 access to the manager application is split between;<title>Apache Tomcat/;<pre>$CATALINA_HOME/RUNNING.txt</pre>|appops
 <title>Test Page for the Apache HTTP Server on Red Hat Enterprise Linux</title>;<h1>Red Hat Enterprise Linux <strong>Test Page|crap
 <title>Welcome to VMware vSphere</title>;<meta content="VMware VirtualCenter is virtual infrastructure software for partitioning, consolidating and managing systems in mission-critical environments.|virtualization
 title="VMware vFabric, Cloud Application Platform";<p>This is the default vFabric tc Server Runtime home page|crap
@@ -125,7 +125,7 @@ div.hpGasGaugeBlock;div.hpPageText;HP 9250C Digital Sender|printer
 <title>HP Designjet T1100 44in;getElementById('printerStatusId').innerHTML|printer
 Wired PrintServer<h3>Status;<h1>Zebra Technologies<br />|printer
 <div id="headertitle">;Phaser 7760;<div id="stattableWithoutBkGif">|printer
-document.write("&lt;title&gt;XEROX WORKCENTRE");Function Name:	SyncTreeToThisUrl|printer
+document.write("&lt;title&gt;XEROX WORKCENTRE");Function Name:;SyncTreeToThisUrl|printer
 div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;Printers</title>|printer
 div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;MFP Series</title>|printer
 <frame target="_self" noresize="noresize" marginheight="10" marginwidth="15" scrolling="auto" src="/cgi-bin/dynamic/PrinterStatus.html" name="rbottom" />|printer
@@ -145,12 +145,13 @@ KONICA MINOLTA PageScope;m_s_smm.html|printer
 k Camera;AXIS;indexMain|voip
 This is a placeholder page installed by the Ubuntu;bug in this Light|crap
 Welcome to nginx on Ubuntu;ubuntu-bug;Thank you for using Ubuntu|crap
+Page for the Nginx HTTP Server on Red Hat|crap
 Xerox;/status/consumables.dhtml;displayTree;SMart|printer
 div.hpGasGaugeBlock;div.hpPageText;hp LaserJet;|printer
 It works!;This is the default web page for this server;The web server software is running|crap
 <html><head></head><body><h1>It works!</h1>|crap
 <title>AXIS;Network Camera;/view/view.shtml|camera
-It works !;Tomcat home page;Tomcat7 veterans;tomcat7-admin|highval
+It works !;Tomcat home page;Tomcat7 veterans;tomcat7-admin|appops
 Canon Inc;DeviceDetail;t_title.gif;alt="Network Configuration"|printer
 function encode (psstrs, iLen);D-LINK|netdev
 Laser Printer</title>;Dell;<frame name="Printer Information" target="Main";dynamic/printer/PrinterStatus|printer
@@ -175,15 +176,15 @@ qnap-lib;myqnapcloud.com;logo-img x-abs-layout|nas
 var thisIDRACText = EntityDecode(" This iDRAC") //" This iDRAC"|idrac
 Avaya G450 - Avaya Device Manager;Welcome to the Avaya G450 Manager|netdev
 <frame src="/index_top.htm" name="Banner" noresize="noresize" frameborder="0" marginwidth="0" marginheight="0" scrolling="no">;document.writeln("This application cannot run on Windows 3.1.  Please upgrade to Windows NT 4.0, Windows 95 or Windows 98.")|printer
-If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;href="/manager/html";As you may have guessed by now, this is the default Tomcat home page|highval
+If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;href="/manager/html";As you may have guessed by now, this is the default Tomcat home page|appops
 <a href="http://www.apachehaus.com/forum">;Apache Haus Distribution Installation Test;href="/apachehaus.ico";If you are seeing this it means that the web server installed at this site is working properly|crap
-If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;href="manager/html";As you may have guessed by now, this is the default Tomcat home page|highval
-If you're seeing this, you've successfully installed Tomcat. Congratulations!;href="manager/html"|highval
+If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;href="manager/html";As you may have guessed by now, this is the default Tomcat home page|appops
+If you're seeing this, you've successfully installed Tomcat. Congratulations!;href="manager/html"|appops
 content="F5 Networks, Inc.";doesn't have a BIGIPAuthCookie;F5 Networks Logo|netdev
 Cisco Codec;alert alert-info recommended-browsers tr;<span class="tr">System name|voip
 Cisco Edge 340;For more information of Cisco Edge 340 Series, please visit homepage;/auth/static/images/logo_duotone_gradient1.png|voip
 a href="EthernetInformation";Streaming Statistics;<a href="/">Device Information|voip
-If you're seeing this, you've successfully installed Tomcat. Congratulations!;href="/manager/html"|highval
+If you're seeing this, you've successfully installed Tomcat. Congratulations!;href="/manager/html"|appops
 Cisco IP Phone;Device Information;/CGI/Java/Serviceability?adapter=device|voip
 GlassFish Server - Server Running;Your server is now running;go to the Administration Console|crap
 var alertMgr = new AlertManager();HP BladeSystem Onboard Administrator;Checks to see if we are signing on from HP SIM.;//hpoa:version|idrac
@@ -205,17 +206,17 @@ To replace this page, overwrite;Sun Java System Application Server Platform Edit
 TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|nas
 This page is used to test the Apache Haus distribution of the Apache HTTP server after it has been installed;Test Page for the Apache Haus distribution|crap
 WebTools;images/img_printer.gif;Xerox;WT2Home/English/WT2Home2/Output/Home.htm|crap
-Manage this JBoss AS Instance;href="css/jboss.css";/admin-console/|highval
-"css/jboss.css";/jmx-console/;JBoss Enterprise Application Platform|highval
-JBoss Application Server 7... it's here.;Administration Console;jboss_community.png|highval
-Welcome to WildFly 8;jboss_community.png;Your WildFly 8 is running|highval
+Manage this JBoss AS Instance;href="css/jboss.css";/admin-console/|appops
+"css/jboss.css";/jmx-console/;JBoss Enterprise Application Platform|appops
+JBoss Application Server 7... it's here.;Administration Console;jboss_community.png|appops
+Welcome to WildFly 8;jboss_community.png;Your WildFly 8 is running|appops
 VMware ESXi Server is virtual infrastructure software for partitioning, consolidating, and managing systems in mission-critical environments.;ID_EESX_Welcome|virtualization
 VMware VirtualCenter is virtual infrastructure software for partitioning;VMware-viclient.exe|virtualization
 XEROX ColorQube  - Status;SyncTreeToThisUrl|printer
 XEROX WORKCENTRE;/index.dhtml;/status/tree.php|printer
 Sun(TM) Integrated Lights Out Manager;Display Product Version;/Images/sun/2.2|idrac
 Remote Insight Lights-Out;Establishing a secure Remote Insight session;img src="compaq.gif"|idrac
-Welcome to JBoss;/jmx-console/;JBoss AS Documentation;Tomcat status|highval
+Welcome to JBoss;/jmx-console/;JBoss AS Documentation;Tomcat status|appops
 hp color LaserJet;div.hpGasGaugeBlock|printer
 iLO 3;js/iLO.js;js/supersleight-min;Hewlett-Packard Development Company|idrac
 <center>Tomcat is running...</center>;</body></html>|crap
@@ -430,7 +431,7 @@ script language="JavaScript" src="readCookie.js;script language="JavaScript" src
 Internet Services;window.document.body.scrollTop;href="JavaScript:parent.fflip;parseInt(chkBrowserVersion("MSIE"))|netdev
 <title>Altova LicenseServer</title>;<span>Please wait...</span>;<div id="statusErrorMessage";<p class="legalese">|infrastructure
 Nimble Storage;/assets/vendor;/oem/settings.js;<!-- Username field -->;data-ember-modal-dialog-overlay|netdev
-<title>Welcome to JBoss™</title>;JBoss Online Resources;<h3>JBoss Management</h3>;href="/status">Tomcat status</a>|highval
+<title>Welcome to JBoss™</title>;JBoss Online Resources;<h3>JBoss Management</h3>;href="/status">Tomcat status</a>|appops
 <title>APC;Log On</title>;function isValidBrowser();class="applyCancel"|infrastructure
 <head><title>U</title></head>;client-side JavaScript client sniff;client-side JavaScript client sniff|voip
 <title>Liebert IntelliSlot Web Card</title>;var appObj = new Object();document.appObj= appObj|infrastructure
@@ -532,6 +533,7 @@ IBM FlashSystem 5200;lib-prod/assets/css/Aspen;FlashCopyMappingsSnapshot|nas
 <title>Kibana</title>|secops
 <title>Log in - Bitbucket</title>|devops
 <title>Home - Grafana</title>|devops
+<title>Grafana|devops
 <title>JBoss Management</title>|devops
 <title>JFrog</title>|devops
 <title>Log in to Fisheye |devops
@@ -557,24 +559,27 @@ IBM FlashSystem 5200;lib-prod/assets/css/Aspen;FlashCopyMappingsSnapshot|nas
 <title>vRealize Log Insight - Login</title>|virtualization
 <title>vRealize Operations Manager</title>|virtualization
 <title>WebSphere Liberty;ibm|appops
-<title>Welcome to WildFly</title>|appops
+<title>Welcome to WildFly|appops
 Vormetric Data Security Management Console</title>|secops
 <pre>Jenkins-Agent-Protocols:|devops
 <title>Dashboard [Jenkins]</title>|devops
 <title>CA Privileged Access Manager</title>;CA Technologies|secops
 <title>BigFix Inventory: Login</title>|secops
 <title>BMC ProactiveNet|secops
+<span class="bmcLoginProductName">BMC AtriumSSO|secops
 BMC Discovery:|secops
 <title>BMC Smart Reporting</title>|secops
 <title>BigFix Compliance: Login</title>|secops
 <title>BIG-IP;F5, Inc., Seattle, Washington. All rights reserved|netdev
 <title>502 - Web server received an invalid response while acting as a gateway or proxy server.</title>|badgw
+<title>502 Bad Gateway</title>|badgw
 <title>503 Service Temporarily Unavailable</title>|serviceunavailable
 <html><head></head><body><h1>503 Service Unavailable</h1>|serviceunavailable
 <title>site unavailable</title>|serviceunavailable
 OpsHub</title>;admin|appops
 <title>Symantec Privileged Access Manager</title>|secops
 <title>windows_exporter</title></head>;<a href="/metrics">|dataops
+<html><head><title>Node Exporter</title></head>|dataops
 <title>Zabbix</title>|secops
 <title>tomcat;installed to|dataops
 </head><body><pre>&lt;s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/|dataops
@@ -582,6 +587,11 @@ OpsHub</title>;admin|appops
 <html><head></head><body>{"result":"Page not found"}</body></html>|notfound
 <title>404 - File or directory not found.</title>|notfound
 <title id="loginTitle"></title>;by Cisco Systems, Inc|netdev
+<div class="citrix_stripe"><a class="citrix_logo">Citrix Systems, Inc.</a></div>|netdev
+Citrix Layering Management Console|netdev
+<title>Cisco Prime Infrastructure Health Monitor|netdev
+Cisco;NCSLoginPage.css|netdev
+<title>Cisco ASDM|netdev
 <html><head></head><body>Tomcat-down for maintenance|serviceunavailable
 <html><head><link rel="stylesheet" href="resource://content-accessible/plaintext.css"></head><body><pre>Listening to;messages.</pre></body></html>|dataops
 <html><head></head><body></body></html>|empty
@@ -601,6 +611,7 @@ xmlns:s="http://schemas.xmlsoap.org/soap/envelope/|dataops
 www.solarwinds.com/documentation/dpa;action="login.iwc"|devops
 <title>E-Business Suite Home Page Redirect</title>|redirector
 <title>Elastic</title>|secops
+<title>Home - Elastic</title>secops
 <title>Enterprise-Class Redis for Developers</title>|devops
 <title>Error response</title>;501|inerror
 <title>HAL Management Console</title>|devops
@@ -616,7 +627,7 @@ Bitbucket</title>|devops
 <title>Qlik Sense login page</title>|appops
 <title>Red Hat</title>;Where to go from here|crap
 <title>Report and Dashboard Server - Log In</title>|devops
-<title>SOAP RPC Server</title>|dataops
+<title>SOAP RPC Server</title>|appops
 <title>SYSLOG Server</title>|dataops
 <title>Selenium Grid Hub</title></head>|appops
 <title>Sign in - Matomo</title>|devops
@@ -633,8 +644,59 @@ python_gc_objects_collected_total{generation;RMF_performance_procu|dataops
 <a href="http://nats.io/documentation/server/gnatsd-monitoring/>help</a>|dataops
 <meta name="author" content="VMware, Inc.">|virtualization
 <body><pre>ERROR: Please retry or contact support</pre></body></html>|serviceunavailable
+503 Service Unavailable</title>|serviceunavailable
 ng-app="esxUiApp">;ng-bind="$root.title"|virtualization
 <title>Command &amp; Control</title>|appops
 <title>EAP 6</title>;<h1>Welcome to JBoss|appops
 <title>Error: Resource Not Found</title>|notfound
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"|dataops
+<html><head><title>;/</title></head><body><h1>;/</h1><hr>;</a><br></pre><hr></body></html>|dirlist
+<title>Alluvio NetIM</title>|netdev
+<title>Appliance Management Console</title>;Login to Threat Response|secops
+<title>Sign In | Threat Response</title>|secops
+<title>Login - VMware Appliance Management</title>|virtualization
+CA Directory Manager</title>|secops
+<title>Citrix App Layering|appops
+<title>Citrix Connector Appliance|appops
+Couchbase Console;cbui-base.css|devops
+<title>DFWorks|appops
+<title>Dependency-Track</title>|badreq
+<title>GigaVUE-OS</title>|secops
+<title>Harbor</title>|devops
+<title>Home page - Site</title>;<p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>|crap
+<title>IBM Planning Analytics with Watson™</title>|appops
+<title>Infoblox Grid Manager</title>|devops
+<title>Klocwork Insight Review</title>|devops
+<title>Kubernetes Dashboard</title>|devops
+data-netapp-id="loginPage-username-input;data-netapp-id="loginPage-password-input|nas
+NetApp® StorageGRID®</title>|nas
+<title>NetApp Harvest|nas
+<title>MailHog</title>|comms
+templateFullName=Cisco+Firepower+Threat+Defense|secops
+<title>Pacemaker/Corosync Configuration</title>|appops
+<title>Packages - Go Documentation Server</title>|devops
+<title>Pacts</title><th class="consumer|devops
+<title>Perforce Validate - Projects Management</title>|devops
+<title>Portainer</title>|devops
+<title>PrinterLogic</title>|printers
+<title>Prometheus Time Series Collection and Processing Server</title>|dataops
+<title>RMF Data Portal</title>|appops
+<title>RMS Print Queue Information</title>|printers
+<title>Riverbed Technology, Inc.</title>|netdev
+<title>Rundeck - Login</title>|devops
+You have created a service.</p><p class="intro">To test this service|dataops
+This is a Windows© Communication Foundation service.<br>|dataops
+<title>Solaris Dashboard</title>|appops
+<title>SonarQube</title>|devops
+<title>Swagger UI</title>|devops
+JIRA</title>|devops
+<title>Welcome to ChartMuseum!</title>|devops
+<title>phpLDAPadmin</title>|secops
+<title>vRealize|virtualization
+<title>vSphere Web Client</title>|virtualization
+service provides version URLs that offer the proper metadata for;redirecting the go tool onto well defined SVN repositories|dataops
+UX RIVERBED ORANGE|netdev
+<html><head><link rel="stylesheet" href="resource://content-accessible/plaintext.css"></head><body><pre>ok</pre></body></html>|empty
+<body><pre>ok</pre></body>|empty
+jvm_buffer_pool_used_bytes;jvm_memory_pool_allocated|dataops
+</head><body><p>Invalid Request</p></body></html>|invalidreq
