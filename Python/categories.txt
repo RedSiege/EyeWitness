@@ -611,7 +611,7 @@ xmlns:s="http://schemas.xmlsoap.org/soap/envelope/|dataops
 www.solarwinds.com/documentation/dpa;action="login.iwc"|devops
 <title>E-Business Suite Home Page Redirect</title>|redirector
 <title>Elastic</title>|secops
-<title>Home - Elastic</title>secops
+<title>Home - Elastic</title>|secops
 <title>Enterprise-Class Redis for Developers</title>|devops
 <title>Error response</title>;501|inerror
 <title>HAL Management Console</title>|devops
@@ -653,7 +653,7 @@ ng-app="esxUiApp">;ng-bind="$root.title"|virtualization
 <html><head><title>;/</title></head><body><h1>;/</h1><hr>;</a><br></pre><hr></body></html>|dirlist
 <title>Alluvio NetIM</title>|netdev
 <title>Appliance Management Console</title>;Login to Threat Response|secops
-<title>Sign In | Threat Response</title>|secops
+<title>Sign In;Threat Response</title>|secops
 <title>Login - VMware Appliance Management</title>|virtualization
 CA Directory Manager</title>|secops
 <title>Citrix App Layering|appops
