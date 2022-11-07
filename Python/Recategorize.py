@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import glob
 import os
@@ -9,33 +9,32 @@ from modules.helpers import strtobool
 from modules.db_manager import DB_Manager
 from modules.reporting import sort_data_and_write
 
-
 def open_file_input(cli_parsed):
     files = glob.glob(os.path.join(cli_parsed.d, 'report.html'))
     if len(files) > 0:
-        print 'Would you like to open the report now? [Y/n]',
+        print('Would you like to open the report now? [Y/n]'),
         while True:
             try:
-                response = raw_input().lower()
-                if response is "":
+                response = input().lower()
+                if response == "":
                     return True
                 else:
                     return strtobool(response)
             except ValueError:
-                print "Please respond with y or n",
+                print("Please respond with y or n"),
     else:
-        print '[*] No report files found to open, perhaps no hosts were successful'
+        print ('[*] No report files found to open, perhaps no hosts were successful')
         return False
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print 'Recategorize a previously completed EyeWitness scan to account for updates. This can take a while!\n'
-        print '[*] Usage: python Recategorize.py <dbpath>'
-        print 'DBPath should point to the ew.db file in your EyeWitness output folder'
+        print('Recategorize a previously completed EyeWitness scan to account for updates. This can take a while!\n')
+        print('[*] Usage: python Recategorize.py <dbpath>')
+        print('DBPath should point to the ew.db file in your EyeWitness output folder')
         sys.exit()
     db_path = sys.argv[1]
     if not os.path.isfile(db_path):
-        print '[*] No valid db path provided'
+        print('[*] No valid db path provided')
         sys.exit()
     dbm = DB_Manager(db_path)
     dbm.open_connection()
@@ -46,7 +45,7 @@ if __name__ == "__main__":
     for f in files:
         os.remove(f)
     results = dbm.recategorize()
-    print 'Writing report'
+    print ('Writing report')
     sort_data_and_write(cli_parsed, results)
     newfiles = glob.glob(cli_parsed.d + '/report.html')
     if open_file_input(cli_parsed):
