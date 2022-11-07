@@ -395,7 +395,7 @@ WSMAN library is loaded here as;FRAMEHEADER;function loadFrames;top.remoteSelect
 <title> SyncThru Web Service </title>;sws_loading_wait;<span>SyncThru Web Service</span>|printer
 <Title>ConfigSummary</Title>;<AuthUserName>Public</AuthUserName>;<ProductName>bizhub C368</ProductName>|printer
 .titleciscolog;.titleciscouser;opener && opener.location.hostname == self.location.hostname;temp=String.fromCharCode(temp)|netdev
-body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;ng-app="esxUiApp"|highval
+body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;ng-app="esxUiApp"|virtualization
 <head><title>Avaya B179</title>;<link href="css/b179.css";http-equiv="Content-Type"|voip
 <title id="titleLbl_id"></title>;var thisIDRACText = EntityDecode;var thisIDRACText;MAXUNLEN = 512|highval
 body onload="init('/wcd/system_device.xml','wcd',';href="/wcd/default.css">;FUNCVER|printer
@@ -633,3 +633,8 @@ python_gc_objects_collected_total{generation;RMF_performance_procu|dataops
 <a href="http://nats.io/documentation/server/gnatsd-monitoring/>help</a>|dataops
 <meta name="author" content="VMware, Inc.">|virtualization
 <body><pre>ERROR: Please retry or contact support</pre></body></html>|serviceunavailable
+ng-app="esxUiApp">;ng-bind="$root.title"|virtualization
+<title>Command &amp; Control</title>|appops
+<title>EAP 6</title>;<h1>Welcome to JBoss|appops
+<title>Error: Resource Not Found</title>|notfound
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"|dataops
