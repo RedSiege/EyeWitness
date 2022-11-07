@@ -41,6 +41,9 @@ namespace EyeWitness
             [Option('f', "file", Group = "Input Source", HelpText = "Specify a new-line separated file of URLs", Default = null)]
             public string File { get; set; }
 
+            [Option('i', "cidr", Group = "Input Source", HelpText = "Specify an IP CIDR", Default = null)]
+            public string IpAddresses { get; set; }
+
             [Option('o', "output", Required = false, HelpText = "Specify an output directory (one will be created if non-existent)", Default = null)]
             public string Output { get; set; }
 
@@ -505,6 +508,30 @@ namespace EyeWitness
                             Console.WriteLine("[-] ERROR: The file containing the URLS to scan does not exist!");
                             Console.WriteLine("[-] ERROR: Please make sure you've provided the correct filepath and try again.");
                             System.Environment.Exit(1);
+                        }
+                    }
+
+                    if (o.IpAddresses != null)
+                    {
+                        Console.WriteLine("[+] Using IP addresses");
+
+                        try
+                        {
+                            if (!IPNetwork.TryParse(o.IpAddresses, out var parsed))
+                            {
+                                Console.WriteLine("[-] ERROR: Failed to parse IP Addresses");
+                                return;
+                            }
+
+                            var ipAddress = parsed.ListIPAddress().Distinct().ToList();
+                            var strings = new List<string>();
+                            ipAddress.ForEach(i => strings.Add(i.ToString()));
+                            allUrls = strings.ToArray();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"[-] ERROR: {e.Message}");
+                            return;
                         }
                     }
 
