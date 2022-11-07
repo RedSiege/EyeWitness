@@ -653,7 +653,7 @@ ng-app="esxUiApp">;ng-bind="$root.title"|virtualization
 <html><head><title>;/</title></head><body><h1>;/</h1><hr>;</a><br></pre><hr></body></html>|dirlist
 <title>Alluvio NetIM</title>|netdev
 <title>Appliance Management Console</title>;Login to Threat Response|secops
-<title>Sign In | Threat Response</title>|secops
+<title>Sign In;Threat Response</title>|secops
 <title>Login - VMware Appliance Management</title>|virtualization
 CA Directory Manager</title>|secops
 <title>Citrix App Layering|appops
