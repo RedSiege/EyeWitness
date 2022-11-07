@@ -5,9 +5,8 @@ import os
 import sys
 import webbrowser
 
-from distutils.util import strtobool
+from modules.helpers import strtobool
 from modules.db_manager import DB_Manager
-
 
 def open_file_input(cli_parsed):
     files = glob.glob(os.path.join(cli_parsed.d, 'report.html'))
