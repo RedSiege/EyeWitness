@@ -1,0 +1,876 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Net.IPNetwork</name>
+    </assembly>
+    <members>
+        <member name="T:System.Net.BigIntegerExtensions">
+            <summary>
+            Extension methods to convert <see cref="T:System.Numerics.BigInteger"/>
+            instances to hexadecimal, octal, and binary strings.
+            </summary>
+        </member>
+        <member name="M:System.Net.BigIntegerExtensions.ToBinaryString(System.Numerics.BigInteger)">
+            <summary>
+            Converts a <see cref="T:System.Numerics.BigInteger"/> to a binary string.
+            </summary>
+            <param name="bigint">A <see cref="T:System.Numerics.BigInteger"/>.</param>
+            <returns>
+            A <see cref="T:System.String"/> containing a binary
+            representation of the supplied <see cref="T:System.Numerics.BigInteger"/>.
+            </returns>
+        </member>
+        <member name="M:System.Net.BigIntegerExtensions.ToHexadecimalString(System.Numerics.BigInteger)">
+            <summary>
+            Converts a <see cref="T:System.Numerics.BigInteger"/> to a hexadecimal string.
+            </summary>
+            <param name="bigint">A <see cref="T:System.Numerics.BigInteger"/>.</param>
+            <returns>
+            A <see cref="T:System.String"/> containing a hexadecimal
+            representation of the supplied <see cref="T:System.Numerics.BigInteger"/>.
+            </returns>
+        </member>
+        <member name="M:System.Net.BigIntegerExtensions.ToOctalString(System.Numerics.BigInteger)">
+            <summary>
+            Converts a <see cref="T:System.Numerics.BigInteger"/> to a octal string.
+            </summary>
+            <param name="bigint">A <see cref="T:System.Numerics.BigInteger"/>.</param>
+            <returns>
+            A <see cref="T:System.String"/> containing an octal
+            representation of the supplied <see cref="T:System.Numerics.BigInteger"/>.
+            </returns>
+        </member>
+        <member name="M:System.Net.BigIntegerExtensions.PositiveReverse(System.Numerics.BigInteger,System.Int32)">
+             <summary>
+            
+             Reverse a Positive BigInteger ONLY
+             Bitwise ~ operator
+            
+             Input  : FF FF FF FF
+             Width  : 4
+             Result : 00 00 00 00
+            
+            
+             Input  : 00 00 00 00
+             Width  : 4
+             Result : FF FF FF FF
+            
+             Input  : FF FF FF FF
+             Width  : 8
+             Result : FF FF FF FF 00 00 00 00
+            
+            
+             Input  : 00 00 00 00
+             Width  : 8
+             Result : FF FF FF FF FF FF FF FF.
+            
+             </summary>
+             <param name="input">The positive number to bitwise reverse.</param>
+             <param name="width">The width of the parameter.
+             </param>
+             <returns>A number representing the input bitwise reversed.</returns>
+        </member>
+        <member name="T:System.Net.CidrClassFull">
+            <summary>
+            Class <c>CidrClassFull</c> tries to guess CIDR in a ClassFull way.
+            </summary>
+        </member>
+        <member name="M:System.Net.CidrClassFull.TryGuessCidr(System.String,System.Byte@)">
+             <summary>
+            
+             IPV4 :
+            
+             Class              Leading bits    Default netmask
+                 A (CIDR /8)        00           255.0.0.0
+                 A (CIDR /8)        01           255.0.0.0
+                 B (CIDR /16)       10           255.255.0.0
+                 C (CIDR /24)       11           255.255.255.0
+            
+             IPV6 : 64.
+            
+             </summary>
+             <param name="ip">A string representing the CIDR to convert.</param>
+             <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+             <returns>true if ip was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="T:System.Net.CidrClassLess">
+            <summary>
+            Try to guess a CIDR in a ClassLess way ie. ipv4 = 32, ipv6 = 128.
+            </summary>
+        </member>
+        <member name="M:System.Net.CidrClassLess.TryGuessCidr(System.String,System.Byte@)">
+             <summary>
+            
+             IPV4 : 32
+             IPV6 : 128.
+            
+             </summary>
+             <param name="ip">A string representing an ipadress that will be used to guess CIDR.</param>
+             <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+             <returns>true if ip was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="T:System.Net.CidrGuess">
+            <summary>
+            A static helper CidrGuess class.
+            </summary>
+        </member>
+        <member name="P:System.Net.CidrGuess.ClassFull">
+            <summary>
+            Gets classFull guess.
+            </summary>
+        </member>
+        <member name="P:System.Net.CidrGuess.ClassLess">
+            <summary>
+            Gets classLess guess.
+            </summary>
+        </member>
+        <member name="T:System.Net.ICidrGuess">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:System.Net.ICidrGuess.TryGuessCidr(System.String,System.Byte@)">
+             <summary>
+            
+             </summary>
+             <param name="ip">An ip adress to guess the ip network CIDR.</param>
+             <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+             <returns>true if ip was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="T:System.Net.IPAddressCollection">
+            <summary>
+            A collection of IP Adresses
+            </summary>
+        </member>
+        <member name="T:System.Net.IPNetwork">
+            <summary>
+            IP Network utility class.
+            Use IPNetwork.Parse to create instances.
+            </summary>
+        </member>
+        <member name="P:System.Net.IPNetwork.Network">
+            <summary>
+            Gets network address.
+            </summary>
+        </member>
+        <member name="P:System.Net.IPNetwork.AddressFamily">
+            <summary>
+            Gets address Family.
+            </summary>
+        </member>
+        <member name="P:System.Net.IPNetwork.Netmask">
+            <summary>
+            Gets netmask.
+            </summary>
+        </member>
+        <member name="P:System.Net.IPNetwork.Broadcast">
+            <summary>
+            Gets broadcast address.
+            </summary>
+        </member>
+        <member name="P:System.Net.IPNetwork.FirstUsable">
+            <summary>
+            Gets first usable IP adress in Network.
+            </summary>
+        </member>
+        <member name="P:System.Net.IPNetwork.LastUsable">
+            <summary>
+            Gets last usable IP adress in Network.
+            </summary>
+        </member>
+        <member name="P:System.Net.IPNetwork.Usable">
+            <summary>
+            Gets number of usable IP adress in Network.
+            </summary>
+        </member>
+        <member name="P:System.Net.IPNetwork.Total">
+            <summary>
+            Gets number of IP adress in Network.
+            </summary>
+        </member>
+        <member name="P:System.Net.IPNetwork.Cidr">
+            <summary>
+            Gets the CIDR netmask notation.
+            </summary>
+        </member>
+        <member name="M:System.Net.IPNetwork.#ctor(System.Net.IPAddress,System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Net.IPNetwork"/> class.
+            Creates a new IPNetwork.
+            </summary>
+            <param name="ipaddress">An ipaddress.</param>
+            <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+            <exception cref="T:System.ArgumentNullException">ipaddress is null.</exception>
+        </member>
+        <member name="M:System.Net.IPNetwork.Parse(System.String,System.String)">
+             <summary>
+             192.168.168.100 - 255.255.255.0
+            
+             ```
+             Network   : 192.168.168.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.168.1
+             End       : 192.168.168.254
+             Broadcast : 192.168.168.255
+             ```.
+            
+             </summary>
+             <param name="ipaddress">A string containing an ip address to convert.</param>
+             <param name="netmask">A string representing a netmask in std format (255.255.255.0).</param>
+             <returns>An IPNetwork equivalent to the network contained in ipaddress/netmask.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Parse(System.String,System.Byte)">
+             <summary>
+             192.168.168.100/24
+            
+             Network   : 192.168.168.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.168.1
+             End       : 192.168.168.254
+             Broadcast : 192.168.168.255.
+             </summary>
+             <param name="ipaddress">A string containing an ip address to convert.</param>
+             <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+             <returns>An IPNetwork equivalent to the network contained in ipaddress/cidr.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Parse(System.Net.IPAddress,System.Net.IPAddress)">
+             <summary>
+             192.168.168.100 255.255.255.0
+            
+             Network   : 192.168.168.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.168.1
+             End       : 192.168.168.254
+             Broadcast : 192.168.168.255.
+             </summary>
+             <param name="ipaddress">A string containing an ip address to convert.</param>
+             <param name="netmask">A netmask to be used to create the IPNetwork.</param>
+             <returns>An IPNetwork equivalent to the network contained in ipaddress/netmask.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Parse(System.String)">
+             <summary>
+             192.168.0.1/24
+             192.168.0.1 255.255.255.0
+            
+             Network   : 192.168.0.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.0.1
+             End       : 192.168.0.254
+             Broadcast : 192.168.0.255.
+             </summary>
+             <param name="network">A string containing an ip network to convert.</param>
+             <returns>An IPNetwork equivalent to the network contained in string network.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Parse(System.String,System.Boolean)">
+             <summary>
+             192.168.0.1/24
+             192.168.0.1 255.255.255.0
+            
+             Network   : 192.168.0.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.0.1
+             End       : 192.168.0.254
+             Broadcast : 192.168.0.255.
+             </summary>
+             <param name="network">A string containing an ip network to convert.</param>
+             <param name="sanitanize">Whether to sanitize network or not.</param>
+             <returns>An IPNetwork equivalent to the network contained in string network.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Parse(System.String,System.Net.ICidrGuess)">
+             <summary>
+             192.168.0.1/24
+             192.168.0.1 255.255.255.0
+            
+             Network   : 192.168.0.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.0.1
+             End       : 192.168.0.254
+             Broadcast : 192.168.0.255.
+             </summary>
+             <param name="network">A string containing an ip network to convert.</param>
+             <param name="cidrGuess">A ICidrGuess implementation that will be used to guess CIDR during converion.</param>
+             <returns>An IPNetwork equivalent to the network contained in string network.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Parse(System.String,System.Net.ICidrGuess,System.Boolean)">
+             <summary>
+             192.168.0.1/24
+             192.168.0.1 255.255.255.0
+            
+             Network   : 192.168.0.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.0.1
+             End       : 192.168.0.254
+             Broadcast : 192.168.0.255.
+             </summary>
+             <param name="network">A string containing an ip network to convert.</param>
+             <param name="cidrGuess">A ICidrGuess implementation that will be used to guess CIDR during converion.</param>
+             <param name="sanitanize">Whether to sanitize network or not.</param>
+             <returns>An IPNetwork equivalent to the network contained in string network.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TryParse(System.String,System.String,System.Net.IPNetwork@)">
+             <summary>
+             192.168.168.100 - 255.255.255.0
+            
+             Network   : 192.168.168.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.168.1
+             End       : 192.168.168.254
+             Broadcast : 192.168.168.255.
+             </summary>
+             <param name="ipaddress">A string containing an ip address to convert.</param>
+             <param name="netmask">A string containing a netmaks to convert (255.255.255.0).</param>
+             <param name="ipnetwork">When this method returns, contains the IPNetwork value equivalent of the ip adress contained in ipaddress with the netmask corresponding to cidr, if the conversion succeeded, or null if the conversion failed. The conversion fails if the s parameter is null or Empty, is not of the correct format, or represents an invalid ip address. This parameter is passed uninitialized; any value originally supplied in result will be overwritten.</param>
+             <returns>true if ipaddress/netmask was converted successfully; otherwise, false..</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TryParse(System.String,System.Byte,System.Net.IPNetwork@)">
+             <summary>
+             192.168.168.100/24
+            
+             Network   : 192.168.168.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.168.1
+             End       : 192.168.168.254
+             Broadcast : 192.168.168.255.
+             </summary>
+             <param name="ipaddress">A string containing an ip address to convert.</param>
+             <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+             <param name="ipnetwork">When this method returns, contains the IPNetwork value equivalent of the ip adress contained in ipaddress with the netmask corresponding to cidr, if the conversion succeeded, or null if the conversion failed. The conversion fails if the s parameter is null or Empty, is not of the correct format, or represents an invalid ip address. This parameter is passed uninitialized; any value originally supplied in result will be overwritten.</param>
+             <returns>true if ipaddress/cidr was converted successfully; otherwise, false..</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TryParse(System.String,System.Net.IPNetwork@)">
+             <summary>
+             192.168.0.1/24
+             192.168.0.1 255.255.255.0
+            
+             Network   : 192.168.0.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.0.1
+             End       : 192.168.0.254
+             Broadcast : 192.168.0.255.
+             </summary>
+             <param name="network">A string containing an ip network to convert.</param>
+             <param name="ipnetwork">When this method returns, contains the IPNetwork value equivalent of the ip adress contained in ipaddress with the netmask corresponding to cidr, if the conversion succeeded, or null if the conversion failed. The conversion fails if the s parameter is null or Empty, is not of the correct format, or represents an invalid ip address. This parameter is passed uninitialized; any value originally supplied in result will be overwritten.</param>
+             <returns>true if network was converted successfully; otherwise, false..</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TryParse(System.String,System.Boolean,System.Net.IPNetwork@)">
+             <summary>
+             192.168.0.1/24
+             192.168.0.1 255.255.255.0
+            
+             Network   : 192.168.0.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.0.1
+             End       : 192.168.0.254
+             Broadcast : 192.168.0.255.
+             </summary>
+             <param name="network">A string containing an ip network to convert.</param>
+             <param name="sanitanize">Whether to sanitize network or not.</param>
+             <param name="ipnetwork">When this method returns, contains the IPNetwork value equivalent of the ip adress contained in ipaddress with the netmask corresponding to cidr, if the conversion succeeded, or null if the conversion failed. The conversion fails if the s parameter is null or Empty, is not of the correct format, or represents an invalid ip address. This parameter is passed uninitialized; any value originally supplied in result will be overwritten.</param>
+             <returns>true if network was converted successfully; otherwise, false..</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TryParse(System.Net.IPAddress,System.Net.IPAddress,System.Net.IPNetwork@)">
+             <summary>
+             192.168.0.1/24
+             192.168.0.1 255.255.255.0
+            
+             Network   : 192.168.0.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.0.1
+             End       : 192.168.0.254
+             Broadcast : 192.168.0.255.
+             </summary>
+             <param name="ipaddress">An IPAdresse to convert.</param>
+             <param name="netmask">A IPAdresse to be used as netmaks to convert.</param>
+             <param name="ipnetwork">When this method returns, contains the IPNetwork value equivalent of the ip adress contained in ipaddress with the netmask corresponding to cidr, if the conversion succeeded, or null if the conversion failed. The conversion fails if the s parameter is null or Empty, is not of the correct format, or represents an invalid ip address. This parameter is passed uninitialized; any value originally supplied in result will be overwritten.</param>
+             <returns>true if network was converted successfully; otherwise, false..</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.InternalParse(System.Boolean,System.String,System.String,System.Net.IPNetwork@)">
+             <summary>
+             192.168.168.100 - 255.255.255.0
+            
+             Network   : 192.168.168.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.168.1
+             End       : 192.168.168.254
+             Broadcast : 192.168.168.255.
+             </summary>
+             <param name="tryParse">Whether to throw exception or not during conversion.</param>
+             <param name="ipaddress">A string containing an ip address to convert.</param>
+             <param name="netmask">A string containing a netmask to convert (255.255.255.0).</param>
+             <param name="ipnetwork">The resulting IPNetwork.</param>
+        </member>
+        <member name="M:System.Net.IPNetwork.InternalParse(System.Boolean,System.Net.IPAddress,System.Net.IPAddress,System.Net.IPNetwork@)">
+             <summary>
+             192.168.168.100 255.255.255.0
+            
+             Network   : 192.168.168.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.168.1
+             End       : 192.168.168.254
+             Broadcast : 192.168.168.255.
+             </summary>
+             <param name="tryParse">Whether to throw exception or not during conversion.</param>
+             <param name="ipaddress">An ip address to convert.</param>
+             <param name="netmask">A netmask to convert (255.255.255.0).</param>
+             <param name="ipnetwork">The resulting IPNetwork.</param>
+        </member>
+        <member name="M:System.Net.IPNetwork.InternalParse(System.Boolean,System.String,System.Byte,System.Net.IPNetwork@)">
+             <summary>
+             192.168.168.100/24
+            
+             Network   : 192.168.168.0
+             Netmask   : 255.255.255.0
+             Cidr      : 24
+             Start     : 192.168.168.1
+             End       : 192.168.168.254
+             Broadcast : 192.168.168.255.
+             </summary>
+             <param name="tryParse">Whether to throw exception or not during conversion.</param>
+             <param name="ipaddress">A string containing an ip address to convert.</param>
+             <param name="cidr">A byte representing the CIDR to be used in conversion (/24).</param>
+             <param name="ipnetwork">The resulting IPNetwork.</param>
+        </member>
+        <member name="M:System.Net.IPNetwork.ToBigInteger(System.Net.IPAddress)">
+            <summary>
+            Convert an ipadress to decimal
+            0.0.0.0 -> 0
+            0.0.1.0 -> 256.
+            </summary>
+            <param name="ipaddress">A string containing an ip address to convert.</param>
+            <returns>A number representing the ipaddress.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TryToBigInteger(System.Net.IPAddress,System.Nullable{System.Numerics.BigInteger}@)">
+            <summary>
+            Convert an ipadress to decimal
+            0.0.0.0 -> 0
+            0.0.1.0 -> 256.
+            </summary>
+            <param name="ipaddress">A string containing an ip address to convert.</param>
+            <param name="uintIpAddress">A number representing the IPAdress.</param>
+            <returns>true if ipaddress was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.ToUint(System.Byte,System.Net.Sockets.AddressFamily)">
+            <summary>
+            Convert a cidr to BigInteger netmask.
+            </summary>
+            <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+            <param name="family">Either IPv4 or IPv6.</param>
+            <returns>A number representing the netmask exprimed in CIDR.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TryToUint(System.Byte,System.Net.Sockets.AddressFamily,System.Nullable{System.Numerics.BigInteger}@)">
+            <summary>
+            Convert a cidr to uint netmask.
+            </summary>
+            <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+            <param name="family">Either IPv4 or IPv6.</param>
+            <param name="uintNetmask">A number representing the netmask.</param>
+            <returns>true if cidr was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.InternalToBigInteger(System.Boolean,System.Byte,System.Net.Sockets.AddressFamily,System.Nullable{System.Numerics.BigInteger}@)">
+            <summary>
+            Convert a cidr to uint netmask.
+            </summary>
+            <param name="tryParse">Whether to throw exception or not during conversion.</param>
+            <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+            <param name="family">Either IPv4 or IPv6.</param>
+            <param name="uintNetmask">A number representing the netmask.</param>
+        </member>
+        <member name="M:System.Net.IPNetwork.InternalToCidr(System.Boolean,System.Numerics.BigInteger,System.Net.Sockets.AddressFamily,System.Nullable{System.Byte}@)">
+            <summary>
+            Convert netmask to CIDR
+             255.255.255.0 -> 24
+             255.255.0.0   -> 16
+             255.0.0.0     -> 8.
+            </summary>
+            <param name="tryParse">Whether to throw exception or not during conversion.</param>
+            <param name="netmask">A number representing the netmask to convert.</param>
+            <param name="family">Either IPv4 or IPv6.</param>
+            <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+        </member>
+        <member name="M:System.Net.IPNetwork.ToCidr(System.Net.IPAddress)">
+            <summary>
+            Convert netmask to CIDR
+             255.255.255.0 -> 24
+             255.255.0.0   -> 16
+             255.0.0.0     -> 8.
+            </summary>
+            <param name="netmask">An IPAdress representing the CIDR to convert.</param>
+            <returns>A byte representing the CIDR converted from the netmask.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TryToCidr(System.Net.IPAddress,System.Nullable{System.Byte}@)">
+            <summary>
+            Convert netmask to CIDR
+             255.255.255.0 -> 24
+             255.255.0.0   -> 16
+             255.0.0.0     -> 8.
+            </summary>
+            <param name="netmask">An IPAdress representing the CIDR to convert.</param>
+            <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+            <returns>true if netmask was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.ToNetmask(System.Byte,System.Net.Sockets.AddressFamily)">
+            <summary>
+            Convert CIDR to netmask
+             24 -> 255.255.255.0
+             16 -> 255.255.0.0
+             8 -> 255.0.0.0.
+            </summary>
+            <see href="http://snipplr.com/view/15557/cidr-class-for-ipv4/"/>
+            <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+            <param name="family">Either IPv4 or IPv6.</param>
+            <returns>An IPAdress representing cidr.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TryToNetmask(System.Byte,System.Net.Sockets.AddressFamily,System.Net.IPAddress@)">
+            <summary>
+            Convert CIDR to netmask
+             24 -> 255.255.255.0
+             16 -> 255.255.0.0
+             8 -> 255.0.0.0.
+            </summary>
+            <see href="http://snipplr.com/view/15557/cidr-class-for-ipv4/"/>
+            <param name="cidr">A byte representing the netmask in cidr format (/24).</param>
+            <param name="family">Either IPv4 or IPv6.</param>
+            <param name="netmask">The resulting netmask.</param>
+            <returns>true if cidr was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.BitsSet(System.Numerics.BigInteger,System.Net.Sockets.AddressFamily)">
+            <summary>
+            Count bits set to 1 in netmask.
+            </summary>
+            <see href="http://stackoverflow.com/questions/109023/best-algorithm-to-count-the-number-of-set-bits-in-a-32-bit-integer"/>
+            <param name="netmask">A number representing the netmask to count bits from.</param>
+            <param name="family">Either IPv4 or IPv6.</param>
+            <returns>The number of bytes set to 1.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.BitsSet(System.Net.IPAddress)">
+            <summary>
+            Count bits set to 1 in netmask.
+            </summary>
+            <param name="netmask">A number representing the netmask to count bits from.</param>
+            <returns>The number of bytes set to 1.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.ValidNetmask(System.Net.IPAddress)">
+            <summary>
+            return true if netmask is a valid netmask
+            255.255.255.0, 255.0.0.0, 255.255.240.0, ...
+            </summary>
+            <see href="http://www.actionsnip.com/snippets/tomo_atlacatl/calculate-if-a-netmask-is-valid--as2-"/>
+            <param name="netmask">A number representing the netmask to validate.</param>
+            <returns>true if netmask is a valid IP Netmask; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.ToIPAddress(System.Numerics.BigInteger,System.Net.Sockets.AddressFamily)">
+            <summary>
+            Transform a uint ipaddress into IPAddress object.
+            </summary>
+            <param name="ipaddress">A number representing an ip address to convert.</param>
+            <param name="family">Either IPv4 or IPv6.</param>
+            <returns>An ip adress.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Contains(System.Net.IPAddress)">
+            <summary>
+            return true if ipaddress is contained in network.
+            </summary>
+            <param name="ipaddress">A string containing an ip address to convert.</param>
+            <returns>true if ipaddress is contained into the IP Network; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Contains(System.Net.IPNetwork)">
+            <summary>
+            return true is network2 is fully contained in network.
+            </summary>
+            <param name="network2">The network to test.</param>
+            <returns>It returns the boolean value. If network2 is in IPNetwork then it returns True, otherwise returns False.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Overlap(System.Net.IPNetwork)">
+            <summary>
+            return true is network2 overlap network.
+            </summary>
+            <param name="network2">The network to test.</param>
+            <returns>true if network2 overlaps into the IP Network; otherwise, false.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:System.Net.IPNetwork.IANA_ABLK_RESERVED1" -->
+        <member name="P:System.Net.IPNetwork.IANA_BBLK_RESERVED1">
+            <summary>
+            Gets 172.12.0.0/12.
+            </summary>
+            <returns>The IANA reserved IPNetwork 172.12.0.0/12.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:System.Net.IPNetwork.IANA_CBLK_RESERVED1" -->
+        <member name="M:System.Net.IPNetwork.IsIANAReserved(System.Net.IPAddress)">
+            <summary>
+            return true if ipaddress is contained in
+            IANA_ABLK_RESERVED1, IANA_BBLK_RESERVED1, IANA_CBLK_RESERVED1.
+            </summary>
+            <param name="ipaddress">A string containing an ip address to convert.</param>
+            <returns>true if ipaddress is a IANA reserverd IP Netowkr ; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.IsIANAReserved">
+            <summary>
+            return true if ipnetwork is contained in
+            IANA_ABLK_RESERVED1, IANA_BBLK_RESERVED1, IANA_CBLK_RESERVED1.
+            </summary>
+            <returns>true if the ipnetwork is a IANA reserverd IP Netowkr ; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Subnet(System.Byte)">
+            <summary>
+            Subnet a network into multiple nets of cidr mask
+            Subnet 192.168.0.0/24 into cidr 25 gives 192.168.0.0/25, 192.168.0.128/25
+            Subnet 10.0.0.0/8 into cidr 9 gives 10.0.0.0/9, 10.128.0.0/9.
+            </summary>
+            <param name="cidr">A byte representing the CIDR to be used to subnet the current IPNetwork.</param>
+            <returns>A IPNetworkCollection splitted by CIDR.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TrySubnet(System.Byte,System.Net.IPNetworkCollection@)">
+            <summary>
+            Subnet a network into multiple nets of cidr mask
+            Subnet 192.168.0.0/24 into cidr 25 gives 192.168.0.0/25, 192.168.0.128/25
+            Subnet 10.0.0.0/8 into cidr 9 gives 10.0.0.0/9, 10.128.0.0/9.
+            </summary>
+            <param name="cidr">A byte representing the CIDR to be used to subnet the current IPNetwork.</param>
+            <param name="ipnetworkCollection">The resulting subnetted IPNetwork.</param>
+            <returns>true if network was split successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Supernet(System.Net.IPNetwork)">
+            <summary>
+            Supernet two consecutive cidr equal subnet into a single one
+            192.168.0.0/24 + 192.168.1.0/24 = 192.168.0.0/23
+            10.1.0.0/16 + 10.0.0.0/16 = 10.0.0.0/15
+            192.168.0.0/24 + 192.168.0.0/25 = 192.168.0.0/24.
+            </summary>
+            <param name="network2">The network to supernet with.</param>
+            <returns>A supernetted IP Network.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TrySupernet(System.Net.IPNetwork,System.Net.IPNetwork@)">
+            <summary>
+            Try to supernet two consecutive cidr equal subnet into a single one
+            192.168.0.0/24 + 192.168.1.0/24 = 192.168.0.0/23
+            10.1.0.0/16 + 10.0.0.0/16 = 10.0.0.0/15
+            192.168.0.0/24 + 192.168.0.0/25 = 192.168.0.0/24.
+            </summary>
+            <param name="network2">The network to supernet with.</param>
+            <param name="supernet">The resulting IPNetwork.</param>
+            <returns>true if network2 was supernetted successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.ComputeHashCode">
+            <summary>
+            20221105 : ldvhcosal
+            GetHashCode uses mutable attributes. That introduce undefined behaviour on Hashtable and dictionary.
+            </summary>
+            <returns>An number representing the hashCode.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Supernet(System.Net.IPNetwork[])">
+            <summary>
+            Supernet a list of subnet
+            192.168.0.0/24 + 192.168.1.0/24 = 192.168.0.0/23
+            192.168.0.0/24 + 192.168.1.0/24 + 192.168.2.0/24 + 192.168.3.0/24 = 192.168.0.0/22.
+            </summary>
+            <param name="ipnetworks">A list of IPNetwork to merge into common supernets.</param>
+            <returns>The result of IPNetwork if merges succeed, the first ipnetwork otherwise.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TrySupernet(System.Net.IPNetwork[],System.Net.IPNetwork[]@)">
+            <summary>
+            Supernet a list of subnet
+            192.168.0.0/24 + 192.168.1.0/24 = 192.168.0.0/23
+            192.168.0.0/24 + 192.168.1.0/24 + 192.168.2.0/24 + 192.168.3.0/24 = 192.168.0.0/22.
+            </summary>
+            <param name="ipnetworks">A list of IPNetwork to merge into common supernets.</param>
+            <param name="supernet">The result of IPNetwork merges.</param>
+            <returns>true if ipnetworks was supernetted successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Print">
+            <summary>
+            Print an ipnetwork in a clear representation string.
+            </summary>
+            <returns>Dump an IPNetwork representation as string.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TryGuessCidr(System.String,System.Byte@)">
+            <summary>
+            Delegate to CidrGuess ClassFull guessing of cidr.
+            </summary>
+            <param name="ip">A string representing an IPAdress that will be used to guess the corresponding CIDR.</param>
+            <param name="cidr">The resulting CIDR as byte.</param>
+            <returns>true if cidr was guessed successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.TryParseCidr(System.String,System.Net.Sockets.AddressFamily,System.Nullable{System.Byte}@)">
+            <summary>
+            Try to parse cidr. Have to be >= 0 and &lt;= 32 or 128.
+            </summary>
+            <param name="sidr">A string representing a byte CIRD (/24).</param>
+            <param name="family">Either IPv4 or IPv6.</param>
+            <param name="cidr">The resulting CIDR as byte.</param>
+            <returns>true if cidr was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.ListIPAddress(System.Net.IPNetwork)">
+            <summary>
+            List all ip addresses in a subnet.
+            </summary>
+            <param name="ipnetwork">The network to list IPAdresses.</param>
+            <returns>All the IPAdresses contained in ipnetwork.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.ListIPAddress(System.Net.FilterEnum)">
+            <summary>
+            List all ip addresses in a subnet.
+            </summary>
+            <param name="filter">Filter IPAdresses from IPNetwork.</param>
+            <returns>The filterted IPAdresses contained in ipnetwork.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.CompareTo(System.Net.IPNetwork)">
+            <summary>
+            Compare two ipnetworks.
+            </summary>
+            <param name="other">The other network to compare to.</param>
+            <returns>A signed number indicating the relative values of this instance and value..</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.CompareTo(System.Object)">
+            <summary>
+            Compare two ipnetworks.
+            </summary>
+            <param name="obj">The other object to compare to.</param>
+            <returns>A signed number indicating the relative values of this instance and value..</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Equals(System.Net.IPNetwork,System.Net.IPNetwork)">
+            <summary>
+            Compare two ipnetworks.
+            </summary>
+            <param name="left">An IPNetwork to compare.</param>
+            <param name="right">An other IPNetwork to compare to.</param>
+            <returns>true if obj has the same value as this instance; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Equals(System.Net.IPNetwork)">
+            <summary>
+            Compare two ipnetworks.
+            </summary>
+            <param name="other">An IPNetwork to compare to this instance.</param>
+            <returns>true if obj has the same value as this instance; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.Equals(System.Object)">
+            <summary>
+            Compare two ipnetworks.
+            </summary>
+            <param name="obj">An object value to compare to this instance.</param>
+            <returns>true if obj has the same value as this instance; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.op_Equality(System.Net.IPNetwork,System.Net.IPNetwork)">
+            <summary>
+            Compares two IPNetwork.
+            </summary>
+            <param name="left">left instance.</param>
+            <param name="right">Right instance.</param>
+            <returns>true if left equals right; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.op_Inequality(System.Net.IPNetwork,System.Net.IPNetwork)">
+            <summary>
+            Compares two IPNetwork.
+            </summary>
+            <param name="left">left instance.</param>
+            <param name="right">Right instance.</param>
+            <returns>true if left does not equals right; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.op_LessThan(System.Net.IPNetwork,System.Net.IPNetwork)">
+            <summary>
+            Compares two IPNetwork.
+            </summary>
+            <param name="left">left instance.</param>
+            <param name="right">Right instance.</param>
+            <returns>true if left is less than right; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.op_GreaterThan(System.Net.IPNetwork,System.Net.IPNetwork)">
+            <summary>
+            Compares two IPNetwork.
+            </summary>
+            <param name="left">left instance.</param>
+            <param name="right">Right instance.</param>
+            <returns>true if left is greater than right; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Net.IPNetwork.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Net.IPNetwork"/> class.
+            Created for DataContractSerialization. Better use static methods IPNetwork.Parse() to create IPNetworks.
+            </summary>
+        </member>
+        <member name="P:System.Net.IPNetwork.WildcardMask">
+             <summary>
+             Gets netmask Inverse
+             https://en.wikipedia.org/wiki/Wildcard_mask
+            
+             A wildcard mask is a mask of bits that indicates which parts of an IP address are available for examination.
+             In the Cisco IOS,[1] they are used in several places, for example:
+                To indicate the size of a network or subnet for some routing protocols, such as OSPF.
+                To indicate what IP addresses should be permitted or denied in access control lists(ACLs).
+            
+             A wildcard mask can be thought of as an inverted subnet mask.For example,
+             a subnet mask of 255.255.255.0 (binary equivalent = 11111111.11111111.11111111.00000000)
+             inverts to a wildcard mask of 0.0.0.255 (binary equivalent = 00000000.00000000.00000000.11111111).
+            
+             A wild card mask is a matching rule.[2] The rule for a wildcard mask is:
+                 0 means that the equivalent bit must match
+                 1 means that the equivalent bit does not matter
+            
+             Any wildcard bit-pattern can be masked for examination.For example, a wildcard mask of 0.0.0.254
+             (binary equivalent = 00000000.00000000.00000000.11111110) applied to IP address 10.10.10.2
+             (00001010.00001010.00001010.00000010) will match even-numbered IP addresses 10.10.10.0, 10.10.10.2,
+             10.10.10.4, 10.10.10.6 etc.
+            
+             Same mask applied to 10.10.10.1 (00001010.00001010.00001010.00000001) will match
+             odd-numbered IP addresses 10.10.10.1, 10.10.10.3, 10.10.10.5 etc.
+            
+             A network and wildcard mask combination of 1.1.1.1 0.0.0.0 would match an interface configured
+             exactly with 1.1.1.1 only, and nothing else.
+            
+             Wildcard masks are used in situations where subnet masks may not apply.For example,
+             when two affected hosts fall in different subnets, the use of a wildcard mask will
+             group them together.
+            
+             List of wildcard masks
+             Slash Netmask Wildcard mask
+             /32   255.255.255.255    0.0.0.0
+             /31   255.255.255.254    0.0.0.1
+             /30   255.255.255.252    0.0.0.3
+             /29   255.255.255.248    0.0.0.7
+             /28   255.255.255.240    0.0.0.15
+             /27   255.255.255.224    0.0.0.31
+             /26   255.255.255.192    0.0.0.63
+             /25   255.255.255.128    0.0.0.127
+             /24   255.255.255.0      0.0.0.255
+             /23   255.255.254.0      0.0.1.255
+             /22   255.255.252.0      0.0.3.255
+             /21   255.255.248.0      0.0.7.255
+             /20   255.255.240.0      0.0.15.255
+             /19   255.255.224.0      0.0.31.255
+             /18   255.255.192.0      0.0.63.255
+             /17   255.255.128.0      0.0.127.255
+             /16   255.255.0.0        0.0.255.255
+             /15   255.254.0.0        0.1.255.255
+             /14   255.252.0.0        0.3.255.255
+             /13   255.248.0.0        0.7.255.255
+             /12   255.240.0.0        0.15.255.255
+             /11   255.224.0.0        0.31.255.255
+             /10   255.192.0.0        0.63.255.255
+             /9    255.128.0.0        0.127.255.255
+             /8    255.0.0.0          0.255.255.255
+             /7    254.0.0.0          1.255.255.255
+             /6    252.0.0.0          3.255.255.255
+             /5    248.0.0.0          7.255.255.255
+             /4    240.0.0.0          15.255.255.255
+             /3    224.0.0.0          31.255.255.255
+             /2    192.0.0.0          63.255.255.255
+             /1    128.0.0.0          127.255.255.255
+             /0    0.0.0.0            255.255.255.255.
+            
+             </summary>
+        </member>
+    </members>
+</doc>
