@@ -408,3 +408,6 @@ www.solarwinds.com/documentation/dpa;action="login.iwc"| Solar Winds Database Pe
 ng-app="esxUiApp">;ng-bind="$root.title"| VmWare ESXi (creds set at install)
 <title id="loginTitle"></title>;by Cisco Systems, Inc| Cisco Webui - webui / cisco
 <title>Klocwork| klocwork / changeit
+<title>Universal Login Manager</title>;widgets_ulm_dispacher;GlobalMenuTopRight| 7654321 / 7654321
+var panels = {};applicationLoading;loginInputContainer;PowerVault Manager| manage / !manage
+ADMdtpDays;ObjTypeCtrl_CentaurSvr;ObjTypeCtrl_EmailSettings;ObjTypeCtrl_RfUniversalRcv| admin / admin

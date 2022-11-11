@@ -700,3 +700,6 @@ UX RIVERBED ORANGE|netdev
 <body><pre>ok</pre></body>|empty
 jvm_buffer_pool_used_bytes;jvm_memory_pool_allocated|dataops
 </head><body><p>Invalid Request</p></body></html>|invalidreq
+<title>Universal Login Manager</title>;widgets_ulm_dispacher;GlobalMenuTopRight|infrastructure
+var panels = {};applicationLoading;loginInputContainer;PowerVault Manager|infrastructure
+ADMdtpDays;ObjTypeCtrl_CentaurSvr;ObjTypeCtrl_EmailSettings;ObjTypeCtrl_RfUniversalRcv|highval
