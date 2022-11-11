@@ -411,3 +411,4 @@ ng-app="esxUiApp">;ng-bind="$root.title"| VmWare ESXi (creds set at install)
 <title>Universal Login Manager</title>;widgets_ulm_dispacher;GlobalMenuTopRight| 7654321 / 7654321
 var panels = {};applicationLoading;loginInputContainer;PowerVault Manager| manage / !manage
 ADMdtpDays;ObjTypeCtrl_CentaurSvr;ObjTypeCtrl_EmailSettings;ObjTypeCtrl_RfUniversalRcv| admin / admin
+<title>Lexmark CX725</title>;gridcell;nonjslink;CustomExport| No default username or pass
