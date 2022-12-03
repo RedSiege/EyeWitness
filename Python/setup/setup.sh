@@ -8,6 +8,8 @@ eplpkg='http://linux.mirrors.es.net/fedora-epel/6/i386/epel-release-6-8.noarch.r
 geckodriver_x86_64='https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz'
 geckodriver_x86_32='https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux32.tar.gz'
 
+chromedriver_x64='https://chromedriver.storage.googleapis.com/107.0.5304.62/chromedriver_linux64.zip'
+
 # Setting environment variables
 export TERM=linux
 
@@ -63,7 +65,7 @@ case ${osinfo} in
   Kali2)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr chromium
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
@@ -101,7 +103,7 @@ case ${osinfo} in
   Kali)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr chromium
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
@@ -139,7 +141,7 @@ case ${osinfo} in
   Parrot)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr chromium
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
@@ -177,7 +179,7 @@ case ${osinfo} in
   Debian)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr
+    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr chromium
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
@@ -215,7 +217,7 @@ case ${osinfo} in
   Ubuntu)
     apt-get update
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils
+    apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils chromium
     pip3 install --upgrade pip
     echo
     echo '[*] Installing Python Modules'
@@ -254,7 +256,7 @@ case ${osinfo} in
   Arch | Manjaro)
     pacman -Syu
     echo '[*] Installing Arch Dependencies'
-    for pkg_name in cmake python3 python-xvfbwrapper python-pip python-netaddr firefox; do
+    for pkg_name in cmake python3 python-xvfbwrapper python-pip python-netaddr firefox chromium; do
         pacman -S --noconfirm "${pkg_name}"
     done
     echo
@@ -284,7 +286,7 @@ case ${osinfo} in
   Alpine)
     apk update
     echo '[*] Installing Alpine Dependencies'
-    apk add cmake python3 xvfb py-pip py-netaddr python3-dev firefox
+    apk add cmake python3 xvfb py-pip py-netaddr python3-dev firefox chromium
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
@@ -320,7 +322,7 @@ case ${osinfo} in
   # CentOS 7 Dependency Installation
   CentOS7)
     echo '[*] Installing Centos 7 Dependencies'
-    yum install -y python3 xorg-x11-server-Xvfb python3-pip firefox
+    yum install -y python3 xorg-x11-server-Xvfb python3-pip firefox chromium
     echo
     echo '[*] Installing Centos 7 Build Dependencies'
     build_pkg=
@@ -371,7 +373,7 @@ case ${osinfo} in
   # Rocky Linux 8 Dependency Installation
   RockyLinux8)
     echo '[*] Installing Rocky Linux 8 Dependencies'
-    dnf install -y python3 xorg-x11-server-Xvfb python3-pip python3-netaddr firefox
+    dnf install -y python3 xorg-x11-server-Xvfb python3-pip python3-netaddr firefox chromium
     echo
     echo '[*] Installing Rocky Linux 8 Build Dependencies'
     build_pkg=
@@ -425,7 +427,7 @@ case ${osinfo} in
     Mint)
       apt-get update
       echo '[*] Installing Mint Dependencies'
-      apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils
+      apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils chromium
       pip3 install --upgrade pip
       echo
       echo '[*] Installing Python Modules'
