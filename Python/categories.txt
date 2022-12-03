@@ -704,3 +704,5 @@ jvm_buffer_pool_used_bytes;jvm_memory_pool_allocated|dataops
 var panels = {};applicationLoading;loginInputContainer;PowerVault Manager|infrastructure
 ADMdtpDays;ObjTypeCtrl_CentaurSvr;ObjTypeCtrl_EmailSettings;ObjTypeCtrl_RfUniversalRcv|highval
 <title>Lexmark CX725</title>;gridcell;nonjslink;CustomExport|printer
+select class="direct_ip_assignment_select" name="direct_ip_assignment";pppoe_op pppoe_ip_op;changed_setting_swports_adjust|printer
+meraki-logo.png;firmware_check_text_updating;encryption_m;backend_access_proxy_password|infrastructure
