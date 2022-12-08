@@ -123,7 +123,7 @@ HP Color LaserJet 4700 Printers</title>;class="hpLogo" src="images/hp_invent_log
 hp LaserJet 9050</title>;div.hpGasGaugeBlock|printer
 div.hpGasGaugeBlock;div.hpPageText;HP 9250C Digital Sender|printer
 <title>HP Designjet T1100 44in;getElementById('printerStatusId').innerHTML|printer
-Wired PrintServer<h3>Status;<h1>Zebra Technologies<br />|printer
+<h1>Zebra Technologies<br>;Internal Wired PrintServer;Status:;Printer Home Page;View and Modify Printer Settings|printer
 <div id="headertitle">;Phaser 7760;<div id="stattableWithoutBkGif">|printer
 document.write("&lt;title&gt;XEROX WORKCENTRE");Function Name:;SyncTreeToThisUrl|printer
 div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;Printers</title>|printer
@@ -706,3 +706,7 @@ ADMdtpDays;ObjTypeCtrl_CentaurSvr;ObjTypeCtrl_EmailSettings;ObjTypeCtrl_RfUniver
 <title>Lexmark CX725</title>;gridcell;nonjslink;CustomExport|printer
 select class="direct_ip_assignment_select" name="direct_ip_assignment";pppoe_op pppoe_ip_op;changed_setting_swports_adjust|printer
 meraki-logo.png;firmware_check_text_updating;encryption_m;backend_access_proxy_password|infrastructure
+class="ng-binding">iDRAC;ngSwitchWhen;"!config.tfa";config.OIDCServers|highval
+<title>EASY CAPTURE CENTER SERVER;LoginKeyEvent;logininfobox|appops
+<title>PowerChute Network Shutdown</title>;ApcSectionHeader;SectionHeaderTitleDiv|infrastructure
+Media5;g_RebootPageTitle;g_LoginPage;g_AutomaticRebootMessage;OnPageUnload|netdev

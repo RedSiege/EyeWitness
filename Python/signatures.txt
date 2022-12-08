@@ -197,7 +197,6 @@ Octopus Deploy'">Octopus Deploy</title>;Checking your credentials. Please wait..
 <title></title>;<span>Barracuda</span>;base64_encode;passwords over HTTP are what they are. Use HTTPS;Barracuda Networks;function obfuscatePassword|Barracuda Web Filter - admin/admin
 <Title>ConfigSummary</Title>;<LangNo>En</LangNo>;DN71B7;DN73B1;DN88B2;EngType;IsAral65|Olivetti Printer - Password 12345678 or administrator
 This <a class="device_noun">access point;is trying to join a network or find;simple-tabs-content container;your_hideable_connection_info|Cisco Meraki - serial number/<nopassword>
-<h1>Zebra Technologies<br>;Internal Wired PrintServer;Status:;Printer Home Page;View and Modify Printer Settings|printer
 <title>Web Connection</title>;function popupCopyright;font color="red";Lang.cgi?LangSelect;i3ddgspc.gif|printer
 <title>Login</title>;img src="/inc/errorbubble.gif;class="tt_form_row_peer" id='usernamePeer;class="tt_form_row_reqd" id="passwordRqd";<legend>Administrator login</legend>|Cisco Telepresence admin/cisco
 <TITLE>Sony Network Camera SNC-RZ50</TITLE>;ViewerSelect;Sony Corporation|Sony SNC-RZ50 admin/admin
@@ -412,5 +411,9 @@ ng-app="esxUiApp">;ng-bind="$root.title"| VmWare ESXi (creds set at install)
 var panels = {};applicationLoading;loginInputContainer;PowerVault Manager| manage / !manage
 ADMdtpDays;ObjTypeCtrl_CentaurSvr;ObjTypeCtrl_EmailSettings;ObjTypeCtrl_RfUniversalRcv| admin / admin
 <title>Lexmark CX725</title>;gridcell;nonjslink;CustomExport| No default username or pass
-select class="direct_ip_assignment_select" name="direct_ip_assignment";pppoe_op pppoe_ip_op;changed_setting_swports_adjust|admin / 1111 or admin / printer serial number
+select class="direct_ip_assignment_select" name="direct_ip_assignment";pppoe_op pppoe_ip_op;changed_setting_swports_adjust|admin / <APs serial number>
 meraki-logo.png;firmware_check_text_updating;encryption_m;backend_access_proxy_password|Login is Device Serial Number with no Pass
+class="ng-binding">iDRAC;ngSwitchWhen;"!config.tfa";config.OIDCServers|root/calvin
+<title>EASY CAPTURE CENTER SERVER;LoginKeyEvent;logininfobox|admin/admin
+<title>PowerChute Network Shutdown</title>;ApcSectionHeader;SectionHeaderTitleDiv|apc/apc
+Media5;g_RebootPageTitle;g_LoginPage;g_AutomaticRebootMessage;OnPageUnload|root / 5678 or admin / administrator
