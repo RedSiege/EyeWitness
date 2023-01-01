@@ -371,17 +371,20 @@ def textfile_parser(file_to_parse, cli_obj):
             url_again = url_again.strip()
             complete_urls.append(url_again)
             if url_again.count(":") == 2:
-                try:
-                    port_number = int(url_again.split(":")[2].split("/")[0])
-                except ValueError:
-                    print("ERROR: You potentially provided an mal-formed URL!")
-                    print("ERROR: URL is - " + url_again)
+                char = url_again.split(":")[2].split("/")[0]
+                check = char.isdigit()
+                if check == True:                   
+                    try:
+                        port_number = int(url_again.split(":")[2].split("/")[0])
+                    except ValueError:
+                        print("ERROR: You potentially provided an mal-formed URL!")
+                        print("ERROR: URL is - " + url_again)
                     sys.exit()
-                hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
-                if port_number in openports:
-                    openports[port_number] += "," + hostname_again
-                else:
-                    openports[port_number] = hostname_again
+                    hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
+                    if port_number in openports:
+                        openports[port_number] += "," + hostname_again
+                    else:
+                        openports[port_number] = hostname_again
             else:
                 if "https://" in url_again:
                     if 443 in openports:
