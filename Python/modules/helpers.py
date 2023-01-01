@@ -379,7 +379,7 @@ def textfile_parser(file_to_parse, cli_obj):
                     except ValueError:
                         print("ERROR: You potentially provided an mal-formed URL!")
                         print("ERROR: URL is - " + url_again)
-                    sys.exit()
+                        sys.exit()
                     hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
                     if port_number in openports:
                         openports[port_number] += "," + hostname_again
