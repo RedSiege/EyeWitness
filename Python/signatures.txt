@@ -417,3 +417,6 @@ class="ng-binding">iDRAC;ngSwitchWhen;"!config.tfa";config.OIDCServers|root/calv
 <title>EASY CAPTURE CENTER SERVER;LoginKeyEvent;logininfobox|admin/admin
 <title>PowerChute Network Shutdown</title>;ApcSectionHeader;SectionHeaderTitleDiv|apc/apc
 Media5;g_RebootPageTitle;g_LoginPage;g_AutomaticRebootMessage;OnPageUnload|root / 5678 or admin / administrator
+<title>Vigor Login Page</title>;div class="product_name" lang="en">VigorAP903</div>|admin / admin
+<title>Vigor Login Page</title>;<h3>Router Login</h3>;You aren't allowed to access internet|admin / admin
+<title>Web Image Monitor</title>;websys/webArch/mainFrame.cgi;jumpPage()| admin / <blank>
