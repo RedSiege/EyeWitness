@@ -717,3 +717,4 @@ Jetadmin</title>|printer
 If you can see this page, it confirms that you can access the PMP application|secops
 McAfee Agent Activity Log|secops
 <title>HP System Management|idrac
+ng-app="cortex"|devops
