@@ -712,3 +712,4 @@ HPE Nimble Storage</title>|nas
 Jetadmin</title>|printer
 <title>ManageEngine Password Manager Pro</title>|secops
 <title>PowerChute Network|infrastructure
+<title>VMware vCenter|vm
