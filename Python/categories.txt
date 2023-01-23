@@ -720,4 +720,4 @@ McAfee Agent Activity Log|secops
 ng-app="cortex"|devops
 Telerik Report Server</title>|dataops
 <title>Home Page</title>;ASP.NET is a free web framework for building great Web sites;<p>© 2023 - My ASP.NET Application</p>|crap
-window.SecureLink.globalState|secops
+window.SecureLink.globalState|netdev
