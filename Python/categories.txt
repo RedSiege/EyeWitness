@@ -709,3 +709,4 @@ meraki-logo.png;firmware_check_text_updating;encryption_m;backend_access_proxy_p
 Copyright (C) ExaGrid Systems|nas
 HPE Nimble Storage</title>|nas
 <title>Cisco CSP Collector</title>|netdev
+Jetadmin</title>|printer
