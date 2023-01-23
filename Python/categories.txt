@@ -711,3 +711,4 @@ HPE Nimble Storage</title>|nas
 <title>Cisco CSP Collector</title>|netdev
 Jetadmin</title>|printer
 <title>ManageEngine Password Manager Pro</title>|secops
+<title>PowerChute Network|infrastructure
