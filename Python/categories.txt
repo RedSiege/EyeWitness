@@ -723,3 +723,4 @@ Telerik Report Server</title>|dataops
 window.SecureLink.globalState|netdev
 src="resources/JS/clm-DropDown.js"></script>;src="resources/JS/license-usage.js"></script>|netdev
 <title>S2 Network Node</title>|netdev
+<title>HP Color LaserJet;buttonManager|printer
