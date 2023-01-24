@@ -728,3 +728,4 @@ src="resources/JS/clm-DropDown.js"></script>;src="resources/JS/license-usage.js"
 HP » TCP/IP Settings » Summary;HP DesignJet|printer
 <title>LenelS2 Login</title>|secops
 font-family: CiscoSans;join-webex-meeting;conference|voip
+<title>Yealink|voip
