@@ -734,3 +734,5 @@ Room Alert;href="/images/AVTECH.ico|netdev
 <form method="post" action="/NMC/;<a href="http://www.apc.co|infrastructure
 <div id="loginTitle">Storage Management Utility</div>|nas
 CISCO Codec;<body class="vega signin-body">|voip
+<title>Cisco Meraki|netdev;cisco-meraki.png|netdev
+
