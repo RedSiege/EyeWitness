@@ -418,3 +418,4 @@ Copyright (C) ExaGrid Systems|SSH Login - root / inflection
 <title>S2 Network Node</title>|NetBox S2 Network Node - admin / admin
 <title>LenelS2 Login</title>|NetBox S2 Physical Access - admin/admin sa/admin admin/password
 Data Acquisition Server</b></font></td>;<!-- AcquiSuite -->|Obvius BACnet Data Server/Gateway admin / admin
+<form method="post" action="/NMC/;<a href="http://www.apc.com|Schneider Electric UPS/PDU admin/admin readonly/admin
