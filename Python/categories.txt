@@ -730,3 +730,4 @@ HP » TCP/IP Settings » Summary;HP DesignJet|printer
 font-family: CiscoSans;join-webex-meeting;conference|voip
 <title>Yealink|voip
 Data Acquisition Server</b></font></td>;<!-- AcquiSuite -->|dataops
+Room Alert;href="/images/AVTECH.ico|netdev
