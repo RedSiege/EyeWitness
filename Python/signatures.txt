@@ -416,3 +416,4 @@ select class="direct_ip_assignment_select" name="direct_ip_assignment";pppoe_op 
 meraki-logo.png;firmware_check_text_updating;encryption_m;backend_access_proxy_password|Login is Device Serial Number with no Pass
 Copyright (C) ExaGrid Systems|SSH Login - root / inflection
 <title>S2 Network Node</title>|NetBox S2 Network Node - admin / admin
+<title>LenelS2 Login</title>|NetBox S2 Physical Access - admin/admin sa/admin admin/password
