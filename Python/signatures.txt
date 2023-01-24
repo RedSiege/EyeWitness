@@ -417,3 +417,4 @@ meraki-logo.png;firmware_check_text_updating;encryption_m;backend_access_proxy_p
 Copyright (C) ExaGrid Systems|SSH Login - root / inflection
 <title>S2 Network Node</title>|NetBox S2 Network Node - admin / admin
 <title>LenelS2 Login</title>|NetBox S2 Physical Access - admin/admin sa/admin admin/password
+Data Acquisition Server</b></font></td>;<!-- AcquiSuite -->|Obvius BACnet Data Server/Gateway admin / admin
