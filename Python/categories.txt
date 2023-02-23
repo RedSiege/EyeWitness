@@ -713,3 +713,4 @@ Media5;g_RebootPageTitle;g_LoginPage;g_AutomaticRebootMessage;OnPageUnload|netde
 <title>Vigor Login Page</title>;div class="product_name" lang="en">VigorAP903</div>|netdev
 <title>Vigor Login Page</title>;<h3>Router Login</h3>;You aren't allowed to access internet|netdev
 <title>Web Image Monitor</title>;websys/webArch/mainFrame.cgi;jumpPage()|infrastructure
+<title>3PAR Service Console</title>;overrideBarChartsCSS;Hewlett Packard Enterprise|nas
