@@ -706,3 +706,36 @@ ADMdtpDays;ObjTypeCtrl_CentaurSvr;ObjTypeCtrl_EmailSettings;ObjTypeCtrl_RfUniver
 <title>Lexmark CX725</title>;gridcell;nonjslink;CustomExport|printer
 select class="direct_ip_assignment_select" name="direct_ip_assignment";pppoe_op pppoe_ip_op;changed_setting_swports_adjust|printer
 meraki-logo.png;firmware_check_text_updating;encryption_m;backend_access_proxy_password|infrastructure
+Copyright (C) ExaGrid Systems|nas
+HPE Nimble Storage</title>|nas
+<title>Cisco CSP Collector</title>|netdev
+Jetadmin</title>|printer
+<title>ManageEngine Password Manager Pro</title>|secops
+<title>PowerChute Network|infrastructure
+<title>VMware vCenter|vm
+<title>splunkd - Splunk</title>|dataops
+If you can see this page, it confirms that you can access the PMP application|secops
+McAfee Agent Activity Log|secops
+<title>HP System Management|idrac
+ng-app="cortex"|devops
+Telerik Report Server</title>|dataops
+<title>Home Page</title>;ASP.NET is a free web framework for building great Web sites;<p>© 2023 - My ASP.NET Application</p>|crap
+window.SecureLink.globalState|netdev
+src="resources/JS/clm-DropDown.js"></script>;src="resources/JS/license-usage.js"></script>|netdev
+<title>S2 Network Node</title>|netdev
+<title>HP Color LaserJet;buttonManager|printer
+<title>Cisco Systems, Inc.;Cisco Unified IP Phone|voip
+HP » TCP/IP Settings » Summary;HP DesignJet|printer
+<title>LenelS2 Login</title>|secops
+font-family: CiscoSans;join-webex-meeting;conference|voip
+<title>Yealink|voip
+Data Acquisition Server</b></font></td>;<!-- AcquiSuite -->|dataops
+Room Alert;href="/images/AVTECH.ico|netdev
+<form method="post" action="/NMC/;<a href="http://www.apc.co|infrastructure
+<div id="loginTitle">Storage Management Utility</div>|nas
+CISCO Codec;<body class="vega signin-body">|voip
+<title>Cisco Meraki|netdev;cisco-meraki.png|netdev
+<div>This product is licensed from F5 Networks.|netdev
+<title>GlobalProtect Portal|netdev
+<title>Sign in to Outlook</title>|comms
+<title>Workday|comms

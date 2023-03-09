@@ -414,3 +414,8 @@ ADMdtpDays;ObjTypeCtrl_CentaurSvr;ObjTypeCtrl_EmailSettings;ObjTypeCtrl_RfUniver
 <title>Lexmark CX725</title>;gridcell;nonjslink;CustomExport| No default username or pass
 select class="direct_ip_assignment_select" name="direct_ip_assignment";pppoe_op pppoe_ip_op;changed_setting_swports_adjust|admin / 1111 or admin / printer serial number
 meraki-logo.png;firmware_check_text_updating;encryption_m;backend_access_proxy_password|Login is Device Serial Number with no Pass
+Copyright (C) ExaGrid Systems|SSH Login - root / inflection
+<title>S2 Network Node</title>|NetBox S2 Network Node - admin / admin
+<title>LenelS2 Login</title>|NetBox S2 Physical Access - admin/admin sa/admin admin/password
+Data Acquisition Server</b></font></td>;<!-- AcquiSuite -->|Obvius BACnet Data Server/Gateway admin / admin
+<form method="post" action="/NMC/;<a href="http://www.apc.com|Schneider Electric UPS/PDU admin/admin readonly/admin
