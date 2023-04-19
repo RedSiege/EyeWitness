@@ -419,3 +419,5 @@ Copyright (C) ExaGrid Systems|SSH Login - root / inflection
 <title>LenelS2 Login</title>|NetBox S2 Physical Access - admin/admin sa/admin admin/password
 Data Acquisition Server</b></font></td>;<!-- AcquiSuite -->|Obvius BACnet Data Server/Gateway admin / admin
 <form method="post" action="/NMC/;<a href="http://www.apc.com|Schneider Electric UPS/PDU admin/admin readonly/admin
+<img id="kemplogo" src="/kemplogo.png"></div>;<div id="toplinediv"><span id="topline">LoadMaster Login</span></div>|Kemp Loadmaster bal / 1fourall
+<h1>Unisphere for SC Series</h1>;<title>Unisphere</title>;System.config(loaderConfig)|Dell Unisphere admin / Password123#
