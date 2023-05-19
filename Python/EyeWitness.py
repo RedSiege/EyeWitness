@@ -126,6 +126,8 @@ def create_cli_parser():
                               help='Prepend http:// and https:// to URLs without either')
     http_options.add_argument('--selenium-log-path', default='./geckodriver.log', action='store',
                               help='Selenium geckodriver log path')
+    http_options.add_argument('--cookies', metavar='key1=value1,key2=value2', default=None,
+                              help='Additional cookies to add to the request')
 
     resume_options = parser.add_argument_group('Resume Options')
     resume_options.add_argument('--resume', metavar='ew.db',
@@ -203,6 +205,17 @@ def create_cli_parser():
         parser.print_help()
         sys.exit()
 
+    if args.cookies:
+        cookies_list = []
+        for one_cookie in args.cookies.split(","):
+            if "=" not in args.cookies:
+                print("[*] Error: Cookies must be in the form of key1=value1,key2=value2")
+                sys.exit()
+            cookies_list.append({
+                "name": one_cookie.split("=")[0],
+                "value": one_cookie.split("=")[1]
+            })
+        args.cookies = cookies_list
     args.ua_init = False
     return args
 
@@ -224,7 +237,6 @@ def single_mode(cli_parsed):
 
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
-    print('Attempting to screenshot {0}'.format(http_object.remote_system))
     driver = create_driver(cli_parsed)
     result, driver = capture_host(cli_parsed, http_object, driver)
     result = default_creds_category(result)

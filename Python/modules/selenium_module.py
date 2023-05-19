@@ -105,7 +105,12 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
 
     # Attempt to take the screenshot
     try:
+        # If cookie is presented we need to avoid cookie-averse error. To do so, we need to get the page twice.
         driver.get(http_object.remote_system)
+        if cli_parsed.cookies is not None:
+            for cookie in cli_parsed.cookies:
+                driver.add_cookie(cookie)
+            driver.get(http_object.remote_system)
     except KeyboardInterrupt:
         print('[*] Skipping: {0}'.format(http_object.remote_system))
         http_object.error_state = 'Skipped'
@@ -140,6 +145,10 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             http_object.error_state = None
             try:
                 driver.get(http_object.remote_system)
+                if cli_parsed.cookies is not None:
+                    for cookie in cli_parsed.cookies:
+                        driver.add_cookie(cookie)
+                    driver.get(http_object.remote_system)
                 break
             except TimeoutException:
                 # Another timeout results in an error state and a return
