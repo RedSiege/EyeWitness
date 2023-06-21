@@ -425,3 +425,5 @@ Data Acquisition Server</b></font></td>;<!-- AcquiSuite -->|Obvius BACnet Data S
 <title>Oracle(R) Integrated Lights Out Manager - Login</title>;document.cookie = "ilom=1|Oracle ILOM root / password
 type="image/ico"><title>;swal2-checkbox label;swal2-range input|CheckMK cmkadmin / YzxfoFZh
 Configuration Utility">;content="F5, Inc.">;delCookie("F5_CURRENT_FOLDER");|F5 BIG-IP admin / admin
+IP Management;d="username" name="ipamusername";name="ipampassword"|phpIPAM Admin / ipamadmin.
+<title>NETGEAR GS324TP</title>;base/cheetah_login;screen_refresh|GS324TP <nousername> / password
