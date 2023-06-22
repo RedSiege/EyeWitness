@@ -747,3 +747,4 @@ type="image/ico"><title>;swal2-checkbox label;swal2-range input|infrastructure
 Configuration Utility">;content="F5, Inc.">;delCookie("F5_CURRENT_FOLDER");|netdev
 IP Management;d="username" name="ipamusername";name="ipampassword"|netdev
 <title>NETGEAR GS324TP</title>;base/cheetah_login;screen_refresh|netdev
+XUX-nwave/xux-js/xux-nwave-1.7.0-al;deviceInfoSection;openDeviceInfoDetailsModalWindow|printer
