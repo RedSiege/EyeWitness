@@ -17,7 +17,7 @@ RUN groupadd -g $GID -r $USER && \
 COPY setup.sh /tmp/setup.sh
 
 RUN dnf install -y git && \
-    git clone --depth 1 https://github.com/FortyNorthSecurity/EyeWitness.git /home/$USER/EyeWitness && \
+    git clone --depth 1 https://github.com/RedSiege/EyeWitness.git /home/$USER/EyeWitness && \
     cp /tmp/setup.sh /home/$USER/EyeWitness/Python/setup/setup.sh && \
     dnf remove -y git
 

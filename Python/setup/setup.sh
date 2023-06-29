@@ -467,6 +467,6 @@ esac
 # Finish Message
 popd > /dev/null
 echo '[*] Setup script completed successfully, enjoy EyeWitness! :)'
-echo '[*] Be sure to check out FortyNorth Security!'
-echo '[*] https://www.fortynorthsecurity.com'
+echo '[*] Be sure to check out Red Siege!'
+echo '[*] https://www.redsiegecom'
 echo

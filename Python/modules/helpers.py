@@ -593,14 +593,14 @@ def get_ua_values(cycle_value):
 def title_screen():
     """Prints the title screen for EyeWitness
     """
-    if platform.system() == "Windows":
-        os.system('cls')
-    else:
-        os.system('clear')
+    #if platform.system() == "Windows":
+    #    os.system('cls')
+    #else:
+    #    os.system('clear')
     print("#" * 80)
     print("#" + " " * 34 + "EyeWitness" + " " * 34 + "#")
     print("#" * 80)
-    print("#" + " " * 11 + "FortyNorth Security - https://www.fortynorthsecurity.com" + " " * 11 + "#")
+    print("#" + " " * 11 + "Red Siege Information Security - https://www.redsiege.com" + " " * 11 + "#")
     print("#" * 80 + "\n")
 
     python_info = sys.version_info

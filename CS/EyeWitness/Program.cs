@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -21,8 +21,8 @@ namespace EyeWitness
         public static string catCode = "";
         public static string sigCode = "";
         public static string reportHtml = "";
-        private const string CatUrl = "https://raw.githubusercontent.com/FortyNorthSecurity/EyeWitness/master/Python/categories.txt";
-        private const string SigUrl = "https://raw.githubusercontent.com/FortyNorthSecurity/EyeWitness/master/Python/signatures.txt";
+        private const string CatUrl = "https://raw.githubusercontent.com/RedSiege/EyeWitness/master/Python/categories.txt";
+        private const string SigUrl = "https://raw.githubusercontent.com/RedSiege/EyeWitness/master/Python/signatures.txt";
         public static Dictionary<string, string> categoryDict = new Dictionary<string, string>();
         public static Dictionary<string, string> signatureDict = new Dictionary<string, string>();
         public static Dictionary<string, object[]> categoryRankDict = new Dictionary<string, object[]>();

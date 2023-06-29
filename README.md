@@ -8,7 +8,7 @@ EyeWitness is designed to run on Kali Linux. It will auto detect the file you gi
 A complete usage guide which documents EyeWitness features and its typical use cases is available here - https://www.christophertruncer.com/eyewitness-2-0-release-and-user-guide/
 
 ## Windows
-FortyNorth Security has created a Windows client (thanks to the massive help of Matt Grandy (@Matt_Grandy_) with the stability fixes). All you need to do is build it locally (or check the releases), and then provide a path to a file containing the URLs you want scanned! EyeWitness will generate the report within your "AppData\Roaming" directory. The latest version of the C# EyeWitness supports parsing and taking screenshots of Internet Explorer and Chrome bookmarks without having to supply a list of URLs. This version is also small enough to be delivered through Cobalt Strike's execute-assembly.
+Red Siege has created a Windows client (thanks to the massive help of Matt Grandy (@Matt_Grandy_) with the stability fixes). All you need to do is build it locally (or check the releases), and then provide a path to a file containing the URLs you want scanned! EyeWitness will generate the report within your "AppData\Roaming" directory. The latest version of the C# EyeWitness supports parsing and taking screenshots of Internet Explorer and Chrome bookmarks without having to supply a list of URLs. This version is also small enough to be delivered through Cobalt Strike's execute-assembly.
 
 ### Setup:
 1. Navigate into the CS directory 
@@ -31,7 +31,7 @@ EyeWitness.exe --file C:\Path\to\urls.txt --delay [timeout in seconds] --compres
 * CentOS 7
 * Rocky Linux 8
 
-**E-Mail:** EyeWitness [@] christophertruncer [dot] com
+**E-Mail:** GetOffensive [@] redsiege [dot] com
 
 ### Setup:
 1. Navigate into the Python/setup directory
@@ -52,7 +52,7 @@ EyeWitness.exe --file C:\Path\to\urls.txt --delay [timeout in seconds] --compres
 ```
 
 ### Proxy Usage
-The best guide for proxying EyeWitness through a socks proxy was made by @raikia and is available here - https://github.com/FortyNorthSecurity/EyeWitness/issues/458
+The best guide for proxying EyeWitness through a socks proxy was made by @raikia and is available here - https://github.com/RedSiege/EyeWitness/issues/458
 
 To install EyeWitness from a system while needing to go through a proxy, the following commands (thanks to @digininja) can be used.
 
