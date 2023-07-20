@@ -66,7 +66,8 @@ case ${osinfo} in
     apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr
     echo
     echo '[*] Installing Python Modules'
-    apt install -y python3-selenium python3-fuzzywuzzy python3-pyvirtualdisplay  python3-netaddr python3-levenshtein
+    apt install -y python3-fuzzywuzzy python3-pyvirtualdisplay  python3-netaddr python3-levenshtein
+    python3 -m pip install selenium==4.9.1
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
