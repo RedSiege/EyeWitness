@@ -1,6 +1,7 @@
 import html
 import os
 import re
+import traceback
 
 from modules.helpers import strip_nonalphanum
 
@@ -29,6 +30,10 @@ class HTTPTableObject(object):
         self._ssl_error = False
         self._ua_left = None
         self._resolved = None
+
+        # parsed authentication, tuple of username and password, if username is empty it will be None
+        self._description = ""
+        self._parsed_creds = [ ]
 
     def set_paths(self, outdir, suffix=None):
         file_name = self.remote_system.replace('://', '.')
@@ -179,7 +184,47 @@ class HTTPTableObject(object):
 
     @default_creds.setter
     def default_creds(self, default_creds):
+        if not default_creds: return
+
+        # attempt to parse
+        # filter out those without '/' or start with '(' # save as comment only
+        if not '/' in default_creds or default_creds[0] == '(':
+          self._parsed_creds = [ (None, None, default_creds, None) ] # no user or pass, only comment
+          self._default_creds = default_creds
+          return
+
+        try:
+          creds = default_creds.split(';')
+          # parse out those with comments if present
+          # else split /
+          for c in creds:
+            user = passwd = comment = None
+            if ' (' in c:
+              x = c.split(' (')
+              comment = x[1][:-1].strip() # assuming ending ) and removing it
+              y = x[0].split('/')
+              user = y[0].strip()
+              try:
+                passwd = y[1].strip()
+              except:
+                # print("Only 1 value found: ", passwd)
+                passwd = None
+            else:
+              y = c.split('/')
+              user = y[0].strip()
+              try:
+                passwd = y[1].strip()
+              except:
+                # print("Only 1 value found: ", passwd)
+                passwd = None
+            self._parsed_creds = self._parsed_creds + [ (user,passwd,comment,None) ]
+        except Exception as e:
+          print("[!] Failed to parse credentials: ", e)
+          print("    ", default_creds)
+          print(traceback.format_exc())
         self._default_creds = default_creds
+        #print("DEF CREDS: ", default_creds)
+        #print("PAR CREDS: ", self._parsed_creds)
 
     @property
     def category(self):
@@ -227,13 +272,29 @@ class HTTPTableObject(object):
                 self.remote_system)
 
         if self.default_creds is not None:
-            try:
-                html += "<br><b>Default credentials:</b> {0}<br>".format(
-                    self.sanitize(self.default_creds))
-            except UnicodeEncodeError:
-                html += u"<br><b>Default credentials:</b> {0}<br>".format(
-                    self.sanitize(self.default_creds))
-
+            if type(self.default_creds) is list:
+                try:
+                    html += "<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                        self.sanitize(self._description), self.sanitize(", ".join(self.default_creds)))
+                except UnicodeEncodeError:
+                    try:
+                        html += u"<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                            self.sanitize(self._description), self.sanitize(self.default_creds))
+                    except:
+                        print('[!] Failed to format default credentials: ')
+                        print(json.dumps(self.default_creds))
+            else:
+                try:
+                    html += "<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                        self.sanitize(self._description), self.sanitize(self.default_creds))
+                except UnicodeEncodeError:
+                    try:
+                        html += u"<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                            self.sanitize(self._description), self.sanitize(self.default_creds))
+                    except:
+                        print('[!] Failed to format default credentials: ')
+                        print(json.dumps(self.default_creds))
+    
         if self.error_state is None:
             try:
                 html += "\n<br><b> Page Title: </b>{0}\n".format(

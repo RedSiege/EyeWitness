@@ -2,8 +2,10 @@ import http.client
 import os
 import socket
 import sys
+import traceback
 import urllib.request
 import urllib.error
+from urllib.parse import urlparse
 import ssl
 
 try:
@@ -12,8 +14,11 @@ except:
     from ssl import SSLError as sslerr
 
 try:
+    # from seleniumwire import webdriver
     from selenium import webdriver
     from selenium.webdriver.firefox.options import Options
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.common.by import By
     from selenium.common.exceptions import NoAlertPresentException
     from selenium.common.exceptions import TimeoutException
     from selenium.common.exceptions import UnexpectedAlertPresentException
@@ -89,6 +94,360 @@ def create_driver(cli_parsed, user_agent=None):
         sys.exit()
 
 
+def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
+    """Performs the internal authentication with single given credential
+
+    Args:
+        cred (Tuple): Consists of username, password, comment, and status result once tested (bool)
+        cli_parsed (ArgumentParser): Command Line Object
+        http_object (HTTPTableObject): Object containing data relating to current URL
+        driver (FirefoxDriver): webdriver instance
+        ua (String, optional): Optional user agent string
+
+    Returns:
+        Boolean: True for success, and False for failure
+    """
+
+    # first attempt for each cred, attempt cred call ie: https://username:password@hostname:port/
+    # if result is unauthorized or a form is found with a password input (assuming failure)
+
+    p = urlparse(http_object.remote_system)
+    if cred[0] and cred[1]:
+        auth_url = p.scheme + "://" + cred[0] + ":" + cred[1] + "@" + p.netloc + p.path
+    elif cred[0]:
+        auth_url = p.scheme + "://" + cred[0] + ":@" + p.netloc + p.path
+    else:
+        print("[*] No credentials found, skipping...")
+        # print(cred)
+        # auth_url = p.scheme + "://" + p.netloc + p.path
+        return False
+    print("[*] Attempting authentication via url: ", auth_url)
+
+    # Attempt to take the screenshot
+    try:
+        # If cookie is presented we need to avoid cookie-averse error. To do so, we need to get the page twice.
+        driver.get(auth_url)
+
+        # if a text input and a password input are shown, print content, and assume login failed
+
+        try:
+            elem = driver.find_element('xpath', "//input[@type='password']")
+        except WebDriverException as e:
+            print("[!] AUTH SUCCESS: No password element found, potential auth success: {0}".format(http_object.remote_system)) 
+            # Save our screenshot to the specified directory
+            try:
+                filename = http_object.screenshot_path[:-4] + ".auth.1.png"
+                print("[!] Saving screenshot to: ", filename)
+                print(driver.save_screenshot(filename))
+            except WebDriverException as e:
+                print('[*] Error saving web page screenshot'
+                      ' for ' + http_object.remote_system)
+
+        # get contents and inspect
+        if cli_parsed.cookies is not None:
+            for cookie in cli_parsed.cookies:
+                driver.add_cookie(cookie)
+
+            driver.get(auth_url)
+            # get contents and inspect again
+            try:
+                elem = driver.find_element('xpath', "//input[@type='password']")
+            except WebDriverException as e:
+                print("[!] AUTH SUCCESS: No password element found, potential auth success: {0}".format(http_object.remote_system)) 
+                # Save our screenshot to the specified directory
+                try:
+                  filename = http_object.screenshot_path[:-4] + ".auth.2.png"
+                  print("[!] Saving screenshot to: ", filename)
+                  print(driver.save_screenshot(filename))
+                except WebDriverException as e:
+                    print('[*] Error saving web page screenshot'
+                          ' for ' + http_object.remote_system)
+                return True
+
+            return False
+
+    except KeyboardInterrupt:
+        print('[*] Skipping: {0}'.format(http_object.remote_system))
+        http_object.error_state = 'Skipped'
+        http_object.page_title = 'Page Skipped by User'
+    except TimeoutException:
+        print('[*] Hit timeout limit when connecting to {0}, retrying'.format(http_object.remote_system))
+    except http.client.BadStatusLine:
+        print('[*] Bad status line when connecting to {0}'.format(http_object.remote_system))
+    except WebDriverException as e:
+        print('[*] WebDriverError when connecting to {0}'.format(http_object.remote_system))
+        # print('[*] WebDriverError when connecting to {0} -> {1}'.format(http_object.remote_system, e))
+    except Exception as e:
+        print("[*] URI login failure: ", e)
+        print(traceback.format_exc())
+
+    # Dismiss any alerts present on the page
+    # Will not work for basic auth dialogs!
+    try:
+        alert = driver.switch_to.alert
+        alert.dismiss()
+    except Exception as e:
+        pass
+
+    return False
+
+def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
+    """Performs the internal authentication with single given credential
+
+    Args:
+        cred (Tuple): Consists of username, password, comment, and status result once tested (bool)
+        cli_parsed (ArgumentParser): Command Line Object
+        http_object (HTTPTableObject): Object containing data relating to current URL
+        driver (FirefoxDriver): webdriver instance
+        ua (String, optional): Optional user agent string
+
+    Returns:
+        Boolean: True for success, and False for failure
+        Driver: Needed since this functions closes connections and retries
+    """
+
+    # form is found, leverage selenium
+
+    # selenium: for each form: 
+    #     find forms that contain password input type. 
+    #     form: provide each user/password and confirm non 400 return
+
+    print("[!] Attempting form validation...")
+    try:
+        success=False
+
+        # If cookie is presented we need to avoid cookie-averse error. To do so, we need to get the page twice. ???
+
+        driver2 = create_driver(cli_parsed, ua)
+        driver2.get(http_object.remote_system)
+        if cli_parsed.cookies is not None:
+            for cookie in cli_parsed.cookies:
+                driver2.add_cookie(cookie)
+            driver2.get(http_object.remote_system)
+
+        # get contents and inspect again
+        # for each form that contains an input
+        try:
+            forms = driver2.find_elements('xpath', "//form")
+        except WebDriverException:
+            print('[*] WebDriverError when connecting to {0} -> {1}'.format(http_object.remote_system, e))
+            print('[*] No forms have been found! Exiting.')
+            return False
+
+        # print("FORMS: ", forms)
+        print("[!] %d forms found..." % len(forms))
+        i = 0
+        for form in forms:
+          # for each radio button, for each radio button option
+            
+          # get contents and inspect again
+          # for each form that contains an input
+          radios = [ ]
+          try:
+              radios = form.find_elements('xpath', "//input[@type='radio']")
+          except WebDriverException:
+              pass
+
+          if len(radios) > 0:
+            # print("[*] Testing additional radio input found in form (radio #%d)" % radioOffset)
+            # radios[radioOffset].click()
+            # radioOffset += 1
+            for radio in radios:
+                i = i + 1
+                radio.click()
+                # submit
+
+                i = i + 1
+                try:
+                  pass_elem = form.find_element('xpath', "//input[@type='password']")
+                  if pass_elem:
+                    pass_elem.send_keys(cred[1])
+                except WebDriverException:
+                  print("[*] No password input found in form, skipping form...")
+                  continue
+  
+                try:
+                  user_elem = form.find_element('xpath', "//input[@type='input']")
+                  user_elem.send_keys(cred[0])
+                except WebDriverException:
+                  print('[*] No username element found, attempting to send password only.')
+  
+                try:
+                  form.find_element('xpath', "//input[@type='submit']").click()
+                except WebDriverException:
+                  print('[*] No submit input element found, attempting to give up.')
+                  try:
+                    form.submit()
+                  except Exception as e:
+                    print('[!] Unable to submit form: ', e)
+  
+                try:
+                  elem = driver2.find_element('xpath', "//input[@type='password']")
+                  print('[*] Authentication failure.')
+                except WebDriverException:
+                  print("[!] AUTH SUCCESS(2): No password element found, potential auth success!")
+                  success=True
+                  # Save our screenshot to the specified directory
+                  try:
+                      filename = http_object.screenshot_path[:-4] + ".auth.3_%d.png" % i
+                      print("[!] Saving screenshot to: ", filename)
+                      print(driver2.save_screenshot(filename))
+                  except WebDriverException as e:
+                      print('[*] Error saving web page screenshot'
+                            ' for ' + http_object.remote_system)
+  
+                # Dismiss any alerts present on the page
+                # Will not work for basic auth dialogs!
+                try:
+                    alert = driver2.switch_to.alert
+                    alert.dismiss()
+                except Exception as e:
+                    pass
+  
+                driver2.back()
+
+          else:
+
+            i = i + 1
+            try:
+              pass_elem = form.find_element('xpath', "//input[@type='password']")
+              if pass_elem:
+                pass_elem.send_keys(cred[1])
+            except WebDriverException:
+              print("[*] No password input found in form, skipping form...")
+              continue
+  
+            try:
+              user_elem = form.find_element('xpath', "//input[@type='input']")
+              user_elem.send_keys(cred[0])
+            except WebDriverException:
+              print('[*] No username element found, attempting to send password only.')
+  
+            try:
+              form.find_element('xpath', "//input[@type='submit']").click()
+            except WebDriverException:
+              print('[*] No submit input element found, attempting to give up.')
+              try:
+                form.submit()
+              except Exception as e:
+                print('[!] Unable to submit form: ', e)
+  
+            try:
+              elem = driver2.find_element('xpath', "//input[@type='password']")
+              print('[*] Authentication failure.')
+            except WebDriverException:
+              print("[!] AUTH SUCCESS(2): No password element found, potential auth success!")
+              success=True
+              # Save our screenshot to the specified directory
+              try:
+                  filename = http_object.screenshot_path[:-4] + ".auth.3_%d.png" % i
+                  print("[!] Saving screenshot to: ", filename)
+                  print(driver2.save_screenshot(filename))
+              except WebDriverException as e:
+                  print('[*] Error saving web page screenshot'
+                        ' for ' + http_object.remote_system)
+  
+            # Dismiss any alerts present on the page
+            # Will not work for basic auth dialogs!
+            try:
+                alert = driver2.switch_to.alert
+                alert.dismiss()
+            except Exception as e:
+                pass
+  
+            driver2.back()
+  
+
+        driver2.quit()
+
+        return success
+    except KeyboardInterrupt:
+        print('[*] Skipping: {0}'.format(http_object.remote_system))
+        http_object.error_state = 'Skipped'
+        http_object.page_title = 'Page Skipped by User'
+    except TimeoutException:
+        print('[*] Hit timeout limit when connecting to {0}, retrying'.format(http_object.remote_system))
+    except http.client.BadStatusLine:
+        print('[*] Bad status line when connecting to {0}'.format(http_object.remote_system))
+    except WebDriverException:
+        print('[*] WebDriverError when connecting to {0}'.format(http_object.remote_system))
+        # print('[*] WebDriverError when connecting to {0} -> {1}'.format(http_object.remote_system, e))
+    except Exception as e:
+        print("[*] Form login failure: ", e)
+        print(traceback.format_exc())
+
+
+    return False
+
+def _auth_host(cred, cli_parsed, http_object, driver, ua=None):
+    """Performs the internal authentication with single given credential
+
+    Args:
+        cred (Tuple): Consists of username, password, comment, and status result once tested (bool)
+        cli_parsed (ArgumentParser): Command Line Object
+        http_object (HTTPTableObject): Object containing data relating to current URL
+        driver (FirefoxDriver): webdriver instance
+        ua (String, optional): Optional user agent string
+
+    Returns:
+        Boolean: True for success, and False for failure
+    """
+
+    # first attempt for each cred, attempt cred call ie: https://username:password@hostname:port/
+    # if result is unauthorized or a form is found with a password input (assuming failure), try next request
+    # else if form is found, leverage selenium
+
+    # selenium: for each form: 
+    #     find forms that contain password input type. 
+    #     form: provide each user/password and confirm non 400 return
+
+    if _auth_host_uri(cred, cli_parsed, http_object, driver, ua):
+      print("[!] Verified using uri request") 
+      return True
+
+    print("[!] URL Authentication method failed, attempting form authentication")
+    
+    return _auth_host_form(cred, cli_parsed, http_object, driver, ua)
+
+
+def auth_host(cli_parsed, http_object, driver, ua=None):
+    """Attempts to authenticate to a single host, given
+    the data available in http_object._parsed_creds
+
+    Args:
+        cli_parsed (ArgumentParser): Command Line Object
+        http_object (HTTPTableObject): Object containing data relating to current URL
+        driver (FirefoxDriver): webdriver instance
+        ua (String, optional): Optional user agent string
+
+    Returns:
+        HTTPTableObject: Complete http_object
+    """
+
+
+    if len(http_object._parsed_creds) == 0:
+      print("[!] Failed to test authentication, no credentials have been found: ", http_object.default_creds)
+      return http_object
+
+    for idx in range(len(http_object._parsed_creds)):
+      c = http_object._parsed_creds[idx]
+      s = ""
+      if c[0] and c[1]:
+        s += "User: %s Password: %s" % (c[0], c[1])
+      elif c[0]:
+        s += "User: %s Password: empty" % c[0]
+      if c[2]:
+        s += " Comment: %s" % c[2]
+      s += "\n"
+
+      if _auth_host(c, cli_parsed, http_object, driver, ua):
+        print("[*] Authentication Success! Credentials:\n%s" % s.strip("\n"))
+        c = list(c)
+        c[3] = True
+        http_object._parsed_creds[idx] = tuple(c)
+
+    return http_object
+
 def capture_host(cli_parsed, http_object, driver, ua=None):
     """Screenshots a single host, saves information, and returns
     a complete HTTP Object
@@ -124,7 +483,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         print('[*] Bad status line when connecting to {0}'.format(http_object.remote_system))
         http_object.error_state = 'BadStatus'
         return http_object, driver
-    except WebDriverException:
+    except WebDriverException as e:
+        # print('[*] WebDriverError when connecting to {0} -> {1}'.format(http_object.remote_system, e))
         print('[*] WebDriverError when connecting to {0}'.format(http_object.remote_system))
         http_object.error_state = 'BadStatus'
         return http_object, driver
@@ -169,8 +529,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
                 http_object.error_state = 'BadStatus'
                 return_status = True
                 break
-            except WebDriverException:
-                print('[*] WebDriverError when connecting to {0}'.format(http_object.remote_system))
+            except WebDriverException as e:
+                print('[*] WebDriverError when connecting to {0} -> {1}'.format(http_object.remote_system, e))
                 http_object.error_state = 'BadStatus'
                 return_status = True
                 break

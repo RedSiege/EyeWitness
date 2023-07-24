@@ -640,7 +640,7 @@ def do_jitter(cli_parsed):
         sleep_value = sleep_value * .01
         sleep_value = 1 - sleep_value
         sleep_value = sleep_value * cli_parsed.jitter
-        print("[*] Sleeping for " + str(sleep_value) + " seconds..")
+        print("[*] Sleeping for " + "{:.2f}".format(sleep_value) + " seconds..")
         try:
             time.sleep(sleep_value)
         except KeyboardInterrupt:
@@ -752,9 +752,24 @@ def default_creds_category(http_object):
             for sig in signatures:
                 # Find the signature(s), split them into their own list if needed
                 # Assign default creds to its own variable
+                # !! added support for description field and cred field, so that creds can be 
+                # !! automatically checked
+                sig = sig.rstrip("\n")
                 sig_cred = sig.split('|')
+                if len(sig_cred) > 3:
+                  # character '|' is contained in the page_sig, rejoin and work backwards
+                  tmp_sig = sig_cred[0:len(sig_cred)-2]
+                  sig = "|".join(tmp_sig)
+                  sig_cred2 = [ sig, sig_cred[len(sig_cred) - 2], sig_cred[len(sig_cred) - 1] ]
+                  sig_cred = sig_cred2
+
                 page_sig = sig_cred[0].split(";")
-                cred_info = sig_cred[1].strip()
+                desc = sig_cred[1].strip()
+                try:
+                  cred_info = sig_cred[2]
+                except Exception as e:
+                  # default to description, assume description is missing
+                  cred_info = desc
 
                 # Set our variable to 1 if the signature was not identified.  If it is
                 # identified, it will be added later on.  Find total number of
@@ -765,10 +780,12 @@ def default_creds_category(http_object):
                 # web page needed to make a signature Delimete the "signature"
                 # by ";" before the "|", and then have the creds after the "|"
                 if all([x.lower() in http_object.source_code.decode().lower() for x in page_sig]):
+                    http_object._description = desc
+
                     if http_object.default_creds is None:
                         http_object.default_creds = cred_info
                     else:
-                        http_object.default_creds += '\n' + cred_info
+                        http_object.default_creds += ';' + cred_info
 
             for cat in categories:
                 # Find the signature(s), split them into their own list if needed
@@ -808,6 +825,12 @@ def default_creds_category(http_object):
                     http_object.category = 'dirlist'
                 if '404 Not Found' in http_object.page_title:
                     http_object.category = 'notfound'
+
+
+        """
+        if True and len(http_object._parsed_creds) > 0:
+          print("Attempting authentication")
+        """
 
         return http_object
     except IOError:

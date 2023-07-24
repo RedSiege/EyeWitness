@@ -9,6 +9,7 @@ import signal
 import sys
 import time
 import webbrowser
+import json
 
 from modules import db_manager
 from modules import objects
@@ -260,6 +261,7 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
     if cli_parsed.web:
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
+        auth_host = selenium_module.auth_host
 
     with lock:
         driver = create_driver(cli_parsed, user_agent)
@@ -293,12 +295,15 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
                     cli_parsed, http_object, driver)
                 if http_object.category is None and http_object.error_state is None:
                     http_object = default_creds_category(http_object)
+                    auth_host(cli_parsed, http_object, driver)
+
                 manager.update_http_object(http_object)
             else:
                 ua_object, driver = capture_host(
                     cli_parsed, http_object, driver)
                 if http_object.category is None and http_object.error_state is None:
                     ua_object = default_creds_category(ua_object)
+                    auth_host(cli_parsed, http_object, driver)
                 manager.update_ua_object(ua_object)
 
             counter[0].value += 1
