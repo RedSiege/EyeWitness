@@ -826,12 +826,6 @@ def default_creds_category(http_object):
                 if '404 Not Found' in http_object.page_title:
                     http_object.category = 'notfound'
 
-
-        """
-        if True and len(http_object._parsed_creds) > 0:
-          print("Attempting authentication")
-        """
-
         return http_object
     except IOError:
         print("[*] WARNING: Credentials file not in the same directory"

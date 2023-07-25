@@ -7,6 +7,8 @@ import traceback
 import urllib.request
 import urllib.error
 from urllib.parse import urlparse
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import requests
 import ssl
 import json
@@ -108,7 +110,7 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
         ua (String, optional): Optional user agent string
 
     Returns:
-        Boolean: True for success, and False for failure
+        Boolean: String (filename of screenshot) for success, and False for failure
     """
 
     # first attempt for each cred, attempt cred call ie: https://username:password@hostname:port/
@@ -132,6 +134,7 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
         driver.get(auth_url)
 
         # if a text input and a password input are shown, print content, and assume login failed
+        screenshots = False
 
         try:
             elem = driver.find_element('xpath', "//input[@type='password']")
@@ -143,6 +146,8 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
                 time.sleep(5) # wait for page to load
                 print("[!] Saving screenshot to: ", filename)
                 driver.save_screenshot(filename)
+                if not screenshots: screenshots = filename
+                else: screenshots += ';' + filename
             except WebDriverException as e:
                 print('[*] Error saving web page screenshot'
                       ' for ' + http_object.remote_system)
@@ -164,10 +169,12 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
                   print("[!] Saving screenshot to: ", filename)
                   time.sleep(5) # wait for page to load
                   driver.save_screenshot(filename)
+                  if not screenshots: screenshots = filename
+                  else: screenshots += ';' + filename
                 except WebDriverException as e:
                     print('[*] Error saving web page screenshot'
                           ' for ' + http_object.remote_system)
-                return True
+                return screenshots
 
             return False
 
@@ -207,7 +214,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
         ua (String, optional): Optional user agent string
 
     Returns:
-        Boolean: True for success, and False for failure
+        Boolean: String (filename of screenshot) for success, and False for failure
         Driver: Needed since this functions closes connections and retries
     """
 
@@ -241,6 +248,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
 
         # print("FORMS: ", forms)
         print("[!] %d forms found..." % len(forms))
+        screenshots = False
         i = 0
         for form in forms:
           # for each radio button, for each radio button option
@@ -298,6 +306,8 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
                       print("[!] Saving screenshot to: ", filename)
                       time.sleep(5) # wait for page to load
                       driver2.save_screenshot(filename)
+                      if not screenshots: screenshots = filename
+                      else: screenshots += ';' + filename
                   except WebDriverException as e:
                       print('[*] Error saving web page screenshot'
                             ' for ' + http_object.remote_system)
@@ -350,6 +360,8 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
                   print("[!] Saving screenshot to: ", filename)
                   time.sleep(5) # wait for page to load
                   driver2.save_screenshot(filename)
+                  if not screenshots: screenshots = filename
+                  else: screenshots += ';' + filename
               except WebDriverException as e:
                   print('[*] Error saving web page screenshot'
                         ' for ' + http_object.remote_system)
@@ -367,7 +379,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
 
         driver2.quit()
 
-        return success
+        return screenshots
     except KeyboardInterrupt:
         print('[*] Skipping: {0}'.format(http_object.remote_system))
         http_object.error_state = 'Skipped'
@@ -397,7 +409,7 @@ def _auth_host(cred, cli_parsed, http_object, driver, ua=None):
         ua (String, optional): Optional user agent string
 
     Returns:
-        Boolean: True for success, and False for failure
+        Boolean: String (filename of screenshot) for success, and False for failure
     """
 
     # first attempt for each cred, attempt cred call ie: https://username:password@hostname:port/
@@ -408,9 +420,10 @@ def _auth_host(cred, cli_parsed, http_object, driver, ua=None):
     #     find forms that contain password input type. 
     #     form: provide each user/password and confirm non 400 return
 
-    if _auth_host_uri(cred, cli_parsed, http_object, driver, ua):
+    screenshots = _auth_host_uri(cred, cli_parsed, http_object, driver, ua)
+    if screenshots != False:
       print("[!] Verified using uri request") 
-      return True
+      return screenshots
 
     print("[!] URL Authentication method failed, attempting form authentication")
     
@@ -447,10 +460,13 @@ def auth_host(cli_parsed, http_object, driver, ua=None):
         s += " Comment: %s" % c[2]
       s += "\n"
 
-      if _auth_host(c, cli_parsed, http_object, driver, ua):
+      screenshots = _auth_host(c, cli_parsed, http_object, driver, ua)
+      if screenshots != False:
         print("[*] Authentication Success! Credentials:\n%s" % s.strip("\n"))
         c = list(c)
         c[3] = True
+        # XXX
+        c[4] = screenshots
         http_object._parsed_creds[idx] = tuple(c)
 
     return http_object
