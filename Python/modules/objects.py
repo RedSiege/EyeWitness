@@ -207,7 +207,7 @@ class HTTPTableObject(object):
               try:
                 passwd = y[1].strip()
               except:
-                # print("Only 1 value found: ", passwd)
+                # Only 1 value found
                 passwd = None
             else:
               y = c.split('/')
@@ -215,7 +215,7 @@ class HTTPTableObject(object):
               try:
                 passwd = y[1].strip()
               except:
-                # print("Only 1 value found: ", passwd)
+                # Only 1 value found
                 passwd = None
             self._parsed_creds = self._parsed_creds + [ (user,passwd,comment,None, '') ]
         except Exception as e:
@@ -223,8 +223,6 @@ class HTTPTableObject(object):
           print("    ", default_creds)
           print(traceback.format_exc())
         self._default_creds = default_creds
-        #print("DEF CREDS: ", default_creds)
-        #print("PAR CREDS: ", self._parsed_creds)
 
     @property
     def category(self):

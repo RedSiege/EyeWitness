@@ -308,10 +308,6 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
 
                 # head call and detect WWW-Authenticate realm info
                 # if found, attempt manual auth
-                """
-                http_object, driver = capture_host(
-                    cli_parsed, http_object, driver)
-                """
 
                 http_object2 = test_realm(cli_parsed, http_object, driver)
                 if not http_object2:
@@ -327,26 +323,7 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
                         auth_host(cli_parsed, http_object2, driver)
                     manager.update_http_object(http_object2)
 
-                """
-                #if http_object.category is None and http_object.error_state is None:
-                #    http_object = default_creds_category(http_object)
-                #    auth_host(cli_parsed, http_object, driver)
-                ua_object = default_creds_category(ua_object)
-                auth_host(cli_parsed, http_object, driver)
-                """
-
             else:
-
-                """
-                ua_object, driver = capture_host(
-                    cli_parsed, http_object, driver)
-
-                #if http_object.category is None and http_object.error_state is None:
-                #    ua_object = default_creds_category(ua_object)
-                #    auth_host(cli_parsed, http_object, driver)
-                ua_object = default_creds_category(ua_object)
-                auth_host(cli_parsed, http_object, driver)
-                """
 
                 ua_object = test_realm(cli_parsed, http_object, driver)
                 if not ua_object:
