@@ -2,11 +2,14 @@ import http.client
 import os
 import socket
 import sys
+import time
 import traceback
 import urllib.request
 import urllib.error
 from urllib.parse import urlparse
+import requests
 import ssl
+import json
 
 try:
     from ssl import CertificateError as sslerr
@@ -137,8 +140,9 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
             # Save our screenshot to the specified directory
             try:
                 filename = http_object.screenshot_path[:-4] + ".auth.1.png"
+                time.sleep(5) # wait for page to load
                 print("[!] Saving screenshot to: ", filename)
-                print(driver.save_screenshot(filename))
+                driver.save_screenshot(filename)
             except WebDriverException as e:
                 print('[*] Error saving web page screenshot'
                       ' for ' + http_object.remote_system)
@@ -158,7 +162,8 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
                 try:
                   filename = http_object.screenshot_path[:-4] + ".auth.2.png"
                   print("[!] Saving screenshot to: ", filename)
-                  print(driver.save_screenshot(filename))
+                  time.sleep(5) # wait for page to load
+                  driver.save_screenshot(filename)
                 except WebDriverException as e:
                     print('[*] Error saving web page screenshot'
                           ' for ' + http_object.remote_system)
@@ -229,7 +234,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
         # for each form that contains an input
         try:
             forms = driver2.find_elements('xpath', "//form")
-        except WebDriverException:
+        except WebDriverException as e:
             print('[*] WebDriverError when connecting to {0} -> {1}'.format(http_object.remote_system, e))
             print('[*] No forms have been found! Exiting.')
             return False
@@ -291,6 +296,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
                   try:
                       filename = http_object.screenshot_path[:-4] + ".auth.3_%d.png" % i
                       print("[!] Saving screenshot to: ", filename)
+                      time.sleep(5) # wait for page to load
                       print(driver2.save_screenshot(filename))
                   except WebDriverException as e:
                       print('[*] Error saving web page screenshot'
@@ -342,6 +348,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
               try:
                   filename = http_object.screenshot_path[:-4] + ".auth.3_%d.png" % i
                   print("[!] Saving screenshot to: ", filename)
+                  time.sleep(5) # wait for page to load
                   print(driver2.save_screenshot(filename))
               except WebDriverException as e:
                   print('[*] Error saving web page screenshot'
@@ -426,7 +433,7 @@ def auth_host(cli_parsed, http_object, driver, ua=None):
 
 
     if len(http_object._parsed_creds) == 0:
-      print("[!] Failed to test authentication, no credentials have been found: ", http_object.default_creds)
+      # print("[!] Failed to test authentication, no credentials have been found: ", http_object.default_creds)
       return http_object
 
     for idx in range(len(http_object._parsed_creds)):
@@ -447,6 +454,103 @@ def auth_host(cli_parsed, http_object, driver, ua=None):
         http_object._parsed_creds[idx] = tuple(c)
 
     return http_object
+
+def test_realm(cli_parsed, http_object, driver, ua=None):
+    """Capture HTTP HEAD request and look for Server and WWW-Authenticate headers
+    Args:
+        cli_parsed (ArgumentParser): Command Line Object
+        http_object (HTTPTableObject): Object containing data relating to current URL
+        driver (FirefoxDriver): webdriver instance
+        ua (String, optional): Optional user agent string
+
+    Returns:
+        HTTPTableObject: Complete http_object
+    """
+
+    status = None
+
+    try:
+        response = requests.head(http_object.remote_system)
+        print("[*] Status Code: ", response.status_code, " Headers : ", json.dumps(dict(response.headers)))
+        if response.status_code >= 400 and response.status_code < 500:
+            # Realm detected? 
+            auth_header = server_response = None
+            if 'Server' in response.headers:
+                server_response = response.headers['Server']
+                if len(server_response.strip()) == 0: server_response = None
+            if 'WWW-Authenticate' in response.headers:
+                auth_header = response.headers['WWW-Authenticate']
+                if len(auth_header.strip()) == 0: auth_header = None
+
+            # parse
+            if auth_header: print("Header detected: ", auth_header)
+            if server_response: print("Server detected: ", server_response)
+
+            # parse out our signature data and attempt to match. for each match: attempt defalut creds. if success, use creds and take screenshot
+
+            http_object.default_creds = None
+            http_object.category = None
+            sigpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               '..', 'signatures_realm.txt')
+            with open(sigpath) as sig_file:
+                signatures = sig_file.readlines()
+
+            for sig in signatures:
+                # Find the signature(s), split them into their own list if needed
+                # Assign default creds to its own variable
+                # !! added support for description field and cred field, so that creds can be
+                # !! automatically checked
+                sig = sig.rstrip("\n")
+                sig_cred = sig.split('|')
+                if len(sig_cred) > 4:
+                  # character '|' is contained in the page_sig, rejoin and work backwards
+                  tmp_sig = sig_cred[0:len(sig_cred)-3]
+                  sig = "|".join(tmp_sig)
+                  sig_cred2 = [ sig, sig_cred[len(sig_cred) - 3], sig_cred[len(sig_cred) - 2] ]
+                  sig_cred = sig_cred2
+
+                server_sig = sig_cred[0].strip()
+                realm_sig = sig_cred[1].strip()
+                desc = sig_cred[2].strip()
+                try:
+                  cred_info = sig_cred[3]
+                except Exception as e:
+                  # default to description, assume description is missing
+                  cred_info = desc
+
+                # if all([x.lower() in server_response.lower() for x in page_sig]) and :
+                if server_response and auth_header and server_sig.lower() in server_response.lower() and auth_header.lower() in realm_sig.lower():
+                    print("[*] Matched Server Response and Authentication Header, attempting default credentials")
+                    http_object._description = desc
+                    if http_object.default_creds is None:
+                        http_object.default_creds = cred_info
+                    else:
+                        http_object.default_creds += ';' + cred_info
+                    status = http_object
+                elif server_response and server_sig.lower() in server_response.lower():
+                    print("[*] Matched Server Response, attempting default credentials")
+                    http_object._description = desc
+                    if http_object.default_creds is None:
+                        http_object.default_creds = cred_info
+                    else:
+                        http_object.default_creds += ';' + cred_info
+                    status = http_object
+                elif auth_header.lower() in realm_sig.lower():
+                    print("[*] Matched Authentication Header, attempting default credentials")
+                    http_object._description = desc
+                    if http_object.default_creds is None:
+                        http_object.default_creds = cred_info
+                    else:
+                        http_object.default_creds += ';' + cred_info
+                    status = http_object
+
+    except Exception as e:
+        print('[*] Error ({0}), Skipping: {1}'.format(e, http_object.remote_system))
+        http_object.error_state = 'Skipped'
+
+    # take screenshot! 
+
+    return status
 
 def capture_host(cli_parsed, http_object, driver, ua=None):
     """Screenshots a single host, saves information, and returns
@@ -529,8 +633,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
                 http_object.error_state = 'BadStatus'
                 return_status = True
                 break
-            except WebDriverException as e:
-                print('[*] WebDriverError when connecting to {0} -> {1}'.format(http_object.remote_system, e))
+            except WebDriverException:
+                print('[*] WebDriverError when connecting to {0}'.format(http_object.remote_system))
                 http_object.error_state = 'BadStatus'
                 return_status = True
                 break
@@ -550,6 +654,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
 
     # Save our screenshot to the specified directory
     try:
+        time.sleep(5) # wait for page to load
         driver.save_screenshot(http_object.screenshot_path)
     except WebDriverException as e:
         print('[*] Error saving web page screenshot'
