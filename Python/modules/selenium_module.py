@@ -297,7 +297,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
                       filename = http_object.screenshot_path[:-4] + ".auth.3_%d.png" % i
                       print("[!] Saving screenshot to: ", filename)
                       time.sleep(5) # wait for page to load
-                      print(driver2.save_screenshot(filename))
+                      driver2.save_screenshot(filename)
                   except WebDriverException as e:
                       print('[*] Error saving web page screenshot'
                             ' for ' + http_object.remote_system)
@@ -349,7 +349,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
                   filename = http_object.screenshot_path[:-4] + ".auth.3_%d.png" % i
                   print("[!] Saving screenshot to: ", filename)
                   time.sleep(5) # wait for page to load
-                  print(driver2.save_screenshot(filename))
+                  driver2.save_screenshot(filename)
               except WebDriverException as e:
                   print('[*] Error saving web page screenshot'
                         ' for ' + http_object.remote_system)
@@ -471,7 +471,7 @@ def test_realm(cli_parsed, http_object, driver, ua=None):
 
     try:
         response = requests.head(http_object.remote_system, timeout=cli_parsed.timeout, verify=False)
-        print("[*] Status Code: ", response.status_code, " Headers : ", json.dumps(dict(response.headers)))
+        # print("[*] Status Code: ", response.status_code, " Headers : ", json.dumps(dict(response.headers)))
         if response.status_code >= 400 and response.status_code < 500:
             # Realm detected? 
             auth_header = server_response = None
@@ -482,6 +482,7 @@ def test_realm(cli_parsed, http_object, driver, ua=None):
                 auth_header = response.headers['WWW-Authenticate']
                 if len(auth_header.strip()) == 0: auth_header = None
             else:
+               response.close()
                return status # no authentication prompt
 
             # parse
@@ -545,6 +546,8 @@ def test_realm(cli_parsed, http_object, driver, ua=None):
                     else:
                         http_object.default_creds += ';' + cred_info
                     status = http_object
+
+        response.close()
 
     except Exception as e:
         print('[*] Error ({0}), Skipping: {1}'.format(e, http_object.remote_system))
