@@ -248,12 +248,12 @@ class HTTPTableObject(object):
         html = u""
         if self._remote_login is not None:
             html += ("""<tr>
-            <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
+            <td valign="top"><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
             <a href=\"{address}\" target=\"_blank\">{address}</a><br>
             """).format(address=self._remote_login)
         else:
             html += ("""<tr>
-            <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
+            <td valign="top"><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
             <a href=\"{address}\" target=\"_blank\">{address}</a><br>
             """).format(address=self.remote_system)
 
@@ -306,7 +306,11 @@ class HTTPTableObject(object):
                 elif cred[1]: 
                     html += "<td></td><td>{0}</td>".format(cred[0])
                 if cred[3] == True:
-                    html += '<td bgcolor="green">Success</td>'
+                    if len(cred[4]) > 0:
+                        a_scr_path = os.path.relpath(cred[4], self.root_path)
+                        html += '<td bgcolor="green"><a href=\"{0}\" target=\"_blank\">Success</a></td>'.format(a_scr_path)
+                    else:
+                        html += '<td bgcolor="green">Success</td>'
                 else:
                     html += '<td bgcolor="red">Failed</td>'
                 html+= "</tr>"
@@ -363,7 +367,7 @@ class HTTPTableObject(object):
                 for cred in self._parsed_creds:
                     if len(cred[4]) > 0:
                         a_scr_path = os.path.relpath(cred[4], self.root_path)
-                        html += "<br /><a href=\"{0}\" target=\"_blank\"<img src=\"{0}\" height=\"400\" /></a><br />".format(a_scr_path)
+                        html += "<br /><a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" height=\"400\" /></a><br />".format(a_scr_path)
            
             html += ("""</td></tr>""")
 
@@ -469,7 +473,7 @@ class UAObject(HTTPTableObject):
         src_path = os.path.relpath(self.source_path, self.root_path)
         html = u""
         html += ("""<tr class="hide {0}">
-        <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
+        <td valign="top"><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
         <a href=\"{1}\" target=\"_blank\">{1}</a><br>
         """).format(divid, self.remote_system)
 
@@ -521,7 +525,11 @@ class UAObject(HTTPTableObject):
                 elif cred[1]: 
                     html += "<td></td><td>{0}</td>".format(cred[0])
                 if cred[3] == True:
-                    html += '<td bgcolor="green">Success</td>'
+                    if len(cred[4]) > 0:
+                        a_scr_path = os.path.relpath(cred[4], self.root_path)
+                        html += '<td bgcolor="green"><a href=\"{0}\" target=\"_blank\">Success</a></td>'.format(a_scr_path)
+                    else:
+                        html += '<td bgcolor="green">Success</td>'
                 else:
                     html += '<td bgcolor="red">Failed</td>'
                 html+= "</tr>"
@@ -565,7 +573,7 @@ class UAObject(HTTPTableObject):
                 for cred in self._parsed_creds:
                     if len(cred[4]) > 0:
                         a_scr_path = os.path.relpath(cred[4], self.root_path)
-                        html += "<br /><a href=\"{0}\" target=\"_blank\"<img src=\"{0}\" height=\"400\" /></a><br />".format(a_scr_path)
+                        html += "<br /><a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" height=\"400\" /></a><br />".format(a_scr_path)
             html += ("""</td></tr>""")
         return html
 
