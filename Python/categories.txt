@@ -745,3 +745,11 @@ CISCO Codec;<body class="vega signin-body">|voip
 <title>Oracle(R) Integrated Lights Out Manager - Login</title>;document.cookie = "ilom=1|infrastructure
 type="image/ico"><title>;swal2-checkbox label;swal2-range input|infrastructure
 Configuration Utility">;content="F5, Inc.">;delCookie("F5_CURRENT_FOLDER");|netdev
+IP Management;d="username" name="ipamusername";name="ipampassword"|netdev
+<title>NETGEAR GS324TP</title>;base/cheetah_login;screen_refresh|netdev
+XUX-nwave/xux-js/xux-nwave-1.7.0-al;deviceInfoSection;openDeviceInfoDetailsModalWindow|printer
+<title>Default Authentication : LBP6780;show_alert_dialog;document.login.password.value|printer
+<title>OneXafe</title>;Cabernet Sauvignon;ONEBLOX;var MODEL|infrastructure
+<title id="appTitle">Reolink</title>;button_container_left|infrastructure
+<title>User Authentication : IRADVC55xx;guestLogin;document.login.DOMAIN.value|printer
+<h1>Welcome to Jenkins!</h1>;jenkins-input normal;jenkins-form-item|highval

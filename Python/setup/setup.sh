@@ -66,7 +66,8 @@ case ${osinfo} in
     apt-get install -y cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr
     echo
     echo '[*] Installing Python Modules'
-    apt install -y python3-selenium python3-fuzzywuzzy python3-pyvirtualdisplay  python3-netaddr python3-levenshtein
+    apt install -y python3-fuzzywuzzy python3-pyvirtualdisplay  python3-netaddr python3-levenshtein
+    python3 -m pip install selenium==4.9.1
     echo
     cd ../bin/
     MACHINE_TYPE=`uname -m`
@@ -101,7 +102,7 @@ case ${osinfo} in
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
-    python3 -m pip install selenium --upgrade
+    python3 -m pip install selenium==4.9.1
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install netaddr
@@ -139,7 +140,7 @@ case ${osinfo} in
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
-    python3 -m pip install selenium --upgrade
+    python3 -m pip install selenium==4.9.1
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install netaddr
@@ -177,7 +178,7 @@ case ${osinfo} in
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
-    python3 -m pip install selenium --upgrade
+    python3 -m pip install selenium==4.9.1
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install netaddr
@@ -216,7 +217,7 @@ case ${osinfo} in
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
-    python3 -m pip install selenium --upgrade
+    python3 -m pip install selenium==4.9.1
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install netaddr
@@ -256,7 +257,7 @@ case ${osinfo} in
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
-    python3 -m pip install selenium --upgrade
+    python3 -m pip install selenium==4.9.1
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install netaddr
@@ -284,7 +285,7 @@ case ${osinfo} in
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
-    python3 -m pip install selenium --upgrade
+    python3 -m pip install selenium==4.9.1
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install netaddr
@@ -330,7 +331,7 @@ case ${osinfo} in
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
-    python3 -m pip install selenium --upgrade
+    python3 -m pip install selenium==4.9.1
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
     python3 -m pip install netaddr
@@ -381,7 +382,7 @@ case ${osinfo} in
     echo
     echo '[*] Installing Python Modules'
     python3 -m pip install fuzzywuzzy
-    python3 -m pip install selenium --upgrade
+    python3 -m pip install selenium==4.9.1
     python3 -m pip install python-Levenshtein
     python3 -m pip install pyvirtualdisplay
     echo
@@ -426,7 +427,7 @@ case ${osinfo} in
       echo
       echo '[*] Installing Python Modules'
       python3 -m pip install fuzzywuzzy
-      python3 -m pip install selenium --upgrade
+      python3 -m pip install selenium==4.9.1
       python3 -m pip install python-Levenshtein
       python3 -m pip install pyvirtualdisplay
       python3 -m pip install netaddr
@@ -467,6 +468,6 @@ esac
 # Finish Message
 popd > /dev/null
 echo '[*] Setup script completed successfully, enjoy EyeWitness! :)'
-echo '[*] Be sure to check out FortyNorth Security!'
-echo '[*] https://www.fortynorthsecurity.com'
+echo '[*] Be sure to check out Red Siege!'
+echo '[*] https://www.redsiegecom'
 echo
