@@ -470,7 +470,7 @@ def test_realm(cli_parsed, http_object, driver, ua=None):
     status = None
 
     try:
-        response = requests.head(http_object.remote_system)
+        response = requests.head(http_object.remote_system, timeout=cli_parsed.timeout, verify=False)
         print("[*] Status Code: ", response.status_code, " Headers : ", json.dumps(dict(response.headers)))
         if response.status_code >= 400 and response.status_code < 500:
             # Realm detected? 
@@ -481,6 +481,8 @@ def test_realm(cli_parsed, http_object, driver, ua=None):
             if 'WWW-Authenticate' in response.headers:
                 auth_header = response.headers['WWW-Authenticate']
                 if len(auth_header.strip()) == 0: auth_header = None
+            else:
+               return status # no authentication prompt
 
             # parse
             if auth_header: print("Header detected: ", auth_header)
@@ -519,7 +521,7 @@ def test_realm(cli_parsed, http_object, driver, ua=None):
                   cred_info = desc
 
                 # if all([x.lower() in server_response.lower() for x in page_sig]) and :
-                if server_response and auth_header and server_sig.lower() in server_response.lower() and auth_header.lower() in realm_sig.lower():
+                if server_sig and realm_sig and server_response and auth_header and server_sig.lower() in server_response.lower() and auth_header.lower() in realm_sig.lower():
                     print("[*] Matched Server Response and Authentication Header, attempting default credentials")
                     http_object._description = desc
                     if http_object.default_creds is None:
@@ -527,7 +529,7 @@ def test_realm(cli_parsed, http_object, driver, ua=None):
                     else:
                         http_object.default_creds += ';' + cred_info
                     status = http_object
-                elif server_response and server_sig.lower() in server_response.lower():
+                elif server_sig and server_response and server_sig.lower() in server_response.lower():
                     print("[*] Matched Server Response, attempting default credentials")
                     http_object._description = desc
                     if http_object.default_creds is None:
@@ -535,7 +537,7 @@ def test_realm(cli_parsed, http_object, driver, ua=None):
                     else:
                         http_object.default_creds += ';' + cred_info
                     status = http_object
-                elif auth_header.lower() in realm_sig.lower():
+                elif realm_sig and auth_header and auth_header.lower() in realm_sig.lower():
                     print("[*] Matched Authentication Header, attempting default credentials")
                     http_object._description = desc
                     if http_object.default_creds is None:

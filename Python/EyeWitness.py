@@ -275,6 +275,7 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
         auth_host = selenium_module.auth_host
+        test_realm = selenium_module.test_realm
 
     with lock:
         driver = create_driver(cli_parsed, user_agent)
@@ -312,18 +313,20 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
                     cli_parsed, http_object, driver)
                 """
 
-                http_object = test_realm(cli_parsed, http_object, driver)
-                if not http_object:
+                http_object2 = test_realm(cli_parsed, http_object, driver)
+                if not http_object2:
                     http_object, driver = capture_host(cli_parsed, http_object, driver)
-                    prit(http_object)
                     http_object = default_creds_category(http_object)
                     auth_host(cli_parsed, http_object, driver)
+                    manager.update_http_object(http_object)
                 else:
                     print("[!] HTTP Authentication Realm Detected")
-                    http_object, driver = capture_host(cli_parsed, http_object, driver)
-                    if http_object.default_creds:
-                        http_object = default_creds_category(http_object)
-                        auth_host(cli_parsed, http_object, driver)
+                    http_object2, driver = capture_host(cli_parsed, http_object2, driver)
+                    if http_object2.default_creds:
+                        http_object2 = default_creds_category(http_object2)
+                        auth_host(cli_parsed, http_object2, driver)
+                    manager.update_http_object(http_object2)
+
                 """
                 #if http_object.category is None and http_object.error_state is None:
                 #    http_object = default_creds_category(http_object)
@@ -332,7 +335,6 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
                 auth_host(cli_parsed, http_object, driver)
                 """
 
-                manager.update_http_object(http_object)
             else:
 
                 """
