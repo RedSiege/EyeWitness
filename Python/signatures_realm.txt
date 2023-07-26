@@ -1,2 +1,3 @@
 Polycom VVX Telephone HTTPd|mrProvServer|Polycom/456;Polycom/123;Polcom/789;Polycom/72227;Polycom/<blank>;admin/456;admin/123;admin/789;admin/72227;admin/<blank>
 |Basic realm="Web Server Authentication"|Mitel|root/73738
+nginx|realm="IPP-Print"|Ricoh|guest/guest;guest/123;guest/1234;user/access;admin/1111;admin/1234
