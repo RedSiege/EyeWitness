@@ -142,8 +142,13 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
             print("[!] AUTH SUCCESS: No password element found, potential auth success: {0}".format(http_object.remote_system)) 
             # Save our screenshot to the specified directory
             try:
-                filename = http_object.screenshot_path[:-4] + ".auth.1.png"
                 time.sleep(5) # wait for page to load
+                filename = http_object.screenshot_path[:-4] + ".auth.1.png"
+                i = 0
+                while os.path.exists(filename):
+                    filename = http_object.screenshot_path[:-4] + ".auth.1_%d.png" % i
+                    i += 1
+
                 print("[!] Saving screenshot to: ", filename)
                 driver.save_screenshot(filename)
                 if not screenshots: screenshots = filename
@@ -165,9 +170,13 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
                 print("[!] AUTH SUCCESS: No password element found, potential auth success: {0}".format(http_object.remote_system)) 
                 # Save our screenshot to the specified directory
                 try:
+                  time.sleep(5) # wait for page to load
                   filename = http_object.screenshot_path[:-4] + ".auth.2.png"
                   print("[!] Saving screenshot to: ", filename)
-                  time.sleep(5) # wait for page to load
+                  i = 0
+                  while os.path.exists(filename):
+                    filename = http_object.screenshot_path[:-4] + ".auth.2_%d.png" % i
+                    i += 1
                   driver.save_screenshot(filename)
                   if not screenshots: screenshots = filename
                   else: screenshots += ';' + filename
@@ -304,9 +313,13 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
                   success=True
                   # Save our screenshot to the specified directory
                   try:
+                      time.sleep(5) # wait for page to load
                       filename = http_object.screenshot_path[:-4] + ".auth.3_%d.png" % i
                       print("[!] Saving screenshot to: ", filename)
-                      time.sleep(5) # wait for page to load
+                      k = 0
+                      while os.path.exists(filename):
+                          filename = http_object.screenshot_path[:-4] + ".auth.3_%d_%d.png" % (i, k)
+                          k += 1
                       driver2.save_screenshot(filename)
                       if not screenshots: screenshots = filename
                       else: screenshots += ';' + filename
@@ -358,9 +371,13 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
               success=True
               # Save our screenshot to the specified directory
               try:
+                  time.sleep(5) # wait for page to load
                   filename = http_object.screenshot_path[:-4] + ".auth.3_%d.png" % i
                   print("[!] Saving screenshot to: ", filename)
-                  time.sleep(5) # wait for page to load
+                  k = 0
+                  while os.path.exists(filename):
+                      filename = http_object.screenshot_path[:-4] + ".auth.3_%d_%d.png" % (i, k)
+                      k += 1
                   driver2.save_screenshot(filename)
                   if not screenshots: screenshots = filename
                   else: screenshots += ';' + filename
