@@ -225,6 +225,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
     #     form: provide each user/password and confirm non 400 return
 
     print("[!] Attempting form validation...")
+    driver2 = None
     try:
         success=False
 
@@ -244,6 +245,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
         except WebDriverException as e:
             print('[*] WebDriverError when connecting to {0} -> {1}'.format(http_object.remote_system, e))
             print('[*] No forms have been found! Exiting.')
+            driver2.quit()
             return False
 
         # print("FORMS: ", forms)
@@ -395,6 +397,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
         print("[*] Form login failure: ", e)
         print(traceback.format_exc())
 
+    if driver2: driver2.quit()
 
     return False
 
