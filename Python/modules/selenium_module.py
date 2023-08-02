@@ -342,10 +342,15 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
             i = i + 1
             try:
               pass_elem = form.find_element('xpath', "//input[@type='password']")
-              if pass_elem:
+              if pass_elem and cred[1]:
                 pass_elem.send_keys(cred[1])
+              elif pass_elem: 
+                pass_elem.send_keys("")
             except WebDriverException:
               print("[*] No password input found in form, skipping form...")
+              continue
+            except Exception as e:
+              print("[*] Failed to send password input, skipping form...")
               continue
   
             try:
