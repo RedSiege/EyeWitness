@@ -469,5 +469,5 @@ esac
 popd > /dev/null
 echo '[*] Setup script completed successfully, enjoy EyeWitness! :)'
 echo '[*] Be sure to check out Red Siege!'
-echo '[*] https://www.redsiegecom'
+echo '[*] https://www.redsiege.com'
 echo
