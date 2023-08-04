@@ -860,7 +860,7 @@ M      /cccccccc\\                                                M
 M      §cccccccc|                     BSidesAugusta!!            M
 M      :ccccccccP                    10/2/23 - 10/5/23           M
 M      \\cccccccc()                   Red Team Tactics            M
-M       \\ccccccccD      https://bsidesaugusta.org/training#red   M
+M       \\ccccccccD             https://redsiege.com/training     M
 M       |cccccccc\\        _                                      M
 M       |ccccccccc)     //                                       M
 M       |cccccc|=      //                                        M
