@@ -857,10 +857,10 @@ def class_info():
 M                                                                M
 M       .”cCCc”.                                                 M
 M      /cccccccc\\                                                M
-M      §cccccccc|            Check Back Soon For                 M
-M      :ccccccccP                 Upcoming Training              M
-M      \\cccccccc()                                               M
-M       \\ccccccccD                                               M
+M      §cccccccc|                     BSidesAugusta!!            M
+M      :ccccccccP                    10/2/23 - 10/5/23           M
+M      \\cccccccc()                   Red Team Tactics            M
+M       \\ccccccccD          https://bsidesaugusta.org/training   M
 M       |cccccccc\\        _                                      M
 M       |ccccccccc)     //                                       M
 M       |cccccc|=      //                                        M
