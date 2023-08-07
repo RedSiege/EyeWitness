@@ -98,6 +98,43 @@ def create_driver(cli_parsed, user_agent=None):
             print(e)
         sys.exit()
 
+# https://gist.github.com/bcarroll/0c5c9bae18c8b6dc7b7a3eea2748a713
+def _get_code_from_driver(driver, url):
+    responses = [ ]
+    perfLog = driver.get_log('performance')
+    for logIndex in range(0, len(perfLog)): # Parse the Chrome Performance logs
+        logMessage = json.loads(perfLog[logIndex]["message"])["message"]
+        if logMessage["method"] == "Network.responseReceived": # Filter out HTTP responses
+            responses.append(logMessage["params"]["response"]) # append each response to self.responses
+            if logMessage["params"]["response"]["url"] == url: # create instance attributes containing the response call for url
+                print(logMessage["params"])
+                return logMessage["params"]["response"]
+
+    return -1
+
+def _auth_log(cred, cli_parsed, http_object, driver, method='form'):
+    """Writes a detected host with a valid default credential to disk
+
+    Args:
+        cred (Tuple): Consists of username, password, comment, and status result once tested (bool)
+        cli_parsed (ArgumentParser): Command Line Object
+        http_object (HTTPTableObject): Object containing data relating to current URL
+        driver (FirefoxDriver): webdriver instance
+        ua (String, optional): Optional user agent string
+
+    Returns:
+        Boolean: True for success, False for failure
+    """
+
+    print("\x1b[32m[!] AUTH LOG: Potential authentication success: {0} username: {1} password: {2} method: {3}\x1b[0m".format(http_object.remote_system, cred[0], cred[1], method)) 
+    if not cli_parsed.validation_output:
+        return
+
+    with open(cli_parsed.validation_output, "a+") as f:
+        print("AUTH LOG: Potential authentication success: {0} username: {1} password: {2} method: {3}".format(http_object.remote_system, cred[0], cred[1], method), file=f) 
+        f.close()
+        
+        
 
 def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
     """Performs the internal authentication with single given credential
@@ -133,6 +170,9 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
         # If cookie is presented we need to avoid cookie-averse error. To do so, we need to get the page twice.
         driver.get(auth_url)
 
+        code = _get_code_from_driver(driver, auth_url)
+        print("CODE: ", code)
+
         # if a text input and a password input are shown, print content, and assume login failed
         screenshots = False
 
@@ -140,6 +180,7 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
             elem = driver.find_element('xpath', "//input[@type='password']")
         except WebDriverException as e:
             print("[!] AUTH SUCCESS: No password element found, potential auth success: {0}".format(http_object.remote_system)) 
+            _auth_log(cred, cli_parsed, http_object, driver, 'uri')
             # Save our screenshot to the specified directory
             try:
                 time.sleep(5) # wait for page to load
@@ -163,11 +204,15 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
                 driver.add_cookie(cookie)
 
             driver.get(auth_url)
+            code = _get_code_from_driver(driver, auth_url)
+            print("CODE: ", code)
+
             # get contents and inspect again
             try:
                 elem = driver.find_element('xpath', "//input[@type='password']")
             except WebDriverException as e:
                 print("[!] AUTH SUCCESS: No password element found, potential auth success: {0}".format(http_object.remote_system)) 
+                _auth_log(cred, cli_parsed, http_object, driver, 'uri')
                 # Save our screenshot to the specified directory
                 try:
                   time.sleep(5) # wait for page to load
@@ -310,6 +355,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
                   print('[*] Authentication failure.')
                 except WebDriverException:
                   print("[!] AUTH SUCCESS(2): No password element found, potential auth success!")
+                  _auth_log(cred, cli_parsed, http_object, driver)
                   success=True
                   # Save our screenshot to the specified directory
                   try:
@@ -373,6 +419,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
               print('[*] Authentication failure.')
             except WebDriverException:
               print("[!] AUTH SUCCESS(2): No password element found, potential auth success!")
+              _auth_log(cred, cli_parsed, http_object, driver)
               success=True
               # Save our screenshot to the specified directory
               try:
