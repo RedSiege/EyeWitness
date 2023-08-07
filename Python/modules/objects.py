@@ -280,7 +280,7 @@ class HTTPTableObject(object):
                             self.sanitize(self._description), self.sanitize(self.default_creds))
                     except:
                         print('[!] Failed to format default credentials: ')
-                        print(json.dumps(self.default_creds))
+                        # print(json.dumps(self.default_creds))
             else:
                 try:
                     html += "<br><b>Default credentials:</b> {0} ({1})<br>".format(
@@ -291,7 +291,7 @@ class HTTPTableObject(object):
                             self.sanitize(self._description), self.sanitize(self.default_creds))
                     except:
                         print('[!] Failed to format default credentials: ')
-                        print(json.dumps(self.default_creds))
+                        # print(json.dumps(self.default_creds))
 
         if self._parsed_creds is not None and type(self._parsed_creds) is list and len(self._parsed_creds) > 0:
             html += "<br /><table width=\"100%\" style=\"padding-left: 5px; padding-right: 5px;\"><thead><td>User</td><td>Password</td><td>Status</td></thead>"
@@ -499,7 +499,7 @@ class UAObject(HTTPTableObject):
                             self.sanitize(self._description), self.sanitize(self.default_creds))
                     except:
                         print('[!] Failed to format default credentials: ')
-                        print(json.dumps(self.default_creds))
+                        # print(json.dumps(self.default_creds))
             else:
                 try:
                     html += "<br><b>Default credentials:</b> {0} ({1})<br>".format(
@@ -510,7 +510,7 @@ class UAObject(HTTPTableObject):
                             self.sanitize(self._description), self.sanitize(self.default_creds))
                     except:
                         print('[!] Failed to format default credentials: ')
-                        print(json.dumps(self.default_creds))
+                        # print(json.dumps(self.default_creds))
 
         if self._parsed_creds is not None and type(self._parsed_creds) is list and len(self._parsed_creds) > 0:
             html += "<br /><table width=\"100%\" style=\"padding-left: 5px; padding-right: 5px;\"><thead><td>User</td><td>Password</td><td>Status</td></thead>"

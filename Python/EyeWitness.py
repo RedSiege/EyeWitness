@@ -9,7 +9,6 @@ import signal
 import sys
 import time
 import webbrowser
-import json
 
 from modules import db_manager
 from modules import objects
