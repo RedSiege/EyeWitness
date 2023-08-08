@@ -248,19 +248,19 @@ def single_mode(cli_parsed):
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
     driver = create_driver(cli_parsed)
-    result = test_realm(cli_parsed, http_object, driver)
+    result, is_protected = test_realm(cli_parsed, http_object, driver)
     if not result:
         result, driver = capture_host(cli_parsed, http_object, driver)
         result = default_creds_category(result)
         if cli_parsed.enable_validation:
-            auth_host(cli_parsed, result, driver)
+            auth_host(cli_parsed, result, driver, is_protected)
     else:
         print("[!] HTTP Authentication Realm Detected")
         result, driver = capture_host(cli_parsed, result, driver)
         if result.default_creds:
             result = default_creds_category(result)
             if cli_parsed.enable_validation:
-                auth_host(cli_parsed, result, driver)
+                auth_host(cli_parsed, result, driver, is_protected)
 
     if cli_parsed.resolve:
         result.resolved = resolve_host(result.remote_system)
@@ -317,12 +317,12 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
                 # head call and detect WWW-Authenticate realm info
                 # if found, attempt manual auth
 
-                http_object2 = test_realm(cli_parsed, http_object, driver)
+                http_object2, is_protected = test_realm(cli_parsed, http_object, driver)
                 if not http_object2:
                     http_object, driver = capture_host(cli_parsed, http_object, driver)
                     http_object = default_creds_category(http_object)
                     if cli_parsed.enable_validation:
-                        auth_host(cli_parsed, http_object, driver)
+                        auth_host(cli_parsed, http_object, driver, is_protected)
                     manager.update_http_object(http_object)
                 else:
                     print("[!] HTTP Authentication Realm Detected")
@@ -330,24 +330,24 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
                     if http_object2.default_creds:
                         http_object2 = default_creds_category(http_object2)
                         if cli_parsed.enable_validation:
-                            auth_host(cli_parsed, http_object2, driver)
+                            auth_host(cli_parsed, http_object2, driver, is_protected)
                     manager.update_http_object(http_object2)
 
             else:
 
-                ua_object = test_realm(cli_parsed, http_object, driver)
+                ua_object, is_protected = test_realm(cli_parsed, http_object, driver)
                 if not ua_object:
                     ua_object, driver = capture_host(cli_parsed, http_object, driver)
                     ua_object = default_creds_category(ua_object)
                     if cli_parsed.enable_validation:
-                        auth_host(cli_parsed, ua_object, driver)
+                        auth_host(cli_parsed, ua_object, driver, is_protected)
                 else:
                     print("[!] HTTP Authentication Realm Detected")
                     ua_object, driver = capture_host(cli_parsed, ua_object, driver)
                     if ua_object.default_creds:
                         ua_object = default_creds_category(ua_object)
                         if cli_parsed.enable_validation:
-                            auth_host(cli_parsed, ua_object, driver)
+                            auth_host(cli_parsed, ua_object, driver, is_protected)
 
                 manager.update_ua_object(ua_object)
 

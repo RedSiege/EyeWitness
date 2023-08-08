@@ -461,7 +461,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
 
     return False
 
-def _auth_host(cred, cli_parsed, http_object, driver, ua=None):
+def _auth_host(cred, cli_parsed, http_object, driver, is_protected, ua=None):
     """Performs the internal authentication with single given credential
 
     Args:
@@ -483,17 +483,13 @@ def _auth_host(cred, cli_parsed, http_object, driver, ua=None):
     #     find forms that contain password input type. 
     #     form: provide each user/password and confirm non 400 return
 
-    screenshots = _auth_host_uri(cred, cli_parsed, http_object, driver, ua)
-    if screenshots != False:
-      print("[!] Verified using uri request") 
-      return screenshots
+    if is_protected:
+        return _auth_host_uri(cred, cli_parsed, http_object, driver, ua)
 
-    print("[!] URL Authentication method failed, attempting form authentication")
-    
     return _auth_host_form(cred, cli_parsed, http_object, driver, ua)
 
 
-def auth_host(cli_parsed, http_object, driver, ua=None):
+def auth_host(cli_parsed, http_object, driver, is_protected, ua=None):
     """Attempts to authenticate to a single host, given
     the data available in http_object._parsed_creds
 
@@ -523,7 +519,7 @@ def auth_host(cli_parsed, http_object, driver, ua=None):
         s += " Comment: %s" % c[2]
       s += "\n"
 
-      screenshots = _auth_host(c, cli_parsed, http_object, driver, ua)
+      screenshots = _auth_host(c, cli_parsed, http_object, driver, is_protected, ua)
       if screenshots != False:
         # print("[*] Authentication Success! Credentials:\n%s" % s.strip("\n"))
         c = list(c)
@@ -544,9 +540,11 @@ def test_realm(cli_parsed, http_object, driver, ua=None):
 
     Returns:
         HTTPTableObject: Complete http_object
+        Boolean: if site is protected by a realm
     """
 
     status = None
+    is_protected = False
 
     try:
         response = requests.head(http_object.remote_system, timeout=cli_parsed.timeout, verify=False)
@@ -562,10 +560,12 @@ def test_realm(cli_parsed, http_object, driver, ua=None):
                 if len(auth_header.strip()) == 0: auth_header = None
             else:
                response.close()
-               return status # no authentication prompt
+               return status, is_protected # no authentication prompt
 
             # parse
-            if auth_header: print("Header detected: ", auth_header)
+            if auth_header: 
+                is_protected = True
+                print("Header detected: ", auth_header)
             if server_response: print("Server detected: ", server_response)
 
             # parse out our signature data and attempt to match. for each match: attempt defalut creds. if success, use creds and take screenshot
@@ -634,7 +634,7 @@ def test_realm(cli_parsed, http_object, driver, ua=None):
 
     # take screenshot! 
 
-    return status
+    return status, is_protected
 
 def capture_host(cli_parsed, http_object, driver, ua=None):
     """Screenshots a single host, saves information, and returns
