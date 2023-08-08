@@ -98,19 +98,12 @@ def create_driver(cli_parsed, user_agent=None):
             print(e)
         sys.exit()
 
-# https://gist.github.com/bcarroll/0c5c9bae18c8b6dc7b7a3eea2748a713
-def _get_code_from_driver(driver, url):
-    responses = [ ]
-    perfLog = driver.get_log('performance')
-    for logIndex in range(0, len(perfLog)): # Parse the Chrome Performance logs
-        logMessage = json.loads(perfLog[logIndex]["message"])["message"]
-        if logMessage["method"] == "Network.responseReceived": # Filter out HTTP responses
-            responses.append(logMessage["params"]["response"]) # append each response to self.responses
-            if logMessage["params"]["response"]["url"] == url: # create instance attributes containing the response call for url
-                print(logMessage["params"])
-                return logMessage["params"]["response"]
+def _has_failure_contents(contents):
 
-    return -1
+    if '500 Internal Server Error' in contents: return True
+    elif '401 Unauthorized' in contents: return True
+
+    return False
 
 def _auth_log(cred, cli_parsed, http_object, driver, method='form'):
     """Writes a detected host with a valid default credential to disk
@@ -170,11 +163,11 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
         # If cookie is presented we need to avoid cookie-averse error. To do so, we need to get the page twice.
         driver.get(auth_url)
 
-        code = _get_code_from_driver(driver, auth_url)
-        print("CODE: ", code)
-
         # if a text input and a password input are shown, print content, and assume login failed
         screenshots = False
+
+        # print(driver.page_source) debugging
+        if _has_failure_contents(driver.page_source): return False
 
         try:
             elem = driver.find_element('xpath', "//input[@type='password']")
@@ -204,8 +197,6 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
                 driver.add_cookie(cookie)
 
             driver.get(auth_url)
-            code = _get_code_from_driver(driver, auth_url)
-            print("CODE: ", code)
 
             # get contents and inspect again
             try:
@@ -349,7 +340,7 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
                     form.submit()
                   except Exception as e:
                     print('[!] Unable to submit form: ', e)
-  
+
                 try:
                   elem = driver2.find_element('xpath', "//input[@type='password']")
                   print('[*] Authentication failure.')
@@ -534,7 +525,7 @@ def auth_host(cli_parsed, http_object, driver, ua=None):
 
       screenshots = _auth_host(c, cli_parsed, http_object, driver, ua)
       if screenshots != False:
-        print("[*] Authentication Success! Credentials:\n%s" % s.strip("\n"))
+        # print("[*] Authentication Success! Credentials:\n%s" % s.strip("\n"))
         c = list(c)
         c[3] = True
         # XXX
