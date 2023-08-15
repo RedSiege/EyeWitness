@@ -102,6 +102,7 @@ def _has_failure_contents(contents):
 
     if '500 Internal Server Error' in contents: return True
     elif '401 Unauthorized' in contents: return True
+    elif 'Authorization failed' in contents: return True
 
     return False
 
@@ -341,36 +342,38 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
                   except Exception as e:
                     print('[!] Unable to submit form: ', e)
 
-                try:
-                  elem = driver2.find_element('xpath', "//input[@type='password']")
-                  print('[*] Authentication failure.')
-                except WebDriverException:
-                  print("[!] AUTH SUCCESS(2): No password element found, potential auth success!")
-                  _auth_log(cred, cli_parsed, http_object, driver)
-                  success=True
-                  # Save our screenshot to the specified directory
+                if not _has_failure_contents(driver2.page_source):
+
                   try:
-                      time.sleep(5) # wait for page to load
-                      filename = http_object.screenshot_path[:-4] + ".auth.3_%d.png" % i
-                      print("[!] Saving screenshot to: ", filename)
-                      k = 0
-                      while os.path.exists(filename):
-                          filename = http_object.screenshot_path[:-4] + ".auth.3_%d_%d.png" % (i, k)
-                          k += 1
-                      driver2.save_screenshot(filename)
-                      if not screenshots: screenshots = filename
-                      else: screenshots += ';' + filename
-                  except WebDriverException as e:
-                      print('[*] Error saving web page screenshot'
-                            ' for ' + http_object.remote_system)
+                    elem = driver2.find_element('xpath', "//input[@type='password']")
+                    print('[*] Authentication failure.')
+                  except WebDriverException:
+                    print("[!] AUTH SUCCESS(2): No password element found, potential auth success!")
+                    _auth_log(cred, cli_parsed, http_object, driver)
+                    success=True
+                    # Save our screenshot to the specified directory
+                    try:
+                        time.sleep(5) # wait for page to load
+                        filename = http_object.screenshot_path[:-4] + ".auth.3_%d.png" % i
+                        print("[!] Saving screenshot to: ", filename)
+                        k = 0
+                        while os.path.exists(filename):
+                            filename = http_object.screenshot_path[:-4] + ".auth.3_%d_%d.png" % (i, k)
+                            k += 1
+                        driver2.save_screenshot(filename)
+                        if not screenshots: screenshots = filename
+                        else: screenshots += ';' + filename
+                    except WebDriverException as e:
+                        print('[*] Error saving web page screenshot'
+                              ' for ' + http_object.remote_system)
   
-                # Dismiss any alerts present on the page
-                # Will not work for basic auth dialogs!
-                try:
-                    alert = driver2.switch_to.alert
-                    alert.dismiss()
-                except Exception as e:
-                    pass
+                  # Dismiss any alerts present on the page
+                  # Will not work for basic auth dialogs!
+                  try:
+                      alert = driver2.switch_to.alert
+                      alert.dismiss()
+                  except Exception as e:
+                      pass
   
                 driver2.back()
 
