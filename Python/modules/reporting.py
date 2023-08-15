@@ -1,6 +1,7 @@
 import os
 import sys
 import urllib.parse
+import traceback
 
 try:
     from fuzzywuzzy import fuzz
@@ -147,9 +148,17 @@ def sort_data_and_write(cli_parsed, data):
             k.error_state = str(k.error_state)
         if k.page_title is None:
             k.page_title = str(k.page_title)
-        return (k.error_state, k.page_title)
-    errors = sorted([x for x in data if (x is not None) and (x.error_state is not None)],
-                     key=key_lambda)
+        return (k.error_state, str(k.page_title))
+
+    errors = [ ]
+    try:
+        data_list = [x for x in data if (x is not None) and (x.error_state is not None)]
+        errors = sorted(data_list, key=key_lambda)
+    except Exception as e:
+        errors = [ ]
+        print("Error parsing out errors: %s" % e)
+        print(traceback.format_exc())
+
     data[:] = [x for x in data if x.error_state is None]
     data = sorted(data, key=lambda k: str(k.page_title))
     html = u""
