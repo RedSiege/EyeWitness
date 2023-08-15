@@ -149,7 +149,10 @@ def _auth_host_uri(cred, cli_parsed, http_object, driver, ua=None):
 
     p = urlparse(http_object.remote_system)
     if cred[0] and cred[1]:
-        auth_url = p.scheme + "://" + cred[0] + ":" + cred[1] + "@" + p.netloc + p.path
+        if cred[1] == '<blank>':
+            auth_url = p.scheme + "://" + cred[0] + ":@" + p.netloc + p.path
+        else:
+            auth_url = p.scheme + "://" + cred[0] + ":" + cred[1] + "@" + p.netloc + p.path
     elif cred[0]:
         auth_url = p.scheme + "://" + cred[0] + ":@" + p.netloc + p.path
     else:
@@ -322,7 +325,10 @@ def _auth_host_form(cred, cli_parsed, http_object, driver, ua=None):
                 try:
                   pass_elem = form.find_element('xpath', "//input[@type='password']")
                   if pass_elem:
-                    pass_elem.send_keys(cred[1])
+                    if cred[1] == '<blank>':
+                        pass_elem.send_keys("")
+                    else:
+                        pass_elem.send_keys(cred[1])
                 except WebDriverException:
                   print("[*] No password input found in form, skipping form...")
                   continue
