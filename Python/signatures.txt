@@ -126,7 +126,7 @@ TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|TeraData 
 <title> Dell B2375dnf Mono MFP </title>;css/sws-all-dell.css;sws_redirect_location|Dell B2375dnf MFP|admin/admin
 <body onload="document.login.password.focus()">;<span id="headerLabel">Polycom Web Configuration Utility</span>;Welcome to Polycom Web Configuration Utility|Polycom Device|admin/456;user/123
 <title>Ruckus Wireless Admin</title>;<h1>Ruckus Wireless Admin</h1>;</div><img src="/images/goahead.gif"|Ruckus Wireless Controller|super/sp-admin;cloud/cloud123
-Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't contain any text node to avoid IE insertBefore bug|Synology Diskstation|admin/
+Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't contain any text node to avoid IE insertBefore bug|Synology Diskstation|admin/<blank>
 <script type="text/javascript">;frameWorkObj = {};frameWorkObj.pkg = "ews";href="/framework/Unified.css" rel="stylesheet" type="text/css"|HP OfficeJet Pro X576dw MFP|admin/<nopass>
 <title>DigitalSi HVR / NVR Gateway</title>;form method="post" action="/login.cgi";Namo WebEditor|DigitalSI HVR/DVR|administrator/<nopassword>
 <title>SolarWinds Virtualization Manager</title>;var message = "{action:'setFrameStatus',status:'loaded'}";link href="history/history.css" type="text/css"|SolarWinds Virtualization Manager|admin/admin
@@ -219,12 +219,12 @@ parse the RedirectUrl;RedirectQueryString;nameArray;nameArray["RedirectQueryStri
 <title>S2 Netbox Login</title>;<!--License IFRAME HERE GOES HERE-->;div id="headerframe"|S2 Netbox|admin/admin
 <title>Remote Support Portal;Powered by BOMGAR</title>;exitSurveyBox;Show Representatives Help Window;/content/access_key_input.js|Bomgar Device|admin/password
 <title>Pritunl</title>;<link rel="icon" type="image/x-icon" href;onSubmit();login-form;var duoUserInput = document.getElementById('duo-username')|Pritunl VPN|pritunl/pritunl
-<title>Log In|Juniper Web Device Manager</title>;document.getElementById("antiClickjack");Juniper Networks, Inc.;document.getElementById('errorMsgId')|Juniper Web Device Manager|root/
+<title>Log In|Juniper Web Device Manager</title>;document.getElementById("antiClickjack");Juniper Networks, Inc.;document.getElementById('errorMsgId')|Juniper Web Device Manager|root/<blank>
 var pageRandom=new Date().getTime();var pageRandom=new Date().getTime();<span>Are you sure you want to email an emergency security code?</span>;<div class="qnap-link show">;<div class="qts-tooltip">| QNAP Devic|admin/admin
 This can be refactored into waitWithCallback;function sendPost( reqUrl, postData, renderPageCallback );//var thisIDRACText = EntityDecode;sendLoginRequest;id="domainDisp" name="domainDisp"|Dell iDrac|root/calvin
 <img src="images/cisco-meraki.png" width="120">;<a class="device_noun">access point;<label for="site_survey_select">|Cisco Meraki|<SERIALNUMBER all uppercase with dashes>/<noPass>
 var applicationLoadingMessage = function ();var applicationLoadingMessage = function ();var views = {};var panels = {}|HP Storage Manager|manage/!manage;monitor/!monitor
-<title>Lexmark MS312dn</title>;<frame name="Printer Information";<!-- Lexmark -->;This page uses frames|Lexmark Printer MS312dn|/
+<title>Lexmark MS312dn</title>;<frame name="Printer Information";<!-- Lexmark -->;This page uses frames|Lexmark Printer MS312dn|<blank>/<blank>
 script type="text/JavaScript";location.href = "/sclogin.html;op.document.location.href = "/index.html;document.location.href = "/login.html|Dell iDrac|root/calvin
 Polycom Web Configuration Utility;Welcome to Polycom Web Configuration Utility;Enter Login Information;submitLoginInfo()|Polycom SoundStructure|admin/456;user/123
 loginHeader;Bricked AWS SCSH Appliance Pane;SteelConnect Manager;confirmPasswordField;currPasswordField;helpPaneCloseButtonContainer|Riverbed Steelhead|admin/password
@@ -234,7 +234,7 @@ Polycom;Media Suite;You are using an;LOGIN.USER_ID;inputPassword3;LOGIN.PASSWORD
 SteelHead WAN optimization;Bricked AWS SCSH Appliance Pane;rvbdLoginLogoContainer;usernameField|Riverbed SteelHead|admin/password
 login-container;form class="form-horizontal";CSRF_TOKEN;h4 class="title">Login</h4>;SpinetiX</a></div>|Spinetix|admin/admin
 <title>Avocent DSR8035 Explorer;iframe id="status-source";td class="app-title" id="app-title";setRootNavNode|Avocent DSR8035|admin/<nopass>
-<title>;Web Image Monitor</title>;src="header.cgi";title="Header Area";src="topPage.cgi"|Ricoh Printer|admin/
+<title>;Web Image Monitor</title>;src="header.cgi";title="Header Area";src="topPage.cgi"|Ricoh Printer|admin/<blank>
 g_direction = "rtl";forceReloadNav;kAllowDirectHTMLFileAccess;getUTF8Name;hdaccelerator;sipuseadcred|Polycom HDX password is 14 digit serial number|
 siteAuthReqd;loginReqdChkd;loginFailed;getUnityInfo;updReturnPageChgMode;document.getElementById('loginMsg')|Emerson Network Power|admin/admin
 <title>Webtools</title>;URL=wt2parser.cgi?home_en;selectedIndex;textsmall;name="inside" src="wt2parser.cgi?status_en.htm"|Fiery Printer|admin/Fiery.1
@@ -299,10 +299,10 @@ Red Gate Software Limited;/Content/Help/ConfigurePassword/GenericLogin.html;SQL 
 <title>Log In</title>;SendLoginXML();lblLoginErrMsg;checkURL();get_statusString|Dell R1 2401|root/calvin
 <title>Login</title>;name="GENERATOR";selectLanguage();/goform/WEB_UsrLoginProc|Linear IP Camera|admin/admin
 <title>User Authentication;iR-ADV C3530;id="corporateBranding";canonlogo.gif|Cannon-iR-ADV-C3530|administrator/7654321
-<title>RNPE5AA81;webArch/topPage.cgi;header.cgi;name="work"|Ricoh-Aficio-MP-C6000|admin/
-isSignedIn;currentDecimalSeparator;currentThousandSeparator;HP Color LaserJet M653|HP Color LaserJet M653|administrator/
-HP LaserJet M506;HomeDeviceName;OpenFromUsb/Index;WelcomeHeader|HP LaserJet M506|administrator/
-isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|HP Color LaserJet E65050|administrator/
+<title>RNPE5AA81;webArch/topPage.cgi;header.cgi;name="work"|Ricoh-Aficio-MP-C6000|admin/<blank>
+isSignedIn;currentDecimalSeparator;currentThousandSeparator;HP Color LaserJet M653|HP Color LaserJet M653|administrator/<blank>
+HP LaserJet M506;HomeDeviceName;OpenFromUsb/Index;WelcomeHeader|HP LaserJet M506|administrator/<blank>
+isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|HP Color LaserJet E65050|administrator/<blank>
 <title>EpsonNet Config Rev.1.0</title>;CHelp.htm#Help_op">See Help;body id="menuResult"|Epson Printer|epson/epson
 <title>Lexmark MS321dn</title>;class="popup-modal-container";data-init="initPage(this)|Lexmark MS321dn|no default creds
 <title>Lexmark CX410de</title>;cgi-bin/dynamic/printer/langbar.html;frame name="Directory"|Lexmark CX410de|<nousermane>/00000
@@ -366,7 +366,7 @@ IBM FlashSystem 900;lib-prod/evo/images/status_sprites.png;guifeatures;|IBM Flas
 td id="login_prompt_td" colspan="3" class="login_title";Insyde Software;input type="hidden" name="encodedpwd"|Veritas Remote Management|sysadmin / Passw0rd
 <title>Login Incorrect</title>;Firstly locate the reset button on the rear panel;<div id="errorbody">|TP-Link TL-WA801ND|admin/admin;admin/ttnet;admin/2011
 <title>NETGEAR GS728TP</title>;var cookie_value;var expire_date = new Date();alertMessage+="1)|There|Netgear GS728TP| <nousername>/password
-var deviceName = "Baseline Switch 2948-SFP Plus";document.title = deviceName;function onEnterSub(e)|Baseline Switch 2948-SFP Plus|admin/
+var deviceName = "Baseline Switch 2948-SFP Plus";document.title = deviceName;function onEnterSub(e)|Baseline Switch 2948-SFP Plus|admin/<blank>
 <title>Nutanix Web Console</title>;Customized CSS with Nutanix Flavor;once AppView is loaded.|Nutanix Web Console|admin/admin;admin/Nutanix/4u
 <title>HYCU for Enterprise Clouds</title>;!-- ngIf: !$ctrl.showLogin --;div class="pre-custom-loader"|Nutanix HYCU|admin / admin
 CRM Call Center Portal;placeholder="Password";section class="panel-section" id="contact"|CRM Call Center Portal|administrator / pass@word1
@@ -403,7 +403,7 @@ IBM FlashSystem 5200;lib-prod/assets/css/Aspen;FlashCopyMappingsSnapshot| superu
 <title>Top Page|MX-M453N</title>;function loginSubmit(mode);class="invisible"| administrator / admin
 <title>KONICA MINOLTA PageScope Web Connection</title>;popupCopyright;index.cgi| 12345678
 <title>windows_exporter</title></head>;<a href="/metrics">| Prometheus Metrics|no auth /metrics
-www.solarwinds.com/documentation/dpa;action="login.iwc"| Solar Winds Database Performance Analyzer|admin/
+www.solarwinds.com/documentation/dpa;action="login.iwc"| Solar Winds Database Performance Analyzer|admin/<blank>
 <title>RabbitMQ Management| guest /guest|admin / changeme
 ng-app="esxUiApp">;ng-bind="$root.title"| VmWare ESXi (creds set at install)
 <title id="loginTitle"></title>;by Cisco Systems, Inc| Cisco Webui|webui / cisco
@@ -428,9 +428,9 @@ Configuration Utility">;content="F5, Inc.">;delCookie("F5_CURRENT_FOLDER");|F5 B
 IP Management;d="username" name="ipamusername";name="ipampassword"|phpIPAM|Admin/ipamadmin
 <title>NETGEAR GS324TP</title>;base/cheetah_login;screen_refresh|GS324TP|<nousername> / password
 XUX-nwave/xux-js/xux-nwave-1.7.0-al;deviceInfoSection;openDeviceInfoDetailsModalWindow|Xerox Versalink C600DN| Admin / 1111; Admin / <printer serial number>
-<title>Default Authentication : LBP6780;show_alert_dialog;document.login.password.value|Canon LBP6780|/7654321
+<title>Default Authentication : LBP6780;show_alert_dialog;document.login.password.value|Canon LBP6780|<blank>/7654321
 <title>OneXafe</title>;Cabernet Sauvignon;ONEBLOX;var MODEL|OneXafe|admin/config
-<title id="appTitle">Reolink</title>;button_container_left|Camera System|admin/
+<title id="appTitle">Reolink</title>;button_container_left|Camera System|admin/<blank>
 <title>User Authentication : IRADVC55xx;guestLogin;document.login.DOMAIN.value|Canon IRADVC55xx|Administrator / 7654321
 <h1>Welcome to Jenkins!</h1>;jenkins-input normal;jenkins-form-item|Jenkins|admin / password
 <h1>Welcome to Jenkins!</h1>;id="j_username"|Jenkins|admin / password
