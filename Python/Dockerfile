@@ -1,5 +1,5 @@
-FROM phusion/baseimage:master-amd64
-LABEL maintainer Netanel Ravid
+FROM kalilinux/kali-rolling:latest
+LABEL eyewitness
 
 ARG user=eyewitness
 
@@ -13,7 +13,7 @@ RUN export uid=1000 gid=1000 && \
     echo "$user:x:${uid}:" >> /etc/group && \
     chown ${uid}:${gid} -R /home/$user
 
-RUN	git clone --depth 1 https://github.com/RedSiege/EyeWitness.git /home/$user/EyeWitness
+RUN	git clone --depth 1 https://github.com/Fuzzy-Buzzy/EyeWitness.git /home/$user/EyeWitness
 
 WORKDIR /home/$user/EyeWitness
 
