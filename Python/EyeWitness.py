@@ -141,6 +141,17 @@ def create_cli_parser():
         parser.print_help()
         sys.exit()
 
+    if args.f is None and args.single is None and args.resume is None and args.x is None:
+        print("[*] Error: You didn't specify a file! I need a file containing "
+              "URLs!")
+        parser.print_help()
+        sys.exit()
+
+    if ((args.f is not None) and not os.path.isfile(args.f)) or ((args.x is not None) and not os.path.isfile(args.x)):
+        print("[*] Error: You didn't specify the correct path to a file. Try gain!")
+        parser.print_help()
+        sys.exit()
+
     if args.d is not None:
         if args.d.startswith('/') or re.match(
                 '^[A-Za-z]:\\\\', args.d) is not None:
@@ -177,12 +188,6 @@ def create_cli_parser():
         args.d = os.path.join(os.getcwd(), output_folder)
 
     args.log_file_path = os.path.join(args.d, 'logfile.log')
-
-    if args.f is None and args.single is None and args.resume is None and args.x is None:
-        print("[*] Error: You didn't specify a file! I need a file containing "
-              "URLs!")
-        parser.print_help()
-        sys.exit()
 
     if not any((args.resume, args.web)):
         print("[*] Error: You didn't give me an action to perform.")
