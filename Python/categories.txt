@@ -754,3 +754,5 @@ XUX-nwave/xux-js/xux-nwave-1.7.0-al;deviceInfoSection;openDeviceInfoDetailsModal
 <title>User Authentication : IRADVC55xx;guestLogin;document.login.DOMAIN.value|printer
 <h1>Welcome to Jenkins!</h1>;jenkins-input normal;jenkins-form-item|highval
 DellClarity Spinner;initLoading;class="spinner spinner-lg"|infrastructure
+<title>SIP-T43U</title>;Ultra-elegant Gigabit IP Phone|voip
+<title>SIP-W60</title>;g_strLanguage;g_strFirmware|voip
