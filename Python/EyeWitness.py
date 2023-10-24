@@ -148,7 +148,7 @@ def create_cli_parser():
         sys.exit()
 
     if ((args.f is not None) and not os.path.isfile(args.f)) or ((args.x is not None) and not os.path.isfile(args.x)):
-        print("[*] Error: You didn't specify the correct path to a file. Try gain!")
+        print("[*] Error: You didn't specify the correct path to a file. Try again!\n")
         parser.print_help()
         sys.exit()
 
