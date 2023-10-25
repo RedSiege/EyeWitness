@@ -191,6 +191,13 @@ class DB_Manager(object):
         rows = c.execute("SELECT * FROM http WHERE complete=1").fetchall()
         for row in rows:
             o = pickle.loads(row['object'])
+
+            if type(o.source_code) is str:
+                o.source_code = o.source_code.encode()
+
+            if type(o.page_title) is str:
+                o.page_title = o.page_title.encode()
+
             uadat = c.execute("SELECT * FROM ua WHERE parent_id=?",
                               (o.id,)).fetchall()
             for ua in uadat:
