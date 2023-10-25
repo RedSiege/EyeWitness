@@ -198,7 +198,7 @@ class DB_Manager(object):
                 if uao is not None:
                     o.add_ua_data(uao)
             if o.error_state is None:
-                if search in o.source_code or search in o.page_title:
+                if search.encode() in o.source_code or search.encode() in o.page_title:
                     finished.append(o)
         c.close()
         return finished
