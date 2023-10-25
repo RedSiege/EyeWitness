@@ -12,7 +12,7 @@ from modules.reporting import sort_data_and_write
 def open_file_input(cli_parsed):
     files = glob.glob(os.path.join(cli_parsed.d, 'report.html'))
     if len(files) > 0:
-        print('Would you like to open the report now? [Y/n]'),
+        print('Would you like to open the report now? [Y/n]', end=' ')
         while True:
             try:
                 response = input().lower()
@@ -21,9 +21,9 @@ def open_file_input(cli_parsed):
                 else:
                     return strtobool(response)
             except ValueError:
-                print("Please respond with y or n"),
+                print('Please respond with y or n', end=' ')
     else:
-        print ('[*] No report files found to open, perhaps no hosts were successful')
+        print('[*] No report files found to open, perhaps no hosts were successful')
         return False
 
 if __name__ == "__main__":
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     for f in files:
         os.remove(f)
     results = dbm.recategorize()
-    print ('Writing report')
+    print('Writing report')
     sort_data_and_write(cli_parsed, results)
     newfiles = glob.glob(cli_parsed.d + '/report.html')
     if open_file_input(cli_parsed):
