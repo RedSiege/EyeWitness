@@ -204,7 +204,7 @@ class DB_Manager(object):
                 uao = pickle.loads(ua['object'])
                 if uao is not None:
                     o.add_ua_data(uao)
-            if o.error_state is None:
+            if o.error_state is None and o.source_code is not None and o.page_title is not None:
                 if search.encode() in o.source_code or search.encode() in o.page_title:
                     finished.append(o)
         c.close()
