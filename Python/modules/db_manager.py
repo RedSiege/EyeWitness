@@ -206,8 +206,8 @@ class DB_Manager(object):
                     o.add_ua_data(uao)
 
             # if o.source_code or o.page_title are None, set them to empty strings for comparison
-            source_code = '' if o.source_code is None else o.source_code
-            page_title = '' if o.page_title is None else o.page_title
+            source_code = b'' if o.source_code is None else o.source_code
+            page_title = b'' if o.page_title is None else o.page_title
 
             if o.error_state is None:
                 if search.encode() in source_code or search.encode() in page_title:
