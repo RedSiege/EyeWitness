@@ -440,7 +440,7 @@ DellClarity Spinner;initLoading;class="spinner spinner-lg"|Dell PowerStore Manag
 loginAnonymous;Unauthorized;devtools-tab-line;jsonPanelBox;Collapse| FLIR CCTV camera admin / admin
 <script type="text/javascript">function release(){document.frames['banner'].release();<iframe name="banner";marginwidth="0" marginheight="0" src=" ../index.htm?clientIpAddr=|Geovision IP Camera admin / admin / 12345
 <title>GeoVision Inc.|Geovision IP Camera admin / admin / 12345
-<manufacturer>Geovision</manufacturer>;<modelDescription>Geovision IP Device </modelDescription>|Geovision IP Camera admin / admin / 12345
+<manufacturer>Geovision</manufacturer>;<modelDescription>Geovision IP Device|Geovision IP Camera admin / admin / 12345
 <p class="text_login_title">Secure Email;Gateway Virtual;Cisco Systems| Cisco Secure Email Gateway admin / ironport
 <title>Emerson Network Power| Emerson UPS admin / Liebert
 <div id="loginLogo">;Storage Management Utility|HP Storage Management Utility - manage / !manage

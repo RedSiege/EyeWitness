@@ -761,7 +761,7 @@ loginAnonymous;Unauthorized;devtools-tab-line;jsonPanelBox;Collapse|camera
 Login to Dominion|kvm
 <script type="text/javascript">function release(){document.frames['banner'].release();<iframe name="banner";marginwidth="0" marginheight="0" src=" ../index.htm?clientIpAddr=|camera
 <title>GeoVision Inc.|camera
-<manufacturer>Geovision</manufacturer>;<modelDescription>Geovision IP Device </modelDescription>|camera
+<manufacturer>Geovision</manufacturer>;<modelDescription>Geovision IP Device|camera
 <p class="text_login_title">Secure Email;Gateway Virtual;Cisco Systems|comms
 <title>Emerson Network Power|infrastructure
 <div id="loginLogo">;Storage Management Utility|nas
