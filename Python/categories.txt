@@ -356,7 +356,7 @@ Cisco Unified IP Phone CP-7970G;Device Information;Serviceability;device.statist
 secure/ltx_conf.htm;sTargetURL;window.location.href = sTargetURL;doRedirect|infrastructure
 browsehappy;meta name="viewport" content;esxUiApp;$root.title;div ui-view|highval
 <title>Forcepoint Appliance</title>;For assistance with specific CLI commands, see the;Use the Content Gateway Manager;prodSelect_button|infrastructure
-ATEN International Co Ltd;LANG_LOGIN_INVALID_USERNAME;LANG_LOGIN_INVALID_PASSWORD;form1.pwd.focus();LANG_LOGIN_PROMPT|netdev
+ATEN International Co Ltd;LANG_LOGIN_INVALID_USERNAME;LANG_LOGIN_INVALID_PASSWORD;form1.pwd.focus();LANG_LOGIN_PROMPT|idrac
 <title>Pure Storage Login</title>;pure-help;pure-header-links-action;type="password" style="float;groupOption|nas
 <title>Honeywell Building Control</title>;printCardholderManagementSection;message-install_silverlight;checkIfDotNetIsInstalled;HMIWeb Browser links|infrastructure
 Printer with Embedded Web Server;www.office.xerox.com;ColorQube 8580;LaunchDrivers()|printer
