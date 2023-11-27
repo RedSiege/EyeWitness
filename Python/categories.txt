@@ -345,7 +345,7 @@ meta http-equiv="Content-Type" content="text/html;img src="iisstart.png" alt="II
 SteelHead WAN optimization;Bricked AWS SCSH Appliance Pane;rvbdLoginLogoContainer;usernameField|netdev
 login-container;form class="form-horizontal";CSRF_TOKEN;h4 class="title">Login</h4>;SpinetiX</a></div>|infrastructure
 <title>Avocent DSR8035 Explorer;iframe id="status-source";td class="app-title" id="app-title";setRootNavNode|infrastructure
-<title>;Web Image Monitor</title>;src="header.cgi";title="Header Area";src="topPage.cgi"|printer
+<title>;Web Image Monitor</title>|printer
 g_direction = "rtl";forceReloadNav;kAllowDirectHTMLFileAccess;getUTF8Name;hdaccelerator;sipuseadcred|voip
 siteAuthReqd;loginReqdChkd;loginFailed;getUnityInfo;updReturnPageChgMode;document.getElementById('loginMsg')|infrastructure
 <title>Webtools</title>;URL=wt2parser.cgi?home_en;selectedIndex;textsmall;name="inside" src="wt2parser.cgi?status_en.htm"|printer
