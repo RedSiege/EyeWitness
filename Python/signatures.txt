@@ -438,3 +438,4 @@ DellClarity Spinner;initLoading;class="spinner spinner-lg"|Dell PowerStore Manag
 <title>SIP-T43U</title>;Ultra-elegant Gigabit IP Phone|IP Phone admin / admin
 <title>SIP-W60</title>;g_strLanguage;g_strFirmware| DECT Base admin / admin
 loginAnonymous;Unauthorized;devtools-tab-line;jsonPanelBox;Collapse| FLIR CCTV camera admin / admin
+<script type="text/javascript">function release(){document.frames['banner'].release();<iframe name="banner";marginwidth="0" marginheight="0" src=" ../index.htm?clientIpAddr=|Geovision IP Camera admin / admin / 12345
