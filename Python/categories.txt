@@ -769,3 +769,4 @@ alt="Cisco Device Manager"|netdev
 <title>DG Inspector|secops
 emc-logo;XtremIO Management</div>|nas
 emc-log;SECURE REMOTE SERVICES</h3>|kvm
+<title>Unisphere;Dell Inc|nas
