@@ -86,6 +86,7 @@ def sort_data_and_write(cli_parsed, data):
                   ('netdev', 'Network Devices', 'netdev'),
                   ('voip', 'Voice/Video over IP (VoIP)', 'voip'),
                   ('printer', 'Printers', 'printer'),
+                  ('camera', 'Cameras', 'camera'),
                   ('infrastructure', 'Infrastructure', 'infrastructure'),
                   (None, 'Uncategorized', 'uncat'),
                   ('construction', 'Under Construction', 'construction'),

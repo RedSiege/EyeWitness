@@ -151,6 +151,7 @@ namespace EyeWitness
             categoryRankDict.Add("uncat", new object[] { "Uncategorized", 0 });
             categoryRankDict.Add("crap", new object[] { "Splash Pages", 0 });
             categoryRankDict.Add("printer", new object[] { "Printers", 0 });
+            categoryRankDict.Add("camera", new object[] { "Cameras", 0 });
             categoryRankDict.Add("infrastructure", new object[] { "Infrastructure", 0 });
             categoryRankDict.Add("successfulLogin", new object[] { "Successful Logins", 0 });
             categoryRankDict.Add("identifiedLogin", new object[] { "Identified Logins", 0 });
