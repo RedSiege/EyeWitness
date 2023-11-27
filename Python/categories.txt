@@ -398,6 +398,7 @@ WSMAN library is loaded here as;FRAMEHEADER;function loadFrames;top.remoteSelect
 .titleciscolog;.titleciscouser;opener && opener.location.hostname == self.location.hostname;temp=String.fromCharCode(temp)|netdev
 body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;ng-app="esxUiApp"|virtualization
 <head><title>Avaya B179</title>;<link href="css/b179.css";http-equiv="Content-Type"|voip
+/cgi-bin/common/login/webLogin">Continue</a>|voip
 <title id="titleLbl_id"></title>;var thisIDRACText = EntityDecode;var thisIDRACText;MAXUNLEN = 512|highval
 body onload="init('/wcd/system_device.xml','wcd',';href="/wcd/default.css">;FUNCVER|printer
 <title>KONICA MINOLTA bizhub 4702P</title>;role="heading">Embedded Web Server;label id="langlabel" aria-hidden="true"|printer
