@@ -765,3 +765,4 @@ Login to Dominion|kvm
 <div id="loginLogo">;Storage Management Utility|nas
 Speakerbus Technology Ltd|voip
 OpManager;$zoho.salesiq|appops
+alt="Cisco Device Manager"|netdev
