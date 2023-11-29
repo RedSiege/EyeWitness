@@ -715,9 +715,12 @@ def create_folders_css(cli_parsed):
     os.makedirs(os.path.join(cli_parsed.d, 'screens'))
     os.makedirs(os.path.join(cli_parsed.d, 'source'))
     local_path = os.path.dirname(os.path.realpath(__file__))
-    # Move our jquery file to the local directory
+    # Move our jquery and bootstrap file to the local directory
     shutil.copy2(
         os.path.join(local_path, '..', 'bin', 'jquery-1.11.3.min.js'), cli_parsed.d)
+
+    shutil.copy2(
+        os.path.join(local_path, '..', 'bin', 'bootstrap.min.css'), cli_parsed.d)
 
     # Write our stylesheet to disk
     with open(os.path.join(cli_parsed.d, 'style.css'), 'w') as f:
