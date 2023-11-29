@@ -449,3 +449,5 @@ Synology;Diskatation;webman/modules/EzInternet/style.css|Synology Diskstation ad
 <title>Yealink W60B Base</title>;var g_strFirmware;g_strLanguage|DECT Base W60B admin / admin
 <title>Yealink T42U;Phone</title>;id="idLogin">;placeholder="Password"|Yealink T42U Phone admin / admin
 <title>Yealink T42S Phone</title>;g_phonetype;g_strFirmware|Yealink T42S Phone admin / admin
+able class="tblLayout" title;readonly="readonly" name="connectMsg;oracle/login| Oracle iLO root / changeme
+tnt-fortinet-grid icon-xl;var xhr = new XMLHttpRequest();document.forms[0].username.focus()| Fortinet Fortigate admin / <blank>

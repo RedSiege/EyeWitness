@@ -770,3 +770,5 @@ Synology;Diskatation;webman/modules/EzInternet/style.css|nas
 <title>Brother MFC-J4340DW</title>;refreshLCD|printer
 <title>Yealink W60B Base</title>;var g_strFirmware;g_strLanguage|voip
 <title>Yealink T42U;Phone</title>;id="idLogin">;placeholder="Password"|voip
+able class="tblLayout" title;readonly="readonly" name="connectMsg;oracle/login|highval
+tnt-fortinet-grid icon-xl;var xhr = new XMLHttpRequest();document.forms[0].username.focus()|netdev
