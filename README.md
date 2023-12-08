@@ -94,26 +94,25 @@ Now you can execute EyeWitness in a docker container and prevent you from instal
 
 ##### Usage
 ```bash
-docker build --build-arg user=$USER --tag eyewitness --file ./Python/Dockerfile .
-docker run \
-    --rm \
-    -it \
-    -v /path/to/results:/tmp/EyeWitness \
-    eyewitness \
-    EyeWitness_flags_and_input
+sudo docker build -t eyewitness
 ```
 
-##### Example #1 - headless capturing
+##### Example #1 - 
 ```bash
-docker run \
-    --rm \
-    -it \
-    -v ~/EyeWitness:/tmp/EyeWitness \
-    eyewitness \
-    --web \
-    --single http://www.google.com
+sudo docker run --rm \
+    -v /tmp:/Eyewitness/Python/ \
+    eyewitness --web \
+    -f /Eyewitness/Python/dns.txt \
+    --no-prompt \
+    -d /Eyewitness/Python/report-$(date +'%d-%m-%Y-%H-%M-%S' | sed 's/[-:]/-/g')
 ```
+And then on your host : 
 
+```bash
+cd /tmp && ls 
+cd report*
+firefox-esr report.html &
+```
 ###### Call to Action:
 I'd love for EyeWitness to identify more default credentials of various web applications.  
 As you find a device which utilizes default credentials, please e-mail me the source code of the index page and the default creds so I can add it in to EyeWitness!

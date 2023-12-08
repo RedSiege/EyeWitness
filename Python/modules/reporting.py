@@ -283,7 +283,7 @@ def create_web_index_head(date, time):
     """
     return ("""<html>
         <head>
-        <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
+        <link rel=\"stylesheet\" href=\"bootstrap.min.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
         <script src="jquery-1.11.3.min.js"></script>
         <script type="text/javascript">

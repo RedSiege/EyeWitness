@@ -758,6 +758,21 @@ DellClarity Spinner;initLoading;class="spinner spinner-lg"|infrastructure
 <title>SIP-T43U</title>;Ultra-elegant Gigabit IP Phone|voip
 <title>SIP-W60</title>;g_strLanguage;g_strFirmware|voip
 loginAnonymous;Unauthorized;devtools-tab-line;jsonPanelBox;Collapse|camera
+<div>Ultra-elegant Gigabit IP Phone;<title>SIP-T46U</title>|voip
+<title>Brother MFC-L2710DW series</title>;id="SetBoxAuthRight"><div id="SetBoxAuthLeft">|printer
+<h1>Unisphere for SC Series</h1>;<title>Unisphere</title>|nas
+<title>User Authentication : iR-ADV C3325 : iR-ADV C3325</title>|printer
+<title>Machine Identification - MX-2630N</title>;alt="Link to Sharp Global|printer
+<title>Login Page</title>;/image/draytek_logo.svg";VigorAP903|netdev
+<title>Login</title>;span class="icon-logo">Tp-link</span>;This switch is being managed|netdev
+<title>Kyocera Command Center</title>;var ModelName="KM-3050"|printer
+Synology;Diskatation;webman/modules/EzInternet/style.css|nas
+=qnap-photowall.js;"viewport";gi-bin/loginTheme|nas
+<title>Brother MFC-J4340DW</title>;refreshLCD|printer
+<title>Yealink W60B Base</title>;var g_strFirmware;g_strLanguage|voip
+<title>Yealink T42U;Phone</title>;id="idLogin">;placeholder="Password"|voip
+able class="tblLayout" title;readonly="readonly" name="connectMsg;oracle/login|highval
+tnt-fortinet-grid icon-xl;var xhr = new XMLHttpRequest();document.forms[0].username.focus()|netdev
 Login to Dominion|kvm
 <script type="text/javascript">function release(){document.frames['banner'].release();<iframe name="banner";marginwidth="0" marginheight="0" src=" ../index.htm?clientIpAddr=|camera
 <title>GeoVision Inc.|camera

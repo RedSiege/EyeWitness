@@ -438,6 +438,20 @@ DellClarity Spinner;initLoading;class="spinner spinner-lg"|Dell PowerStore Manag
 <title>SIP-T43U</title>;Ultra-elegant Gigabit IP Phone|IP Phone admin / admin
 <title>SIP-W60</title>;g_strLanguage;g_strFirmware| DECT Base admin / admin
 loginAnonymous;Unauthorized;devtools-tab-line;jsonPanelBox;Collapse| FLIR CCTV camera admin / admin
+<div>Ultra-elegant Gigabit IP Phone;<title>SIP-T46U</title>|Ultra-elegant Gigabit IP Phone SIP-T46U admin/admin user/user
+<title>Brother MFC-L2710DW series</title>;id="SetBoxAuthRight"><div id="SetBoxAuthLeft">|Brother MFC-L2710DW initpass
+<h1>Unisphere for SC Series</h1>;<title>Unisphere</title>|Dell EMC Unisphere admin / Password123#
+<title>User Authentication : iR-ADV C3325 : iR-ADV C3325</title>|Cannon iR-ADV C3325 / iR-ADV C3325 Administrator / 7654321
+<title>Machine Identification - MX-2630N</title>;alt="Link to Sharp Global|Sharp MX-2630N printer admin / admin
+<title>Login Page</title>;/image/draytek_logo.svg";VigorAP903|Draytek VigorAP903 admin / admin
+<title>Login</title>;span class="icon-logo">Tp-link</span>;This switch is being managed|TP-Link switch admin / admin
+Synology;Diskatation;webman/modules/EzInternet/style.css|Synology Diskstation admin / 1234
+=qnap-photowall.js;"viewport";gi-bin/loginTheme|QNAP QTS The default admin password is the first MAC address of the NAS in uppercase letters and without special characters.
+<title>Yealink W60B Base</title>;var g_strFirmware;g_strLanguage|DECT Base W60B admin / admin
+<title>Yealink T42U;Phone</title>;id="idLogin">;placeholder="Password"|Yealink T42U Phone admin / admin
+<title>Yealink T42S Phone</title>;g_phonetype;g_strFirmware|Yealink T42S Phone admin / admin
+able class="tblLayout" title;readonly="readonly" name="connectMsg;oracle/login| Oracle iLO root / changeme
+tnt-fortinet-grid icon-xl;var xhr = new XMLHttpRequest();document.forms[0].username.focus()| Fortinet Fortigate admin / <blank>
 <script type="text/javascript">function release(){document.frames['banner'].release();<iframe name="banner";marginwidth="0" marginheight="0" src=" ../index.htm?clientIpAddr=|Geovision IP Camera admin / admin / 12345
 <title>GeoVision Inc.|Geovision IP Camera admin / admin / 12345
 <manufacturer>Geovision</manufacturer>;<modelDescription>Geovision IP Device|Geovision IP Camera admin / admin / 12345
