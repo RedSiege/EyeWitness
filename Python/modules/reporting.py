@@ -73,6 +73,7 @@ def sort_data_and_write(cli_parsed, data):
     # We'll be using this number for our table of contents
     total_results = len(data)
     categories = [('highval', 'High Value Targets', 'highval'),
+                  ('kvm','Remote Console/KVM','kvm'),
                   ('dirlist', 'Directory Listings', 'dirlist'),
                   ('cms', 'Content Management System (CMS)', 'cms'),
                   ('idrac', 'IDRAC/ILo/Management Interfaces', 'idrac'),
@@ -85,6 +86,7 @@ def sort_data_and_write(cli_parsed, data):
                   ('netdev', 'Network Devices', 'netdev'),
                   ('voip', 'Voice/Video over IP (VoIP)', 'voip'),
                   ('printer', 'Printers', 'printer'),
+                  ('camera', 'Cameras', 'camera'),
                   ('infrastructure', 'Infrastructure', 'infrastructure'),
                   (None, 'Uncategorized', 'uncat'),
                   ('construction', 'Under Construction', 'construction'),

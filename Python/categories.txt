@@ -345,7 +345,7 @@ meta http-equiv="Content-Type" content="text/html;img src="iisstart.png" alt="II
 SteelHead WAN optimization;Bricked AWS SCSH Appliance Pane;rvbdLoginLogoContainer;usernameField|netdev
 login-container;form class="form-horizontal";CSRF_TOKEN;h4 class="title">Login</h4>;SpinetiX</a></div>|infrastructure
 <title>Avocent DSR8035 Explorer;iframe id="status-source";td class="app-title" id="app-title";setRootNavNode|infrastructure
-<title>;Web Image Monitor</title>;src="header.cgi";title="Header Area";src="topPage.cgi"|printer
+<title>;Web Image Monitor</title>|printer
 g_direction = "rtl";forceReloadNav;kAllowDirectHTMLFileAccess;getUTF8Name;hdaccelerator;sipuseadcred|voip
 siteAuthReqd;loginReqdChkd;loginFailed;getUnityInfo;updReturnPageChgMode;document.getElementById('loginMsg')|infrastructure
 <title>Webtools</title>;URL=wt2parser.cgi?home_en;selectedIndex;textsmall;name="inside" src="wt2parser.cgi?status_en.htm"|printer
@@ -356,7 +356,7 @@ Cisco Unified IP Phone CP-7970G;Device Information;Serviceability;device.statist
 secure/ltx_conf.htm;sTargetURL;window.location.href = sTargetURL;doRedirect|infrastructure
 browsehappy;meta name="viewport" content;esxUiApp;$root.title;div ui-view|highval
 <title>Forcepoint Appliance</title>;For assistance with specific CLI commands, see the;Use the Content Gateway Manager;prodSelect_button|infrastructure
-ATEN International Co Ltd;LANG_LOGIN_INVALID_USERNAME;LANG_LOGIN_INVALID_PASSWORD;form1.pwd.focus();LANG_LOGIN_PROMPT|netdev
+ATEN International Co Ltd;LANG_LOGIN_INVALID_USERNAME;LANG_LOGIN_INVALID_PASSWORD;form1.pwd.focus();LANG_LOGIN_PROMPT|idrac
 <title>Pure Storage Login</title>;pure-help;pure-header-links-action;type="password" style="float;groupOption|nas
 <title>Honeywell Building Control</title>;printCardholderManagementSection;message-install_silverlight;checkIfDotNetIsInstalled;HMIWeb Browser links|infrastructure
 Printer with Embedded Web Server;www.office.xerox.com;ColorQube 8580;LaunchDrivers()|printer
@@ -398,6 +398,7 @@ WSMAN library is loaded here as;FRAMEHEADER;function loadFrames;top.remoteSelect
 .titleciscolog;.titleciscouser;opener && opener.location.hostname == self.location.hostname;temp=String.fromCharCode(temp)|netdev
 body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;ng-app="esxUiApp"|virtualization
 <head><title>Avaya B179</title>;<link href="css/b179.css";http-equiv="Content-Type"|voip
+/cgi-bin/common/login/webLogin">Continue</a>|voip
 <title id="titleLbl_id"></title>;var thisIDRACText = EntityDecode;var thisIDRACText;MAXUNLEN = 512|highval
 body onload="init('/wcd/system_device.xml','wcd',';href="/wcd/default.css">;FUNCVER|printer
 <title>KONICA MINOLTA bizhub 4702P</title>;role="heading">Embedded Web Server;label id="langlabel" aria-hidden="true"|printer
@@ -466,7 +467,7 @@ placeholder="Username";id="username" name="ipamusername";class="login form-contr
 meta name="vizportal-config";div class="tb-app" ng-app="VizPortalRun";api/tableau|netdev
 img src="iisstart.png";div id="container";<title>IIS Windows Server</title>|crap
 var cssfile=document.createElement(;getElementById("LOGIN_VALUE_1";d="msglbl">Please log in|infrastructure
-function openSMH(targetURL);var page = getAltModePage();jQuery.existsNonNull(data.event)|infrastructure
+function openSMH(targetURL);var page = getAltModePage();jQuery.existsNonNull(data.event)|idrac
 <title>OneView</title>;id="hp-font-css" href;class="hp-spinner-image"></div|infrastructure
 <title>StoreServ Management Console</title>;id="hp-session-lost";#/virtual-machines">Virtual Machines</a>|nas
 <title>Login</title>;<style type="text/css">.ReactPasswordStrength {;<strong>Welcome to Foreman</strong>|infrastructure
@@ -772,3 +773,19 @@ Synology;Diskatation;webman/modules/EzInternet/style.css|nas
 <title>Yealink T42U;Phone</title>;id="idLogin">;placeholder="Password"|voip
 able class="tblLayout" title;readonly="readonly" name="connectMsg;oracle/login|highval
 tnt-fortinet-grid icon-xl;var xhr = new XMLHttpRequest();document.forms[0].username.focus()|netdev
+Login to Dominion|kvm
+<script type="text/javascript">function release(){document.frames['banner'].release();<iframe name="banner";marginwidth="0" marginheight="0" src=" ../index.htm?clientIpAddr=|camera
+<title>GeoVision Inc.|camera
+<manufacturer>Geovision</manufacturer>;<modelDescription>Geovision IP Device|camera
+<title>GeoWebServer;.ASWeb|secops
+<p class="text_login_title">Secure Email;Gateway Virtual;Cisco Systems|comms
+<title>Emerson Network Power|infrastructure
+<div id="loginLogo">;Storage Management Utility|nas
+Speakerbus Technology Ltd|voip
+OpManager;$zoho.salesiq|appops
+alt="Cisco Device Manager"|netdev
+<title>DG Inspector|secops
+emc-logo;XtremIO Management</div>|nas
+emc-log;SECURE REMOTE SERVICES</h3>|kvm
+<title>Unisphere;Dell Inc|nas
+<title>CData - API Server|dataops

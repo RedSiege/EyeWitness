@@ -75,6 +75,7 @@ Synology;DiskStation;DS713;modules/AdminCenter/style.css|(Synology Diskstation D
 hp color LaserJet 5550;div.hpConsumableBlockData;td class="hpBanner"|(HP Color LaserJet 5550) <nodefaultcreds>
 HP LaserJet P4015;td style="vertical-align;this.LCDispatcher;deviceStatusPage|(HP Color LaserJet P4015) <nodefaultcreds>
 function initFavoriteDevices(;function javaPluginExists();Dominion;function addDiscoveredDevices|Raritan Dominion KX II admin/raritan
+Login to DominionSX|Raritan Dominion SX II admin/raritan
 EasyCoder PM4i;navframe;FRAME src;FRAMESET;noresize scrolling| EasyCoder PM4i admin/pass
 Symmetricom SyncServer S100;var serverName;function usernameKey;function answerKey;loginPasswordTable;passedit|Symmetricom SyncServer S100 admin/symmetricom
 KYOCERA;idxlang;opt_msg1_;startwlm|Kyocera Printer (General) Admin/Admin
@@ -234,7 +235,7 @@ Polycom;Media Suite;You are using an;LOGIN.USER_ID;inputPassword3;LOGIN.PASSWORD
 SteelHead WAN optimization;Bricked AWS SCSH Appliance Pane;rvbdLoginLogoContainer;usernameField|Riverbed SteelHead admin/password
 login-container;form class="form-horizontal";CSRF_TOKEN;h4 class="title">Login</h4>;SpinetiX</a></div>|Spinetix admin/admin
 <title>Avocent DSR8035 Explorer;iframe id="status-source";td class="app-title" id="app-title";setRootNavNode|Avocent DSR8035 admin/<nopass>
-<title>;Web Image Monitor</title>;src="header.cgi";title="Header Area";src="topPage.cgi"|Ricoh Printer admin/<blank>
+<title>;Web Image Monitor</title>|Ricoh Printer admin/<blank>
 g_direction = "rtl";forceReloadNav;kAllowDirectHTMLFileAccess;getUTF8Name;hdaccelerator;sipuseadcred|Polycom HDX password is 14 digit serial number
 siteAuthReqd;loginReqdChkd;loginFailed;getUnityInfo;updReturnPageChgMode;document.getElementById('loginMsg')|Emerson Network Power - (possibly admin/admin)
 <title>Webtools</title>;URL=wt2parser.cgi?home_en;selectedIndex;textsmall;name="inside" src="wt2parser.cgi?status_en.htm"|Fiery Printer admin/Fiery.1
@@ -451,3 +452,16 @@ Synology;Diskatation;webman/modules/EzInternet/style.css|Synology Diskstation ad
 <title>Yealink T42S Phone</title>;g_phonetype;g_strFirmware|Yealink T42S Phone admin / admin
 able class="tblLayout" title;readonly="readonly" name="connectMsg;oracle/login| Oracle iLO root / changeme
 tnt-fortinet-grid icon-xl;var xhr = new XMLHttpRequest();document.forms[0].username.focus()| Fortinet Fortigate admin / <blank>
+<script type="text/javascript">function release(){document.frames['banner'].release();<iframe name="banner";marginwidth="0" marginheight="0" src=" ../index.htm?clientIpAddr=|Geovision IP Camera admin / admin / 12345
+<title>GeoVision Inc.|Geovision IP Camera admin / admin / 12345
+<manufacturer>Geovision</manufacturer>;<modelDescription>Geovision IP Device|Geovision IP Camera admin / admin / 12345
+<title>GeoWebServer;.ASWeb|GeoVision GeoWebServer - admin / admin
+<p class="text_login_title">Secure Email;Gateway Virtual;Cisco Systems| Cisco Secure Email Gateway admin / ironport
+<title>Emerson Network Power| Emerson UPS admin / Liebert
+<div id="loginLogo">;Storage Management Utility|HP Storage Management Utility - manage / !manage
+OpManager;$zoho.salesiq|Zoho Op Manager - admin / admin
+alt="Cisco Device Manager"|Cisco Device Manager - admin / admin 
+<title>DG Inspector|Digital Guardian - admin / a10
+emc-logo;XtremIO Management</div>|EMC ExtremIO xmsadmin / 123456 or Xtrem10
+<title>Unisphere;Dell Inc|EMC Unisphere - admin / Password123#
+<title>CData - API Server|CData API server - Username: admin Password: vm-name
