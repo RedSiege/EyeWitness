@@ -77,7 +77,7 @@ install_deps() {
     esac
 
     # PEP 668 workaround
-    PIP_BREAK_SYSTEM_PACKAGES=1
+    export PIP_BREAK_SYSTEM_PACKAGES=1
 
     echo
     echo "[*] Installing Python dependencies..."
