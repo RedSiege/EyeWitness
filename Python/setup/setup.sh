@@ -2,25 +2,6 @@
 # Original script by @themightyshiv
 # Rewritten by moth@bhis (@0x6d6f7468)
 
-require_root() {
-    echo
-    echo "[*] Checking if running as root...";
-    if [ "$EUID" -ne 0 ]; then
-        echo "[-] Error: You must run this setup script with root privileges."
-        echo
-        exit 1
-    else
-        echo "[+] Running as root."
-    fi
-}
-
-check_system() {
-    echo
-    echo "[*] Getting system information..."
-    os_id=$(grep ^ID= /etc/os-release | cut -d'=' -f2)
-    mach_type=$(uname -m)
-}
-
 get_gecko() {
     echo
     echo "[*] Getting latest Gecko driver..."
@@ -40,6 +21,7 @@ get_gecko() {
             gecko_url=$(echo "$latest_geckos" | grep "linux-aarch64.tar.gz$");;
         *)
             echo "[-] Error: Unsupported architecture: ${mach_type}"
+            popd >/dev/null
             exit 1
             ;;
     esac
@@ -90,6 +72,7 @@ install_deps() {
             ;;
         *)
             echo "[-] Error: Unsupported Operating System ID: ${os_id}"
+            popd >/dev/null
             ;;
     esac
 
@@ -112,9 +95,36 @@ done_success() {
     echo
 }
 
-# check root
-require_root;
-check_system;
-get_gecko;
-install_deps;
-done_success;
+# Make sure we're in the setup directory
+pushd "$(dirname "$0")" >/dev/null
+
+# Make sure we're running as root
+echo
+echo "[*] Checking if running as root..."
+if [ "$EUID" -ne 0 ]; then
+    echo "[-] Error: You must run this setup script with root privileges."
+    echo
+    popd >/dev/null
+    exit 1
+else
+    echo "[+] Running as root."
+fi
+
+# Get some system information
+echo
+echo "[*] Getting system information..."
+os_id=$(grep ^ID= /etc/os-release | cut -d'=' -f2)
+mach_type=$(uname -m)
+
+# Get the gecko
+get_gecko
+
+# Install dependencies
+install_deps
+
+# Get out of there!
+popd >/dev/null
+
+# Print success message
+done_success
+
