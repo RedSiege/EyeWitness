@@ -38,12 +38,12 @@ install_deps() {
 
     case ${os_id} in
         debian|kali)
-            apt update
-            apt install -y wget cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr
+            apt-get update
+            apt-get install -y wget cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr
             ;;
         ubuntu|linuxmint)
-            apt update
-            apt install -y wget cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils
+            apt-get update
+            apt-get install -y wget cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils
             ;;
         arch|manjaro)
             pacman -Syu
