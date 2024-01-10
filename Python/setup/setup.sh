@@ -116,11 +116,11 @@ echo "[*] Getting system information..."
 os_id=$(grep ^ID= /etc/os-release | cut -d'=' -f2)
 mach_type=$(uname -m)
 
-# Get the gecko
-get_gecko
-
 # Install dependencies
 install_deps
+
+# Get the gecko
+get_gecko
 
 # Get out of there!
 popd >/dev/null
