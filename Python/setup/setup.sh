@@ -39,19 +39,19 @@ install_deps() {
     case ${os_id} in
         debian|kali)
             apt-get update
-            apt-get install -y wget curl cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr
+            apt-get install -y wget curl cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr tar
             ;;
         ubuntu|linuxmint)
             apt-get update
-            apt-get install -y wget curl cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils
+            apt-get install -y wget curl cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils tar
             ;;
         arch|manjaro)
             pacman -Syu
-            pacman -S --noconfirm wget curl cmake python3 python-xvfbwrapper python-pip python-netaddr firefox
+            pacman -S --noconfirm wget curl cmake python3 python-xvfbwrapper python-pip python-netaddr firefox tar
             ;;
         alpine)
             apk update
-            apk add wget curl cmake python3 xvfb py-pip py-netaddr python3-dev firefox
+            apk add wget curl cmake python3 xvfb py-pip py-netaddr python3-dev firefox tar
 
             # from https://stackoverflow.com/questions/58738920/running-geckodriver-in-an-alpine-docker-container
             # Get all the prereqs
@@ -65,7 +65,7 @@ install_deps() {
             apk add firefox-esr=60.9.0-r0
             ;;
         centos|rocky|fedora)
-            yum install -y wget curl python3 xorg-x11-server-Xvfb python3-pip firefox gcc cmake python3-devel gcc cmake python3-devel
+            yum install -y wget curl python3 xorg-x11-server-Xvfb python3-pip firefox gcc cmake python3-devel gcc cmake python3-devel tar
             ;;
         *)
             echo "[-] Error: Unsupported Operating System ID: ${os_id}"
