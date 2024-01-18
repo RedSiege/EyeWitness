@@ -110,7 +110,7 @@ fi
 # Get some system information
 echo
 echo "[*] Getting system information..."
-os_id=$(grep ^ID= /etc/os-release | cut -d'=' -f2)
+os_id=$(grep ^ID= /etc/os-release | cut -d'=' -f2 | tr -d '"')
 mach_type=$(uname -m)
 
 # Install dependencies
