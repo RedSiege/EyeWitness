@@ -74,15 +74,10 @@ install_deps() {
             ;;
     esac
 
-    # PEP 668 workaround
-    export PIP_BREAK_SYSTEM_PACKAGES=1
-
     echo
     echo "[*] Installing Python dependencies..."
     pip3 install --upgrade pip
     python3 -m pip install -r requirements.txt
-
-    unset PIP_BREAK_SYSTEM_PACKAGES
 }
 
 done_success() {
