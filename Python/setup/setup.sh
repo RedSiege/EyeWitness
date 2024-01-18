@@ -65,10 +65,7 @@ install_deps() {
             apk add firefox-esr=60.9.0-r0
             ;;
         centos|rocky|fedora)
-            yum install -y wget curl python3 xorg-x11-server-Xvfb python3-pip firefox
-            yum install -y gcc
-            yum install -y cmake
-            yum install -y python3-devel
+            yum install -y wget curl python3 xorg-x11-server-Xvfb python3-pip firefox gcc cmake python3-devel gcc cmake python3-devel
             ;;
         *)
             echo "[-] Error: Unsupported Operating System ID: ${os_id}"
