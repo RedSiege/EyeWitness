@@ -70,6 +70,7 @@ install_deps() {
         *)
             echo "[-] Error: Unsupported Operating System ID: ${os_id}"
             popd >/dev/null
+            exit 1
             ;;
     esac
 
