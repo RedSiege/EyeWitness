@@ -2,6 +2,7 @@
 # Original script by @themightyshiv
 # Rewritten by moth@bhis (@0x6d6f7468)
 
+# Function for downloading latest geckodriver for the correct CPU architecture
 get_gecko() {
     echo
     echo "[*] Getting latest Gecko driver..."
@@ -32,6 +33,7 @@ get_gecko() {
     rm geckodriver.tar.gz
 }
 
+# Function to install Linux and Python dependencies
 install_deps() {
     echo
     echo "[*] Installing system dependencies..."
@@ -80,14 +82,6 @@ install_deps() {
     python3 -m pip install -r requirements.txt
 }
 
-done_success() {
-    echo
-    echo "[+] Setup script completed successfully. Enjoy EyeWitness! ^_^"
-    echo "[*] Be sure to check out Red Siege!"
-    echo "[*] https://www.redsiege.com"
-    echo
-}
-
 # Make sure we're in the setup directory
 pushd "$(dirname "$0")" >/dev/null
 
@@ -119,5 +113,8 @@ get_gecko
 popd >/dev/null
 
 # Print success message
-done_success
-
+echo
+echo "[+] Setup script completed successfully. Enjoy EyeWitness! ^_^"
+echo "[*] Be sure to check out Red Siege!"
+echo "[*] https://www.redsiege.com"
+echo
