@@ -9,7 +9,7 @@ get_gecko() {
 
     # Get download links for latest geckodriver via GitHub API
     local latest_geckos=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest \
-            | grep browser_download_url | cut -d':' -f2,3 | tr -d \" | tr -d '[:blank:]')
+            | jq '.assets.[].browser_download_url' | tr -d \")
     
     # Construct appropriate download URL (or exit if unsupported arch)
     local gecko_url="";
@@ -41,19 +41,19 @@ install_deps() {
     case ${os_id} in
         debian|kali)
             apt-get update
-            apt-get install -y wget curl cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr tar
+            apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr tar
             ;;
         ubuntu|linuxmint)
             apt-get update
-            apt-get install -y wget curl cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils tar
+            apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils tar
             ;;
         arch|manjaro)
             pacman -Syu
-            pacman -S --noconfirm wget curl cmake python3 python-xvfbwrapper python-pip python-netaddr firefox tar
+            pacman -S --noconfirm wget curl jq cmake python3 python-xvfbwrapper python-pip python-netaddr firefox tar
             ;;
         alpine)
             apk update
-            apk add wget curl cmake python3 xvfb py-pip py-netaddr python3-dev firefox tar
+            apk add wget curl jq cmake python3 xvfb py-pip py-netaddr python3-dev firefox tar
 
             # from https://stackoverflow.com/questions/58738920/running-geckodriver-in-an-alpine-docker-container
             # Get all the prereqs
@@ -67,7 +67,7 @@ install_deps() {
             apk add firefox-esr=60.9.0-r0
             ;;
         centos|rocky|fedora)
-            yum install -y wget curl python3 xorg-x11-server-Xvfb python3-pip firefox gcc cmake python3-devel gcc cmake python3-devel tar
+            yum install -y wget curl jq python3 xorg-x11-server-Xvfb python3-pip firefox gcc cmake python3-devel gcc cmake python3-devel tar
             ;;
         *)
             echo "[-] Error: Unsupported Operating System ID: ${os_id}"
