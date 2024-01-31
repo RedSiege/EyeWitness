@@ -9,7 +9,7 @@ get_gecko() {
 
     # Get download links for latest geckodriver via GitHub API
     local latest_geckos=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest \
-            | jq '.assets.[].browser_download_url' | tr -d \")
+            | jq '.assets[].browser_download_url' | tr -d \")
     
     # Construct appropriate download URL (or exit if unsupported arch)
     local gecko_url="";
