@@ -227,6 +227,15 @@ def create_cli_parser():
 
 def single_mode(cli_parsed):
     display = None
+    
+    def exitsig(*args):
+        if current_process().name == 'MainProcess':
+            print('')
+            print('Quitting...')
+        os._exit(1)
+
+    signal.signal(signal.SIGINT, exitsig)
+
     if cli_parsed.web:
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
