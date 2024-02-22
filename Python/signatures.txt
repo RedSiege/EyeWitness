@@ -465,3 +465,4 @@ alt="Cisco Device Manager"|Cisco Device Manager - admin / admin
 emc-logo;XtremIO Management</div>|EMC ExtremIO xmsadmin / 123456 or Xtrem10
 <title>Unisphere;Dell Inc|EMC Unisphere - admin / Password123#
 <title>CData - API Server|CData API server - Username: admin Password: vm-name
+<body>Redirecting to vRealize Operations Manager Web UI|VMware vRealize Admin / <pass_set_during_install>
