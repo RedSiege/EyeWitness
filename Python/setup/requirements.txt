@@ -1,0 +1,5 @@
+fuzzywuzzy
+selenium==4.9.1
+python-Levenshtein
+pyvirtualdisplay
+netaddr
