@@ -717,7 +717,7 @@ def create_folders_css(cli_parsed):
     local_path = os.path.dirname(os.path.realpath(__file__))
     # Move our jquery and bootstrap file to the local directory
     shutil.copy2(
-        os.path.join(local_path, '..', 'bin', 'jquery-1.11.3.min.js'), cli_parsed.d)
+        os.path.join(local_path, '..', 'bin', 'jquery-3.7.1.min.js'), cli_parsed.d)
 
     shutil.copy2(
         os.path.join(local_path, '..', 'bin', 'bootstrap.min.css'), cli_parsed.d)
