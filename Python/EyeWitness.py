@@ -90,6 +90,9 @@ def create_cli_parser():
     report_options.add_argument('--no-prompt', default=False,
                                 action='store_true',
                                 help='Don\'t prompt to open the report')
+    report_options.add_argument('--no-clear', default=False,
+                                action='store_true',
+                                help='Don\'t clear screen buffer')
 
     http_options = parser.add_argument_group('Web Options')
     http_options.add_argument('--user-agent', metavar='User Agent',
@@ -399,10 +402,10 @@ def multi_callback(x):
 
 
 if __name__ == "__main__":
-    title_screen()
     cli_parsed = create_cli_parser()
     start_time = time.time()
-
+    title_screen(cli_parsed)
+    
     if cli_parsed.resume:
         print('[*] Loading Resume Data...')
         temp = cli_parsed
