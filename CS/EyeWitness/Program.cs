@@ -157,7 +157,7 @@ namespace EyeWitness
             categoryRankDict.Add("identifiedLogin", new object[] { "Identified Logins", 0 });
             categoryRankDict.Add("redirector", new object[] { "Redirecting Pages", 0 });
             categoryRankDict.Add("construction", new object[] { "Under Construction", 0 });
-            categoryRankDict.Add("emptyu", new object[] { "No Significant Content", 0 });
+            categoryRankDict.Add("empty", new object[] { "No Significant Content", 0 });
             categoryRankDict.Add("unauth", new object[] { "401/403 Unauthorized", 0 });
             categoryRankDict.Add("notfound", new object[] { "404 Not Found", 0 });
             categoryRankDict.Add("badhost", new object[] { "Invalid Hostname", 0 });
