@@ -590,13 +590,14 @@ def get_ua_values(cycle_value):
         return desktop_uagents
 
 
-def title_screen():
+def title_screen(cli_parsed):
     """Prints the title screen for EyeWitness
     """
     if platform.system() == "Windows":
-        os.system('cls')
+        if not cli_parsed.no_clear: os.system('cls')
     else:
-        os.system('clear')
+        if not cli_parsed.no_clear: os.system('clear')
+
     print("#" * 80)
     print("#" + " " * 34 + "EyeWitness" + " " * 34 + "#")
     print("#" * 80)
