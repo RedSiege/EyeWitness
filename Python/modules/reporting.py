@@ -285,7 +285,7 @@ def create_web_index_head(date, time):
         <head>
         <link rel=\"stylesheet\" href=\"bootstrap.min.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
-        <script src="jquery-1.11.3.min.js"></script>
+        <script src="jquery-3.7.1.min.js"></script>
         <script type="text/javascript">
         function toggleUA(id, url){{
         idi = "." + id;
@@ -330,7 +330,7 @@ def search_index_head():
         <head>
         <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
-        <script src="jquery-1.11.3.min.js"></script>
+        <script src="jquery-3.7.1.min.js"></script>
         <script type="text/javascript">
         function toggleUA(id, url){{
         idi = "." + id;
