@@ -713,7 +713,7 @@ HPE Nimble Storage</title>|nas
 Jetadmin</title>|printer
 <title>ManageEngine Password Manager Pro</title>|secops
 <title>PowerChute Network|infrastructure
-<title>VMware vCenter|vm
+<title>VMware vCenter|virtualization
 <title>splunkd - Splunk</title>|dataops
 If you can see this page, it confirms that you can access the PMP application|secops
 McAfee Agent Activity Log|secops
