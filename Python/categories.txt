@@ -679,10 +679,10 @@ templateFullName=Cisco+Firepower+Threat+Defense|secops
 <title>Pacts</title><th class="consumer|devops
 <title>Perforce Validate - Projects Management</title>|devops
 <title>Portainer</title>|devops
-<title>PrinterLogic</title>|printers
+<title>PrinterLogic</title>|printer
 <title>Prometheus Time Series Collection and Processing Server</title>|dataops
 <title>RMF Data Portal</title>|appops
-<title>RMS Print Queue Information</title>|printers
+<title>RMS Print Queue Information</title>|printer
 <title>Riverbed Technology, Inc.</title>|netdev
 <title>Rundeck - Login</title>|devops
 You have created a service.</p><p class="intro">To test this service|dataops
