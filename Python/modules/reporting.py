@@ -73,6 +73,7 @@ def sort_data_and_write(cli_parsed, data):
     # We'll be using this number for our table of contents
     total_results = len(data)
     categories = [('highval', 'High Value Targets', 'highval'),
+                  ('virtualization', 'Virtualization','virtualization')
                   ('kvm','Remote Console/KVM','kvm'),
                   ('dirlist', 'Directory Listings', 'dirlist'),
                   ('cms', 'Content Management System (CMS)', 'cms'),
