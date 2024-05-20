@@ -637,7 +637,7 @@ Bitbucket</title>|devops
 <title>TIBCO WebFOCUS ;Reporting Server</title>|secops
 <title>TSM Web</title>|appops
 <title>Vault</title>;vault/config/environment|secops
-title>Web Administration has moved</title>|redirect
+title>Web Administration has moved</title>|redirector
 <title>Welcome to Keycloak</title>|secops
 <title>cAdvisor -|appops
 python_gc_objects_collected_total{generation;RMF_performance_procu|dataops
