@@ -758,7 +758,7 @@ XUX-nwave/xux-js/xux-nwave-1.7.0-al;deviceInfoSection;openDeviceInfoDetailsModal
 DellClarity Spinner;initLoading;class="spinner spinner-lg"|infrastructure
 <title>SIP-T43U</title>;Ultra-elegant Gigabit IP Phone|voip
 <title>SIP-W60</title>;g_strLanguage;g_strFirmware|voip
-loginAnonymous;Unauthorized;devtools-tab-line;jsonPanelBox;Collapse|camera
+loginAnonymous;Unauthorized;devtools-tab-line;jsonPanelBox;Collapse|secops
 <div>Ultra-elegant Gigabit IP Phone;<title>SIP-T46U</title>|voip
 <title>Brother MFC-L2710DW series</title>;id="SetBoxAuthRight"><div id="SetBoxAuthLeft">|printer
 <h1>Unisphere for SC Series</h1>;<title>Unisphere</title>|nas
@@ -776,8 +776,8 @@ able class="tblLayout" title;readonly="readonly" name="connectMsg;oracle/login|h
 tnt-fortinet-grid icon-xl;var xhr = new XMLHttpRequest();document.forms[0].username.focus()|netdev
 Login to Dominion|kvm
 <script type="text/javascript">function release(){document.frames['banner'].release();<iframe name="banner";marginwidth="0" marginheight="0" src=" ../index.htm?clientIpAddr=|camera
-<title>GeoVision Inc.|camera
-<manufacturer>Geovision</manufacturer>;<modelDescription>Geovision IP Device|camera
+<title>GeoVision Inc.|secops
+<manufacturer>Geovision</manufacturer>;<modelDescription>Geovision IP Device|secops
 <title>GeoWebServer;.ASWeb|secops
 <p class="text_login_title">Secure Email;Gateway Virtual;Cisco Systems|comms
 <title>Emerson Network Power|infrastructure
