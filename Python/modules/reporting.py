@@ -1,4 +1,3 @@
-from ast import Try
 import os
 import sys
 import urllib.parse
