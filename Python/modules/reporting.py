@@ -1,3 +1,4 @@
+from ast import Try
 import os
 import sys
 import urllib.parse
@@ -112,7 +113,7 @@ def sort_data_and_write(cli_parsed, data):
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
     table_head = create_table_head()
     counter = 1
-    csv_request_data = "Protocol,Port,Domain,Request Status,Screenshot Path, Source Path"
+    csv_request_data = "Protocol,Port,Domain,Resolved,Request Status,Title,Category,Default Creds,Screenshot Path, Source Path, "
 
     # Generate and write json log of requests
     for json_request in data:
@@ -133,12 +134,20 @@ def sort_data_and_write(cli_parsed, data):
             print("Possible bad url (improperly formatted) in the URL list.")
             print("Fix your list and re-try. Killing EyeWitness....")
             sys.exit(1)
+        csv_request_data += json_request.resolved + ","
         if json_request._error_state == None:
             csv_request_data += "Successful,"
         else:
             csv_request_data += json_request._error_state + ","
+        try:
+            csv_request_data += "\"" + (json_request._page_title).decode('UTF-8') + "\","
+        except:
+            csv_request_data += "\"!Error\","
+        csv_request_data += str(json_request._category) + ","
+        csv_request_data += "\"" + str(json_request._default_creds) + "\","
         csv_request_data += json_request._screenshot_path + ","
         csv_request_data += json_request._source_path
+
 
     with open(os.path.join(cli_parsed.d, 'Requests.csv'), 'a') as f:
         f.write(csv_request_data)
