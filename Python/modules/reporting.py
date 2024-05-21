@@ -112,7 +112,7 @@ def sort_data_and_write(cli_parsed, data):
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
     table_head = create_table_head()
     counter = 1
-    csv_request_data = "Protocol,Port,Domain,Resolved,Request Status,Title,Category,Default Creds,Screenshot Path, Source Path, "
+    csv_request_data = "Protocol,Port,Domain,Resolved,Request Status,Title,Category,Default Creds,Screenshot Path, Source Path"
 
     # Generate and write json log of requests
     for json_request in data:
