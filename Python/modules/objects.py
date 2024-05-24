@@ -277,8 +277,8 @@ class HTTPTableObject(object):
             html += ("""<br><br><a href=\"{0}\"
                 target=\"_blank\">Source Code</a></div></td>
                 <td><div id=\"screenshot\"><a href=\"{1}\"
-                target=\"_blank\"><img src=\"{1}\"
-                height=\"400\"></a></div></td></tr>""").format(
+                target=\"_blank\"><img style=\"max-height:400px;height: expression(this.height > 400 ? 400: true);\"
+                src=\"{1}\"></a></div></td></tr>""").format(
                 src_path, scr_path)
 
         if len(self._uadata) > 0:
@@ -439,8 +439,8 @@ class UAObject(HTTPTableObject):
             html += ("""<br><br><a href=\"{0}\"
                 target=\"_blank\">Source Code</a></div></td>
                 <td><div id=\"screenshot\"><a href=\"{1}\"
-                target=\"_blank\"><img src=\"{1}\"
-                height=\"400\"></a></div></td></tr>""").format(
+                target=\"_blank\"><img style=\"max-height:400px;height: expression(this.height > 400 ? 400: true);\"
+                src=\"{1}\"></a></div></td></tr>""").format(
                 src_path, scr_path)
         return html
 
