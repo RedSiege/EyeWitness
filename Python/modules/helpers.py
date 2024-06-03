@@ -396,6 +396,10 @@ def textfile_parser(file_to_parse, cli_obj):
                         openports[80] += "," + url_again
                     else:
                         openports[80] = url_again
+            if ' ' in url_again.strip():
+                    print("ERROR: You potentially provided an mal-formed URL!")
+                    print("ERROR: URL is - " + url_again)
+                    sys.exit()
 
         # Start prepping to write out the CSV
         csv_data = "URL"
