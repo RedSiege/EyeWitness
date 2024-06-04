@@ -131,6 +131,10 @@ def create_cli_parser():
                               help='Selenium geckodriver log path')
     http_options.add_argument('--cookies', metavar='key1=value1,key2=value2', default=None,
                               help='Additional cookies to add to the request')
+    http_options.add_argument('--width', metavar="1366", default=1366,type=int,
+                              help='Screenshot window image width size. 600-7680 (eg. 1920)')
+    http_options.add_argument('--height', metavar="768", default=768, type=int,
+                              help='Screenshot window image height size. 400-4320 (eg. 1080)')
 
     resume_options = parser.add_argument_group('Resume Options')
     resume_options.add_argument('--resume', metavar='ew.db',
@@ -152,6 +156,16 @@ def create_cli_parser():
 
     if ((args.f is not None) and not os.path.isfile(args.f)) or ((args.x is not None) and not os.path.isfile(args.x)):
         print("[*] Error: You didn't specify the correct path to a file. Try again!\n")
+        parser.print_help()
+        sys.exit()
+
+    if args.width < 600 or args.width >7680:
+        print("\n[*] Error: Specify a width >= 600 and <= 7680, for example 1920.\n")
+        parser.print_help()
+        sys.exit()
+
+    if args.height < 400 or args.height >4320:
+        print("\n[*] Error: Specify a height >= 400 and <= 4320, for example, 1080.\n")
         parser.print_help()
         sys.exit()
 

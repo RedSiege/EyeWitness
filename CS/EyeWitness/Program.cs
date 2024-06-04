@@ -135,6 +135,7 @@ namespace EyeWitness
 
             //Create dictionary of categories
             categoryRankDict.Add("highval", new object[] { "High Value Targets", 0 });
+            categoryRankDict.Add("virtualization", new object[] { "Virtualization", 0 });
             categoryRankDict.Add("kvm", new object[] { "Remote Console/KVM", 0 });
             categoryRankDict.Add("comms", new object[] { "Communications", 0 });
             categoryRankDict.Add("devops", new object[] { "Development Operations", 0 });
