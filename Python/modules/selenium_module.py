@@ -78,6 +78,7 @@ def create_driver(cli_parsed, user_agent=None):
         profile.update_preferences()
         driver = webdriver.Firefox(profile, capabilities=capabilities, options=options, service_log_path=cli_parsed.selenium_log_path)
         driver.set_page_load_timeout(cli_parsed.timeout)
+        driver.set_window_size(cli_parsed.width,cli_parsed.height)
         return driver
     except Exception as e:
         if 'Failed to find firefox binary' in str(e):
