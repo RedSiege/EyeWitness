@@ -796,3 +796,4 @@ emc-log;SECURE REMOTE SERVICES</h3>|kvm
 function isIE();name="viewport";@keyframes rotate;THESE STYLES MUST|infrastructure
 content="RackStation;RackStation</title>|nas
 <img src="/image/cisco_logo_about.png">;Phone Adapter|voip
+content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|printer
