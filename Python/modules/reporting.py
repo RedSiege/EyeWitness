@@ -293,6 +293,7 @@ def create_web_index_head(date, time):
     return ("""<html>
         <head>
         <link rel=\"stylesheet\" href=\"bootstrap.min.css\" type=\"text/css\"/>
+        <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
         <script src="jquery-3.7.1.min.js"></script>
         <script type="text/javascript">
