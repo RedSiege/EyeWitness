@@ -262,8 +262,14 @@ class HTTPTableObject(object):
             </tr>
             """)
         elif self.error_state == 'Timeout':
-            html += ("""</td><td>Hit timeout limit while attempting to
-            screenshot</td></tr>""")
+            html += ("</td><td>Hit timeout limit")
+            if os.path.isfile(self.screenshot_path):
+                html += ("""<br>
+                <div id=\"screenshot\"><a href=\"{1}\"
+                target=\"_blank\"><img style=\"max-height:400px;height: expression(this.height > 400 ? 400: true);\"
+                src=\"{1}\"></a></div></td></tr>""").format(src_path, scr_path)
+            else:
+                html += ("</td></tr>")
         elif self.error_state == 'BadStatus':
             html += ("""</td><td>Unknown error while attempting to
             screenshot</td></tr>""")
