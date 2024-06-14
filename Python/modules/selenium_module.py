@@ -309,5 +309,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         print("[*] ERROR: Skipping: " + http_object.remote_system)
     except WebDriverException:
         print("[*] ERROR: Skipping source code capture for: " + http_object.remote_system)
+    except Exception: 
+         print("[*] ERROR: Skipping source code capture for: " + http_object.remote_system)
 
     return http_object, driver
