@@ -1,29 +1,17 @@
-FROM phusion/baseimage:master-amd64
-LABEL maintainer Netanel Ravid
-
-ARG user=eyewitness
+FROM debian
+LABEL maintainer Archidote
 
 RUN apt-get update && \
-    apt-get install -y git wget && \
-	rm -rf /var/lib/apt/lists/*
+    echo '\e[32m[*] Installing Debian Dependencies...\e[39m' && \ 
+    apt-get install -y git wget cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr python3-venv
 
-RUN export uid=1000 gid=1000 && \
-    mkdir -p /home/$user && \
-    echo "$user:x:${uid}:${gid}:$user,,,:/home/$user:/bin/bash" >> /etc/passwd && \
-    echo "$user:x:${uid}:" >> /etc/group && \
-    chown ${uid}:${gid} -R /home/$user
+RUN	git clone --depth 1 https://github.com/RedSiege/EyeWitness.git /EyeWitness
 
-RUN	git clone --depth 1 https://github.com/RedSiege/EyeWitness.git /home/$user/EyeWitness
+WORKDIR /EyeWitness
 
-WORKDIR /home/$user/EyeWitness
+RUN echo -e '\e[32m[*] Setting up the EyeWitness Python env (venv and dependencies)...\e[39m"' && \
+    python3 -m venv venv && . venv/bin/activate && \ 
+    python3 -m pip install fuzzywuzzy selenium==4.9.1 python-Levenshtein pyvirtualdisplay netaddr && \
+    cd Python/setup && ./setup.sh
 
-RUN cd Python/setup && \
-    ./setup.sh && \
-    cd .. && \
-    chown -R $user:$user /home/$user/EyeWitness && \
-    mkdir -p /tmp/EyeWitness && \
-    chown $user:$user /tmp/EyeWitness
-
-USER $user
-
-ENTRYPOINT ["python3", "Python/EyeWitness.py", "-d", "/tmp/EyeWitness/results", "--no-prompt"]
+ENTRYPOINT ["/bin/bash", "-c", "source /EyeWitness/venv/bin/activate && python3 /EyeWitness/Python/EyeWitness.py -d /tmp/out --no-prompt $@"]

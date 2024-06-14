@@ -98,6 +98,9 @@ def create_cli_parser():
     report_options.add_argument('--no-prompt', default=False,
                                 action='store_true',
                                 help='Don\'t prompt to open the report')
+    report_options.add_argument('--no-clear', default=False,
+                                action='store_true',
+                                help='Don\'t clear screen buffer')
 
     http_options = parser.add_argument_group('Web Options')
     http_options.add_argument('--user-agent', metavar='User Agent',
@@ -136,6 +139,10 @@ def create_cli_parser():
                               help='Selenium geckodriver log path')
     http_options.add_argument('--cookies', metavar='key1=value1,key2=value2', default=None,
                               help='Additional cookies to add to the request')
+    http_options.add_argument('--width', metavar="1366", default=1366,type=int,
+                              help='Screenshot window image width size. 600-7680 (eg. 1920)')
+    http_options.add_argument('--height', metavar="768", default=768, type=int,
+                              help='Screenshot window image height size. 400-4320 (eg. 1080)')
 
     resume_options = parser.add_argument_group('Resume Options')
     resume_options.add_argument('--resume', metavar='ew.db',
@@ -146,6 +153,27 @@ def create_cli_parser():
     args.time = time.strftime('%H:%M:%S')
 
     if args.h:
+        parser.print_help()
+        sys.exit()
+
+    if args.f is None and args.single is None and args.resume is None and args.x is None:
+        print("[*] Error: You didn't specify a file! I need a file containing "
+              "URLs!")
+        parser.print_help()
+        sys.exit()
+
+    if ((args.f is not None) and not os.path.isfile(args.f)) or ((args.x is not None) and not os.path.isfile(args.x)):
+        print("[*] Error: You didn't specify the correct path to a file. Try again!\n")
+        parser.print_help()
+        sys.exit()
+
+    if args.width < 600 or args.width >7680:
+        print("\n[*] Error: Specify a width >= 600 and <= 7680, for example 1920.\n")
+        parser.print_help()
+        sys.exit()
+
+    if args.height < 400 or args.height >4320:
+        print("\n[*] Error: Specify a height >= 400 and <= 4320, for example, 1080.\n")
         parser.print_help()
         sys.exit()
 
@@ -186,12 +214,6 @@ def create_cli_parser():
 
     args.log_file_path = os.path.join(args.d, 'logfile.log')
 
-    if args.f is None and args.single is None and args.resume is None and args.x is None:
-        print("[*] Error: You didn't specify a file! I need a file containing "
-              "URLs!")
-        parser.print_help()
-        sys.exit()
-
     if not any((args.resume, args.web)):
         print("[*] Error: You didn't give me an action to perform.")
         print("[*] Error: Please use --web!\n")
@@ -230,6 +252,15 @@ def create_cli_parser():
 
 def single_mode(cli_parsed):
     display = None
+    
+    def exitsig(*args):
+        if current_process().name == 'MainProcess':
+            print('')
+            print('Quitting...')
+        os._exit(1)
+
+    signal.signal(signal.SIGINT, exitsig)
+
     if cli_parsed.web:
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
@@ -435,10 +466,10 @@ def multi_callback(x):
 
 
 if __name__ == "__main__":
-    title_screen()
     cli_parsed = create_cli_parser()
     start_time = time.time()
-
+    title_screen(cli_parsed)
+    
     if cli_parsed.resume:
         print('[*] Loading Resume Data...')
         temp = cli_parsed

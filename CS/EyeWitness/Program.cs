@@ -135,6 +135,8 @@ namespace EyeWitness
 
             //Create dictionary of categories
             categoryRankDict.Add("highval", new object[] { "High Value Targets", 0 });
+            categoryRankDict.Add("virtualization", new object[] { "Virtualization", 0 });
+            categoryRankDict.Add("kvm", new object[] { "Remote Console/KVM", 0 });
             categoryRankDict.Add("comms", new object[] { "Communications", 0 });
             categoryRankDict.Add("devops", new object[] { "Development Operations", 0 });
             categoryRankDict.Add("secops", new object[] { "Security Operations", 0 });
@@ -150,12 +152,13 @@ namespace EyeWitness
             categoryRankDict.Add("uncat", new object[] { "Uncategorized", 0 });
             categoryRankDict.Add("crap", new object[] { "Splash Pages", 0 });
             categoryRankDict.Add("printer", new object[] { "Printers", 0 });
+            categoryRankDict.Add("camera", new object[] { "Cameras", 0 });
             categoryRankDict.Add("infrastructure", new object[] { "Infrastructure", 0 });
             categoryRankDict.Add("successfulLogin", new object[] { "Successful Logins", 0 });
             categoryRankDict.Add("identifiedLogin", new object[] { "Identified Logins", 0 });
             categoryRankDict.Add("redirector", new object[] { "Redirecting Pages", 0 });
             categoryRankDict.Add("construction", new object[] { "Under Construction", 0 });
-            categoryRankDict.Add("emptyu", new object[] { "No Significant Content", 0 });
+            categoryRankDict.Add("empty", new object[] { "No Significant Content", 0 });
             categoryRankDict.Add("unauth", new object[] { "401/403 Unauthorized", 0 });
             categoryRankDict.Add("notfound", new object[] { "404 Not Found", 0 });
             categoryRankDict.Add("badhost", new object[] { "Invalid Hostname", 0 });

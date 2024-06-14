@@ -371,17 +371,20 @@ def textfile_parser(file_to_parse, cli_obj):
             url_again = url_again.strip()
             complete_urls.append(url_again)
             if url_again.count(":") == 2:
-                try:
-                    port_number = int(url_again.split(":")[2].split("/")[0])
-                except ValueError:
-                    print("ERROR: You potentially provided an mal-formed URL!")
-                    print("ERROR: URL is - " + url_again)
-                    sys.exit()
-                hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
-                if port_number in openports:
-                    openports[port_number] += "," + hostname_again
-                else:
-                    openports[port_number] = hostname_again
+                char = url_again.split(":")[2].split("/")[0]
+                check = char.isdigit()
+                if check == True:                   
+                    try:
+                        port_number = int(url_again.split(":")[2].split("/")[0])
+                    except ValueError:
+                        print("ERROR: You potentially provided an mal-formed URL!")
+                        print("ERROR: URL is - " + url_again)
+                        sys.exit()
+                    hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
+                    if port_number in openports:
+                        openports[port_number] += "," + hostname_again
+                    else:
+                        openports[port_number] = hostname_again
             else:
                 if "https://" in url_again:
                     if 443 in openports:
@@ -393,6 +396,10 @@ def textfile_parser(file_to_parse, cli_obj):
                         openports[80] += "," + url_again
                     else:
                         openports[80] = url_again
+            if ' ' in url_again.strip():
+                    print("ERROR: You potentially provided an mal-formed URL!")
+                    print("ERROR: URL is - " + url_again)
+                    sys.exit()
 
         # Start prepping to write out the CSV
         csv_data = "URL"
@@ -590,17 +597,18 @@ def get_ua_values(cycle_value):
         return desktop_uagents
 
 
-def title_screen():
+def title_screen(cli_parsed):
     """Prints the title screen for EyeWitness
     """
     if platform.system() == "Windows":
-        os.system('cls')
+        if not cli_parsed.no_clear: os.system('cls')
     else:
-        os.system('clear')
+        if not cli_parsed.no_clear: os.system('clear')
+
     print("#" * 80)
     print("#" + " " * 34 + "EyeWitness" + " " * 34 + "#")
     print("#" * 80)
-    print("#" + " " * 11 + "Red Siege Information Security - https://www.redsiege.com" + " " * 11 + "#")
+    print("#" + " " * 11 + "Red Siege Information Security - https://www.redsiege.com" + " " * 10 + "#")
     print("#" * 80 + "\n")
 
     python_info = sys.version_info
@@ -669,44 +677,6 @@ def create_folders_css(cli_parsed):
     Args:
         cli_parsed (ArgumentParser): CLI Object
     """
-    css_page = """img {
-    max-width:100%;
-    height:auto;
-    }
-    #screenshot{
-    max-width: 850px;
-    max-height: 550px;
-    display: inline-block;
-    width: 850px;
-    overflow:scroll;
-    }
-    .hide{
-    display:none;
-    }
-    .uabold{
-    font-weight:bold;
-    cursor:pointer;
-    background-color:green;
-    }
-    .uared{
-    font-weight:bold;
-    cursor:pointer;
-    background-color:red;
-    }
-    table.toc_table{
-    border-collapse: collapse;
-    border: 1px solid black;
-    }
-    table.toc_table td{
-    border: 1px solid black;
-    padding: 3px 8px 3px 8px;
-    }
-    table.toc_table th{
-    border: 1px solid black;
-    text-align: left;
-    padding: 3px 8px 3px 8px;
-    }
-    """
 
     # Create output directories
     if os.path.exists(cli_parsed.d):
@@ -715,13 +685,17 @@ def create_folders_css(cli_parsed):
     os.makedirs(os.path.join(cli_parsed.d, 'screens'))
     os.makedirs(os.path.join(cli_parsed.d, 'source'))
     local_path = os.path.dirname(os.path.realpath(__file__))
-    # Move our jquery file to the local directory
-    shutil.copy2(
-        os.path.join(local_path, '..', 'bin', 'jquery-1.11.3.min.js'), cli_parsed.d)
 
-    # Write our stylesheet to disk
-    with open(os.path.join(cli_parsed.d, 'style.css'), 'w') as f:
-        f.write(css_page)
+    # Move our jquery & css files to the local directory
+    shutil.copy2(
+        os.path.join(local_path, '..', 'bin', 'jquery-3.7.1.min.js'), cli_parsed.d)
+
+    shutil.copy2(
+        os.path.join(local_path, '..', 'bin', 'bootstrap.min.css'), cli_parsed.d)
+
+    shutil.copy2(
+        os.path.join(local_path, '..', 'bin', 'style.css'), cli_parsed.d)
+
 
 
 def default_creds_category(http_object):
@@ -874,10 +848,10 @@ def class_info():
 M                                                                M
 M       .”cCCc”.                                                 M
 M      /cccccccc\\                                                M
-M      §cccccccc|            Check Back Soon For                 M
-M      :ccccccccP                 Upcoming Training              M
-M      \\cccccccc()                                               M
-M       \\ccccccccD                                               M
+M      §cccccccc|                     BSidesAugusta!!            M
+M      :ccccccccP                    10/2/23 - 10/5/23           M
+M      \\cccccccc()                   Red Team Tactics            M
+M       \\ccccccccD             https://redsiege.com/training     M
 M       |cccccccc\\        _                                      M
 M       |ccccccccc)     //                                       M
 M       |cccccc|=      //                                        M

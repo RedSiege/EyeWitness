@@ -88,6 +88,7 @@ def create_driver(cli_parsed, user_agent=None):
         profile.update_preferences()
         driver = webdriver.Firefox(profile, capabilities=capabilities, options=options, service_log_path=cli_parsed.selenium_log_path)
         driver.set_page_load_timeout(cli_parsed.timeout)
+        driver.set_window_size(cli_parsed.width,cli_parsed.height)
         return driver
     except Exception as e:
         if 'Failed to find firefox binary' in str(e):
@@ -776,9 +777,9 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             req.set_proxy(str(cli_parsed.proxy_ip) + ':' + str(cli_parsed.proxy_port), 'http')
             req.set_proxy(str(cli_parsed.proxy_ip) + ':' + str(cli_parsed.proxy_port), 'https')
         if context is None:
-            opened = urllib.request.urlopen(req)
+            opened = urllib.request.urlopen(req, timeout=cli_parsed.timeout)
         else:
-            opened = urllib.request.urlopen(req, context=context)
+            opened = urllib.request.urlopen(req,timeout=cli_parsed.timeout, context=context)
         headers = dict(opened.info())
         headers['Response Code'] = str(opened.getcode())
     except urllib.error.HTTPError as e:
@@ -822,6 +823,11 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         elif e.errno == 10054:
             headers = {'Error': 'Connection Reset'}
             http_object.error_state = 'ConnReset'
+            return http_object, driver
+        elif 'timed out' in str(e):
+            headers = {'Error': 'Timed Out'}
+            http_object.error_state = 'Timeout'
+            print('[*] Socket Timeout when connecting to {0}'.format(http_object.remote_system))
             return http_object, driver
         else:
             http_object.error_state = 'BadStatus'
