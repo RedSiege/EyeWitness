@@ -17,7 +17,6 @@ from modules.helpers import class_info
 from modules.helpers import create_folders_css
 from modules.helpers import default_creds_category
 from modules.helpers import do_jitter
-from modules.helpers import get_ua_values
 from modules.helpers import target_creator
 from modules.helpers import title_screen
 from modules.helpers import open_file_input
