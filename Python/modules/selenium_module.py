@@ -280,6 +280,14 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     except sslerr:
         headers = {'Error': 'Invalid SSL Certificate'}
         http_object.ssl_error = True
+    except TypeError:
+        headers = {'Error': 'Communication Error'}
+        http_object.error_state = 'BadStatus'
+        return http_object, driver
+    except Exception:
+        headers = {'Error': 'Communication Error'}
+        http_object.error_state = 'BadStatus'
+        return http_object, driver
 
     try:
         http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode(
@@ -301,5 +309,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         print("[*] ERROR: Skipping: " + http_object.remote_system)
     except WebDriverException:
         print("[*] ERROR: Skipping source code capture for: " + http_object.remote_system)
+    except Exception: 
+         print("[*] ERROR: Skipping source code capture for: " + http_object.remote_system)
 
     return http_object, driver
