@@ -371,17 +371,20 @@ def textfile_parser(file_to_parse, cli_obj):
             url_again = url_again.strip()
             complete_urls.append(url_again)
             if url_again.count(":") == 2:
-                try:
-                    port_number = int(url_again.split(":")[2].split("/")[0])
-                except ValueError:
-                    print("ERROR: You potentially provided an mal-formed URL!")
-                    print("ERROR: URL is - " + url_again)
-                    sys.exit()
-                hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
-                if port_number in openports:
-                    openports[port_number] += "," + hostname_again
-                else:
-                    openports[port_number] = hostname_again
+                char = url_again.split(":")[2].split("/")[0]
+                check = char.isdigit()
+                if check == True:                   
+                    try:
+                        port_number = int(url_again.split(":")[2].split("/")[0])
+                    except ValueError:
+                        print("ERROR: You potentially provided an mal-formed URL!")
+                        print("ERROR: URL is - " + url_again)
+                        sys.exit()
+                    hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
+                    if port_number in openports:
+                        openports[port_number] += "," + hostname_again
+                    else:
+                        openports[port_number] = hostname_again
             else:
                 if "https://" in url_again:
                     if 443 in openports:
@@ -393,6 +396,10 @@ def textfile_parser(file_to_parse, cli_obj):
                         openports[80] += "," + url_again
                     else:
                         openports[80] = url_again
+            if ' ' in url_again.strip():
+                    print("ERROR: You potentially provided an mal-formed URL!")
+                    print("ERROR: URL is - " + url_again)
+                    sys.exit()
 
         # Start prepping to write out the CSV
         csv_data = "URL"
@@ -472,131 +479,14 @@ def target_creator(command_line_object):
             command_line_object.f, command_line_object)
         return file_urls
 
-
-def get_ua_values(cycle_value):
-    """Create the dicts which hold different user agents.
-    Thanks to Chris John Riley for having an awesome tool which I
-    could get this info from. His tool - UAtester.py -
-    http://blog.c22.cc/toolsscripts/ua-tester/
-    Additional user agent strings came from -
-    http://www.useragentstring.com/pages/useragentstring.php
-
-    Args:
-        cycle_value (String): Which UA dict to retrieve
-
-    Returns:
-        Dict: Dictionary of user agents
-    """
-
-    # "Normal" desktop user agents
-    desktop_uagents = {
-        "MSIE9.0": ("Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1;"
-                    " Trident/5.0)"),
-        "MSIE8.0": ("Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64;"
-                    "Trident/4.0)"),
-        "MSIE7.0": "Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)",
-        "MSIE6.0": ("Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1;"
-                    " .NET CLR 2.0.50727)"),
-        "Chrome32.0.1667.0": ("Mozilla/5.0 (Windows NT 6.2; Win64; x64)"
-                              "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0"
-                              "Safari/537.36"),
-        "Chrome31.0.1650.16": ("Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36"
-                               " (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36"),
-        "Firefox25": ("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0)"
-                      " Gecko/20100101 Firefox/25.0"),
-        "Firefox24": ("Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0)"
-                      " Gecko/20100101 Firefox/24.0,"),
-        "Opera12.14": ("Opera/9.80 (Windows NT 6.0) Presto/2.12.388"
-                       " Version/12.14"),
-        "Opera12": ("Opera/12.0(Windows NT 5.1;U;en)Presto/22.9.168"
-                    " Version/12.00"),
-        "Safari5.1.7": ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8)"
-                        " AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2"),
-        "Safari5.0": ("Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US)"
-                      " AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0 Safari/533.16")
-    }
-
-    # Miscellaneous user agents
-    misc_uagents = {
-        "wget1.9.1": "Wget/1.9.1",
-        "curl7.9.8": ("curl/7.9.8 (i686-pc-linux-gnu) libcurl 7.9.8"
-                      " (OpenSSL 0.9.6b) (ipv6 enabled)"),
-        "PyCurl7.23.1": "PycURL/7.23.1",
-        "Pythonurllib3.1": "Python-urllib/3.1"
-    }
-
-    # Bot crawler user agents
-    crawler_uagents = {
-        "Baiduspider": "Baiduspider+(+http://www.baidu.com/search/spider.htm)",
-        "Bingbot": ("Mozilla/5.0 (compatible;"
-                    " bingbot/2.0 +http://www.bing.com/bingbot.htm)"),
-        "Googlebot2.1": "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-        "MSNBot2.1": "msnbot/2.1",
-        "YahooSlurp!": ("Mozilla/5.0 (compatible; Yahoo! Slurp;"
-                        " http://help.yahoo.com/help/us/ysearch/slurp)")
-    }
-
-    # Random mobile User agents
-    mobile_uagents = {
-        "BlackBerry": ("Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en)"
-                       " AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.1.0.346 Mobile"
-                       " Safari/534.11+"),
-        "Android": ("Mozilla/5.0 (Linux; U; Android 2.3.5; en-us; HTC Vision"
-                    " Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0"
-                    " Mobile Safari/533.1"),
-        "IEMobile9.0": ("Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS"
-                        " 7.5; Trident/5.0; IEMobile/9.0)"),
-        "OperaMobile12.02": ("Opera/12.02 (Android 4.1; Linux; Opera"
-                             " Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02"),
-        "iPadSafari6.0": ("Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X)"
-                          " AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d"
-                          " Safari/8536.25"),
-        "iPhoneSafari7.0.6": ("Mozilla/5.0 (iPhone; CPU iPhone OS 7_0_6 like"
-                              " Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0"
-                              " Mobile/11B651 Safari/9537.53")
-    }
-
-    # Web App Vuln Scanning user agents (give me more if you have any)
-    scanner_uagents = {
-        "w3af": "w3af.org",
-        "skipfish": "Mozilla/5.0 SF/2.10b",
-        "HTTrack": "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)",
-        "nikto": "Mozilla/5.00 (Nikto/2.1.5) (Evasions:None) (Test:map_codes)"
-    }
-
-    # Combine all user agents into a single dictionary
-    all_combined_uagents = dict(desktop_uagents.items() + misc_uagents.items()
-                                + crawler_uagents.items() +
-                                mobile_uagents.items())
-
-    cycle_value = cycle_value.lower()
-
-    if cycle_value == "browser":
-        return desktop_uagents
-    elif cycle_value == "misc":
-        return misc_uagents
-    elif cycle_value == "crawler":
-        return crawler_uagents
-    elif cycle_value == "mobile":
-        return mobile_uagents
-    elif cycle_value == "scanner":
-        return scanner_uagents
-    elif cycle_value == "all":
-        return all_combined_uagents
-    else:
-        print("[*] Error: You did not provide the type of user agents\
-         to cycle through!".replace('    ', ''))
-        print("[*] Error: Defaulting to desktop browser user agents.")
-        return desktop_uagents
-
-
-def title_screen():
+def title_screen(cli_parsed):
     """Prints the title screen for EyeWitness
     """
     if platform.system() == "Windows":
-        os.system('cls')
+        if not cli_parsed.no_clear: os.system('cls')
     else:
-        os.system('clear')
+        if not cli_parsed.no_clear: os.system('clear')
+
     print("#" * 80)
     print("#" + " " * 34 + "EyeWitness" + " " * 34 + "#")
     print("#" * 80)
@@ -669,44 +559,6 @@ def create_folders_css(cli_parsed):
     Args:
         cli_parsed (ArgumentParser): CLI Object
     """
-    css_page = """img {
-    max-width:100%;
-    height:auto;
-    }
-    #screenshot{
-    max-width: 850px;
-    max-height: 550px;
-    display: inline-block;
-    width: 850px;
-    overflow:scroll;
-    }
-    .hide{
-    display:none;
-    }
-    .uabold{
-    font-weight:bold;
-    cursor:pointer;
-    background-color:green;
-    }
-    .uared{
-    font-weight:bold;
-    cursor:pointer;
-    background-color:red;
-    }
-    table.toc_table{
-    border-collapse: collapse;
-    border: 1px solid black;
-    }
-    table.toc_table td{
-    border: 1px solid black;
-    padding: 3px 8px 3px 8px;
-    }
-    table.toc_table th{
-    border: 1px solid black;
-    text-align: left;
-    padding: 3px 8px 3px 8px;
-    }
-    """
 
     # Create output directories
     if os.path.exists(cli_parsed.d):
@@ -715,16 +567,17 @@ def create_folders_css(cli_parsed):
     os.makedirs(os.path.join(cli_parsed.d, 'screens'))
     os.makedirs(os.path.join(cli_parsed.d, 'source'))
     local_path = os.path.dirname(os.path.realpath(__file__))
-    # Move our jquery and bootstrap file to the local directory
+
+    # Move our jquery & css files to the local directory
     shutil.copy2(
-        os.path.join(local_path, '..', 'bin', 'jquery-1.11.3.min.js'), cli_parsed.d)
+        os.path.join(local_path, '..', 'bin', 'jquery-3.7.1.min.js'), cli_parsed.d)
 
     shutil.copy2(
         os.path.join(local_path, '..', 'bin', 'bootstrap.min.css'), cli_parsed.d)
 
-    # Write our stylesheet to disk
-    with open(os.path.join(cli_parsed.d, 'style.css'), 'w') as f:
-        f.write(css_page)
+    shutil.copy2(
+        os.path.join(local_path, '..', 'bin', 'style.css'), cli_parsed.d)
+
 
 
 def default_creds_category(http_object):

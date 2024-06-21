@@ -283,7 +283,7 @@ body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;
 body onload="init('/wcd/system_device.xml','wcd',';href="/wcd/default.css">;FUNCVER|Konica Minolta - No Pass
 <title>KONICA MINOLTA bizhub 4702P</title>;role="heading">Embedded Web Server;label id="langlabel" aria-hidden="true"|Konica Minolta - No Pass
 <title>HD-MD4x1-4K-E</title>| Crestron admin/admin
-<span class="prtgversion">&nbsp;PRTG Network Monitor|PRTG Network Monitor ptrgadmin/ptrgadmin
+<span class="prtgversion">&nbsp;PRTG Network Monitor|PRTG Network Monitor prtgadmin/prtgadmin
 Virtual Appliance Management;VAMI.css;vmware.vami.CoreWrapper.nocache.js;gwt_historyFrame|Avamar Virtual Machine Proxy root/avam@r
 <title>AR-M277</title>;src="link_user.html";src="link_user.html";<a href="link_user.html">|Sharp AR-M277 admin/Sharp
 <title>AR-M355N</title>;<frame src="link_user.html";main_user;link_user.html|Sharp AR-M355N admin/Sharp
@@ -466,3 +466,9 @@ emc-logo;XtremIO Management</div>|EMC ExtremIO xmsadmin / 123456 or Xtrem10
 <title>Unisphere;Dell Inc|EMC Unisphere - admin / Password123#
 <title>CData - API Server|CData API server - Username: admin Password: vm-name
 <body>Redirecting to vRealize Operations Manager Web UI|VMware vRealize Admin / <pass_set_during_install>
+<title>Login</title>;<td id="xeroxLogo">|Xerox Printer / Admin:1111
+<title>RemoteUI;www.canon.com|Canon Printer / Administrator:7654321
+function isIE();name="viewport";@keyframes rotate;THESE STYLES MUST|PowerProtect DD sysadmin/<instance ID> (AWS or GCP) or sysadmin/changeme (Azure or on-prem)
+content="RackStation;RackStation</title>|Rackstation / admin : blank
+img src="/image/cisco_logo_about.png">;Phone Adapter|Cisco Phone Adaptor / admin : admin
+content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|Epson Printer - no default credentials

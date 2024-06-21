@@ -235,12 +235,12 @@ Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't
 <title>DigitalSi HVR / NVR Gateway</title>;form method="post" action="/login.cgi";Namo WebEditor|camera
 <title>SolarWinds Virtualization Manager</title>;var message = "{action:'setFrameStatus',status:'loaded'}";link href="history/history.css" type="text/css"|virtualization
 <title>Citrix CloudBridge - Login</title>;var err_map = { "SESS_CORRUPTED": "Session expired or killed. Please login."};function checkHTTP()|infrastructure
-<title>SolarWinds Log &amp; Event Manager</title>;var requiredMajorVersion;var MMredirectURL = window.location;allowMultipleConsoleSessions|logging
+<title>SolarWinds Log &amp; Event Manager</title>;var requiredMajorVersion;var MMredirectURL = window.location;allowMultipleConsoleSessions|dataops
 <meta content="WEBUI LOGIN PAGE" name="others" /><title>Gaia</title>;var hostname=;/cgi-bin/home.tcl|infrastructure
 <title>Microsoft Internet Information Services 8</title>;<img class="hero" alt="Microsoft Internet Information Services 8.0";<img class="brand" alt="Microsoft Windows Server" src="ws8-brand.png"|crap
 width="960" height="600" alt="IIS" src="iis-85.png" />;<title>IIS Windows Server</title>;background-color:#0072C6|crap
 <title>HP Insight Control server provisioning</title>;Hewlett-Packard Development Company;hp-authn-provider-name|virtualization
-<title>ManageEngine EventLog Analyzer;function userType(ADAuthEnabled);function GetXmlHttpObject();function loadLogin()|logging
+<title>ManageEngine EventLog Analyzer;function userType(ADAuthEnabled);function GetXmlHttpObject();function loadLogin()|dataops
 <title>SAP NetWeaver Portal</title>;var webpath = "/caportallogon_new/;<script>var hash = document.location.hash;certLogonForm|infrastructure
 <title>Brother HL-5370DW series</title>;onchange="changeLanguage();</tbody></table>|printer
 Check the address for typing errors such;Please contact the web site owners to inform them of this problem;<title>Problem loading page</title>|notfound
@@ -637,7 +637,7 @@ Bitbucket</title>|devops
 <title>TIBCO WebFOCUS ;Reporting Server</title>|secops
 <title>TSM Web</title>|appops
 <title>Vault</title>;vault/config/environment|secops
-title>Web Administration has moved</title>|redirect
+title>Web Administration has moved</title>|redirector
 <title>Welcome to Keycloak</title>|secops
 <title>cAdvisor -|appops
 python_gc_objects_collected_total{generation;RMF_performance_procu|dataops
@@ -679,10 +679,10 @@ templateFullName=Cisco+Firepower+Threat+Defense|secops
 <title>Pacts</title><th class="consumer|devops
 <title>Perforce Validate - Projects Management</title>|devops
 <title>Portainer</title>|devops
-<title>PrinterLogic</title>|printers
+<title>PrinterLogic</title>|printer
 <title>Prometheus Time Series Collection and Processing Server</title>|dataops
 <title>RMF Data Portal</title>|appops
-<title>RMS Print Queue Information</title>|printers
+<title>RMS Print Queue Information</title>|printer
 <title>Riverbed Technology, Inc.</title>|netdev
 <title>Rundeck - Login</title>|devops
 You have created a service.</p><p class="intro">To test this service|dataops
@@ -700,7 +700,7 @@ UX RIVERBED ORANGE|netdev
 <html><head><link rel="stylesheet" href="resource://content-accessible/plaintext.css"></head><body><pre>ok</pre></body></html>|empty
 <body><pre>ok</pre></body>|empty
 jvm_buffer_pool_used_bytes;jvm_memory_pool_allocated|dataops
-</head><body><p>Invalid Request</p></body></html>|invalidreq
+</head><body><p>Invalid Request</p></body></html>|badreq
 <title>Universal Login Manager</title>;widgets_ulm_dispacher;GlobalMenuTopRight|infrastructure
 var panels = {};applicationLoading;loginInputContainer;PowerVault Manager|infrastructure
 ADMdtpDays;ObjTypeCtrl_CentaurSvr;ObjTypeCtrl_EmailSettings;ObjTypeCtrl_RfUniversalRcv|highval
@@ -713,7 +713,7 @@ HPE Nimble Storage</title>|nas
 Jetadmin</title>|printer
 <title>ManageEngine Password Manager Pro</title>|secops
 <title>PowerChute Network|infrastructure
-<title>VMware vCenter|vm
+<title>VMware vCenter|virtualization
 <title>splunkd - Splunk</title>|dataops
 If you can see this page, it confirms that you can access the PMP application|secops
 McAfee Agent Activity Log|secops
@@ -735,7 +735,8 @@ Room Alert;href="/images/AVTECH.ico|netdev
 <form method="post" action="/NMC/;<a href="http://www.apc.co|infrastructure
 <div id="loginTitle">Storage Management Utility</div>|nas
 CISCO Codec;<body class="vega signin-body">|voip
-<title>Cisco Meraki|netdev;cisco-meraki.png|netdev
+<title>Cisco Meraki|netdev
+cisco-meraki.png|netdev
 <div>This product is licensed from F5 Networks.|netdev
 <title>GlobalProtect Portal|netdev
 <title>Sign in to Outlook</title>|comms
@@ -790,3 +791,9 @@ emc-log;SECURE REMOTE SERVICES</h3>|kvm
 <title>Unisphere;Dell Inc|nas
 <title>CData - API Server|dataops
 <body>Redirecting to vRealize Operations Manager Web UI|highval
+<title>Login</title>;<td id="xeroxLogo">|printer
+<title>RemoteUI;www.canon.com|printer
+function isIE();name="viewport";@keyframes rotate;THESE STYLES MUST|infrastructure
+content="RackStation;RackStation</title>|nas
+<img src="/image/cisco_logo_about.png">;Phone Adapter|voip
+content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|printer
