@@ -1,6 +1,7 @@
 import html
 import os
 import re
+import traceback
 
 from modules.helpers import strip_nonalphanum
 
@@ -29,6 +30,10 @@ class HTTPTableObject(object):
         self._ssl_error = False
         self._ua_left = None
         self._resolved = None
+
+        # parsed authentication, tuple of username and password, if username is empty it will be None
+        self._description = ""
+        self._parsed_creds = [ ]
 
     def set_paths(self, outdir, suffix=None):
         file_name = self.remote_system.replace('://', '.')
@@ -179,6 +184,44 @@ class HTTPTableObject(object):
 
     @default_creds.setter
     def default_creds(self, default_creds):
+        if not default_creds: return
+
+        # attempt to parse
+        # filter out those without '/' or start with '(' # save as comment only
+        if not '/' in default_creds or default_creds[0] == '(':
+          self._parsed_creds = [ (None, None, default_creds, None, '') ] # no user or pass, only comment
+          self._default_creds = default_creds
+          return
+
+        try:
+          creds = default_creds.split(';')
+          # parse out those with comments if present
+          # else split /
+          for c in creds:
+            user = passwd = comment = None
+            if ' (' in c:
+              x = c.split(' (')
+              comment = x[1][:-1].strip() # assuming ending ) and removing it
+              y = x[0].split('/')
+              user = y[0].strip()
+              try:
+                passwd = y[1].strip()
+              except:
+                # Only 1 value found
+                passwd = None
+            else:
+              y = c.split('/')
+              user = y[0].strip()
+              try:
+                passwd = y[1].strip()
+              except:
+                # Only 1 value found
+                passwd = None
+            self._parsed_creds = self._parsed_creds + [ (user,passwd,comment,None, '') ]
+        except Exception as e:
+          print("[!] Failed to parse credentials: ", e)
+          print("    ", default_creds)
+          print(traceback.format_exc())
         self._default_creds = default_creds
 
     @property
@@ -203,12 +246,12 @@ class HTTPTableObject(object):
         html = u""
         if self._remote_login is not None:
             html += ("""<tr>
-            <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
+            <td valign="top"><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
             <a href=\"{address}\" target=\"_blank\">{address}</a><br>
             """).format(address=self._remote_login)
         else:
             html += ("""<tr>
-            <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
+            <td valign="top"><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
             <a href=\"{address}\" target=\"_blank\">{address}</a><br>
             """).format(address=self.remote_system)
 
@@ -227,13 +270,51 @@ class HTTPTableObject(object):
                 self.remote_system)
 
         if self.default_creds is not None:
-            try:
-                html += "<br><b>Default credentials:</b> {0}<br>".format(
-                    self.sanitize(self.default_creds))
-            except UnicodeEncodeError:
-                html += u"<br><b>Default credentials:</b> {0}<br>".format(
-                    self.sanitize(self.default_creds))
+            if type(self.default_creds) is list:
+                try:
+                    html += "<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                        self.sanitize(self._description), self.sanitize(", ".join(self.default_creds)))
+                except UnicodeEncodeError:
+                    try:
+                        html += u"<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                            self.sanitize(self._description), self.sanitize(self.default_creds))
+                    except:
+                        print('[!] Failed to format default credentials: ')
+                        # print(json.dumps(self.default_creds))
+            else:
+                try:
+                    html += "<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                        self.sanitize(self._description), self.sanitize(self.default_creds))
+                except UnicodeEncodeError:
+                    try:
+                        html += u"<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                            self.sanitize(self._description), self.sanitize(self.default_creds))
+                    except:
+                        print('[!] Failed to format default credentials: ')
+                        # print(json.dumps(self.default_creds))
 
+        if self._parsed_creds is not None and type(self._parsed_creds) is list and len(self._parsed_creds) > 0:
+            html += "<br /><table width=\"100%\" style=\"padding-left: 5px; padding-right: 5px;\"><thead><td>User</td><td>Password</td><td>Status</td></thead>"
+            for cred in self._parsed_creds:
+                html += "<tr>"
+                if cred[0] and cred[1]:
+                    html += "<td>{0}</td><td>{1}</td>".format(cred[0], cred[1])
+                elif cred[0]: 
+                    html += "<td>{0}</td><td></td>".format(cred[0])
+                elif cred[1]: 
+                    html += "<td></td><td>{0}</td>".format(cred[0])
+                if cred[3] == True:
+                    if len(cred[4]) > 0:
+                        a_scr_path = os.path.relpath(cred[4], self.root_path)
+                        html += '<td bgcolor="green"><a href=\"{0}\" target=\"_blank\">Success</a></td>'.format(a_scr_path)
+                    else:
+                        html += '<td bgcolor="green">Success</td>'
+                else:
+                    html += '<td bgcolor="red">Failed</td>'
+                html+= "</tr>"
+            html += "</table><br />"
+        
+    
         if self.error_state is None:
             try:
                 html += "\n<br><b> Page Title: </b>{0}\n".format(
@@ -286,6 +367,13 @@ class HTTPTableObject(object):
                 target=\"_blank\"><img style=\"max-height:400px;height: expression(this.height > 400 ? 400: true);\"
                 src=\"{1}\"></a></div></td></tr>""").format(
                 src_path, scr_path)
+            if self._parsed_creds is not None and type(self._parsed_creds) is list and len(self._parsed_creds) > 0:
+                for cred in self._parsed_creds:
+                    if len(cred[4]) > 0:
+                        a_scr_path = os.path.relpath(cred[4], self.root_path)
+                        html += "<br /><a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" height=\"400\" /></a><br />".format(a_scr_path)
+           
+            html += ("""</td></tr>""")
 
         if len(self._uadata) > 0:
             divid = strip_nonalphanum(self.remote_system)
@@ -389,7 +477,7 @@ class UAObject(HTTPTableObject):
         src_path = os.path.relpath(self.source_path, self.root_path)
         html = u""
         html += ("""<tr class="hide {0}">
-        <td><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
+        <td valign="top"><div style=\"display: inline-block; width: 300px; word-wrap: break-word\">
         <a href=\"{1}\" target=\"_blank\">{1}</a><br>
         """).format(divid, self.remote_system)
 
@@ -407,12 +495,49 @@ class UAObject(HTTPTableObject):
                 self.remote_system)
 
         if self.default_creds is not None:
-            try:
-                html += "<br><b>Default credentials:</b> {0}<br>".format(
-                    self.sanitize(self.default_creds))
-            except UnicodeEncodeError:
-                html += u"<br><b>Default credentials:</b> {0}<br>".format(
-		    self.sanitize(self.default_creds))
+            if type(self.default_creds) is list:
+                try:
+                    html += "<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                        self.sanitize(self._description), self.sanitize(", ".join(self.default_creds)))
+                except UnicodeEncodeError:
+                    try:
+                        html += u"<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                            self.sanitize(self._description), self.sanitize(self.default_creds))
+                    except:
+                        print('[!] Failed to format default credentials: ')
+                        # print(json.dumps(self.default_creds))
+            else:
+                try:
+                    html += "<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                        self.sanitize(self._description), self.sanitize(self.default_creds))
+                except UnicodeEncodeError:
+                    try:
+                        html += u"<br><b>Default credentials:</b> {0} ({1})<br>".format(
+                            self.sanitize(self._description), self.sanitize(self.default_creds))
+                    except:
+                        print('[!] Failed to format default credentials: ')
+                        # print(json.dumps(self.default_creds))
+
+        if self._parsed_creds is not None and type(self._parsed_creds) is list and len(self._parsed_creds) > 0:
+            html += "<br /><table width=\"100%\" style=\"padding-left: 5px; padding-right: 5px;\"><thead><td>User</td><td>Password</td><td>Status</td></thead>"
+            for cred in self._parsed_creds:
+                html += "<tr>"
+                if cred[0] and cred[1]:
+                    html += "<td>{0}</td><td>{1}</td>".format(cred[0], cred[1])
+                elif cred[0]: 
+                    html += "<td>{0}</td><td></td>".format(cred[0])
+                elif cred[1]: 
+                    html += "<td></td><td>{0}</td>".format(cred[0])
+                if cred[3] == True:
+                    if len(cred[4]) > 0:
+                        a_scr_path = os.path.relpath(cred[4], self.root_path)
+                        html += '<td bgcolor="green"><a href=\"{0}\" target=\"_blank\">Success</a></td>'.format(a_scr_path)
+                    else:
+                        html += '<td bgcolor="green">Success</td>'
+                else:
+                    html += '<td bgcolor="red">Failed</td>'
+                html+= "</tr>"
+            html += "</table><br />"
                 
         try:
             html += "\n<br><b> Page Title: </b>{0}\n".format(
@@ -446,7 +571,12 @@ class UAObject(HTTPTableObject):
                 target=\"_blank\">Source Code</a></div></td>
                 <td><div id=\"screenshot\"><a href=\"{1}\"
                 target=\"_blank\"><img style=\"max-height:400px;height: expression(this.height > 400 ? 400: true);\"
-                src=\"{1}\"></a></div></td></tr>""").format(
-                src_path, scr_path)
+                src=\"{1}\"></a></div></td></tr>""").format(src_path, scr_path)
+            if self._parsed_creds is not None and type(self._parsed_creds) is list and len(self._parsed_creds) > 0:
+                for cred in self._parsed_creds:
+                    if len(cred[4]) > 0:
+                        a_scr_path = os.path.relpath(cred[4], self.root_path)
+                        html += "<br /><a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" height=\"400\" /></a><br />".format(a_scr_path)
+            html += ("""</td></tr>""")
         return html
 

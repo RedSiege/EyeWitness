@@ -79,6 +79,14 @@ def create_cli_parser():
                                 a timeout'.replace('    ', ''), type=int,
                                 help='Max retries on timeouts')
 
+    cred_validation_options = parser.add_argument_group('Credential Validation Options')
+    cred_validation_options.add_argument('--enable-validation',
+                                default=None, action='store_true',
+                                help='Test default credentials and validate the host is vulnerable.')
+    cred_validation_options.add_argument('--validation-output', metavar='Output log file of validated credentials',
+                                default=None,
+                                help='Specify a file to log valid credentials (for easy automation).')
+
     report_options = parser.add_argument_group('Report Output Options')
     report_options.add_argument('-d', metavar='Directory Name',
                                 default=None,
@@ -255,6 +263,8 @@ def single_mode(cli_parsed):
     if cli_parsed.web:
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
+        auth_host = selenium_module.auth_host
+        test_realm = selenium_module.test_realm
         if not cli_parsed.show_selenium:
             display = Display(visible=0, size=(1920, 1080))
             display.start()
@@ -268,8 +278,20 @@ def single_mode(cli_parsed):
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
 
     driver = create_driver(cli_parsed)
-    result, driver = capture_host(cli_parsed, http_object, driver)
-    result = default_creds_category(result)
+    result, is_protected = test_realm(cli_parsed, http_object, driver)
+    if not result:
+        result, driver = capture_host(cli_parsed, http_object, driver)
+        result = default_creds_category(result)
+        if cli_parsed.enable_validation:
+            auth_host(cli_parsed, result, driver, is_protected)
+    else:
+        print("[!] HTTP Authentication Realm Detected")
+        result, driver = capture_host(cli_parsed, result, driver)
+        if result.default_creds:
+            result = default_creds_category(result)
+            if cli_parsed.enable_validation:
+                auth_host(cli_parsed, result, driver, is_protected)
+
     if cli_parsed.resolve:
         result.resolved = resolve_host(result.remote_system)
     driver.quit()
@@ -290,6 +312,8 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
     if cli_parsed.web:
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
+        auth_host = selenium_module.auth_host
+        test_realm = selenium_module.test_realm
 
     with lock:
         driver = create_driver(cli_parsed, user_agent)
@@ -319,16 +343,42 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
 
             http_object.resolved = resolve_host(http_object.remote_system)
             if user_agent is None:
-                http_object, driver = capture_host(
-                    cli_parsed, http_object, driver)
-                if http_object.category is None and http_object.error_state is None:
+
+                # head call and detect WWW-Authenticate realm info
+                # if found, attempt manual auth
+
+                http_object2, is_protected = test_realm(cli_parsed, http_object, driver)
+                if not http_object2:
+                    http_object, driver = capture_host(cli_parsed, http_object, driver)
                     http_object = default_creds_category(http_object)
-                manager.update_http_object(http_object)
+                    if cli_parsed.enable_validation:
+                        auth_host(cli_parsed, http_object, driver, is_protected)
+                    manager.update_http_object(http_object)
+                else:
+                    print("[!] HTTP Authentication Realm Detected")
+                    http_object2, driver = capture_host(cli_parsed, http_object2, driver)
+                    if http_object2.default_creds:
+                        http_object2 = default_creds_category(http_object2)
+                        if cli_parsed.enable_validation:
+                            auth_host(cli_parsed, http_object2, driver, is_protected)
+                    manager.update_http_object(http_object2)
+
             else:
-                ua_object, driver = capture_host(
-                    cli_parsed, http_object, driver)
-                if http_object.category is None and http_object.error_state is None:
+
+                ua_object, is_protected = test_realm(cli_parsed, http_object, driver)
+                if not ua_object:
+                    ua_object, driver = capture_host(cli_parsed, http_object, driver)
                     ua_object = default_creds_category(ua_object)
+                    if cli_parsed.enable_validation:
+                        auth_host(cli_parsed, ua_object, driver, is_protected)
+                else:
+                    print("[!] HTTP Authentication Realm Detected")
+                    ua_object, driver = capture_host(cli_parsed, ua_object, driver)
+                    if ua_object.default_creds:
+                        ua_object = default_creds_category(ua_object)
+                        if cli_parsed.enable_validation:
+                            auth_host(cli_parsed, ua_object, driver, is_protected)
+
                 manager.update_ua_object(ua_object)
 
             counter[0].value += 1
