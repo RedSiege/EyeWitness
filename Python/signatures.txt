@@ -460,7 +460,7 @@ tnt-fortinet-grid icon-xl;var xhr = new XMLHttpRequest();document.forms[0].usern
 <title>Emerson Network Power| Emerson UPS admin / Liebert
 <div id="loginLogo">;Storage Management Utility|HP Storage Management Utility - manage / !manage
 OpManager;$zoho.salesiq|Zoho Op Manager - admin / admin
-alt="Cisco Device Manager"|Cisco Device Manager - admin / admin 
+alt="Cisco Device Manager"|Cisco Device Manager - admin / admin
 <title>DG Inspector|Digital Guardian - admin / a10
 emc-logo;XtremIO Management</div>|EMC ExtremIO xmsadmin / 123456 or Xtrem10
 <title>Unisphere;Dell Inc|EMC Unisphere - admin / Password123#
@@ -472,3 +472,4 @@ function isIE();name="viewport";@keyframes rotate;THESE STYLES MUST|PowerProtect
 content="RackStation;RackStation</title>|Rackstation / admin : blank
 img src="/image/cisco_logo_about.png">;Phone Adapter|Cisco Phone Adaptor / admin : admin
 content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|Epson Printer - no default credentials
+<title>Web Configurator</title>;<iframe id="main_frame"|ACTi Web Configurator Camera / admin:123456 or Admin:123456
