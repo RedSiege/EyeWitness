@@ -797,3 +797,4 @@ function isIE();name="viewport";@keyframes rotate;THESE STYLES MUST|infrastructu
 content="RackStation;RackStation</title>|nas
 <img src="/image/cisco_logo_about.png">;Phone Adapter|voip
 content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|printer
+<title>Web Configurator</title>;<iframe id="main_frame"|camera
