@@ -473,3 +473,5 @@ content="RackStation;RackStation</title>|Rackstation / admin : blank
 img src="/image/cisco_logo_about.png">;Phone Adapter|Cisco Phone Adaptor / admin : admin
 content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|Epson Printer - no default credentials
 <title>Web Configurator</title>;<iframe id="main_frame"|ACTi Web Configurator Camera / admin:123456 or Admin:123456
+<title>Login</title>;function hide_login_big_logo|GW Security Camera / admin:123456 or admin:admin or admin:888888
+<title>Machine Identification - BP-50C26</title>;function changeMyPage|Sharp Printer / Administrator:admin
