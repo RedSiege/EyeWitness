@@ -1,4 +1,4 @@
-FROM centos:centos7
+FROM centos:centos8
 LABEL maintainer ???
 
 ARG USER=eyewitness
