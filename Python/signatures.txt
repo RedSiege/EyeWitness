@@ -475,3 +475,26 @@ content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|Epson Printer - no default cred
 <title>Web Configurator</title>;<iframe id="main_frame"|ACTi Web Configurator Camera / admin:123456 or Admin:123456
 <title>Login</title>;function hide_login_big_logo|GW Security Camera / admin:123456 or admin:admin or admin:888888
 <title>Machine Identification - BP-50C26</title>;function changeMyPage|Sharp Printer / Administrator:admin
+<title>AXIS;Axis Communications|Axis Camera System / root:pass
+join-webex-meeting|WebEx
+Remote Device Viewer;sympl</span>|Symplr Remote Access - pass set at install
+<title>2N IP|2N Camera - admin:2n
+<title>Canon;iR-|Canon PrinterImageRunnre 7654321:7654321 or admin:7654321
+<title>User Authentication;iR-;CANON|Canon Printer 7654321:7654321 or admin:7654321
+;>Cisco Webui;Cisco Systems,|Cisco device - set in config or cisco:cisco
+Citrix Gateway</title>|Citrix Gateway
+ctxstxt_NetscalerGateway|Citrix Gateway
+<title>GAiA|Checkpoint GAia / admin:admin
+<title>Ivanti|Invanti Security / admin:admin
+<div class="exacqVisionHeader">|ExacqVision Camera / admin:admin256
+title="IntelliMix";shure|Shure Microphone - no default creds
+<title>Shure|Shure Microphone - no default creds
+<title>Mitel|Mitel VOIP system
+<title>Remote UI : Portal :CANON|Canon Printer 7654321:7654321 or admin:7654321
+<title>Remote UI: Login;CANON;|Canon Printer 7654321:7654321 or admin:7654321
+<title>User Authentication : ;CANON|Canon Printer 7654321:7654321 or admin:7654321
+<title>SentrySuite|SentrySuite - Created at install
+<title>Siemens Fieldpanel|Siemens Fieldpanel / Administrator:Administrator
+title>Smart-UPS|APC UPS / apc:apc
+<title>TightVNC desktop|TightVNC - Set at install or desktop username and password
+wlmframe" src="../startwlm/Start_Wlm.htm|CommandCenter RX / Admin:Admin or first two numbers of model+00: for username and password
