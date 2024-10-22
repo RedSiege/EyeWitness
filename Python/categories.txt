@@ -840,6 +840,7 @@ wlmframe" src="../startwlm/Start_Wlm.htm|printer
 <title>401 - Unauthorized|unauth
 <title>404 - Not Found</title>|notfound
 <title>503 Service Not Available</title>|serviceunavailable
+<body><b>Http/1.1 Service Unavailable</b>|serviceunavailable
 ATT&amp|secops
 Copyright CANON INC;canonlogo.gif|printer
 Secure Connection Failed;Problem loading page</title>
