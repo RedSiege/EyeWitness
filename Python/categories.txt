@@ -827,3 +827,11 @@ title="IntelliMix";shure|camera
 title>Smart-UPS|infrastructure
 <title>TightVNC desktop|kvm
 wlmframe" src="../startwlm/Start_Wlm.htm|printer
+<title>DVR LOGIN</title>;function is_mobile_browser|camera
+<title>TSP100III Network Utility</title>;<img src="../image/StarLogo_Blue.png"|printer
+<title>Ubiquiti</title>;<span class="product_name">PowerBeam 5AC</span>|netdev
+<title>Ubiquiti Networks</title>;<span class="product_name">PowerBeam 5AC Gen2</span>|netdev
+<title>VPN Portal</title>;<body onload="document.forms[0].username.focus(); document.forms[0].username.select();initLogin();">|infrastructure
+<title>Login</title>;<label ng-bind="oLan.login" class="ng-binding">Login</label>|camera
+<title>Quantum Spark Security Appliance - Login</title>;<meta name="title" content="Quantum Spark Security Appliance - Login">|infrastructure
+<title>SSL VPN Service</title>;<meta name="HandheldFriendly" content="true">;var blinkCounter=0;|infrastructure
