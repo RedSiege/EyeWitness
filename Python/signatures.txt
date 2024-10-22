@@ -498,3 +498,9 @@ title="IntelliMix";shure|Shure Microphone - no default creds
 title>Smart-UPS|APC UPS / apc:apc
 <title>TightVNC desktop|TightVNC - Set at install or desktop username and password
 wlmframe" src="../startwlm/Start_Wlm.htm|CommandCenter RX / Admin:Admin or first two numbers of model+00: for username and password
+<title>DVR LOGIN</title>;function is_mobile_browser| DVR IP Camera / admin:000000 or admin:00000000 or admin:123456 or admin:wbox123 or admin:admin or admin:12345 or admin:1234 or admin:4321 or admin:1111111
+<title>TSP100III Network Utility</title>;<img src="../image/StarLogo_Blue.png"|Star Printer / root:public
+<title>Ubiquiti</title>;<span class="product_name">PowerBeam 5AC</span>|Wireless Access Point / ubnt:ubnt
+<title>Ubiquiti Networks</title>;<span class="product_name">PowerBeam 5AC Gen2</span>|Wireless Access Point / ubnt:ubnt
+<title>Login</title>;<label ng-bind="oLan.login" class="ng-binding">Login</label>|Hikvision Digital Technology / admin:12345 or admin:admin or admin:123456
+<title>Quantum Spark Security Appliance - Login</title>;<meta name="title" content="Quantum Spark Security Appliance - Login">|Firewall / admin:admin
