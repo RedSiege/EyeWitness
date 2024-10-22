@@ -391,7 +391,7 @@ fromWebChromeNACL;console.log(e.source);var g_ocx = 0;g_backIvs;g_busernameEncry
 <title ng-bind="manageCtrl.system.getName();UniFi'" class="ng-binding">UniFi</title>;translate="ACCOUNT_TITLE_HOTSPOT_MANAGER"|infrastructure
 <title>Dell OpenManage Switch Administrator</title>;window.top.location.href = "dell_login.html";login_text|netdev
 WSMAN library is loaded here as;FRAMEHEADER;function loadFrames;top.remoteSelection = "radioJava";src="lib/eLang.js"|infrastructure
-<title>Login</title>;label id="lausername" name="lausername";label id="lapassword" name="lapassword";label id="lapassword" name="lapassword"|infrastructure
+<title>Login</title>;label id="lausername" name="lausername";label id="lapassword" name="lapassword";label id="lapassword" name="lapassword"|camera
 <title>Network Monitor</title>;Spiceworks Network Monitor requires;!checkConfig();versionCheck|infrastructure
 <title> SyncThru Web Service </title>;sws_loading_wait;<span>SyncThru Web Service</span>|printer
 <Title>ConfigSummary</Title>;<AuthUserName>Public</AuthUserName>;<ProductName>bizhub C368</ProductName>|printer
