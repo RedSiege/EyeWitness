@@ -821,7 +821,7 @@ title="IntelliMix";shure|camera
 <title>Mitel|voip
 <title>REDCap|appops
 {"NAME":"Red Hat Enterprise Linux|infrastructure
-<title>Remote UI : Portal :CANON|printer
+<title>Remote UI : Portal ;CANON|printer
 <title>Remote UI: Login:;CANON;|printer
 <title>User Authentication : ;CANON|printer
 <title>SentrySuite|secops
@@ -833,3 +833,5 @@ wlmframe" src="../startwlm/Start_Wlm.htm|printer
 <title>404 - Not Found</title>|notfound
 <title>503 Service Not Available</title>|serviceunavailable
 ATT&amp|secops
+Copyright CANON INC;canonlogo.gif|printer
+Secure Connection Failed;Problem loading page</title>

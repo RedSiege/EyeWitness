@@ -492,7 +492,7 @@ ctxstxt_NetscalerGateway|Citrix Gateway
 title="IntelliMix";shure|Shure Microphone - no default creds
 <title>Shure|Shure Microphone - no default creds
 <title>Mitel|Mitel VOIP system
-<title>Remote UI : Portal :CANON|Canon Printer 7654321:7654321 or admin:7654321
+<title>Remote UI : Portal ;CANON|Canon Printer 7654321:7654321 or admin:7654321
 <title>Remote UI: Login;CANON;|Canon Printer 7654321:7654321 or admin:7654321
 <title>User Authentication : ;CANON|Canon Printer 7654321:7654321 or admin:7654321
 <title>SentrySuite|SentrySuite - Created at install
@@ -500,3 +500,4 @@ title="IntelliMix";shure|Shure Microphone - no default creds
 title>Smart-UPS|APC UPS / apc:apc
 <title>TightVNC desktop|TightVNC - Set at install or desktop username and password
 wlmframe" src="../startwlm/Start_Wlm.htm|CommandCenter RX / Admin:Admin or first two numbers of model+00: for username and password
+Copyright CANON INC;canonlogo.gif|Canon Printer 7654321:7654321 or admin:7654321
