@@ -802,7 +802,7 @@ content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|printer
 <title>Machine Identification - BP-50C26</title>;function changeMyPage|printer
 <title>AXIS;Axis Communications|camera
 join-webex-meeting|voip
-Remote Device Viewer;sympl</span>|kvm
+Remote Device Viewer</span>;sympl|kvm
 <title>2N IP|camera
 <title>Canon;iR-|printer
 <title>User Authentication;iR-;CANON|printer

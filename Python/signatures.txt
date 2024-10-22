@@ -477,7 +477,7 @@ content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|Epson Printer - no default cred
 <title>Machine Identification - BP-50C26</title>;function changeMyPage|Sharp Printer / Administrator:admin
 <title>AXIS;Axis Communications|Axis Camera System / root:pass
 join-webex-meeting|WebEx
-Remote Device Viewer;sympl</span>|Symplr Remote Access - pass set at install
+Remote Device Viewer</span>;sympl|Symplr Remote Access - pass set at install
 <title>2N IP|2N Camera - admin:2n
 <title>Canon;iR-|Canon PrinterImageRunnre 7654321:7654321 or admin:7654321
 <title>User Authentication;iR-;CANON|Canon Printer 7654321:7654321 or admin:7654321
