@@ -479,6 +479,7 @@ content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|Epson Printer - no default cred
 join-webex-meeting|WebEx
 Remote Device Viewer</span>;sympl|Symplr Remote Access - pass set at install
 <title>2N IP|2N Camera - admin:2n
+<title>2N;<h1 class="x-productname login">|2N Camera - admin:2n
 <title>Canon;iR-|Canon PrinterImageRunnre 7654321:7654321 or admin:7654321
 <title>User Authentication;iR-;CANON|Canon Printer 7654321:7654321 or admin:7654321
 ;>Cisco Webui;Cisco Systems,|Cisco device - set in config or cisco:cisco
