@@ -476,12 +476,14 @@ content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|Epson Printer - no default cred
 <title>Login</title>;function hide_login_big_logo|GW Security Camera / admin:123456 or admin:admin or admin:888888
 <title>Machine Identification - BP-50C26</title>;function changeMyPage|Sharp Printer / Administrator:admin
 <title>AXIS;Axis Communications|Axis Camera System / root:pass
+<title>AXIS;<span>Well, that's unfortunate.|Axis Camera System / root:pass
 join-webex-meeting|WebEx
-Remote Device Viewer;sympl</span>|Symplr Remote Access - pass set at install
+Remote Device Viewer</span>;sympl|Symplr Remote Access - pass set at install
 <title>2N IP|2N Camera - admin:2n
+<title>2N;<h1 class="x-productname login">|2N Camera - admin:2n
 <title>Canon;iR-|Canon PrinterImageRunnre 7654321:7654321 or admin:7654321
 <title>User Authentication;iR-;CANON|Canon Printer 7654321:7654321 or admin:7654321
-;>Cisco Webui;Cisco Systems,|Cisco device - set in config or cisco:cisco
+>Cisco Webui;Cisco Systems,|Cisco device - set in config or cisco:cisco
 Citrix Gateway</title>|Citrix Gateway
 ctxstxt_NetscalerGateway|Citrix Gateway
 <title>GAiA|Checkpoint GAia / admin:admin
@@ -490,7 +492,7 @@ ctxstxt_NetscalerGateway|Citrix Gateway
 title="IntelliMix";shure|Shure Microphone - no default creds
 <title>Shure|Shure Microphone - no default creds
 <title>Mitel|Mitel VOIP system
-<title>Remote UI : Portal :CANON|Canon Printer 7654321:7654321 or admin:7654321
+<title>Remote UI : Portal ;CANON|Canon Printer 7654321:7654321 or admin:7654321
 <title>Remote UI: Login;CANON;|Canon Printer 7654321:7654321 or admin:7654321
 <title>User Authentication : ;CANON|Canon Printer 7654321:7654321 or admin:7654321
 <title>SentrySuite|SentrySuite - Created at install
@@ -504,3 +506,4 @@ wlmframe" src="../startwlm/Start_Wlm.htm|CommandCenter RX / Admin:Admin or first
 <title>Ubiquiti Networks</title>;<span class="product_name">PowerBeam 5AC Gen2</span>|Wireless Access Point / ubnt:ubnt
 <title>Login</title>;<label ng-bind="oLan.login" class="ng-binding">Login</label>|Hikvision Digital Technology / admin:12345 or admin:admin or admin:123456
 <title>Quantum Spark Security Appliance - Login</title>;<meta name="title" content="Quantum Spark Security Appliance - Login">|Firewall / admin:admin
+Copyright CANON INC;canonlogo.gif|Canon Printer 7654321:7654321 or admin:7654321

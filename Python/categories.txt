@@ -801,12 +801,14 @@ content="SEIKO EPSON">;/IMAGE/EPSONLOGO_NEW.PNG"|printer
 <title>Login</title>;function hide_login_big_logo|camera
 <title>Machine Identification - BP-50C26</title>;function changeMyPage|printer
 <title>AXIS;Axis Communications|camera
+<title>AXIS;<span>Well, that's unfortunate.|camera
 join-webex-meeting|voip
-Remote Device Viewer;sympl</span>|kvm
+Remote Device Viewer</span>;sympl|kvm
 <title>2N IP|camera
+<title>2N; <h1 class="x-productname login">|camera
 <title>Canon;iR-|printer
 <title>User Authentication;iR-;CANON|printer
-;>Cisco Webui;Cisco Systems,|netdev
+>Cisco Webui;Cisco Systems,|netdev
 Citrix Gateway</title>|netdev
 ctxstxt_NetscalerGateway|netdev
 Default Appliance Page</title|crap
@@ -819,7 +821,7 @@ title="IntelliMix";shure|camera
 <title>Mitel|voip
 <title>REDCap|appops
 {"NAME":"Red Hat Enterprise Linux|infrastructure
-<title>Remote UI : Portal :CANON|printer
+<title>Remote UI : Portal ;CANON|printer
 <title>Remote UI: Login:;CANON;|printer
 <title>User Authentication : ;CANON|printer
 <title>SentrySuite|secops
@@ -835,3 +837,9 @@ wlmframe" src="../startwlm/Start_Wlm.htm|printer
 <title>Login</title>;<label ng-bind="oLan.login" class="ng-binding">Login</label>|camera
 <title>Quantum Spark Security Appliance - Login</title>;<meta name="title" content="Quantum Spark Security Appliance - Login">|infrastructure
 <title>SSL VPN Service</title>;<meta name="HandheldFriendly" content="true">;var blinkCounter=0;|infrastructure
+<title>401 - Unauthorized|unauth
+<title>404 - Not Found</title>|notfound
+<title>503 Service Not Available</title>|serviceunavailable
+ATT&amp|secops
+Copyright CANON INC;canonlogo.gif|printer
+Secure Connection Failed;Problem loading page</title>
