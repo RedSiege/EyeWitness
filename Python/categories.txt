@@ -828,3 +828,6 @@ title="IntelliMix";shure|camera
 title>Smart-UPS|infrastructure
 <title>TightVNC desktop|kvm
 wlmframe" src="../startwlm/Start_Wlm.htm|printer
+<title>401 - Unauthorized|unauth
+<title>404 - Not Found</title>|notfound
+<title>503 Service Not Available</title>|serviceunavailable
