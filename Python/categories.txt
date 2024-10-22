@@ -838,8 +838,10 @@ wlmframe" src="../startwlm/Start_Wlm.htm|printer
 <title>Quantum Spark Security Appliance - Login</title>;<meta name="title" content="Quantum Spark Security Appliance - Login">|infrastructure
 <title>SSL VPN Service</title>;<meta name="HandheldFriendly" content="true">;var blinkCounter=0;|infrastructure
 <title>401 - Unauthorized|unauth
+<body>401 Unauthorized|unauth
 <title>404 - Not Found</title>|notfound
 <title>503 Service Not Available</title>|serviceunavailable
+<body><b>Http/1.1 Service Unavailable</b>|serviceunavailable
 ATT&amp|secops
 Copyright CANON INC;canonlogo.gif|printer
 Secure Connection Failed;Problem loading page</title>
