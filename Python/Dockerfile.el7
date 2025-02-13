@@ -19,12 +19,14 @@ COPY setup.sh /tmp/setup.sh
 RUN yum install -y git && \
     git clone --depth 1 https://github.com/RedSiege/EyeWitness.git /home/$USER/EyeWitness && \
     cp /tmp/setup.sh /home/$USER/EyeWitness/Python/setup/setup.sh && \
-    yum remove -y git
+    yum remove -y git && \
+    yum clean all
 
 WORKDIR /home/$USER/EyeWitness
 
 RUN cd Python/setup && \
     ./setup.sh && \
+    yum clean all && \
     cd .. && \
     chown -R $USER:$USER /home/$USER/EyeWitness && \
     mkdir -p /tmp/EyeWitness && \

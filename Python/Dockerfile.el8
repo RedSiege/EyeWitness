@@ -19,12 +19,14 @@ COPY setup.sh /tmp/setup.sh
 RUN dnf install -y git && \
     git clone --depth 1 https://github.com/RedSiege/EyeWitness.git /home/$USER/EyeWitness && \
     cp /tmp/setup.sh /home/$USER/EyeWitness/Python/setup/setup.sh && \
-    dnf remove -y git
+    dnf remove -y git && \
+    dnf clean all
 
 WORKDIR /home/$USER/EyeWitness
 
 RUN cd Python/setup && \
     ./setup.sh && \
+    dnf clean all && \
     cd .. && \
     chown -R $USER:$USER /home/$USER/EyeWitness && \
     mkdir -p /tmp/EyeWitness && \
