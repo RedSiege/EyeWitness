@@ -52,8 +52,7 @@ install_deps() {
             pacman -S --noconfirm wget curl jq cmake python3 python-xvfbwrapper python-pip python-netaddr firefox tar
             ;;
         alpine)
-            apk update
-            apk add wget curl jq cmake python3 xvfb py-pip py-netaddr python3-dev firefox tar
+            apk add --no-cache wget curl jq cmake python3 xvfb py-pip py-netaddr python3-dev firefox tar
 
             # from https://stackoverflow.com/questions/58738920/running-geckodriver-in-an-alpine-docker-container
             # Get all the prereqs
@@ -62,9 +61,10 @@ install_deps() {
             wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-bin-2.30-r0.apk
             apk add glibc-2.30-r0.apk
             apk add glibc-bin-2.30-r0.apk
+            rm glibc-2.30-r0.apk glibc-bin-2.30-r0.apk
             
             # And of course we need Firefox if we actually want to *use* GeckoDriver
-            apk add firefox-esr=60.9.0-r0
+            apk add --no-cache firefox-esr=60.9.0-r0
             ;;
         centos|rocky|fedora)
             yum install -y wget curl jq python3 xorg-x11-server-Xvfb python3-pip firefox gcc cmake python3-devel gcc cmake python3-devel tar
@@ -78,8 +78,8 @@ install_deps() {
 
     echo
     echo "[*] Installing Python dependencies..."
-    pip3 install --upgrade pip
-    python3 -m pip install -r requirements.txt
+    pip3 install --no-cache-dir --upgrade pip
+    python3 -m pip install --no-cache-dir -r requirements.txt
 }
 
 # Make sure we're in the setup directory
