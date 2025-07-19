@@ -9,6 +9,7 @@ import time
 import xml.sax
 import glob
 import socket
+from pathlib import Path
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from urllib.parse import urlparse
@@ -242,37 +243,60 @@ def duplicate_check(cli_object):
     hash_files = {}
     report_files = []
 
-    for name in glob.glob(cli_object.d + '/screens/*.png'):
+    # Use pathlib for cross-platform path handling
+    output_dir = Path(cli_object.d)
+    screens_pattern = str(output_dir / 'screens' / '*.png')
+    
+    for name in glob.glob(screens_pattern):
         with open(name, 'rb') as screenshot:
             pic_data = screenshot.read()
         md5_hash = hashlib.md5(pic_data).hexdigest()
+        
+        # Get relative path from output directory for storage
+        name_path = Path(name)
+        relative_path = name_path.relative_to(output_dir)
+        relative_path_str = str(relative_path).replace('\\', '/')  # Normalize for HTML
+        
         if md5_hash in hash_files:
-            hash_files[md5_hash].append(name.split('/')[-2] + '/' + name.split('/')[-1])
+            hash_files[md5_hash].append(relative_path_str)
         else:
-            hash_files[md5_hash] = [name.split('/')[-2] + '/' + name.split('/')[-1]]
+            hash_files[md5_hash] = [relative_path_str]
 
-    for html_file in glob.glob(cli_object.d + '/*.html'):
+    # Find HTML report files
+    html_pattern = str(output_dir / '*.html')
+    for html_file in glob.glob(html_pattern):
         report_files.append(html_file)
 
+    # Process duplicates
     for hex_value, file_dict in hash_files.items():
         total_files = len(file_dict)
         if total_files > 1:
             original_pic_name = file_dict[0]
             for num in range(1, total_files):
                 next_filename = file_dict[num]
+                
+                # Update HTML report files
                 for report_page in report_files:
                     with open(report_page, 'r') as report:
                         page_text = report.read()
                     page_text = page_text.replace(next_filename, original_pic_name)
                     with open(report_page, 'w') as report_out:
                         report_out.write(page_text)
-                os.remove(cli_object.d + '/' + next_filename)
-                with open(cli_object.d + "/Requests.csv", 'r') as csv_port_file:
-                    csv_lines = csv_port_file.read()
-                    if next_filename in csv_lines:
-                        csv_lines = csv_lines.replace(next_filename, original_pic_name)
-                with open(cli_object.d + "/Requests.csv", 'w') as csv_port_writer:
-                    csv_port_writer.write(csv_lines)
+                
+                # remove the duplicate 
+                duplicate_file_path = output_dir / next_filename.replace('/', os.sep)
+                if duplicate_file_path.exists():
+                    os.remove(duplicate_file_path)  # should probably use pathlib but this works
+                
+                # Update CSV file
+                csv_file_path = output_dir / "Requests.csv"
+                if csv_file_path.exists():
+                    with open(csv_file_path, 'r') as csv_port_file:
+                        csv_lines = csv_port_file.read()
+                        if next_filename in csv_lines:
+                            csv_lines = csv_lines.replace(next_filename, original_pic_name)
+                    with open(csv_file_path, 'w') as csv_port_writer:
+                        csv_port_writer.write(csv_lines)
     return
 
 
@@ -482,10 +506,9 @@ def target_creator(command_line_object):
 def title_screen(cli_parsed):
     """Prints the title screen for EyeWitness
     """
-    if platform.system() == "Windows":
-        if not cli_parsed.no_clear: os.system('cls')
-    else:
-        if not cli_parsed.no_clear: os.system('clear')
+    if not cli_parsed.no_clear:
+        from modules.platform_utils import platform_mgr
+        platform_mgr.clear_screen()
 
     print("#" * 80)
     print("#" + " " * 34 + "EyeWitness" + " " * 34 + "#")
@@ -554,29 +577,25 @@ def do_delay(cli_parsed):
             pass
 
 def create_folders_css(cli_parsed):
-    """Writes out the CSS file and generates folders for output
+    # create output dirs and copy css/js files
 
-    Args:
-        cli_parsed (ArgumentParser): CLI Object
-    """
+    # Create output directories using pathlib for cross-platform compatibility
+    output_dir = Path(cli_parsed.d)
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
+    
+    output_dir.mkdir(parents=True)
+    (output_dir / 'screens').mkdir()
+    (output_dir / 'source').mkdir()
+    
+    # Get paths using pathlib
+    local_path = Path(__file__).parent
+    bin_path = local_path.parent / 'bin'
 
-    # Create output directories
-    if os.path.exists(cli_parsed.d):
-        shutil.rmtree(cli_parsed.d)
-    os.makedirs(cli_parsed.d)
-    os.makedirs(os.path.join(cli_parsed.d, 'screens'))
-    os.makedirs(os.path.join(cli_parsed.d, 'source'))
-    local_path = os.path.dirname(os.path.realpath(__file__))
-
-    # Move our jquery & css files to the local directory
-    shutil.copy2(
-        os.path.join(local_path, '..', 'bin', 'jquery-3.7.1.min.js'), cli_parsed.d)
-
-    shutil.copy2(
-        os.path.join(local_path, '..', 'bin', 'bootstrap.min.css'), cli_parsed.d)
-
-    shutil.copy2(
-        os.path.join(local_path, '..', 'bin', 'style.css'), cli_parsed.d)
+    # Copy CSS and JS files using pathlib
+    shutil.copy2(bin_path / 'jquery-3.7.1.min.js', output_dir)
+    shutil.copy2(bin_path / 'bootstrap.min.css', output_dir)
+    shutil.copy2(bin_path / 'style.css', output_dir)
 
 
 
@@ -592,10 +611,10 @@ def default_creds_category(http_object):
     http_object.default_creds = None
     http_object.category = None
     try:
-        sigpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                               '..', 'signatures.txt')
-        catpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                               '..', 'categories.txt')
+        # Use pathlib for cross-platform path handling
+        module_dir = Path(__file__).parent
+        sigpath = module_dir.parent / 'signatures.txt'
+        catpath = module_dir.parent / 'categories.txt'
         with open(sigpath) as sig_file:
             signatures = sig_file.readlines()
 

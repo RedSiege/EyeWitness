@@ -11,7 +11,7 @@ WORKDIR /EyeWitness
 
 RUN echo -e '\e[32m[*] Setting up the EyeWitness Python env (venv and dependencies)...\e[39m"' && \
     python3 -m venv venv && . venv/bin/activate && \ 
-    python3 -m pip install fuzzywuzzy selenium==4.9.1 python-Levenshtein pyvirtualdisplay netaddr && \
+    python3 -m pip install rapidfuzz>=3.0.0 selenium>=4.29.0 pyvirtualdisplay>=3.0 netaddr>=0.10.0 && \
     cd Python/setup && ./setup.sh
 
 ENTRYPOINT ["/bin/bash", "-c", "source /EyeWitness/venv/bin/activate && python3 /EyeWitness/Python/EyeWitness.py -d /tmp/out --no-prompt $@"]

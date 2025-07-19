@@ -5,6 +5,7 @@ import sys
 import urllib.request
 import urllib.error
 import ssl
+from pathlib import Path
 
 try:
     from ssl import CertificateError as sslerr
@@ -14,17 +15,27 @@ except:
 try:
     from selenium import webdriver
     from selenium.webdriver.firefox.options import Options
+    from selenium.webdriver.firefox.service import Service as FirefoxService
     from selenium.common.exceptions import NoAlertPresentException
     from selenium.common.exceptions import TimeoutException
     from selenium.common.exceptions import UnexpectedAlertPresentException
     from selenium.common.exceptions import WebDriverException
-    from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+    # DesiredCapabilities is deprecated - capabilities now handled via Options
 except ImportError:
     print('[*] Selenium not found.')
     print('[*] Please run the script in the setup directory!')
     sys.exit()
 
 from modules.helpers import do_delay
+from modules.platform_utils import platform_mgr
+
+# Platform-specific Selenium Manager configuration
+if platform_mgr.is_linux:
+    # On Linux, disable Selenium Manager to prevent network requests
+    os.environ['SE_MANAGER_PATH'] = ''  # Disable Selenium Manager entirely
+    os.environ['SE_OFFLINE'] = '1'      # Force offline mode
+    os.environ['WDM_LOG_LEVEL'] = '0'   # Keep WebDriverManager quiet too
+
 
 def create_driver(cli_parsed, user_agent=None):
     """Creates a selenium FirefoxDriver
@@ -38,10 +49,8 @@ def create_driver(cli_parsed, user_agent=None):
     """
     profile = webdriver.FirefoxProfile()
     # Load our custom firefox addon to handle basic auth.
-    extension_path = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        '..', 'bin', 'dismissauth.xpi')
-    profile.add_extension(extension_path)
+    extension_path = Path(__file__).parent.parent / 'bin' / 'dismissauth.xpi'
+    profile.add_extension(str(extension_path))
     profile.accept_untrusted_certs = True
 
     # This user agent case covers a user provided one
@@ -71,22 +80,58 @@ def create_driver(cli_parsed, user_agent=None):
     profile.set_preference('extensions.update.enabled', False)
 
     try:
-        capabilities = DesiredCapabilities.FIREFOX.copy()
-        capabilities.update({'acceptInsecureCerts': True})
+        # Modern Selenium 4+ approach - migrate from deprecated DesiredCapabilities
         options = Options()
         options.add_argument("--headless")
+        
+        # Migrate acceptInsecureCerts from capabilities to options
+        options.accept_insecure_certs = True
+        
+        # Set up Firefox profile preferences through options
+        options.profile = profile
         profile.update_preferences()
-        driver = webdriver.Firefox(profile, capabilities=capabilities, options=options, service_log_path=cli_parsed.selenium_log_path)
+        
+        # Cross-platform Firefox detection and service setup
+        firefox_binary = platform_mgr.find_firefox_executable()
+        if firefox_binary:
+            options.binary_location = firefox_binary
+        
+        # Configure geckodriver service to avoid automatic driver management issues
+        service_kwargs = {}
+        if hasattr(cli_parsed, 'selenium_log_path') and cli_parsed.selenium_log_path:
+            service_kwargs['log_path'] = cli_parsed.selenium_log_path
+        
+        # Find local geckodriver to avoid GitHub API requests
+        try:
+            from modules.driver_manager import driver_mgr
+            local_driver = driver_mgr.find_geckodriver()
+            if local_driver:
+                service_kwargs['executable_path'] = local_driver
+            else:
+                # Try system PATH
+                import shutil
+                system_driver = shutil.which('geckodriver')
+                if system_driver:
+                    service_kwargs['executable_path'] = system_driver
+        except:
+            pass  # safe fallback to automatic detection
+        
+        service = FirefoxService(**service_kwargs)
+        
+        # Firefox driver initialization (Selenium Manager disabled via environment vars)
+        driver = webdriver.Firefox(service=service, options=options)
         driver.set_page_load_timeout(cli_parsed.timeout)
-        driver.set_window_size(cli_parsed.width,cli_parsed.height)
+        driver.set_window_size(cli_parsed.width, cli_parsed.height)
         return driver
     except Exception as e:
-        if 'Failed to find firefox binary' in str(e):
-            print('Firefox not found!')
-            print('You can fix this by installing Firefox/Iceweasel\
-             or using phantomjs/ghost')
+        if 'Failed to find firefox binary' in str(e) or 'geckodriver' in str(e).lower():
+            print('[*] Firefox/geckodriver missing.')
+            if platform_mgr.is_windows:
+                print('[*] Install Firefox and run: .\\setup\\setup.ps1')
+            else:
+                print('[*] Install Firefox and run: ./setup/setup.sh')
         else:
-            print(e)
+            print('[*] WebDriver error: {}'.format(e))
         sys.exit()
 
 

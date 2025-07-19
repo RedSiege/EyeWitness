@@ -1,6 +1,7 @@
 import html
 import os
 import re
+from pathlib import Path
 
 from modules.helpers import strip_nonalphanum
 
@@ -37,9 +38,11 @@ class HTTPTableObject(object):
         self.root_path = outdir
         if suffix is not None:
             file_name += '_' + suffix
-        self.screenshot_path = os.path.join(
-            outdir, 'screens', file_name + '.png')
-        self.source_path = os.path.join(outdir, 'source', file_name + '.txt')
+        
+        # Use pathlib for cross-platform path handling
+        output_path = Path(outdir)
+        self.screenshot_path = str(output_path / 'screens' / f'{file_name}.png')
+        self.source_path = str(output_path / 'source' / f'{file_name}.txt')
 
     @property
     def resolved(self):

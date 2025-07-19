@@ -1,5 +1,8 @@
-fuzzywuzzy
-selenium==4.9.1
-python-Levenshtein
-pyvirtualdisplay
-netaddr
+# Core dependencies for all platforms
+rapidfuzz>=3.0.0
+selenium>=4.29.0
+netaddr>=0.10.0
+
+# Platform-specific dependencies
+# Virtual display support for Unix systems (Linux/macOS) only
+pyvirtualdisplay>=3.0; sys_platform != "win32"

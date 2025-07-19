@@ -3,9 +3,9 @@ import sys
 import urllib.parse
 
 try:
-    from fuzzywuzzy import fuzz
+    from rapidfuzz import fuzz
 except ImportError:
-    print('[*] fuzzywuzzy not found.')
+    print('[*] rapidfuzz not found.')
     print('[*] Please run the script in the setup directory!')
     sys.exit()
 

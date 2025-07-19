@@ -28,12 +28,10 @@ from modules.reporting import sort_data_and_write
 from multiprocessing import Manager
 from multiprocessing import Process
 from multiprocessing import current_process
-try:
-    from pyvirtualdisplay import Display
-except ImportError:
-    print('[*] pyvirtualdisplay not found.')
-    print('[*] Please run the script in the setup directory!')
-    sys.exit()
+from modules.platform_utils import PlatformManager, setup_virtual_display
+
+# Initialize platform manager
+platform_mgr = PlatformManager()
 
 
 multi_counter = 0
@@ -89,9 +87,9 @@ def create_cli_parser():
     report_options.add_argument('--no-prompt', default=False,
                                 action='store_true',
                                 help='Don\'t prompt to open the report')
-    report_options.add_argument('--no-clear', default=False,
+    report_options.add_argument('--no-clear', default=True,
                                 action='store_true',
-                                help='Don\'t clear screen buffer')
+                                help='Don\'t clear screen buffer (default behavior)')
 
     http_options = parser.add_argument_group('Web Options')
     http_options.add_argument('--user-agent', metavar='User Agent',
@@ -255,9 +253,9 @@ def single_mode(cli_parsed):
     if cli_parsed.web:
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
-        if not cli_parsed.show_selenium:
-            display = Display(visible=0, size=(1920, 1080))
-            display.start()
+        
+        # Setup virtual display with cross-platform handling
+        display = setup_virtual_display(platform_mgr, cli_parsed.show_selenium)
 
     url = cli_parsed.single
     http_object = objects.HTTPTableObject()
@@ -370,9 +368,8 @@ def multi_mode(cli_parsed):
                 dbm.create_http_object(url, cli_parsed)
 
     if cli_parsed.web:
-        if cli_parsed.web and not cli_parsed.show_selenium:
-            display = Display(visible=0, size=(1920, 1080))
-            display.start()
+        # Setup virtual display with cross-platform handling
+        display = setup_virtual_display(platform_mgr, cli_parsed.show_selenium)
 
         multi_total = dbm.get_incomplete_http(targets)
         if multi_total > 0:
