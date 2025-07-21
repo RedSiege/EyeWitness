@@ -527,15 +527,19 @@ namespace EyeWitness
 
                         try
                         {
-                            if (!IPNetwork.TryParse(o.IpAddresses, out var parsed))
+                            if (!IPNetwork2.TryParse(o.IpAddresses, out var parsed))
                             {
                                 Console.WriteLine("[-] ERROR: Failed to parse IP Addresses");
                                 return;
                             }
 
-                            var ipAddress = parsed.ListIPAddress().Distinct().ToList();
+                            // Get all IP addresses in the network using ListIPAddress()
+                            var ipAddresses = parsed.ListIPAddress();
                             var strings = new List<string>();
-                            ipAddress.ForEach(i => strings.Add(i.ToString()));
+                            foreach (var ip in ipAddresses)
+                            {
+                                strings.Add(ip.ToString());
+                            }
                             allUrls = strings.ToArray();
                         }
                         catch (Exception e)
