@@ -23,7 +23,8 @@ try:
     # DesiredCapabilities is deprecated - capabilities now handled via Options
 except ImportError:
     print('[*] Selenium not found.')
-    print('[*] Please run the script in the setup directory!')
+    print('[*] Run pip list to verify installation')
+    print('[*] Try: sudo apt install python3-selenium')
     sys.exit()
 
 from modules.helpers import do_delay

@@ -727,14 +727,19 @@ def strtobool(value, raise_exc=False):
         raise ValueError('Expected "%s"' % '", "'.join(str2b_true | str2b_false))
     return None
 
+# Waiting for approval to add web scraper for class dates. 
+# Makes zero sense to hard code these as an advert people would need to pull down
+# the latest version of the code everytime a new class is offered
+# get_class_info() method goes here. 
+
 def class_info():
     class_image = '''MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 M                                                                M
 M       .”cCCc”.                                                 M
 M      /cccccccc\\                                                M
-M      §cccccccc|                     BSidesAugusta!!            M
-M      :ccccccccP                    10/2/23 - 10/5/23           M
-M      \\cccccccc()                   Red Team Tactics            M
+M      §cccccccc|                                                M
+M      :ccccccccP                                                M
+M      \\cccccccc()                  Looking for training?       M
 M       \\ccccccccD             https://redsiege.com/training     M
 M       |cccccccc\\        _                                      M
 M       |ccccccccc)     //                                       M

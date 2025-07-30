@@ -41,10 +41,15 @@ install_deps() {
     case ${os_id} in
         debian|kali)
             apt-get update
+            apt install python3-rapidfuzz
+            apt install python3-selenium
+
             apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr tar
             ;;
         ubuntu|linuxmint)
             apt-get update
+            apt install python3-rapidfuzz
+            apt install python3-selenium
             apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils tar
             ;;
         arch|manjaro)

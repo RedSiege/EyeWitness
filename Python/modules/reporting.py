@@ -6,7 +6,8 @@ try:
     from rapidfuzz import fuzz
 except ImportError:
     print('[*] rapidfuzz not found.')
-    print('[*] Please run the script in the setup directory!')
+    print('[*] Run pip list to verify installation!')
+    print('[*] Try: sudo apt install python3-rapidfuzz')
     sys.exit()
 
 
