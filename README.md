@@ -17,11 +17,11 @@ EyeWitness is designed to take screenshots of websites, provide server header in
 ### Windows
 1. Install Firefox if not already installed
 2. Run PowerShell as Administrator
-3. Navigate to the Python/setup directory
+3. Navigate to the setup directory
 4. Run: `.\setup.ps1`
 
 ### Linux
-1. Navigate to the Python/setup directory
+1. Navigate to the setup directory
 2. Run: `./setup.sh`
 
 **Supported Linux Distributions:**
@@ -124,7 +124,7 @@ Create a config file to save your preferred settings:
 
 **Firefox/Geckodriver not found:**
 - Linux: `sudo apt install firefox-esr firefox-geckodriver`
-- Windows: Re-run `setup.ps1` as Administrator
+- Windows: Navigate to setup directory and run `.\setup.ps1` as Administrator
 - macOS: `brew install --cask firefox`
 
 **Connection timeouts:**

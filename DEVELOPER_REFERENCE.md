@@ -31,11 +31,10 @@ EyeWitness/
 │   │   ├── helpers.py          # Utility functions and XML parsing
 │   │   ├── driver_manager.py   # WebDriver management and auto-download
 │   │   └── platform_utils.py   # Cross-platform compatibility
-│   ├── setup/                  # Installation and dependencies
-│   │   ├── setup.sh           # Linux/Unix installation script
-│   │   ├── setup.ps1          # Windows PowerShell installation
-│   │   └── requirements.txt    # Python dependencies
-│   └── Dockerfile*            # Container deployment configurations
+├── setup/                      # Installation and dependencies
+│   ├── setup.sh               # Linux/Unix installation script
+│   ├── setup.ps1              # Windows PowerShell installation
+│   └── requirements.txt       # Python dependencies
 └── CS/                        # Windows C# implementation
     └── EyeWitness/            # Visual Studio solution
 ```

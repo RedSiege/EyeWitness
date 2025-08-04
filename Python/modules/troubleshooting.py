@@ -73,7 +73,7 @@ ERROR_MESSAGES = {
         'message': 'Firefox browser not found',
         'guidance': [
             'Install Firefox: sudo apt install firefox-esr',
-            'On Windows: Run setup\\setup.ps1 as Administrator',
+            'On Windows: Navigate to setup folder and run .\\setup.ps1 as Administrator',
             'On macOS: brew install --cask firefox',
             'Ensure Firefox is in system PATH'
         ]
@@ -81,7 +81,7 @@ ERROR_MESSAGES = {
     'geckodriver_missing': {
         'message': 'Geckodriver not found',
         'guidance': [
-            'Run setup script: ./setup/setup.sh',
+            'Run setup script from setup directory: ./setup.sh',
             'Download manually from: https://github.com/mozilla/geckodriver/releases',
             'Place geckodriver in system PATH',
             'On Linux: sudo apt install firefox-geckodriver'

@@ -56,7 +56,7 @@ from rapidfuzz import fuzz
 **⚠️ Critical:** The 70% similarity threshold for grouping page titles is preserved exactly.
 
 ### **3. Dependencies Updated**
-**File:** `Python/setup/requirements.txt`
+**File:** `setup/requirements.txt`
 
 **Before:**
 ```
@@ -146,7 +146,7 @@ python test_modernization.py
 
 ### **1. Install Modern Dependencies**
 ```bash
-cd Python/setup/
+cd setup/
 pip install -r requirements.txt
 ```
 
