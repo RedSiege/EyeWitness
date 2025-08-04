@@ -1,0 +1,52 @@
+<html>
+        <head>
+        <link rel="stylesheet" href="bootstrap.min.css" type="text/css"/>
+        <link rel="stylesheet" href="style.css" type="text/css"/>
+        <title>EyeWitness Report</title>
+        <script src="jquery-3.7.1.min.js"></script>
+        <script type="text/javascript">
+        function toggleUA(id, url){
+        idi = "." + id;
+        $(idi).toggle();
+        change = document.getElementById(id);
+        if (change.innerHTML.indexOf("expand") > -1){
+            change.innerHTML = "Click to collapse User Agents for " + url;
+        }else{
+            change.innerHTML = "Click to expand User Agents for " + url;
+        }
+        }
+
+        document.onkeydown = function(event){
+            event = event || window.event;
+            switch (event.keyCode){
+                case 37:
+                    leftArrow();
+                    break;
+                case 39:
+                    rightArrow();
+                    break;
+            }
+        };
+                
+        function leftArrow(){
+            $('#previous')[0].click();
+        };
+
+        function rightArrow(){
+            $('#next')[0].click();
+        };
+
+        </script>
+        </head>
+        <body>
+        <center>
+        <center>Report Generated on 2025/08/04 at 04:18:07</center><table border="1">
+        <tr>
+        <th>Web Request Info</th>
+        <th>Web Screenshot</th>
+        </tr><tr>
+            <td><div style="display: inline-block; width: 300px; word-wrap: break-word">
+            <a href="http://example.invalid" target="_blank">http://example.invalid</a><br>
+            </td><td>Unknown error while attempting to
+            screenshot</td></tr></div>
+        </div></table><br>

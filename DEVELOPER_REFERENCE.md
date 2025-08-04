@@ -8,9 +8,8 @@ EyeWitness is a cybersecurity reconnaissance tool designed for penetration teste
 
 ## Architecture Overview
 
-### Dual Platform Strategy
-- **Python Implementation** (Primary): Linux/Unix environments (Kali, Debian, CentOS, Rocky Linux)
-- **C# Implementation**: Windows-specific with Visual Studio integration
+### Platform Strategy
+- **Python Implementation**: Cross-platform support for Linux/Unix (Kali, Debian, CentOS, Rocky Linux), Windows, and macOS
 
 ### Core Architecture Pattern
 ```
@@ -31,12 +30,10 @@ EyeWitness/
 │   │   ├── helpers.py          # Utility functions and XML parsing
 │   │   ├── driver_manager.py   # WebDriver management and auto-download
 │   │   └── platform_utils.py   # Cross-platform compatibility
-├── setup/                      # Installation and dependencies
-│   ├── setup.sh               # Linux/Unix installation script
-│   ├── setup.ps1              # Windows PowerShell installation
-│   └── requirements.txt       # Python dependencies
-└── CS/                        # Windows C# implementation
-    └── EyeWitness/            # Visual Studio solution
+└── setup/                      # Installation and dependencies
+    ├── setup.sh               # Linux/Unix installation script
+    ├── setup.ps1              # Windows PowerShell installation
+    └── requirements.txt       # Python dependencies
 ```
 
 ## Core Modules and Functions
