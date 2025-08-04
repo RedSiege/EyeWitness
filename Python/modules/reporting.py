@@ -142,7 +142,7 @@ def sort_data_and_write(cli_parsed, data):
             csv_request_data += json_request._error_state + ","
         try:
             csv_request_data += "\"" + (json_request._page_title).decode('UTF-8') + "\","
-        except:
+        except (UnicodeDecodeError, AttributeError):
             csv_request_data += "\"!Error\","
         csv_request_data += str(json_request._category) + ","
         csv_request_data += "\"" + str(json_request._default_creds) + "\","
@@ -339,7 +339,7 @@ def create_web_index_head(date, time):
 def search_index_head():
     return ("""<html>
         <head>
-        <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
+        <link rel=\"stylesheet\" href=\"bootstrap.min.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
         <script src="jquery-3.7.1.min.js"></script>
         <script type="text/javascript">

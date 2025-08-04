@@ -13,6 +13,7 @@ from pathlib import Path
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from urllib.parse import urlparse
+from modules.validation import validate_url, validate_url_list, get_url_validation_errors
 
 
 class XML_Parser(xml.sax.ContentHandler):
@@ -346,12 +347,33 @@ def textfile_parser(file_to_parse, cli_obj):
     urls = []
     openports = {}
     complete_urls = []
+    validation_errors = []
 
     try:
         # Open the URL file and read all URLs, and reading again to catch
         # total number of websites
         with open(file_to_parse) as f:
             all_urls = [url for url in f if url.strip()]
+
+        # Validate URLs if validation is enabled
+        if hasattr(cli_obj, 'skip_validation') and not cli_obj.skip_validation:
+            print("[*] Validating URLs...")
+            valid_count = 0
+            for url in all_urls:
+                url = url.strip()
+                is_valid, error, normalized = validate_url(url, require_scheme=False)
+                if not is_valid and error != "Invalid scheme" and error != "No host specified in URL":
+                    validation_errors.append(f"  - {url}: {error}")
+                else:
+                    valid_count += 1
+            
+            if validation_errors:
+                print(f"[!] Found {len(validation_errors)} invalid URLs:")
+                for error in validation_errors[:10]:  # Show first 10 errors
+                    print(error)
+                if len(validation_errors) > 10:
+                    print(f"  ... and {len(validation_errors) - 10} more")
+                print(f"[*] Proceeding with {valid_count} valid URLs")
 
         # else:
         for line in all_urls:
@@ -535,8 +557,7 @@ def strip_nonalphanum(string):
     Returns:
         String: String stripped of all non-alphanumeric characters
     """
-    todel = ''.join(c for c in map(chr, range(256)) if not c.isalnum())
-    return string.translate(None, todel)
+    return ''.join(c for c in string if c.isalnum())
 
 
 def do_jitter(cli_parsed):
@@ -595,6 +616,7 @@ def create_folders_css(cli_parsed):
     # Copy CSS and JS files using pathlib
     shutil.copy2(bin_path / 'jquery-3.7.1.min.js', output_dir)
     shutil.copy2(bin_path / 'bootstrap.min.css', output_dir)
+    shutil.copy2(bin_path / 'bootstrap.min.js', output_dir)
     shutil.copy2(bin_path / 'style.css', output_dir)
 
 
@@ -692,11 +714,26 @@ def default_creds_category(http_object):
         return http_object
 
 
-def open_file_input(cli_parsed):
-    files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
+def open_file_input(cli_parsed, report_type='report'):
+    """Prompt user to open generated report file
+    
+    Args:
+        cli_parsed: CLI arguments object with 'd' attribute for directory
+        report_type: Type of report to open ('report' or 'search')
+    
+    Returns:
+        bool: True if user wants to open report, False otherwise
+    """
+    if report_type == 'search':
+        pattern = 'search.html'
+    else:
+        pattern = '*report.html'
+    
+    files = glob.glob(os.path.join(cli_parsed.d, pattern))
     if len(files) > 0:
-        print('\n[*] Done! Report written in the ' + cli_parsed.d + ' folder!')
-        print('Would you like to open the report now? [Y/n]')
+        if report_type != 'search':
+            print('\n[*] Done! Report written in the ' + cli_parsed.d + ' folder!')
+        print('Would you like to open the report now? [Y/n]', end=' ')
         while True:
             try:
                 response = input().lower()
@@ -705,7 +742,7 @@ def open_file_input(cli_parsed):
                 else:
                     return strtobool(response)
             except ValueError:
-                print("Please respond with y or n")
+                print('Please respond with y or n', end=' ')
     else:
         print('[*] No report files found to open, perhaps no hosts were successful')
         return False

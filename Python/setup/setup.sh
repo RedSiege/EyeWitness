@@ -43,6 +43,7 @@ install_deps() {
             apt-get update
             apt install python3-rapidfuzz
             apt install python3-selenium
+            apt install python3-psutil
 
             apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr tar
             ;;
@@ -50,6 +51,7 @@ install_deps() {
             apt-get update
             apt install python3-rapidfuzz
             apt install python3-selenium
+            apt install python3-psutil
             apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils tar
             ;;
         arch|manjaro)

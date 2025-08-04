@@ -28,14 +28,13 @@ from modules.reporting import sort_data_and_write
 from multiprocessing import Manager
 from multiprocessing import Process
 from multiprocessing import current_process
+import multiprocessing
 from modules.platform_utils import PlatformManager, setup_virtual_display
+from modules.resource_monitor import ResourceMonitor, check_disk_space, get_system_info
+from modules.troubleshooting import get_progress_message
 
 # Initialize platform manager
 platform_mgr = PlatformManager()
-
-
-multi_counter = 0
-multi_total = 0
 
 
 def create_cli_parser():
@@ -70,23 +69,23 @@ def create_cli_parser():
                                  delay between requests')
     timing_options.add_argument('--delay', metavar='# of Seconds', default=0,
                                 type=int, help='Delay between the opening of the navigator and taking the screenshot')
-    timing_options.add_argument('--threads', metavar='# of Threads', default=10,
-                                type=int, help='Number of threads to use while using\
-                                file based input')
+    # Calculate default threads based on CPU cores (2 threads per core, max 20)
+    default_threads = min(multiprocessing.cpu_count() * 2, 20)
+    timing_options.add_argument('--threads', metavar='# of Threads', default=default_threads,
+                                type=int, help=f'Number of threads to use (default: {default_threads} based on CPU cores)')
     timing_options.add_argument('--max-retries', default=1, metavar='Max retries on \
                                 a timeout'.replace('    ', ''), type=int,
                                 help='Max retries on timeouts')
 
     report_options = parser.add_argument_group('Report Output Options')
-    report_options.add_argument('-d', metavar='Directory Name',
+    report_options.add_argument('-d', metavar='Output Directory',
                                 default=None,
-                                help='Directory name for report output')
-    report_options.add_argument('--results', metavar='Hosts Per Page',
-                                default=25, type=int, help='Number of Hosts per\
-                                 page of report')
+                                help='Output directory for screenshots and reports')
+    report_options.add_argument('--results', metavar='Results/Page',
+                                default=25, type=int, help='Number of results per report page (default: 25)')
     report_options.add_argument('--no-prompt', default=False,
                                 action='store_true',
-                                help='Don\'t prompt to open the report')
+                                help='Skip prompt to open report when complete')
     report_options.add_argument('--no-clear', default=True,
                                 action='store_true',
                                 help='Don\'t clear screen buffer (default behavior)')
@@ -124,6 +123,10 @@ def create_cli_parser():
                               "use (e.g. '80,8080')"))
     http_options.add_argument('--prepend-https', default=False, action='store_true',
                               help='Prepend http:// and https:// to URLs without either')
+    http_options.add_argument('--validate-urls', default=False, action='store_true',
+                              help='Only validate URLs without taking screenshots')
+    http_options.add_argument('--skip-validation', default=False, action='store_true',
+                              help='Skip URL validation checks (use with caution)')
     http_options.add_argument('--selenium-log-path', default='./geckodriver.log', action='store',
                               help='Selenium geckodriver log path')
     http_options.add_argument('--cookies', metavar='key1=value1,key2=value2', default=None,
@@ -137,24 +140,48 @@ def create_cli_parser():
     resume_options.add_argument('--resume', metavar='ew.db',
                                 default=None, help='Path to db file if you want to resume')
 
+    config_options = parser.add_argument_group('Configuration Options')
+    config_options.add_argument('--config', metavar='config.json', default=None,
+                                help='Configuration file path')
+    config_options.add_argument('--create-config', action='store_true',
+                                help='Create sample configuration file')
+
     args = parser.parse_args()
     args.date = time.strftime('%Y/%m/%d')
     args.time = time.strftime('%H:%M:%S')
+    
+    # Handle config creation
+    if args.create_config:
+        from modules.config import ConfigManager
+        ConfigManager.create_sample_config()
+        sys.exit(0)
+    
+    # Load config file if specified or found
+    from modules.config import ConfigManager
+    config = ConfigManager.load_config(args.config)
+    args = ConfigManager.apply_config_to_args(args, config)
 
     if args.h:
         parser.print_help()
         sys.exit()
 
     if args.f is None and args.single is None and args.resume is None and args.x is None:
-        print("[*] Error: You didn't specify a file! I need a file containing "
-              "URLs!")
-        parser.print_help()
-        sys.exit()
+        print("[!] Error: No input specified")
+        print("[*] You must provide one of the following:")
+        print("    - URL file: -f urls.txt")
+        print("    - Single URL: --single http://example.com")
+        print("    - XML file: -x nmap.xml")
+        print("    - Resume scan: --resume")
+        print("[*] Run 'EyeWitness.py -h' for full help")
+        sys.exit(1)
 
     if ((args.f is not None) and not os.path.isfile(args.f)) or ((args.x is not None) and not os.path.isfile(args.x)):
-        print("[*] Error: You didn't specify the correct path to a file. Try again!\n")
-        parser.print_help()
-        sys.exit()
+        from modules.troubleshooting import get_error_guidance
+        if args.f and not os.path.isfile(args.f):
+            print(get_error_guidance('file_not_found', path=args.f))
+        if args.x and not os.path.isfile(args.x):
+            print(get_error_guidance('file_not_found', path=args.x))
+        sys.exit(1)
 
     if args.width < 600 or args.width >7680:
         print("\n[*] Error: Specify a width >= 600 and <= 7680, for example 1920.\n")
@@ -241,6 +268,7 @@ def create_cli_parser():
 
 def single_mode(cli_parsed):
     display = None
+    driver = None
     
     def exitsig(*args):
         if current_process().name == 'MainProcess':
@@ -257,41 +285,49 @@ def single_mode(cli_parsed):
         # Setup virtual display with cross-platform handling
         display = setup_virtual_display(platform_mgr, cli_parsed.show_selenium)
 
-    url = cli_parsed.single
-    http_object = objects.HTTPTableObject()
-    http_object.remote_system = url
-    http_object.set_paths(
-        cli_parsed.d, None)
-
-    web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
-
-    driver = create_driver(cli_parsed)
-    result, driver = capture_host(cli_parsed, http_object, driver)
-    result = default_creds_category(result)
-    if cli_parsed.resolve:
-        result.resolved = resolve_host(result.remote_system)
-    driver.quit()
-    if display is not None:
-        display.stop()
-    html = result.create_table_html()
-    with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
-        f.write(web_index_head)
-        f.write(create_table_head())
-        f.write(html)
-        f.write("</table><br>")
-
-
-def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
-    manager = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
-    manager.open_connection()
-
-    if cli_parsed.web:
-        create_driver = selenium_module.create_driver
-        capture_host = selenium_module.capture_host
-
-    with lock:
-        driver = create_driver(cli_parsed, user_agent)
     try:
+        url = cli_parsed.single
+        http_object = objects.HTTPTableObject()
+        http_object.remote_system = url
+        http_object.set_paths(
+            cli_parsed.d, None)
+
+        web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
+
+        driver = create_driver(cli_parsed)
+        result, driver = capture_host(cli_parsed, http_object, driver)
+        result = default_creds_category(result)
+        if cli_parsed.resolve:
+            result.resolved = resolve_host(result.remote_system)
+        
+        html = result.create_table_html()
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
+            f.write(web_index_head)
+            f.write(create_table_head())
+            f.write(html)
+            f.write("</table><br>")
+    finally:
+        if driver:
+            driver.quit()
+        if display is not None:
+            display.stop()
+
+
+def worker_thread(cli_parsed, targets, lock, counter, start_time, user_agent=None):
+    manager = None
+    driver = None
+    
+    try:
+        manager = db_manager.DB_Manager(cli_parsed.d + '/ew.db')
+        manager.open_connection()
+
+        if cli_parsed.web:
+            create_driver = selenium_module.create_driver
+            capture_host = selenium_module.capture_host
+
+        with lock:
+            driver = create_driver(cli_parsed, user_agent)
+        
         while True:
             http_object = targets.get()
             if http_object is None:
@@ -330,13 +366,26 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
                 manager.update_ua_object(ua_object)
 
             counter[0].value += 1
-            if counter[0].value % 15 == 0:
-                print('\x1b[32m[*] Completed {0} out of {1} services\x1b[0m'.format(counter[0].value, counter[1]))
+            
+            # Show progress with ETA every 5 completions or at milestones
+            if counter[0].value % 5 == 0 or counter[0].value in [1, 10, 25, 50, 100]:
+                progress_msg = get_progress_message(
+                    counter[0].value, 
+                    counter[1], 
+                    start_time.value if start_time.value > 0 else None
+                )
+                print(f'\x1b[32m{progress_msg}\x1b[0m')
+            
             do_jitter(cli_parsed)
     except KeyboardInterrupt:
         pass
-    manager.close()
-    driver.quit()
+    except Exception as e:
+        print(f'[!] Worker thread error: {e}')
+    finally:
+        if manager:
+            manager.close()
+        if driver:
+            driver.quit()
 
 
 def multi_mode(cli_parsed):
@@ -349,6 +398,7 @@ def multi_mode(cli_parsed):
     targets = m.Queue()
     lock = m.Lock()
     multi_counter = m.Value('i', 0)
+    start_time = m.Value('d', 0.0)  # Track start time for ETA
     display = None
 
     def exitsig(*args):
@@ -371,6 +421,18 @@ def multi_mode(cli_parsed):
         # Setup virtual display with cross-platform handling
         display = setup_virtual_display(platform_mgr, cli_parsed.show_selenium)
 
+        # Initialize resource monitor
+        resource_monitor = ResourceMonitor(memory_limit_percent=80)
+        
+        # Check disk space before starting
+        has_space, available_gb, total_gb = check_disk_space(cli_parsed.d, min_gb=1)
+        if not has_space:
+            print(f'[!] Warning: Low disk space! Only {available_gb:.1f}GB available')
+            print('[!] Consider freeing space or using a different output directory')
+        
+        # Get system info and recommended threads
+        print(f'[*] {get_system_info()}')
+        
         multi_total = dbm.get_incomplete_http(targets)
         if multi_total > 0:
             if cli_parsed.resume:
@@ -378,15 +440,23 @@ def multi_mode(cli_parsed):
             else:
                 print('Starting Web Requests ({0} Hosts)'.format(str(multi_total)))
 
-        if multi_total < cli_parsed.threads:
+        # Adjust thread count based on workload and resources
+        recommended_threads = resource_monitor.get_recommended_threads(cli_parsed.threads)
+        if recommended_threads < cli_parsed.threads:
+            print(f'[*] Adjusting threads from {cli_parsed.threads} to {recommended_threads} based on available memory')
+        
+        if multi_total < recommended_threads:
             num_threads = multi_total
         else:
-            num_threads = cli_parsed.threads
+            num_threads = recommended_threads
+        
+        print(f'[*] Using {num_threads} threads for processing')
         for i in range(num_threads):
             targets.put(None)
         try:
+            start_time.value = time.time()  # Set start time
             workers = [Process(target=worker_thread, args=(
-                cli_parsed, targets, lock, (multi_counter, multi_total))) for i in range(num_threads)]
+                cli_parsed, targets, lock, (multi_counter, multi_total), start_time)) for i in range(num_threads)]
             for w in workers:
                 w.start()
             for w in workers:
@@ -400,15 +470,6 @@ def multi_mode(cli_parsed):
     dbm.close()
     m.shutdown()
     sort_data_and_write(cli_parsed, results)
-
-
-def multi_callback(x):
-    global multi_counter
-    global multi_total
-    multi_counter += 1
-
-    if multi_counter % 15 == 0:
-        print('\x1b[32m[*] Completed {0} out of {1} hosts\x1b[0m'.format(multi_counter, multi_total))
 
 
 if __name__ == "__main__":
@@ -441,6 +502,44 @@ if __name__ == "__main__":
         print('')
     else:
         create_folders_css(cli_parsed)
+
+    # Handle validate-only mode
+    if cli_parsed.validate_urls:
+        print('[*] Running in URL validation mode only')
+        from modules.validation import validate_url_list
+        from modules.helpers import target_creator
+        
+        url_list = target_creator(cli_parsed)
+        valid_urls, invalid_urls = validate_url_list(url_list, require_scheme=False)
+        
+        print(f'\n[*] Validation Results:')
+        print(f'    - Valid URLs: {len(valid_urls)}')
+        print(f'    - Invalid URLs: {len(invalid_urls)}')
+        
+        if invalid_urls:
+            print('\n[!] Invalid URLs found:')
+            for url, error in invalid_urls[:20]:  # Show first 20
+                print(f'    - {url}: {error}')
+            if len(invalid_urls) > 20:
+                print(f'    ... and {len(invalid_urls) - 20} more')
+        
+        # Write valid URLs to file
+        if valid_urls:
+            valid_file = os.path.join(cli_parsed.d, 'valid_urls.txt')
+            with open(valid_file, 'w') as f:
+                for url in valid_urls:
+                    f.write(url + '\n')
+            print(f'\n[*] Valid URLs written to: {valid_file}')
+        
+        if invalid_urls:
+            invalid_file = os.path.join(cli_parsed.d, 'invalid_urls.txt')
+            with open(invalid_file, 'w') as f:
+                for url, error in invalid_urls:
+                    f.write(f'{url} # {error}\n')
+            print(f'[*] Invalid URLs written to: {invalid_file}')
+        
+        print(f'\n[*] Validation completed in {time.time() - start_time:.2f} seconds')
+        sys.exit(0)
 
     if cli_parsed.single:
         if cli_parsed.web:

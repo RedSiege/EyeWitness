@@ -9,7 +9,7 @@ from pathlib import Path
 
 try:
     from ssl import CertificateError as sslerr
-except:
+except ImportError:
     from ssl import SSLError as sslerr
 
 try:
@@ -114,7 +114,7 @@ def create_driver(cli_parsed, user_agent=None):
                 system_driver = shutil.which('geckodriver')
                 if system_driver:
                     service_kwargs['executable_path'] = system_driver
-        except:
+        except (ImportError, Exception):
             pass  # safe fallback to automatic detection
         
         service = FirefoxService(**service_kwargs)
@@ -125,15 +125,19 @@ def create_driver(cli_parsed, user_agent=None):
         driver.set_window_size(cli_parsed.width, cli_parsed.height)
         return driver
     except Exception as e:
-        if 'Failed to find firefox binary' in str(e) or 'geckodriver' in str(e).lower():
-            print('[*] Firefox/geckodriver missing.')
-            if platform_mgr.is_windows:
-                print('[*] Install Firefox and run: .\\setup\\setup.ps1')
-            else:
-                print('[*] Install Firefox and run: ./setup/setup.sh')
+        from modules.troubleshooting import get_error_guidance
+        
+        if 'Failed to find firefox binary' in str(e) or 'firefox' in str(e).lower():
+            print(get_error_guidance('firefox_missing'))
+        elif 'geckodriver' in str(e).lower():
+            print(get_error_guidance('geckodriver_missing'))
         else:
-            print('[*] WebDriver error: {}'.format(e))
-        sys.exit()
+            print(f'[!] WebDriver initialization error: {e}')
+            print('[*] Troubleshooting tips:')
+            print('    - Ensure Firefox is installed and in PATH')
+            print('    - Run the appropriate setup script for your OS')
+            print('    - Check geckodriver compatibility with Firefox version')
+        sys.exit(1)
 
 
 def capture_host(cli_parsed, http_object, driver, ua=None):
@@ -163,7 +167,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         http_object.error_state = 'Skipped'
         http_object.page_title = 'Page Skipped by User'
     except TimeoutException:
-        print('[*] Hit timeout limit when connecting to {0}, retrying'.format(http_object.remote_system))
+        from modules.troubleshooting import get_error_guidance
+        print(get_error_guidance('timeout', url=http_object.remote_system, host=http_object.remote_system.split('/')[2]))
         driver.quit()
         driver = create_driver(cli_parsed, ua)
         http_object.error_state = 'Timeout'
@@ -248,7 +253,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         context = ssl.create_default_context()
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
-    except:
+    except (ssl.SSLError, AttributeError):
         context = None
         pass
 
@@ -257,7 +262,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     else:
         try:
             tempua = driver.execute_script("return navigator.userAgent")
-        except:
+        except (WebDriverException, Exception):
             tempua = ''
     try:
         req = urllib.request.Request(http_object.remote_system, headers={'User-Agent': tempua})
@@ -284,10 +289,14 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         headers['Response Code'] = str(e.code)
     except urllib.error.URLError as e:
         if '104' in str(e.reason):
+            from modules.troubleshooting import get_error_guidance
+            print(get_error_guidance('connection_reset', url=http_object.remote_system))
             headers = {'Error': 'Connection Reset'}
             http_object.error_state = 'ConnReset'
             return http_object, driver
         elif '111' in str(e.reason):
+            from modules.troubleshooting import get_error_guidance
+            print(get_error_guidance('connection_refused', url=http_object.remote_system))
             headers = {'Error': 'Connection Refused'}
             http_object.error_state = 'ConnRefuse'
             return http_object, driver

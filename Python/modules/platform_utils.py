@@ -17,7 +17,7 @@ class PlatformManager:
         self.machine = platform.machine().lower()
         self.is_windows = self.system == 'windows'
         self.is_linux = self.system == 'linux' 
-        self.is_mac = self.system == 'darwin'  # TODO: test on actual mac
+        self.is_mac = self.system == 'darwin'
         self.is_unix = self.is_linux or self.is_mac
         
         self.has_display = self._check_display_available()
@@ -36,7 +36,7 @@ class PlatformManager:
                 return ctypes.windll.shell32.IsUserAnAdmin() != 0
             else:
                 return os.geteuid() == 0
-        except:
+        except (AttributeError, OSError):
             return False
     
     def clear_screen(self):

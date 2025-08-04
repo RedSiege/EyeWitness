@@ -70,9 +70,9 @@ $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
 $isAdmin = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 if (-not $isAdmin) {
-    Write-ErrorMsgMsg "This script requires Administrator privileges."
-    Write-InfoMsgMsg "Please run PowerShell as Administrator and try again."
-    Write-InfoMsgMsg "Right-click PowerShell and select 'Run as Administrator'"
+    Write-ErrorMsg "This script requires Administrator privileges."
+    Write-InfoMsg "Please run PowerShell as Administrator and try again."
+    Write-InfoMsg "Right-click PowerShell and select 'Run as Administrator'"
     exit 1
 }
 

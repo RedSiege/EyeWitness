@@ -1,118 +1,188 @@
-EyeWitness
-======
+# EyeWitness
 
-EyeWitness is designed to take screenshots of websites provide some server header info, and identify default credentials if known.
+EyeWitness is designed to take screenshots of websites, provide server header info, and identify default credentials if known.
 
-EyeWitness is designed to run on Kali Linux. It will auto detect the file you give it with the -f flag as either being a text file with URLs on each new line, nmap xml output, or nessus xml output. The --timeout flag is completely optional, and lets you provide the max time to wait when trying to render and screenshot a web page.
+## Key Features
+- **Cross-platform support** - Windows, Linux, and macOS
+- **Adaptive resource management** - Automatically adjusts to system capabilities
+- **Configuration file support** - Save your preferred settings
+- **URL validation** - Pre-flight checks to ensure URLs are valid
+- **Progress tracking with ETA** - Know exactly when your scan will complete
+- **Comprehensive error handling** - Actionable troubleshooting for every error
+- **Multiple input formats** - Text files, Nmap XML, Nessus XML
+- **Offline operation** - All dependencies bundled locally
 
-A complete usage guide which documents EyeWitness features and its typical use cases is available here - https://www.christophertruncer.com/eyewitness-2-0-release-and-user-guide/
+## Installation
 
-## Windows
-Red Siege has created a Windows client (thanks to the massive help of Matt Grandy (@Matt_Grandy_) with the stability fixes). All you need to do is build it locally (or check the releases), and then provide a path to a file containing the URLs you want scanned! EyeWitness will generate the report within your "AppData\Roaming" directory. The latest version of the C# EyeWitness supports parsing and taking screenshots of Internet Explorer and Chrome bookmarks without having to supply a list of URLs. This version is also small enough to be delivered through Cobalt Strike's execute-assembly.
+### Windows
+1. Install Firefox if not already installed
+2. Run PowerShell as Administrator
+3. Navigate to the Python/setup directory
+4. Run: `.\setup.ps1`
 
-### Setup:
-1. Navigate into the CS directory 
-2. Load EyeWitness.sln into Visual Studio
-3. Go to Build at the top and then Build Solution if no modifications are wanted
+### Linux
+1. Navigate to the Python/setup directory
+2. Run: `./setup.sh`
 
-### Usage:
+**Supported Linux Distributions:**
+- Kali Linux
+- Debian 7+
+- Ubuntu 18.04+
+- CentOS 7/8
+- Rocky Linux 8
+- Arch Linux
+
+### macOS
+1. Install Firefox: `brew install --cask firefox`
+2. Run: `./setup.sh`
+
+## Usage
+
+### Basic Usage
 ```bash
-EyeWitness.exe --help
-EyeWitness.exe --bookmarks
-EyeWitness.exe -f C:\Path\to\urls.txt
-EyeWitness.exe --file C:\Path\to\urls.txt --delay [timeout in seconds] --compress
+# Single URL
+./EyeWitness.py --single http://example.com
+
+# URL list from file
+./EyeWitness.py -f urls.txt --web
+
+# Nmap/Nessus XML
+./EyeWitness.py -x nmap_scan.xml
 ```
 
-## Linux
+### Configuration Files
+```bash
+# Create a sample config file
+./EyeWitness.py --create-config
 
-###### Supported Linux Distros:
-* Kali Linux
-* Debian 7+ (at least stable, looking into testing) (Thanks to @themightyshiv)
-* CentOS 7
-* Rocky Linux 8
+# Use a config file
+./EyeWitness.py -f urls.txt --config ~/.eyewitness/config.json
+```
+
+### URL Validation
+```bash
+# Validate URLs without taking screenshots
+./EyeWitness.py -f urls.txt --validate-urls
+
+# Skip validation (use with caution)
+./EyeWitness.py -f urls.txt --skip-validation
+```
+
+### Advanced Options
+```bash
+# Adjust threads based on your system (default: auto-detected)
+./EyeWitness.py -f urls.txt --threads 5
+
+# Increase timeout for slow connections
+./EyeWitness.py -f urls.txt --timeout 30
+
+# Add delays and jitter
+./EyeWitness.py -f urls.txt --delay 2 --jitter 5
+
+# Use proxy
+./EyeWitness.py -f urls.txt --proxy-ip 127.0.0.1 --proxy-port 8080
+
+# Custom output directory
+./EyeWitness.py -f urls.txt -d /path/to/output
+
+# Resume a previous scan
+./EyeWitness.py --resume /path/to/output/ew.db
+```
+
+### Performance Tuning
+EyeWitness automatically detects your system resources and adjusts accordingly:
+- Thread count based on CPU cores (2 × cores, max 20)
+- Memory monitoring to prevent system overload
+- Disk space checks before starting
+
+## Configuration File Format
+
+Create a config file to save your preferred settings:
+
+```json
+{
+    "threads": 10,
+    "timeout": 30,
+    "delay": 0,
+    "jitter": 0,
+    "user_agent": "Custom User Agent",
+    "proxy_ip": "127.0.0.1",
+    "proxy_port": 8080,
+    "output_dir": "./sessions",
+    "prepend_https": false,
+    "show_selenium": false,
+    "resolve": false,
+    "skip_validation": false,
+    "results_per_page": 25,
+    "max_retries": 2
+}
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Firefox/Geckodriver not found:**
+- Linux: `sudo apt install firefox-esr firefox-geckodriver`
+- Windows: Re-run `setup.ps1` as Administrator
+- macOS: `brew install --cask firefox`
+
+**Connection timeouts:**
+- Increase timeout: `--timeout 60`
+- Check firewall settings
+- Verify target is accessible
+
+**High memory usage:**
+- Reduce threads: `--threads 5`
+- Process URLs in smaller batches
+- Close other applications
+
+**Permission errors:**
+- Linux/macOS: Check file permissions
+- Windows: Run as Administrator if needed
+
+### Error Messages
+All errors now include specific troubleshooting steps. For example:
+- Timeout errors suggest proxy settings and timeout increases
+- Connection errors provide firewall and network checks
+- Resource errors show memory usage and recommendations
+
+## Output
+
+EyeWitness generates:
+- `report.html` - Main report with screenshots
+- `screens/` - Screenshot images
+- `source/` - Page source code
+- `ew.db` - SQLite database for resume capability
+
+### Report Features
+- Categorized results (High Value, CMS, Network Devices, etc.)
+- Default credential detection
+- Header analysis
+- Searchable and sortable
+
+## Requirements
+
+- Python 3.7+
+- Firefox browser
+- Geckodriver (automatically installed by setup script)
+
+## Changes from Original
+
+This fork includes significant modernization:
+- Fixed deprecated Selenium APIs
+- Replaced archived dependencies (fuzzywuzzy → rapidfuzz)
+- Added comprehensive error handling
+- Improved cross-platform support
+- Added resource monitoring
+- Removed Docker support (unmaintained)
+- Added configuration file support
+- Enhanced user experience
+
+## Contact
 
 **E-Mail:** GetOffensive [@] redsiege [dot] com
 
-### Setup:
-1. Navigate into the Python/setup directory
-2. Run the setup.sh script
+## License
 
-### Usage:
-```bash
-./EyeWitness.py -f filename --timeout optionaltimeout
-```
-
-### Examples:
-```bash
-./EyeWitness -f urls.txt --web
-
-./EyeWitness -x urls.xml --timeout 8 
-
-./EyeWitness.py -f urls.txt --web --proxy-ip 127.0.0.1 --proxy-port 8080 --proxy-type socks5 --timeout 120
-```
-
-### Proxy Usage
-The best guide for proxying EyeWitness through a socks proxy was made by @raikia and is available here - https://github.com/RedSiege/EyeWitness/issues/458
-
-To install EyeWitness from a system while needing to go through a proxy, the following commands (thanks to @digininja) can be used.
-
-```bash
-APT
--------
-/etc/apt/apt.conf.d/70proxy
-
-$ cat /etc/apt/apt.conf.d/70proxy
-Acquire::http::proxy "http://localhost:3128";
-Acquire::https::proxy "https://localhost:3128";
-
-Git
------------------
-$ cat ~/.gitconfig
-[http]
-proxy = http://localhost:3128
-
-Wget
----------------------
-$ cat ~/.wgetrc or /etc/wgetrc
-
-use_proxy=yes
-http_proxy=127.0.0.1:3128
-https_proxy=127.0.0.1:3128
-
-General system proxy
---------------------------------
-
-export HTTP_PROXY=http://localhost:3128
-export HTTPS_PROXY=http://localhost:3128
-```
-
-### Docker
-Now you can execute EyeWitness in a docker container and prevent you from install unnecessary dependencies in your host machine.
-
-**Note:** execute *docker run* with the folder path in the host which hold your results (**/path/to/results**)  
-**Note2:** in case you want to scan urls from a file, make sure you put it in the volume folder (if you put *urls.txt* in */path/to/results*, then the argument should be *-f /tmp/EyeWitness/urls.txt*)
-
-##### Usage
-```bash
-sudo docker build -t eyewitness
-```
-
-##### Example #1 - 
-```bash
-sudo docker run --rm \
-    -v /tmp:/Eyewitness/Python/ \
-    eyewitness --web \
-    -f /Eyewitness/Python/dns.txt \
-    --no-prompt \
-    -d /Eyewitness/Python/report-$(date +'%d-%m-%Y-%H-%M-%S' | sed 's/[-:]/-/g')
-```
-And then on your host : 
-
-```bash
-cd /tmp && ls 
-cd report*
-firefox-esr report.html &
-```
-###### Call to Action:
-I'd love for EyeWitness to identify more default credentials of various web applications.  
-As you find a device which utilizes default credentials, please e-mail me the source code of the index page and the default creds so I can add it in to EyeWitness!
+EyeWitness is licensed under the GNU General Public License v3.0.
