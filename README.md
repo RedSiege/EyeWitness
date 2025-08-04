@@ -14,13 +14,32 @@ EyeWitness is designed to take screenshots of websites, provide server header in
 
 ## Installation
 
-### Windows
+### Docker (Recommended - All Platforms)
+The easiest way to run EyeWitness is using Docker. No Python, Firefox, or dependencies needed!
+
+```bash
+# Clone the repository
+git clone https://github.com/RedSiege/EyeWitness.git
+cd EyeWitness
+
+# Build the Docker image
+docker build -t eyewitness .
+
+# Run EyeWitness
+docker run --rm -v $(pwd):/data eyewitness -f /data/urls.txt -d /data/output
+```
+
+See [DOCKER.md](DOCKER.md) for detailed Docker usage instructions, platform-specific examples, and troubleshooting.
+
+### Traditional Installation
+
+#### Windows
 1. Install Firefox if not already installed
 2. Run PowerShell as Administrator
 3. Navigate to the setup directory
 4. Run: `.\setup.ps1`
 
-### Linux
+#### Linux
 1. Navigate to the setup directory
 2. Run: `./setup.sh`
 
@@ -32,13 +51,27 @@ EyeWitness is designed to take screenshots of websites, provide server header in
 - Rocky Linux 8
 - Arch Linux
 
-### macOS
+#### macOS
 1. Install Firefox: `brew install --cask firefox`
 2. Run: `./setup.sh`
 
 ## Usage
 
 ### Basic Usage
+
+#### Using Docker
+```bash
+# Single URL
+docker run --rm eyewitness --single http://example.com -d /output
+
+# URL list from file
+docker run --rm -v $(pwd):/data eyewitness -f /data/urls.txt -d /data/output
+
+# Nmap/Nessus XML
+docker run --rm -v $(pwd):/data eyewitness -x /data/nmap_scan.xml -d /data/output
+```
+
+#### Using Python
 ```bash
 # Single URL
 ./EyeWitness.py --single http://example.com

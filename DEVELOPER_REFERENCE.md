@@ -10,6 +10,27 @@ EyeWitness is a cybersecurity reconnaissance tool designed for penetration teste
 
 ### Platform Strategy
 - **Python Implementation**: Cross-platform support for Linux/Unix (Kali, Debian, CentOS, Rocky Linux), Windows, and macOS
+- **Docker Support**: Containerized deployment eliminating dependency management
+
+### Docker Architecture
+The Docker implementation provides a fully isolated environment with all dependencies pre-installed:
+
+- **Base Image**: Python 3.11-slim-bookworm (Debian-based for stability)
+- **Display Server**: Xvfb (X Virtual Framebuffer) for headless screenshot capture
+- **Browser**: Firefox ESR with geckodriver for Selenium automation
+- **Isolation**: Non-root user execution with proper permission handling
+- **Volume Mounts**: Input files and output directory mapping
+
+**Container Components**:
+```
+Container Environment:
+├── Python 3.11 Runtime
+├── Firefox ESR Browser
+├── Geckodriver (Selenium WebDriver)
+├── Xvfb Display Server
+├── EyeWitness Application
+└── All Python Dependencies
+```
 
 ### Core Architecture Pattern
 ```
@@ -30,10 +51,14 @@ EyeWitness/
 │   │   ├── helpers.py          # Utility functions and XML parsing
 │   │   ├── driver_manager.py   # WebDriver management and auto-download
 │   │   └── platform_utils.py   # Cross-platform compatibility
-└── setup/                      # Installation and dependencies
-    ├── setup.sh               # Linux/Unix installation script
-    ├── setup.ps1              # Windows PowerShell installation
-    └── requirements.txt       # Python dependencies
+├── setup/                      # Installation and dependencies
+│   ├── setup.sh               # Linux/Unix installation script
+│   ├── setup.ps1              # Windows PowerShell installation
+│   └── requirements.txt       # Python dependencies
+├── Dockerfile                  # Docker container definition
+├── .dockerignore              # Docker build exclusions
+├── DOCKER.md                  # Docker usage documentation
+└── docker-compose.yml         # Docker Compose configuration (optional)
 ```
 
 ## Core Modules and Functions
