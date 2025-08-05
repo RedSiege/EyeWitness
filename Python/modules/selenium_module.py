@@ -36,6 +36,10 @@ if platform_mgr.is_linux:
     os.environ['SE_MANAGER_PATH'] = ''  # Disable Selenium Manager entirely
     os.environ['SE_OFFLINE'] = '1'      # Force offline mode
     os.environ['WDM_LOG_LEVEL'] = '0'   # Keep WebDriverManager quiet too
+    # Set headless mode for better compatibility
+    os.environ['MOZ_HEADLESS'] = '1'
+    # Disable GPU to avoid issues on headless servers
+    os.environ['MOZ_DISABLE_GPU'] = '1'
 
 
 def create_driver(cli_parsed, user_agent=None):
@@ -119,6 +123,13 @@ def create_driver(cli_parsed, user_agent=None):
         
         service = FirefoxService(**service_kwargs)
         
+        # Set environment for better marionette communication
+        import tempfile
+        temp_dir = tempfile.gettempdir()
+        os.environ['TMPDIR'] = temp_dir
+        os.environ['TMP'] = temp_dir
+        os.environ['TEMP'] = temp_dir
+        
         # Firefox driver initialization (Selenium Manager disabled via environment vars)
         driver = webdriver.Firefox(service=service, options=options)
         driver.set_page_load_timeout(cli_parsed.timeout)
@@ -137,6 +148,11 @@ def create_driver(cli_parsed, user_agent=None):
             print('    - Ensure Firefox is installed and in PATH')
             print('    - Run the appropriate setup script for your OS')
             print('    - Check geckodriver compatibility with Firefox version')
+            # Special handling for marionette port errors
+            if 'marionette port' in str(e).lower():
+                print('\n[!] Marionette port error detected - common with snap Firefox')
+                print('[*] Quick fix: sudo /opt/tools/EyeWitness/setup/fix-firefox-snap.sh')
+                print('[*] Alternative: export MOZ_HEADLESS=1 && export MOZ_DISABLE_GPU=1')
         sys.exit(1)
 
 

@@ -76,6 +76,12 @@ class PlatformManager:
         for name in ['firefox', 'firefox-esr']:
             path = shutil.which(name)
             if path:
+                # Check if it's a snap package (problematic for Selenium)
+                if '/snap/' in path or path.startswith('/snap'):
+                    print('[!] Warning: Firefox is installed as a snap package')
+                    print('[!] Snap Firefox often causes issues with Selenium/Geckodriver')
+                    print('[*] Run: sudo /opt/tools/EyeWitness/setup/fix-firefox-snap.sh')
+                    # Still return it, but user is warned
                 return path
         
         # fallback to hardcoded paths

@@ -64,6 +64,14 @@ install_deps() {
             if ! command -v firefox &> /dev/null; then
                 echo "[*] Firefox not found, trying alternative package names..."
                 apt-get install -y firefox-esr || apt-get install -y firefox-browser || true
+            else
+                # Check if Firefox is installed as snap (causes Selenium issues)
+                firefox_path=$(which firefox 2>/dev/null || true)
+                if [[ "$firefox_path" == *"snap"* ]]; then
+                    echo "[!] Detected Firefox snap package - this causes issues with Selenium"
+                    echo "[*] Running Firefox snap fix..."
+                    bash "$(dirname "$0")/fix-firefox-snap.sh"
+                fi
             fi
             ;;
         arch|manjaro)
