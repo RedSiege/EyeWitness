@@ -51,6 +51,22 @@ install_deps() {
             if ! command -v firefox &> /dev/null; then
                 echo "[*] Firefox not found, trying alternative package names..."
                 apt-get install -y firefox || apt-get install -y firefox-browser || true
+            else
+                # Check if Firefox is installed as snap (causes Selenium issues)
+                firefox_path=$(which firefox 2>/dev/null || true)
+                if [[ "$firefox_path" == *"snap"* ]]; then
+                    echo "[!] Detected Firefox snap package - this causes issues with Selenium"
+                    echo "[*] Removing Firefox snap and installing from apt..."
+                    
+                    # Remove snap Firefox
+                    snap remove firefox
+                    
+                    # For Debian/Kali, just install ESR version
+                    apt-get update
+                    apt-get install -y firefox-esr
+                    
+                    echo "[+] Firefox ESR installed from apt repository"
+                fi
             fi
             ;;
         ubuntu|linuxmint)
@@ -69,8 +85,30 @@ install_deps() {
                 firefox_path=$(which firefox 2>/dev/null || true)
                 if [[ "$firefox_path" == *"snap"* ]]; then
                     echo "[!] Detected Firefox snap package - this causes issues with Selenium"
-                    echo "[*] Running Firefox snap fix..."
-                    bash "$(dirname "$0")/fix-firefox-snap.sh"
+                    echo "[*] Removing Firefox snap and installing from apt..."
+                    
+                    # Remove snap Firefox
+                    snap remove firefox
+                    
+                    # Add Mozilla PPA for latest Firefox
+                    add-apt-repository -y ppa:mozillateam/ppa 2>/dev/null || true
+                    
+                    # Prevent snap Firefox from reinstalling
+                    cat > /etc/apt/preferences.d/mozilla-firefox <<EOF
+Package: firefox*
+Pin: release o=LP-PPA-mozillateam
+Pin-Priority: 1001
+
+Package: firefox*
+Pin: release o=Ubuntu
+Pin-Priority: -1
+EOF
+                    
+                    # Update and install Firefox from apt
+                    apt-get update
+                    apt-get install -y firefox
+                    
+                    echo "[+] Firefox installed from apt repository"
                 fi
             fi
             ;;

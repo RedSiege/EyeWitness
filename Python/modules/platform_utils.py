@@ -80,7 +80,7 @@ class PlatformManager:
                 if '/snap/' in path or path.startswith('/snap'):
                     print('[!] Warning: Firefox is installed as a snap package')
                     print('[!] Snap Firefox often causes issues with Selenium/Geckodriver')
-                    print('[*] Run: sudo /opt/tools/EyeWitness/setup/fix-firefox-snap.sh')
+                    print('[*] Run the setup script to fix: sudo ./setup/setup.sh')
                     # Still return it, but user is warned
                 return path
         

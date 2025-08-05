@@ -151,7 +151,7 @@ def create_driver(cli_parsed, user_agent=None):
             # Special handling for marionette port errors
             if 'marionette port' in str(e).lower():
                 print('\n[!] Marionette port error detected - common with snap Firefox')
-                print('[*] Quick fix: sudo /opt/tools/EyeWitness/setup/fix-firefox-snap.sh')
+                print('[*] Quick fix: Re-run the setup script - sudo ./setup/setup.sh')
                 print('[*] Alternative: export MOZ_HEADLESS=1 && export MOZ_DISABLE_GPU=1')
         sys.exit(1)
 
