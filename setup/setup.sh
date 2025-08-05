@@ -71,6 +71,30 @@ install_deps() {
             ;;
         ubuntu|linuxmint)
             apt-get update
+            
+            # Check for snap Firefox BEFORE trying to install
+            firefox_path=$(which firefox 2>/dev/null || true)
+            if [[ "$firefox_path" == *"snap"* ]]; then
+                echo "[!] Detected Firefox snap package - removing and replacing with apt version..."
+                snap remove firefox
+                
+                # Add Mozilla PPA for latest Firefox
+                add-apt-repository -y ppa:mozillateam/ppa
+                
+                # Prevent snap Firefox from reinstalling
+                cat > /etc/apt/preferences.d/mozilla-firefox <<EOF
+Package: firefox*
+Pin: release o=LP-PPA-mozillateam
+Pin-Priority: 1001
+
+Package: firefox*
+Pin: release o=Ubuntu
+Pin-Priority: -1
+EOF
+                
+                apt-get update
+            fi
+            
             apt install -y python3-rapidfuzz
             apt install -y python3-selenium
             apt install -y python3-psutil
@@ -199,6 +223,15 @@ if ! command -v firefox &> /dev/null; then
     echo "[-] Firefox not found - EyeWitness requires Firefox to capture screenshots"
     echo "    Try: sudo apt install firefox-esr (or firefox)"
     missing_deps=1
+else
+    # Check if Firefox is still a snap
+    firefox_path=$(which firefox)
+    if [[ "$firefox_path" == *"snap"* ]]; then
+        echo "[-] Firefox is still installed as a snap package"
+        echo "    This will cause issues with Selenium/Geckodriver"
+        echo "    Please run this script again to fix the issue"
+        missing_deps=1
+    fi
 fi
 
 if ! command -v geckodriver &> /dev/null; then
