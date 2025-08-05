@@ -41,17 +41,19 @@ install_deps() {
     case ${os_id} in
         debian|kali)
             apt-get update
-            apt install python3-rapidfuzz
-            apt install python3-selenium
-            apt install python3-psutil
+            apt install -y python3-rapidfuzz
+            apt install -y python3-selenium
+            apt install -y python3-psutil
+            apt install -y python3-pyvirtualdisplay 2>/dev/null || true
 
             apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr tar
             ;;
         ubuntu|linuxmint)
             apt-get update
-            apt install python3-rapidfuzz
-            apt install python3-selenium
-            apt install python3-psutil
+            apt install -y python3-rapidfuzz
+            apt install -y python3-selenium
+            apt install -y python3-psutil
+            apt install -y python3-pyvirtualdisplay 2>/dev/null || true
             apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils tar
             ;;
         arch|manjaro)
@@ -85,12 +87,21 @@ install_deps() {
 
     echo
     echo "[*] Installing Python dependencies..."
-    pip3 install --upgrade pip
-    python3 -m pip install -r requirements.txt
-    
-    echo
-    echo "[*] Installing argcomplete for tab completion..."
-    python3 -m pip install argcomplete
+    # Check if pip needs upgrade using system package manager
+    case ${os_id} in
+        debian|kali|ubuntu|linuxmint)
+            # Install pyvirtualdisplay via apt if available
+            apt install -y python3-pyvirtualdisplay 2>/dev/null || true
+            # Install argcomplete via apt
+            apt install -y python3-argcomplete 2>/dev/null || python3 -m pip install --break-system-packages argcomplete
+            ;;
+        *)
+            # For non-debian systems, use pip normally
+            pip3 install --upgrade pip
+            python3 -m pip install -r requirements.txt
+            python3 -m pip install argcomplete
+            ;;
+    esac
 }
 
 # Make sure we're in the setup directory
