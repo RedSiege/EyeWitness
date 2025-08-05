@@ -85,6 +85,8 @@ install_deps() {
                 if [[ "$firefox_path" == *"snap"* ]]; then
                     echo "[*] Removing existing snap Firefox..."
                     snap remove firefox
+                    # Also remove firefox transitional package that points to snap
+                    apt-get remove -y firefox 2>/dev/null || true
                 fi
                 
                 # Add Mozilla PPA for latest Firefox
@@ -108,7 +110,14 @@ EOF
             apt install -y python3-selenium
             apt install -y python3-psutil
             apt install -y python3-pyvirtualdisplay 2>/dev/null || true
-            apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils tar bc
+            apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev x11-utils tar bc
+            # Install Firefox separately with downgrade allowed
+            apt-get install -y --allow-downgrades firefox || {
+                echo "[!] Firefox installation failed, trying more aggressive approach..."
+                # Source helper and use aggressive fix
+                source "$(dirname "$0")/install-firefox-helper.sh"
+                fix_firefox_installation
+            }
             # Ensure Firefox is really installed (sometimes package name varies)
             if ! command -v firefox &> /dev/null; then
                 echo "[*] Firefox not found, trying alternative package names..."
@@ -240,6 +249,16 @@ else
         echo "    This will cause issues with Selenium/Geckodriver"
         echo "    Please run this script again to fix the issue"
         missing_deps=1
+    else
+        # Verify Firefox can actually run headless
+        echo "[*] Testing Firefox headless mode..."
+        if timeout 10 firefox --headless --screenshot=/tmp/test.png https://example.com 2>/dev/null; then
+            echo "[+] Firefox headless mode verified!"
+            rm -f /tmp/test.png
+        else
+            echo "[!] Firefox headless test failed - may have compatibility issues"
+            echo "    Try: export MOZ_HEADLESS=1 before running EyeWitness"
+        fi
     fi
 fi
 
