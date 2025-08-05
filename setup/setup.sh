@@ -74,14 +74,23 @@ install_deps() {
             
             # Check for snap Firefox BEFORE trying to install
             firefox_path=$(which firefox 2>/dev/null || true)
-            if [[ "$firefox_path" == *"snap"* ]]; then
-                echo "[!] Detected Firefox snap package - removing and replacing with apt version..."
-                snap remove firefox
+            
+            # On Ubuntu 22.04+, Firefox defaults to snap, so we need to prevent that
+            # Check Ubuntu version
+            ubuntu_version=$(lsb_release -rs 2>/dev/null || echo "0")
+            if [[ $(echo "$ubuntu_version >= 22.04" | bc -l) -eq 1 ]] || [[ "$firefox_path" == *"snap"* ]]; then
+                echo "[*] Ubuntu 22.04+ detected or snap Firefox found - configuring apt Firefox..."
+                
+                # Remove snap Firefox if it exists
+                if [[ "$firefox_path" == *"snap"* ]]; then
+                    echo "[*] Removing existing snap Firefox..."
+                    snap remove firefox
+                fi
                 
                 # Add Mozilla PPA for latest Firefox
                 add-apt-repository -y ppa:mozillateam/ppa
                 
-                # Prevent snap Firefox from reinstalling
+                # Prevent snap Firefox from being installed
                 cat > /etc/apt/preferences.d/mozilla-firefox <<EOF
 Package: firefox*
 Pin: release o=LP-PPA-mozillateam
@@ -99,7 +108,7 @@ EOF
             apt install -y python3-selenium
             apt install -y python3-psutil
             apt install -y python3-pyvirtualdisplay 2>/dev/null || true
-            apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils tar
+            apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils tar bc
             # Ensure Firefox is really installed (sometimes package name varies)
             if ! command -v firefox &> /dev/null; then
                 echo "[*] Firefox not found, trying alternative package names..."
