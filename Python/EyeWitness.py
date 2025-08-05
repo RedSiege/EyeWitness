@@ -4,9 +4,11 @@
 import argparse
 try:
     import argcomplete
+    from argcomplete.completers import FilesCompleter
     HAS_ARGCOMPLETE = True
 except ImportError:
     HAS_ARGCOMPLETE = False
+    FilesCompleter = None
 import glob
 import os
 import re
@@ -55,11 +57,15 @@ def create_cli_parser():
                            help='HTTP Screenshot using Selenium')
 
     input_options = parser.add_argument_group('Input Options')
-    input_options.add_argument('-f', metavar='Filename', default=None,
+    f_arg = input_options.add_argument('-f', metavar='Filename', default=None,
                                help='Line-separated file containing URLs to \
                                 capture')
-    input_options.add_argument('-x', metavar='Filename.xml', default=None,
+    if HAS_ARGCOMPLETE and FilesCompleter:
+        f_arg.completer = FilesCompleter()
+    x_arg = input_options.add_argument('-x', metavar='Filename.xml', default=None,
                                help='Nmap XML or .Nessus file')
+    if HAS_ARGCOMPLETE and FilesCompleter:
+        x_arg.completer = FilesCompleter(allowednames='*.xml *.nessus', directories=True)
     input_options.add_argument('--single', metavar='Single URL', default=None,
                                help='Single URL/Host to capture')
     input_options.add_argument('--no-dns', default=False, action='store_true',
@@ -84,9 +90,12 @@ def create_cli_parser():
                                 help='Max retries on timeouts')
 
     report_options = parser.add_argument_group('Report Output Options')
-    report_options.add_argument('-d', metavar='Output Directory',
+    d_arg = report_options.add_argument('-d', metavar='Output Directory',
                                 default=None,
                                 help='Output directory for screenshots and reports')
+    if HAS_ARGCOMPLETE and FilesCompleter:
+        from argcomplete.completers import DirectoriesCompleter
+        d_arg.completer = DirectoriesCompleter()
     report_options.add_argument('--results', metavar='Results/Page',
                                 default=25, type=int, help='Number of results per report page (default: 25)')
     report_options.add_argument('--no-prompt', default=False,
@@ -147,8 +156,10 @@ def create_cli_parser():
                                 default=None, help='Path to db file if you want to resume')
 
     config_options = parser.add_argument_group('Configuration Options')
-    config_options.add_argument('--config', metavar='config.json', default=None,
+    config_arg = config_options.add_argument('--config', metavar='config.json', default=None,
                                 help='Configuration file path')
+    if HAS_ARGCOMPLETE and FilesCompleter:
+        config_arg.completer = FilesCompleter(allowednames='*.json', directories=True)
     config_options.add_argument('--create-config', action='store_true',
                                 help='Create sample configuration file')
 
