@@ -87,6 +87,10 @@ install_deps() {
     echo "[*] Installing Python dependencies..."
     pip3 install --upgrade pip
     python3 -m pip install -r requirements.txt
+    
+    echo
+    echo "[*] Installing argcomplete for tab completion..."
+    python3 -m pip install argcomplete
 }
 
 # Make sure we're in the setup directory
@@ -118,6 +122,26 @@ get_gecko
 
 # Get out of there!
 popd >/dev/null
+
+# Enable tab completion
+echo
+echo "[*] Enabling tab completion..."
+if command -v activate-global-python-argcomplete3 &> /dev/null; then
+    activate-global-python-argcomplete3
+    echo "[+] Global tab completion activated"
+elif command -v activate-global-python-argcomplete &> /dev/null; then
+    activate-global-python-argcomplete
+    echo "[+] Global tab completion activated"
+else
+    echo "[*] Adding tab completion to bashrc..."
+    if ! grep -q "register-python-argcomplete.*EyeWitness" ~/.bashrc 2>/dev/null; then
+        echo "" >> ~/.bashrc
+        echo "# EyeWitness tab completion" >> ~/.bashrc
+        echo 'eval "$(register-python-argcomplete EyeWitness.py 2>/dev/null || register-python-argcomplete3 EyeWitness.py 2>/dev/null)"' >> ~/.bashrc
+    fi
+    echo "[+] Tab completion added to ~/.bashrc"
+    echo "[*] Please restart your shell or run: source ~/.bashrc"
+fi
 
 # Print success message
 echo

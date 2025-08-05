@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
+# PYTHON_ARGCOMPLETE_OK
 
 import argparse
+try:
+    import argcomplete
+    HAS_ARGCOMPLETE = True
+except ImportError:
+    HAS_ARGCOMPLETE = False
 import glob
 import os
 import re
@@ -146,6 +152,10 @@ def create_cli_parser():
     config_options.add_argument('--create-config', action='store_true',
                                 help='Create sample configuration file')
 
+    # Enable bash tab completion if argcomplete is available
+    if HAS_ARGCOMPLETE:
+        argcomplete.autocomplete(parser)
+    
     args = parser.parse_args()
     args.date = time.strftime('%Y/%m/%d')
     args.time = time.strftime('%H:%M:%S')
