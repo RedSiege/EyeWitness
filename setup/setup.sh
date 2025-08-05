@@ -47,6 +47,11 @@ install_deps() {
             apt install -y python3-pyvirtualdisplay 2>/dev/null || true
 
             apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr tar
+            # Ensure Firefox ESR is really installed (sometimes package name varies)
+            if ! command -v firefox &> /dev/null; then
+                echo "[*] Firefox not found, trying alternative package names..."
+                apt-get install -y firefox || apt-get install -y firefox-browser || true
+            fi
             ;;
         ubuntu|linuxmint)
             apt-get update
@@ -55,6 +60,11 @@ install_deps() {
             apt install -y python3-psutil
             apt install -y python3-pyvirtualdisplay 2>/dev/null || true
             apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox x11-utils tar
+            # Ensure Firefox is really installed (sometimes package name varies)
+            if ! command -v firefox &> /dev/null; then
+                echo "[*] Firefox not found, trying alternative package names..."
+                apt-get install -y firefox-esr || apt-get install -y firefox-browser || true
+            fi
             ;;
         arch|manjaro)
             pacman -Syu
@@ -133,6 +143,36 @@ get_gecko
 
 # Get out of there!
 popd >/dev/null
+
+# Verify critical dependencies
+echo
+echo "[*] Verifying installation..."
+missing_deps=0
+
+if ! command -v firefox &> /dev/null; then
+    echo "[-] Firefox not found - EyeWitness requires Firefox to capture screenshots"
+    echo "    Try: sudo apt install firefox-esr (or firefox)"
+    missing_deps=1
+fi
+
+if ! command -v geckodriver &> /dev/null; then
+    echo "[-] Geckodriver not found in PATH"
+    missing_deps=1
+fi
+
+if ! command -v Xvfb &> /dev/null && [ "${os_id}" != "windows" ]; then
+    echo "[-] Xvfb not found - required for headless operation"
+    echo "    Try: sudo apt install xvfb"
+    missing_deps=1
+fi
+
+if [ $missing_deps -eq 0 ]; then
+    echo "[+] All critical dependencies verified!"
+else
+    echo
+    echo "[!] Some dependencies are missing. EyeWitness may not work properly."
+    echo "[*] Run setup/check-dependencies.sh for detailed diagnostics"
+fi
 
 # Enable tab completion
 echo
