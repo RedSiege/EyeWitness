@@ -206,14 +206,47 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         http_object.error_state = 'Timeout'
         
     except Exception as e:
-        print(f'[*] Error capturing {http_object.remote_system}: {e}')
-        http_object.error_state = 'Error'
+        error_msg = str(e).lower()
         
-        # Recreate driver if it becomes unusable
+        # Enhanced error handling with specific error types
+        if 'net::err_connection_reset' in error_msg:
+            print(f'[*] Connection reset by {http_object.remote_system} - target may be blocking requests')
+            http_object.error_state = 'Connection Reset'
+        elif 'net::err_connection_refused' in error_msg:
+            print(f'[*] Connection refused by {http_object.remote_system} - service may be down')
+            http_object.error_state = 'Connection Refused'
+        elif 'net::err_timed_out' in error_msg or 'timeout' in error_msg:
+            print(f'[*] Timeout connecting to {http_object.remote_system}')
+            http_object.error_state = 'Timeout'
+        elif 'net::err_name_not_resolved' in error_msg:
+            print(f'[*] DNS resolution failed for {http_object.remote_system}')
+            http_object.error_state = 'DNS Failed'
+        elif 'net::err_cert_' in error_msg or 'certificate' in error_msg:
+            print(f'[*] SSL/Certificate error for {http_object.remote_system}')
+            http_object.error_state = 'SSL Error'
+        elif 'chrome not reachable' in error_msg or 'session deleted' in error_msg:
+            print(f'[*] Chrome driver crashed while accessing {http_object.remote_system} - restarting')
+            http_object.error_state = 'Driver Crashed'
+            # Force driver restart
+            try:
+                driver.quit()
+            except:
+                pass
+            driver = create_driver(cli_parsed, ua)
+            return http_object, driver
+        else:
+            print(f'[*] Error capturing {http_object.remote_system}: {e}')
+            http_object.error_state = 'Error'
+        
+        # Test if driver is still responsive
         try:
             driver.get('about:blank')
         except:
-            driver.quit()
+            print(f'[*] Chrome driver became unresponsive - restarting')
+            try:
+                driver.quit()
+            except:
+                pass
             driver = create_driver(cli_parsed, ua)
     
     return http_object, driver

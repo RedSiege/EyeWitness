@@ -1,21 +1,22 @@
-# EyeWitness
+# EyeWitness - Web Screenshot Tool
 
-EyeWitness is designed to take screenshots of websites, provide server header info, and identify default credentials if known.
+EyeWitness is designed to take screenshots of websites, provide server header info, and identify default credentials if known. **Now powered by Chromium browser for better reliability and easier installation.**
 
-## Key Features
-- **Cross-platform support** - Windows, Linux, and macOS
+## 🚀 Key Features
+- **Cross-platform support** - Windows, Linux, macOS, and Docker
+- **Chromium-powered** - Reliable headless screenshots with Google Chrome/Chromium
 - **Adaptive resource management** - Automatically adjusts to system capabilities
 - **Configuration file support** - Save your preferred settings
 - **URL validation** - Pre-flight checks to ensure URLs are valid
 - **Progress tracking with ETA** - Know exactly when your scan will complete
-- **Comprehensive error handling** - Actionable troubleshooting for every error
+- **Enhanced error handling** - Specific error types with actionable guidance
 - **Multiple input formats** - Text files, Nmap XML, Nessus XML
-- **Offline operation** - All dependencies bundled locally
+- **Lightweight installation** - Simple 2-package install on most platforms
 
-## Installation
+## 📦 Installation Options
 
-### Docker (Recommended - All Platforms)
-The easiest way to run EyeWitness is using Docker. No Python, Chromium, or dependencies needed!
+### 🐳 Docker (Recommended - All Platforms)
+The easiest way to run EyeWitness. No Python, Chromium, or dependencies needed on your host!
 
 ```bash
 # Clone the repository
@@ -25,59 +26,133 @@ cd EyeWitness
 # Build the Docker image
 docker build -t eyewitness .
 
-# Run EyeWitness
+# Run EyeWitness with Docker
 docker run --rm -v $(pwd):/data eyewitness -f /data/urls.txt -d /data/output
+
+# For single URLs
+docker run --rm -v $(pwd):/data eyewitness --single https://example.com -d /data/output
 ```
 
-See [DOCKER.md](DOCKER.md) for detailed Docker usage instructions, platform-specific examples, and troubleshooting.
+See [DOCKER.md](DOCKER.md) for detailed Docker usage instructions and troubleshooting.
 
-### Traditional Installation
+### 🪟 Windows Installation
+**Simple automated setup with PowerShell:**
 
-#### Windows
-1. Install Chrome or Chromium if not already installed
-2. Run PowerShell as Administrator
-3. Navigate to the setup directory
-4. Run: `.\setup.ps1`
+```powershell
+# 1. Open PowerShell as Administrator
+# 2. Navigate to EyeWitness directory
+cd path\to\EyeWitness\setup
 
-#### Linux
-1. Navigate to the setup directory
-2. Run: `./setup.sh`
+# 3. Run the setup script
+.\setup.ps1
+
+# 4. Test the installation
+cd ..\Python
+python EyeWitness.py --single https://example.com
+```
+
+**What gets installed:**
+- Python dependencies (selenium, etc.)
+- Google Chrome browser (if not present)
+- ChromeDriver for automation
+- Tab completion support
+
+### 🐧 Linux Installation
+**One-line setup for most distributions:**
+
+```bash
+# 1. Navigate to setup directory
+cd EyeWitness/setup
+
+# 2. Run the setup script
+sudo ./setup.sh
+
+# 3. Test the installation
+cd ../Python
+python3 EyeWitness.py --single https://example.com
+```
+
+**What gets installed:**
+- Python packages via system package manager (avoids PEP 668 issues)
+- Chromium browser and ChromeDriver
+- Virtual display support (xvfb)
+- Tab completion support
 
 **Supported Linux Distributions:**
-- Kali Linux
-- Debian 7+
-- Ubuntu 18.04+
-- CentOS 7/8
-- Rocky Linux 8
-- Arch Linux
+- Ubuntu 20.04+ / Linux Mint
+- Debian 10+ / Kali Linux  
+- CentOS 8+ / RHEL / Rocky Linux
+- Arch Linux / Manjaro
+- Alpine Linux
 
-#### macOS
-1. Install Chrome: `brew install --cask google-chrome`
-2. Run: `./setup.sh`
+### 🍎 macOS Installation
+**Homebrew-based setup:**
 
-## Usage
-
-### Basic Usage
-
-#### Using Docker
 ```bash
-# Single URL
-docker run --rm eyewitness --single http://example.com -d /output
+# 1. Install Chrome via Homebrew
+brew install --cask google-chrome
 
-# URL list from file
-docker run --rm -v $(pwd):/data eyewitness -f /data/urls.txt -d /data/output
+# 2. Navigate to setup directory and run setup
+cd EyeWitness/setup
+sudo ./setup.sh
 
-# Nmap/Nessus XML
-docker run --rm -v $(pwd):/data eyewitness -x /data/nmap_scan.xml -d /data/output
+# 3. Test the installation
+cd ../Python
+python3 EyeWitness.py --single https://example.com
 ```
 
-#### Using Python
-```bash
-# Single URL
-./EyeWitness.py --single http://example.com
+**What gets installed:**
+- Python dependencies via pip
+- Chrome browser (via Homebrew)
+- ChromeDriver for automation
 
-# URL list from file
-./EyeWitness.py -f urls.txt --web
+## 🎯 Usage Examples
+
+### 🐳 Docker Usage (Recommended)
+Docker provides the most consistent experience across platforms:
+
+```bash
+# Single website screenshot
+docker run --rm -v $(pwd):/data eyewitness --single https://example.com -d /data/output
+
+# Multiple URLs from file
+docker run --rm -v $(pwd):/data eyewitness -f /data/urls.txt -d /data/output
+
+# Nmap XML input (scan results)
+docker run --rm -v $(pwd):/data eyewitness -x /data/nmap_scan.xml -d /data/output
+
+# Nessus file input
+docker run --rm -v $(pwd):/data eyewitness -x /data/scan.nessus -d /data/output
+
+# Custom options (timeout, threads, user-agent)
+docker run --rm -v $(pwd):/data eyewitness \
+  -f /data/urls.txt \
+  --timeout 30 \
+  --threads 10 \
+  --user-agent "Custom-Agent" \
+  -d /data/output
+```
+
+### 💻 Native Usage (Linux/Windows/macOS)
+After running the setup script:
+
+```bash
+cd EyeWitness/Python
+
+# Single website
+python3 EyeWitness.py --single https://example.com
+
+# URL list from file  
+python3 EyeWitness.py -f urls.txt
+
+# Nmap XML scan results
+python3 EyeWitness.py -x nmap_scan.xml
+
+# Custom output directory
+python3 EyeWitness.py -f urls.txt -d /path/to/output
+
+# Performance tuning for large scans
+python3 EyeWitness.py -f large_list.txt --threads 20 --timeout 10
 
 # Nmap/Nessus XML
 ./EyeWitness.py -x nmap_scan.xml

@@ -1,37 +1,31 @@
-# EyeWitness Dockerfile
-# Provides a fully containerized environment for running EyeWitness
-# No Python, Firefox, or other dependencies needed on host system
+# EyeWitness Dockerfile - Chromium Edition
+# Lightweight containerized environment for running EyeWitness with Chrome/Chromium
+# Simplified installation with no Firefox dependencies
 
 FROM python:3.11-slim-bookworm
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
-    # Disable Selenium Manager to prevent network requests
-    SE_MANAGER_PATH="" \
-    SE_OFFLINE=1 \
-    WDM_LOG_LEVEL=0
+    # Chrome/Chromium environment optimizations
+    CHROME_HEADLESS=1 \
+    CHROME_NO_SANDBOX=1 \
+    DISPLAY=:99
 
-# Install system dependencies
+# Install system dependencies - Chromium focused
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    # Firefox and display dependencies
-    firefox-esr \
+    # Chromium browser and driver
+    chromium \
+    chromium-driver \
+    # Virtual display for headless operation
     xvfb \
-    x11-utils \
-    # Required libraries
+    # Essential libraries for Chromium
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libdrm2 \
     libgtk-3-0 \
-    libdbus-glib-1-2 \
-    libxt6 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxrandr2 \
+    libgbm1 \
     libasound2 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libcairo-gobject2 \
-    libgtk-3-0 \
-    libgdk-pixbuf-2.0-0 \
     # Fonts for proper rendering
     fonts-liberation \
     fonts-noto \
@@ -39,25 +33,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # Utilities
     wget \
     ca-certificates \
+    # Clean up
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Install geckodriver
-# Using specific version for compatibility
-ARG GECKODRIVER_VERSION=v0.34.0
-RUN ARCH=$(dpkg --print-architecture) && \
-    if [ "$ARCH" = "amd64" ]; then \
-        GECKO_ARCH="linux64"; \
-    elif [ "$ARCH" = "arm64" ]; then \
-        GECKO_ARCH="linux-aarch64"; \
-    else \
-        echo "Unsupported architecture: $ARCH" && exit 1; \
+# Verify Chromium installation and create symlinks if needed
+RUN if [ -f /usr/bin/chromium ]; then \
+        ln -s /usr/bin/chromium /usr/bin/google-chrome || true; \
     fi && \
-    wget -q -O /tmp/geckodriver.tar.gz \
-        "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-${GECKO_ARCH}.tar.gz" && \
-    tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin && \
-    rm /tmp/geckodriver.tar.gz && \
-    chmod +x /usr/local/bin/geckodriver
+    if [ -f /usr/bin/chromedriver ]; then \
+        ln -s /usr/bin/chromedriver /usr/bin/chromium-chromedriver || true; \
+    fi
 
 # Create app directory
 WORKDIR /app
@@ -77,24 +63,57 @@ RUN mkdir -p /data /output && \
 RUN useradd -m -u 1000 eyewitness && \
     chown -R eyewitness:eyewitness /app
 
-# Create entrypoint script
+# Create entrypoint script optimized for Chromium
 RUN echo '#!/bin/bash\n\
+# EyeWitness Docker Entrypoint - Chromium Edition\n\
+\n\
 # Handle signals for graceful shutdown\n\
 trap "exit" INT TERM\n\
 \n\
-# If running as root, warn user\n\
+# Security warning for root usage\n\
 if [ "$EUID" -eq 0 ]; then\n\
     echo "[!] Warning: Running as root. Output files will be owned by root."\n\
     echo "[!] Consider using --user $(id -u):$(id -g) when running docker"\n\
 fi\n\
 \n\
-# Start Xvfb in background\n\
-Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp &\n\
+# Start Xvfb in background for headless display\n\
+echo "[*] Starting virtual display (Xvfb)..."\n\
+Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp -nolisten unix &\n\
+XVFB_PID=$!\n\
 export DISPLAY=:99\n\
 \n\
 # Wait for Xvfb to start\n\
 sleep 2\n\
 \n\
+# Verify Chromium is available\n\
+if command -v chromium >/dev/null 2>&1; then\n\
+    echo "[+] Chromium browser: $(chromium --version)"\n\
+elif command -v google-chrome >/dev/null 2>&1; then\n\
+    echo "[+] Chrome browser: $(google-chrome --version)"\n\
+else\n\
+    echo "[-] No Chromium/Chrome browser found!"\n\
+    exit 1\n\
+fi\n\
+\n\
+# Verify ChromeDriver is available\n\
+if command -v chromedriver >/dev/null 2>&1; then\n\
+    echo "[+] ChromeDriver: $(chromedriver --version | head -1)"\n\
+else\n\
+    echo "[-] ChromeDriver not found!"\n\
+    exit 1\n\
+fi\n\
+\n\
+# Function to cleanup on exit\n\
+cleanup() {\n\
+    echo "[*] Cleaning up..."\n\
+    kill $XVFB_PID 2>/dev/null || true\n\
+    exit 0\n\
+}\n\
+\n\
+# Set cleanup trap\n\
+trap cleanup EXIT\n\
+\n\
+echo "[*] Starting EyeWitness with Chromium backend..."\n\
 # Run EyeWitness with all arguments\n\
 python /app/EyeWitness.py "$@"\n\
 ' > /entrypoint.sh && chmod +x /entrypoint.sh
@@ -110,6 +129,9 @@ CMD ["--help"]
 
 # Labels for metadata
 LABEL maintainer="Red Siege <GetOffensive@redsiege.com>" \
-      description="EyeWitness - Web Screenshot Tool" \
-      version="1.0" \
-      org.opencontainers.image.source="https://github.com/RedSiege/EyeWitness"
+      description="EyeWitness - Web Screenshot Tool (Chromium Edition)" \
+      version="2.0" \
+      browser="Chromium" \
+      org.opencontainers.image.source="https://github.com/RedSiege/EyeWitness" \
+      org.opencontainers.image.description="Lightweight web screenshot tool using Chromium browser" \
+      org.opencontainers.image.title="EyeWitness"

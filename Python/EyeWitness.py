@@ -142,8 +142,8 @@ def create_cli_parser():
                               help='Only validate URLs without taking screenshots')
     http_options.add_argument('--skip-validation', default=False, action='store_true',
                               help='Skip URL validation checks (use with caution)')
-    http_options.add_argument('--selenium-log-path', default='./geckodriver.log', action='store',
-                              help='Selenium geckodriver log path')
+    http_options.add_argument('--selenium-log-path', default='./chromedriver.log', action='store',
+                              help='Selenium ChromeDriver log path')
     http_options.add_argument('--cookies', metavar='key1=value1,key2=value2', default=None,
                               help='Additional cookies to add to the request')
     http_options.add_argument('--width', metavar="1366", default=1366,type=int,

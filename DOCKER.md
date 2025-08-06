@@ -1,6 +1,6 @@
 # EyeWitness Docker Guide
 
-This guide covers running EyeWitness in a Docker container, which eliminates the need to install Python, Firefox, or any dependencies on your host system.
+This guide covers running EyeWitness in a Docker container, which eliminates the need to install Python, Chromium, or any dependencies on your host system.
 
 ## Table of Contents
 - [Prerequisites](#prerequisites)
@@ -19,7 +19,7 @@ This guide covers running EyeWitness in a Docker container, which eliminates the
   - **Windows**: Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
   - **macOS**: Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
-That's it! No Python, Firefox, or other dependencies needed.
+That's it! No Python, Chromium, or other dependencies needed.
 
 ## Quick Start
 
@@ -50,8 +50,8 @@ docker build -t mycompany/eyewitness:v1.0 .
 
 ### Build Arguments
 ```bash
-# Use specific geckodriver version
-docker build --build-arg GECKODRIVER_VERSION=v0.35.0 -t eyewitness .
+# Build with custom image name
+docker build -t mycompany/eyewitness:chromium .
 ```
 
 ## Running EyeWitness
@@ -142,7 +142,8 @@ echo -e "https://example.com\nhttps://google.com" > urls.txt
 docker run --rm -v $(pwd):/data eyewitness -f /data/urls.txt -d /data/output
 
 # View results
-firefox output/report.html
+xdg-open output/report.html  # Linux
+# google-chrome output/report.html  # Alternative
 ```
 
 ### Windows PowerShell Examples
@@ -332,8 +333,8 @@ done
 
 ## FAQ
 
-**Q: Why is the image so large (~1GB)?**
-A: The image includes Firefox, Python, and all dependencies. This is a one-time download.
+**Q: Why is the image so large (~800MB)?**
+A: The image includes Chromium, Python, and all dependencies. This is a one-time download and optimized for the Chromium-only architecture.
 
 **Q: Can I run multiple instances?**
 A: Yes! Docker provides isolation between containers:
@@ -359,7 +360,7 @@ A: Yes! Docker makes it perfect for CI/CD:
 eyewitness:
   image: eyewitness:latest
   script:
-    - eyewitness -f urls.txt -d output
+    - python /app/EyeWitness.py -f urls.txt -d output
   artifacts:
     paths:
       - output/

@@ -1,33 +1,38 @@
-# EyeWitness Windows Setup Script
-# PowerShell script for automatic Windows installation
+# EyeWitness Windows Setup Script - Chromium Edition
+# PowerShell script for automatic Windows installation with Chrome/Chromium
 
 [CmdletBinding()]
 param(
     [switch]$Force,
-    [switch]$SkipFirefox,
+    [switch]$SkipChrome,
     [switch]$Help
 )
 
 if ($Help) {
     Write-Host @"
-EyeWitness Windows Setup Script
+EyeWitness Windows Setup Script (Chromium Edition)
 
 Usage: .\setup.ps1 [options]
 
 Options:
   -Force        Force reinstall even if components exist
-  -SkipFirefox  Skip Firefox installation (assume already installed)
+  -SkipChrome   Skip Chrome installation (assume already installed)
   -Help         Show this help message
 
 Examples:
   .\setup.ps1                    # Standard installation
   .\setup.ps1 -Force             # Force reinstall everything
-  .\setup.ps1 -SkipFirefox       # Skip Firefox installation
+  .\setup.ps1 -SkipChrome        # Skip Chrome installation
 
 Requirements:
   - PowerShell 5.0+ (Windows 10/11 default)
   - Administrator privileges
   - Internet connection
+
+Dependencies installed:
+  - Python packages (selenium, etc.)
+  - Google Chrome browser
+  - ChromeDriver for automation
 "@
     exit 0
 }
@@ -52,14 +57,14 @@ function Write-InfoMsg {
 
 Write-Host @"
 ╔══════════════════════════════════════════════════════════════╗
-║                    EyeWitness Windows Setup                  ║
+║                EyeWitness Windows Setup (Chromium)          ║
 ║                                                              ║
 ║  This script will install the required dependencies for     ║
 ║  EyeWitness to run on Windows including:                    ║
 ║                                                              ║
-║  • Python dependencies                                      ║
-║  • Firefox browser (if not present)                         ║
-║  • Geckodriver for browser automation                       ║
+║  • Python dependencies (selenium, etc.)                     ║
+║  • Google Chrome browser (if not present)                   ║
+║  • ChromeDriver for browser automation                      ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
 "@ -ForegroundColor Cyan
@@ -81,8 +86,8 @@ Write-Success "Running with Administrator privileges"
 # Check PowerShell version
 $psVersion = $PSVersionTable.PSVersion.Major
 if ($psVersion -lt 5) {
-    Write-ErrorMsgMsg "PowerShell 5.0 or higher is required. Current version: $psVersion"
-    Write-InfoMsgMsg "Please update PowerShell: https://aka.ms/pscore6"
+    Write-ErrorMsg "PowerShell 5.0 or higher is required. Current version: $psVersion"
+    Write-InfoMsg "Please update PowerShell: https://aka.ms/pscore6"
     exit 1
 }
 
@@ -124,8 +129,10 @@ Write-InfoMsg "Installing Python dependencies..."
 $requirementsFile = Join-Path $PSScriptRoot "requirements.txt"
 
 if (-not (Test-Path $requirementsFile)) {
-    Write-ErrorMsg "requirements.txt not found at: $requirementsFile"
-    exit 1
+    Write-WarningMsg "requirements.txt not found, installing essential packages directly"
+    $packages = @("selenium", "netaddr", "psutil", "pyvirtualdisplay", "argcomplete")
+} else {
+    $packages = @()
 }
 
 try {
@@ -134,181 +141,221 @@ try {
     Write-Success "pip updated"
     
     # Install packages
-    python -m pip install -r $requirementsFile --quiet
-    Write-Success "Python dependencies installed"
+    if ($packages.Count -gt 0) {
+        foreach ($package in $packages) {
+            python -m pip install $package --quiet
+            Write-Success "Installed $package"
+        }
+    } else {
+        python -m pip install -r $requirementsFile --quiet
+        Write-Success "Python dependencies installed from requirements.txt"
+    }
 } catch {
     Write-ErrorMsg "Failed to install Python dependencies"
-    Write-InfoMsg "Try running: python -m pip install -r requirements.txt"
+    Write-InfoMsg "Try running manually: python -m pip install selenium netaddr psutil"
     exit 1
 }
 
-# Check Firefox installation
-if (-not $SkipFirefox) {
-    Write-InfoMsg "Checking Firefox installation..."
+# Check Chrome installation
+if (-not $SkipChrome) {
+    Write-InfoMsg "Checking Chrome installation..."
     
-    $firefoxPaths = @(
-        "C:\Program Files\Mozilla Firefox\firefox.exe",
-        "C:\Program Files (x86)\Mozilla Firefox\firefox.exe",
-        "$env:USERPROFILE\AppData\Local\Mozilla Firefox\firefox.exe"
+    $chromePaths = @(
+        "${env:ProgramFiles}\Google\Chrome\Application\chrome.exe",
+        "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe",
+        "${env:LOCALAPPDATA}\Google\Chrome\Application\chrome.exe",
+        "${env:ProgramFiles}\Chromium\Application\chrome.exe"
     )
     
-    $firefoxFound = $false
-    foreach ($path in $firefoxPaths) {
+    $chromeFound = $false
+    $chromePath = $null
+    
+    foreach ($path in $chromePaths) {
         if (Test-Path $path) {
-            Write-Success "Firefox found at: $path"
-            $firefoxFound = $true
+            $chromeFound = $true
+            $chromePath = $path
+            Write-Success "Chrome found at: $path"
             break
         }
     }
     
-    if (-not $firefoxFound -or $Force) {
-        Write-InfoMsg "Installing Firefox..."
+    if (-not $chromeFound -or $Force) {
+        Write-InfoMsg "Installing Google Chrome..."
         
-        # Check if Chocolatey is available
-        if (Get-Command choco -ErrorAction SilentlyContinue) {
-            try {
-                choco install firefox -y --quiet
-                Write-Success "Firefox installed via Chocolatey"
-                $firefoxFound = $true
-            } catch {
-                Write-WarningMsg "Chocolatey installation failed, trying direct download"
-            }
-        }
+        # Download Chrome installer
+        $tempDir = [System.IO.Path]::GetTempPath()
+        $chromeInstaller = Join-Path $tempDir "ChromeSetup.exe"
         
-        if (-not $firefoxFound) {
-            Write-InfoMsg "Downloading Firefox installer..."
-            $firefoxUrl = "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"
-            $installerPath = "$env:TEMP\FirefoxInstaller.exe"
+        try {
+            Write-InfoMsg "Downloading Chrome installer..."
+            $chromeUrl = "https://dl.google.com/chrome/install/ChromeStandaloneSetup64.exe"
+            Invoke-WebRequest -Uri $chromeUrl -OutFile $chromeInstaller -UseBasicParsing
+            Write-Success "Chrome installer downloaded"
             
-            try {
-                Invoke-WebRequest -Uri $firefoxUrl -OutFile $installerPath -UseBasicParsing
-                Write-Success "Firefox downloaded"
-                
-                Write-InfoMsg "Installing Firefox (this may take a moment)..."
-                Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait -NoNewWindow
-                Write-Success "Firefox installation completed"
-                
-                # Clean up installer
-                Remove-Item $installerPath -Force -ErrorAction SilentlyContinue
-            } catch {
-                Write-WarningMsg "Automatic Firefox installation failed"
-                Write-InfoMsg "Please manually install Firefox from: https://firefox.com"
+            Write-InfoMsg "Installing Chrome (this may take a moment)..."
+            Start-Process -FilePath $chromeInstaller -ArgumentList "/silent", "/install" -Wait
+            
+            # Clean up
+            Remove-Item $chromeInstaller -Force -ErrorAction SilentlyContinue
+            
+            # Verify installation
+            Start-Sleep -Seconds 3
+            $chromeFound = $false
+            foreach ($path in $chromePaths) {
+                if (Test-Path $path) {
+                    $chromeFound = $true
+                    Write-Success "Chrome successfully installed at: $path"
+                    break
+                }
             }
+            
+            if (-not $chromeFound) {
+                Write-WarningMsg "Chrome installation may have failed"
+                Write-InfoMsg "Please install Chrome manually from: https://www.google.com/chrome/"
+            }
+            
+        } catch {
+            Write-ErrorMsg "Failed to download/install Chrome: $_"
+            Write-InfoMsg "Please install Chrome manually from: https://www.google.com/chrome/"
         }
     }
-} else {
-    Write-InfoMsg "Skipping Firefox installation (--SkipFirefox specified)"
 }
 
-# Install Geckodriver
-Write-InfoMsg "Setting up Geckodriver..."
+# Install ChromeDriver
+Write-InfoMsg "Checking ChromeDriver installation..."
 
-# Determine architecture
-$arch = if ([Environment]::Is64BitOperatingSystem) { "win64" } else { "win32" }
-$geckodriverName = "geckodriver.exe"
+$chromeDriverPaths = @(
+    "${env:ProgramFiles}\ChromeDriver\chromedriver.exe",
+    "${env:ProgramFiles(x86)}\ChromeDriver\chromedriver.exe",
+    ".\chromedriver.exe",
+    "${env:PATH}" -split ";" | ForEach-Object { Join-Path $_ "chromedriver.exe" }
+)
 
-try {
-    # Get latest geckodriver release info
-    Write-InfoMsg "Getting latest Geckodriver version..."
-    $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/mozilla/geckodriver/releases/latest"
-    $version = $releases.tag_name
-    
-    # Find the appropriate download
-    $asset = $releases.assets | Where-Object { $_.name -like "*$arch*" } | Select-Object -First 1
-    
-    if (-not $asset) {
-        Write-ErrorMsg "Could not find Geckodriver for architecture: $arch"
-        exit 1
+$chromeDriverFound = $false
+foreach ($path in $chromeDriverPaths) {
+    if ((Test-Path $path) -and (-not $Force)) {
+        $chromeDriverFound = $true
+        Write-Success "ChromeDriver found at: $path"
+        break
     }
-    
-    Write-Success "Found Geckodriver $version for $arch"
-    
-    # Download geckodriver
-    $zipPath = "$env:TEMP\geckodriver-$version-$arch.zip"
-    Write-InfoMsg "Downloading Geckodriver..."
-    Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zipPath -UseBasicParsing
-    Write-Success "Geckodriver downloaded"
-    
-    # Extract geckodriver
-    $extractPath = "$env:TEMP\geckodriver-extract"
-    if (Test-Path $extractPath) {
-        Remove-Item $extractPath -Recurse -Force
-    }
-    New-Item -ItemType Directory -Path $extractPath -Force | Out-Null
-    
-    Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
-    Write-Success "Geckodriver extracted"
-    
-    # Install to System32 (in PATH)
-    $destPath = "C:\Windows\System32\$geckodriverName"
-    $sourcePath = Join-Path $extractPath $geckodriverName
-    
-    if (Test-Path $sourcePath) {
-        Copy-Item $sourcePath $destPath -Force
-        Write-Success "Geckodriver installed to: $destPath"
-    } else {
-        Write-ErrorMsg "Geckodriver executable not found in downloaded archive"
-    }
-    
-    # Clean up temporary files
-    Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
-    Remove-Item $extractPath -Recurse -Force -ErrorAction SilentlyContinue
-    
-} catch {
-    Write-WarningMsg "Automatic Geckodriver installation failed: $_"
-    Write-InfoMsg "You can manually install from: https://github.com/mozilla/geckodriver/releases"
-    Write-InfoMsg "Download the $arch version and place geckodriver.exe in your PATH"
 }
 
-# Verify installation
+if (-not $chromeDriverFound -or $Force) {
+    Write-InfoMsg "Installing ChromeDriver..."
+    
+    try {
+        # Get Chrome version
+        $chromeVersion = $null
+        foreach ($path in $chromePaths) {
+            if (Test-Path $path) {
+                $versionInfo = (Get-Item $path).VersionInfo.FileVersion
+                if ($versionInfo -match "(\d+\.\d+\.\d+)") {
+                    $chromeVersion = $matches[1]
+                    break
+                }
+            }
+        }
+        
+        if (-not $chromeVersion) {
+            Write-WarningMsg "Could not determine Chrome version, using latest ChromeDriver"
+            $chromeDriverUrl = "https://chromedriver.chromium.org/downloads"
+        }
+        
+        # Download and install ChromeDriver
+        $chromeDriverDir = "${env:ProgramFiles}\ChromeDriver"
+        $chromeDriverExe = Join-Path $chromeDriverDir "chromedriver.exe"
+        
+        # Create directory
+        if (-not (Test-Path $chromeDriverDir)) {
+            New-Item -ItemType Directory -Path $chromeDriverDir -Force | Out-Null
+        }
+        
+        # For simplicity, download the latest stable version
+        $tempZip = Join-Path ([System.IO.Path]::GetTempPath()) "chromedriver.zip"
+        $chromeDriverDownloadUrl = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"
+        
+        try {
+            # Get latest version
+            $latestVersion = Invoke-WebRequest -Uri $chromeDriverDownloadUrl -UseBasicParsing | Select-Object -ExpandProperty Content
+            $downloadUrl = "https://chromedriver.storage.googleapis.com/$latestVersion/chromedriver_win32.zip"
+            
+            Write-InfoMsg "Downloading ChromeDriver $latestVersion..."
+            Invoke-WebRequest -Uri $downloadUrl -OutFile $tempZip -UseBasicParsing
+            
+            # Extract
+            Expand-Archive -Path $tempZip -DestinationPath $chromeDriverDir -Force
+            Remove-Item $tempZip -Force -ErrorAction SilentlyContinue
+            
+            # Add to PATH if not already there
+            $currentPath = [Environment]::GetEnvironmentVariable("PATH", "Machine")
+            if ($currentPath -notlike "*$chromeDriverDir*") {
+                [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$chromeDriverDir", "Machine")
+                Write-Success "ChromeDriver added to system PATH"
+            }
+            
+            Write-Success "ChromeDriver installed successfully"
+            
+        } catch {
+            Write-WarningMsg "Failed to auto-install ChromeDriver: $_"
+            Write-InfoMsg "Please download ChromeDriver manually from: https://chromedriver.chromium.org/"
+            Write-InfoMsg "Extract chromedriver.exe to a directory in your PATH"
+        }
+        
+    } catch {
+        Write-WarningMsg "ChromeDriver installation encountered issues: $_"
+        Write-InfoMsg "You may need to install ChromeDriver manually"
+    }
+}
+
+# Final verification
 Write-InfoMsg "Verifying installation..."
 
-# Test Python imports
+$errors = 0
+
+# Check Python
 try {
-    python -c "import selenium; import rapidfuzz; import netaddr; print('Python packages OK')" 2>$null
-    Write-Success "Python packages verified"
+    python -c "import selenium; print('✓ Selenium available')"
+    Write-Success "Python selenium module verified"
 } catch {
-    Write-WarningMsg "Some Python packages may not be properly installed"
+    Write-ErrorMsg "Python selenium module not available"
+    $errors++
 }
 
-# Test Geckodriver
-try {
-    $geckodriverVersion = & geckodriver --version 2>$null | Select-String "geckodriver" | Select-Object -First 1
-    if ($geckodriverVersion) {
-        Write-Success "Geckodriver verified: $geckodriverVersion"
-    } else {
-        Write-WarningMsg "Geckodriver not found in PATH"
+# Check Chrome
+$chromeFound = $false
+foreach ($path in $chromePaths) {
+    if (Test-Path $path) {
+        Write-Success "Chrome browser verified: $path"
+        $chromeFound = $true
+        break
     }
-} catch {
-    Write-WarningMsg "Geckodriver verification failed"
+}
+if (-not $chromeFound) {
+    Write-ErrorMsg "Chrome browser not found"
+    $errors++
 }
 
-# Test Firefox
+# Check ChromeDriver
 try {
-    # Quick test that Firefox can be found
-    python -c @"
-from modules.platform_utils import PlatformManager
-pm = PlatformManager()
-firefox = pm.find_firefox_executable()
-if firefox:
-    print(f'Firefox found: {firefox}')
-else:
-    print('Firefox not found')
-"@ 2>$null | Tee-Object -Variable firefoxTest
-    
-    if ($firefoxTest -match "Firefox found:") {
-        Write-Success $firefoxTest
-    } else {
-        Write-WarningMsg "Firefox may not be properly installed"
-    }
+    $cdVersion = chromedriver --version 2>&1
+    Write-Success "ChromeDriver verified: $cdVersion"
 } catch {
-    Write-WarningMsg "Firefox verification failed"
+    Write-ErrorMsg "ChromeDriver not found in PATH"
+    $errors++
+}
+
+Write-Host "`n" -NoNewline
+
+if ($errors -eq 0) {
+    Write-Success "✓ All dependencies verified - EyeWitness is ready to run!"
+    Write-Host ""
+    Write-InfoMsg "Test installation with:"
+    Write-Host "  cd Python && python EyeWitness.py --single https://example.com" -ForegroundColor White
+} else {
+    Write-ErrorMsg "✗ $errors error(s) found - please resolve before using EyeWitness"
+    Write-InfoMsg "Re-run this script or install missing components manually"
 }
 
 Write-Host ""
-Write-Host "[+] Setup complete!" -ForegroundColor Green
-Write-Host ""
-Write-Host "Test it: python ..\EyeWitness.py --single https://example.com -d test"
-Write-Host "If it breaks, check firefox/geckodriver installation"
-
-Write-Success "Windows setup completed successfully!"
+Write-InfoMsg "EyeWitness setup completed!"
+Write-InfoMsg "Visit https://www.redsiege.com for more Red Siege tools"

@@ -17,7 +17,7 @@ The Docker implementation provides a fully isolated environment with all depende
 
 - **Base Image**: Python 3.11-slim-bookworm (Debian-based for stability)
 - **Display Server**: Xvfb (X Virtual Framebuffer) for headless screenshot capture
-- **Browser**: Firefox ESR with geckodriver for Selenium automation
+- **Browser**: Chromium with ChromeDriver for Selenium automation
 - **Isolation**: Non-root user execution with proper permission handling
 - **Volume Mounts**: Input files and output directory mapping
 
@@ -25,8 +25,8 @@ The Docker implementation provides a fully isolated environment with all depende
 ```
 Container Environment:
 ├── Python 3.11 Runtime
-├── Firefox ESR Browser
-├── Geckodriver (Selenium WebDriver)
+├── Chromium Browser
+├── ChromeDriver (Selenium WebDriver)
 ├── Xvfb Display Server
 ├── EyeWitness Application
 └── All Python Dependencies
@@ -93,22 +93,22 @@ def PrintCVSRow(self)             # Export data as CSV row
 
 ### 2. selenium_module.py - Web Automation Engine
 
-#### create_driver(cli_options, user_agent=None, proxy=None)
-**Purpose**: Initialize Firefox WebDriver with custom configuration.
+#### create_driver(cli_options, user_agent=None)
+**Purpose**: Initialize Chromium WebDriver with optimized headless configuration.
 
 **Parameters**:
 - `cli_options`: Command-line arguments and settings
 - `user_agent`: Custom user-agent string (optional)
-- `proxy`: Proxy configuration (optional)
 
-**Returns**: Configured Selenium WebDriver instance
+**Returns**: Configured Selenium Chrome WebDriver instance
 
 **Key Features**:
-- Cross-platform Firefox detection
-- Headless operation support
-- Custom user-agent and proxy configuration
+- Cross-platform Chromium/Chrome detection
+- Optimized headless operation with new headless mode
+- Custom user-agent configuration
 - SSL certificate error handling
-- Alert dismissal automation
+- Enhanced network error categorization
+- Memory and performance optimization
 
 #### capture_host(targets, selenium_driver, output_directory, cli_options)
 **Purpose**: Core screenshot capture function.
@@ -203,20 +203,21 @@ def PrintCVSRow(self)             # Export data as CSV row
 
 **Returns**: Boolean indicating if default credentials detected
 
-### 6. driver_manager.py - WebDriver Management
+### 6. selenium_module.py - Enhanced Browser Management
 
-#### download_geckodriver()
-**Purpose**: Automatically download latest compatible geckodriver.
+#### find_chromedriver()
+**Purpose**: Locate ChromeDriver executable in system paths.
 
-**Process**:
-1. Query GitHub API for latest geckodriver release
-2. Detect system architecture (x86_64, i386, aarch64)
-3. Download appropriate binary for platform
-4. Install to system PATH with proper permissions
-5. Validate installation and functionality
+**Search Locations**:
+1. Standard system paths (/usr/bin, /usr/local/bin)
+2. Snap package locations
+3. System PATH environment
+4. Common installation directories
 
-#### check_geckodriver_version()
-**Purpose**: Verify installed geckodriver version compatibility.
+#### check_browsers_available()
+**Purpose**: Verify Chromium/Chrome and ChromeDriver availability.
+
+**Returns**: Dictionary with browser and driver status information
 
 ### 7. platform_utils.py - Cross-Platform Support
 
@@ -225,8 +226,8 @@ def PrintCVSRow(self)             # Export data as CSV row
 
 **Returns**: Dictionary with platform information
 
-#### find_firefox_executable()
-**Purpose**: Locate Firefox installation across platforms.
+#### find_chromium_executable()
+**Purpose**: Locate Chromium/Chrome installation across platforms.
 
 **Search Paths**:
 - Windows: Program Files, Program Files (x86), AppData paths
@@ -304,11 +305,12 @@ HTML Reports + Screenshots
 - **Resume**: Tracks incomplete targets for resumption
 
 ### Selenium Configuration
-- **Browser**: Firefox (required)
-- **Mode**: Headless (default) or visible
+- **Browser**: Chromium/Chrome (required)
+- **Mode**: Headless with new headless mode (default)
 - **Timeouts**: Configurable page load and screenshot timeouts
-- **Proxy**: HTTP/SOCKS proxy support
 - **User Agents**: Custom UA string support
+- **Performance**: Memory optimization and background throttling disabled
+- **Security**: Certificate error handling and automation detection disabled
 
 ### Report Configuration
 - **Format**: HTML with Bootstrap CSS
@@ -354,8 +356,8 @@ pyvirtualdisplay>=3.0 # Virtual display support (Unix)
 ```
 
 ### System Requirements
-- **Firefox Browser**: Required for Selenium WebDriver
-- **geckodriver**: WebDriver executable (auto-downloadable)
+- **Chromium/Chrome Browser**: Required for Selenium WebDriver
+- **ChromeDriver**: WebDriver executable (installed via package manager)
 - **Xvfb**: Virtual display server (Linux headless environments)
 - **Python 3.7+**: Minimum Python version requirement
 
@@ -388,13 +390,15 @@ pyvirtualdisplay>=3.0 # Virtual display support (Unix)
 
 ## Troubleshooting Common Issues
 
-### Firefox/Geckodriver Issues
-- **Solution**: Run `driver_manager.py` functions to auto-download latest geckodriver
-- **Manual**: Download from GitHub releases and place in PATH
+### Chromium/ChromeDriver Issues
+- **Linux Solution**: `sudo apt install chromium-browser chromium-chromedriver`
+- **Windows Solution**: Run `setup.ps1` script as Administrator
+- **macOS Solution**: `brew install --cask google-chrome`
 
 ### Headless Display Issues (Linux)
-- **Solution**: Install Xvfb via package manager
+- **Solution**: Install Xvfb: `sudo apt install xvfb`
 - **Verification**: Check `platform_utils.py` virtual display setup
+- **Alternative**: Use optimized headless mode (no display server needed)
 
 ### Permission Issues
 - **Solution**: Run setup scripts with appropriate privileges

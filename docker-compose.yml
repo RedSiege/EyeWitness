@@ -5,8 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        GECKODRIVER_VERSION: v0.34.0
     image: eyewitness:latest
     container_name: eyewitness
     

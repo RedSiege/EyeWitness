@@ -87,27 +87,28 @@ class PlatformManager:
         
         return None
     
-    def get_geckodriver_suffix(self):
-        return '.exe' if self.is_windows else ''
-    
-    def get_geckodriver_download_info(self):
-        # figure out which geckodriver to download
+    def get_chromedriver_paths(self):
+        # common chromedriver install locations
         if self.is_windows:
-            arch = 'win64' if 'amd64' in self.machine or 'x86_64' in self.machine else 'win32'
-            return f'{arch}.zip', 'zip'
+            return [
+                r"C:\Program Files\ChromeDriver\chromedriver.exe",
+                r"C:\Program Files (x86)\ChromeDriver\chromedriver.exe",
+                str(Path.home() / "AppData" / "Local" / "ChromeDriver" / "chromedriver.exe")
+            ]
         elif self.is_linux:
-            if 'aarch64' in self.machine or 'arm64' in self.machine:
-                arch = 'linux-aarch64'
-            elif 'x86_64' in self.machine:
-                arch = 'linux64'
-            else:
-                arch = 'linux32'
-            return f'{arch}.tar.gz', 'tar.gz'
+            return [
+                "/usr/bin/chromedriver",
+                "/usr/local/bin/chromedriver",
+                "/snap/bin/chromium.chromedriver",
+                "/usr/lib/chromium-browser/chromedriver"
+            ]
         elif self.is_mac:
-            arch = 'macos-aarch64' if 'arm64' in self.machine else 'macos'
-            return f'{arch}.tar.gz', 'tar.gz'
-        
-        return None, None
+            return [
+                "/usr/local/bin/chromedriver",
+                "/opt/homebrew/bin/chromedriver",
+                str(Path.home() / "Applications" / "chromedriver")
+            ]
+        return []
     
     def needs_virtual_display(self):
         # windows has native headless, unix needs xvfb if no display
@@ -130,7 +131,7 @@ class PlatformManager:
         """Get system package installation commands for current platform"""
         if self.is_windows:
             return {
-                'firefox': 'choco install firefox -y',
+                'chrome': 'choco install googlechrome -y',
                 'python': 'choco install python -y',
                 'git': 'choco install git -y'
             }
@@ -138,28 +139,28 @@ class PlatformManager:
             # Detect Linux distribution
             if shutil.which('apt-get'):  # Debian/Ubuntu
                 return {
-                    'firefox': 'sudo apt-get install -y firefox-esr',
+                    'chromium': 'sudo apt-get install -y chromium-browser chromium-chromedriver',
                     'xvfb': 'sudo apt-get install -y xvfb',
                     'python': 'sudo apt-get install -y python3 python3-pip python3-dev',
                     'tools': 'sudo apt-get install -y wget curl jq cmake'
                 }
             elif shutil.which('yum'):  # CentOS/RHEL/Fedora
                 return {
-                    'firefox': 'sudo yum install -y firefox',
+                    'chromium': 'sudo yum install -y chromium chromedriver',
                     'xvfb': 'sudo yum install -y xorg-x11-server-Xvfb',
                     'python': 'sudo yum install -y python3 python3-pip python3-devel',
                     'tools': 'sudo yum install -y wget curl jq cmake'
                 }
             elif shutil.which('pacman'):  # Arch
                 return {
-                    'firefox': 'sudo pacman -S firefox --noconfirm',
+                    'chromium': 'sudo pacman -S chromium --noconfirm',
                     'xvfb': 'sudo pacman -S xorg-server-xvfb --noconfirm',
                     'python': 'sudo pacman -S python python-pip --noconfirm',
                     'tools': 'sudo pacman -S wget curl jq cmake --noconfirm'
                 }
         elif self.is_mac:
             return {
-                'firefox': 'brew install --cask firefox',
+                'chrome': 'brew install --cask google-chrome',
                 'python': 'brew install python',
                 'tools': 'brew install wget curl jq cmake'
             }
