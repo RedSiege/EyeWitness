@@ -1,21 +1,35 @@
 #!/bin/bash
 
-echo "=== EyeWitness Dependency Check ==="
+echo "=== EyeWitness Dependency Check (Chromium Only) ==="
 echo
 
-# Check Firefox
-echo -n "Firefox: "
-if command -v firefox &> /dev/null; then
-    echo "✓ Installed ($(firefox --version 2>&1 | head -1))"
-else
+# Check Chromium
+echo -n "Chromium: "
+chromium_found=false
+for browser in chromium-browser chromium google-chrome; do
+    if command -v $browser &> /dev/null; then
+        echo "✓ Installed ($browser $(timeout 2 $browser --version 2>&1 | head -1 | cut -d' ' -f2 2>/dev/null || echo 'version unknown'))"
+        chromium_found=true
+        break
+    fi
+done
+
+if [ "$chromium_found" = false ]; then
     echo "✗ NOT FOUND"
 fi
 
-# Check geckodriver
-echo -n "Geckodriver: "
-if command -v geckodriver &> /dev/null; then
-    echo "✓ Installed ($(geckodriver --version 2>&1 | head -1))"
-else
+# Check chromedriver
+echo -n "ChromeDriver: "
+chromedriver_found=false
+for driver in chromedriver chromium-chromedriver; do
+    if command -v $driver &> /dev/null; then
+        echo "✓ Installed ($driver $($driver --version 2>&1 | head -1 | cut -d' ' -f2 2>/dev/null || echo 'version unknown'))"
+        chromedriver_found=true
+        break
+    fi
+done
+
+if [ "$chromedriver_found" = false ]; then
     echo "✗ NOT FOUND"
 fi
 
@@ -49,23 +63,33 @@ else
 fi
 
 echo
-echo "=== Quick Fix Commands ==="
+echo "=== System Status ==="
 echo
-if ! command -v firefox &> /dev/null; then
-    echo "Install Firefox:"
-    echo "  Ubuntu/Debian: sudo apt install -y firefox"
-    echo "  CentOS/RHEL: sudo yum install -y firefox"
-fi
-
-if ! command -v geckodriver &> /dev/null; then
+if [ "$chromium_found" = true ] && [ "$chromedriver_found" = true ]; then
+    echo "✓ EyeWitness is ready to run!"
     echo
-    echo "Install geckodriver:"
-    echo "  Run: sudo /opt/tools/EyeWitness/setup/setup.sh"
-fi
-
-if ! command -v Xvfb &> /dev/null; then
+    echo "Test with:"
+    echo "  cd Python && python3 EyeWitness.py --single https://example.com"
+else
+    echo "✗ Missing dependencies detected"
     echo
-    echo "Install Xvfb:"
-    echo "  Ubuntu/Debian: sudo apt install -y xvfb"
-    echo "  CentOS/RHEL: sudo yum install -y xorg-x11-server-Xvfb"
+    echo "=== Quick Fix Commands ==="
+    echo
+    if [ "$chromium_found" = false ]; then
+        echo "Install Chromium:"
+        echo "  Ubuntu/Debian: sudo apt install chromium-browser"
+        echo "  CentOS/RHEL: sudo yum install chromium"
+        echo "  Arch: sudo pacman -S chromium"
+    fi
+
+    if [ "$chromedriver_found" = false ]; then
+        echo
+        echo "Install ChromeDriver:"
+        echo "  Ubuntu/Debian: sudo apt install chromium-chromedriver"
+        echo "  Or run: sudo ./setup.sh"
+    fi
+    
+    echo
+    echo "Complete setup:"
+    echo "  sudo ./setup.sh"
 fi

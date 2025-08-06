@@ -42,50 +42,46 @@ class PlatformManager:
     def clear_screen(self):
         os.system('cls' if self.is_windows else 'clear')
     
-    def get_firefox_paths(self):
-        # common firefox install locations
+    def get_chromium_paths(self):
+        # common chromium install locations
         if self.is_windows:
             paths = [
-                r"C:\Program Files\Mozilla Firefox\firefox.exe",
-                r"C:\Program Files (x86)\Mozilla Firefox\firefox.exe"
+                r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+                r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
             ]
             # also check user dirs
             home = Path.home()
             paths.extend([
-                str(home / "AppData" / "Local" / "Mozilla Firefox" / "firefox.exe"),
-                str(home / "AppData" / "Roaming" / "Mozilla Firefox" / "firefox.exe")
+                str(home / "AppData" / "Local" / "Google" / "Chrome" / "Application" / "chrome.exe"),
+                str(home / "AppData" / "Local" / "Chromium" / "Application" / "chrome.exe")
             ])
             return paths
         elif self.is_linux:
             return [
-                "/usr/bin/firefox",
-                "/usr/bin/firefox-esr", 
-                "/opt/firefox/firefox",
-                "/snap/bin/firefox",
-                "/usr/local/bin/firefox"
+                "/usr/bin/chromium-browser",
+                "/usr/bin/chromium",
+                "/usr/bin/google-chrome",
+                "/opt/google/chrome/chrome",
+                "/snap/bin/chromium",
+                "/usr/local/bin/chromium"
             ]
         elif self.is_mac:
             return [
-                "/Applications/Firefox.app/Contents/MacOS/firefox",
-                str(Path.home() / "Applications" / "Firefox.app" / "Contents" / "MacOS" / "firefox")
+                "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                "/Applications/Chromium.app/Contents/MacOS/Chromium",
+                str(Path.home() / "Applications" / "Google Chrome.app" / "Contents" / "MacOS" / "Google Chrome")
             ]
         return []
     
-    def find_firefox_executable(self):
+    def find_chromium_executable(self):
         # check PATH first
-        for name in ['firefox', 'firefox-esr']:
+        for name in ['chromium-browser', 'chromium', 'google-chrome']:
             path = shutil.which(name)
             if path:
-                # Check if it's a snap package (problematic for Selenium)
-                if '/snap/' in path or path.startswith('/snap'):
-                    print('[!] Warning: Firefox is installed as a snap package')
-                    print('[!] Snap Firefox often causes issues with Selenium/Geckodriver')
-                    print('[*] Run the setup script to fix: sudo ./setup/setup.sh')
-                    # Still return it, but user is warned
                 return path
         
         # fallback to hardcoded paths
-        for path in self.get_firefox_paths():
+        for path in self.get_chromium_paths():
             if Path(path).exists():
                 return path
         
@@ -182,7 +178,7 @@ class PlatformManager:
         status = {
             'platform': self.system,
             'python_version': sys.version,
-            'firefox_found': self.find_firefox_executable() is not None,
+            'chromium_found': self.find_chromium_executable() is not None,
             'virtual_display_available': self.can_use_virtual_display(),
             'virtual_display_needed': self.needs_virtual_display(),
             'admin_privileges': self.is_admin,
@@ -190,8 +186,8 @@ class PlatformManager:
         }
         
         # Check for common issues
-        if not status['firefox_found']:
-            status['issues'].append('Firefox not found - install Firefox browser')
+        if not status['chromium_found']:
+            status['issues'].append('Chromium not found - install Chromium browser')
         
         if self.needs_virtual_display() and not self.can_use_virtual_display():
             status['issues'].append('Virtual display needed but not available - install xvfb and pyvirtualdisplay')
@@ -207,8 +203,8 @@ class PlatformManager:
         print(f"Virtual display needed: {self.needs_virtual_display()}")
         print(f"Virtual display available: {self.can_use_virtual_display()}")
         
-        firefox = self.find_firefox_executable()
-        print(f"Firefox: {firefox if firefox else 'Not found'}")
+        chromium = self.find_chromium_executable()
+        print(f"Chromium: {chromium if chromium else 'Not found'}")
         
         validation = self.validate_environment()
         if validation['issues']:

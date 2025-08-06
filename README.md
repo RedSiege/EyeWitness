@@ -15,7 +15,7 @@ EyeWitness is designed to take screenshots of websites, provide server header in
 ## Installation
 
 ### Docker (Recommended - All Platforms)
-The easiest way to run EyeWitness is using Docker. No Python, Firefox, or dependencies needed!
+The easiest way to run EyeWitness is using Docker. No Python, Chromium, or dependencies needed!
 
 ```bash
 # Clone the repository
@@ -34,7 +34,7 @@ See [DOCKER.md](DOCKER.md) for detailed Docker usage instructions, platform-spec
 ### Traditional Installation
 
 #### Windows
-1. Install Firefox if not already installed
+1. Install Chrome or Chromium if not already installed
 2. Run PowerShell as Administrator
 3. Navigate to the setup directory
 4. Run: `.\setup.ps1`
@@ -52,7 +52,7 @@ See [DOCKER.md](DOCKER.md) for detailed Docker usage instructions, platform-spec
 - Arch Linux
 
 #### macOS
-1. Install Firefox: `brew install --cask firefox`
+1. Install Chrome: `brew install --cask google-chrome`
 2. Run: `./setup.sh`
 
 ## Usage
@@ -155,10 +155,10 @@ Create a config file to save your preferred settings:
 
 ### Common Issues
 
-**Firefox/Geckodriver not found:**
-- Linux: `sudo apt install firefox-esr firefox-geckodriver`
+**Chromium/ChromeDriver not found:**
+- Linux: `sudo apt install chromium-browser chromium-chromedriver`
 - Windows: Navigate to setup directory and run `.\setup.ps1` as Administrator
-- macOS: `brew install --cask firefox`
+- macOS: `brew install --cask google-chrome`
 
 **Connection timeouts:**
 - Increase timeout: `--timeout 60`
@@ -197,8 +197,8 @@ EyeWitness generates:
 ## Requirements
 
 - Python 3.7+
-- Firefox browser
-- Geckodriver (automatically installed by setup script)
+- Chromium browser
+- ChromeDriver (automatically installed by setup script)
 
 ## Changes from Original
 

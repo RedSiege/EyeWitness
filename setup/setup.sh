@@ -1,189 +1,65 @@
 #!/bin/bash
-# Original script by @themightyshiv
-# Rewritten by moth@bhis (@0x6d6f7468)
+# EyeWitness Setup Script - Chromium Only
+# Simplified installation for headless screenshot functionality
 
-# Function for downloading latest geckodriver for the correct CPU architecture
-get_gecko() {
-    echo
-    echo "[*] Getting latest Gecko driver..."
-
-    # Get download links for latest geckodriver via GitHub API
-    local latest_geckos=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest \
-            | jq '.assets[].browser_download_url' | tr -d \")
-    
-    # Construct appropriate download URL (or exit if unsupported arch)
-    local gecko_url="";
-    case ${mach_type} in
-        x86_64)
-            gecko_url=$(echo "$latest_geckos" | grep "linux64.tar.gz$");;
-        i386|i686)
-            gecko_url=$(echo "$latest_geckos" | grep "linux32.tar.gz$");;
-        aarch64)
-            gecko_url=$(echo "$latest_geckos" | grep "linux-aarch64.tar.gz$");;
-        *)
-            echo "[-] Error: Unsupported architecture: ${mach_type}"
-            popd >/dev/null
-            exit 1
-            ;;
-    esac
-
-    # Download, extract, and clean up latest driver tarball
-    wget "$gecko_url" -O geckodriver.tar.gz
-    tar -xvf geckodriver.tar.gz -C /usr/bin
-    rm geckodriver.tar.gz
-}
-
-# Function to install Linux and Python dependencies
+# Function to install Linux dependencies and Chromium
 install_deps() {
     echo
-    echo "[*] Installing system dependencies..."
+    echo "[*] Installing system dependencies and Chromium browser..."
 
     case ${os_id} in
         debian|kali)
             apt-get update
+            # Install Python packages via apt (avoid PEP 668 issues)
             apt install -y python3-rapidfuzz
-            apt install -y python3-selenium
+            apt install -y python3-selenium  
             apt install -y python3-psutil
             apt install -y python3-pyvirtualdisplay 2>/dev/null || true
+            apt install -y python3-argcomplete
 
-            apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev firefox-esr tar
-            # Ensure Firefox ESR is really installed (sometimes package name varies)
-            if ! command -v firefox &> /dev/null; then
-                echo "[*] Firefox not found, trying alternative package names..."
-                apt-get install -y firefox || apt-get install -y firefox-browser || true
-            else
-                # Check if Firefox is installed as snap (causes Selenium issues)
-                firefox_path=$(which firefox 2>/dev/null || true)
-                if [[ "$firefox_path" == *"snap"* ]]; then
-                    echo "[!] Detected Firefox snap package - this causes issues with Selenium"
-                    echo "[*] Removing Firefox snap and installing from apt..."
-                    
-                    # Remove snap Firefox
-                    snap remove firefox
-                    
-                    # For Debian/Kali, just install ESR version
-                    apt-get update
-                    apt-get install -y firefox-esr
-                    
-                    echo "[+] Firefox ESR installed from apt repository"
-                fi
-            fi
+            # Install system dependencies
+            apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev tar bc
+            
+            # Install Chromium browser and driver
+            echo "[*] Installing Chromium browser and ChromeDriver..."
+            apt-get install -y chromium-browser chromium-chromedriver || \
+            apt-get install -y chromium chromium-driver
             ;;
+            
         ubuntu|linuxmint)
             apt-get update
             
-            # Check for snap Firefox BEFORE trying to install
-            firefox_path=$(which firefox 2>/dev/null || true)
-            
-            # On Ubuntu 22.04+, Firefox defaults to snap, so we need to prevent that
-            # Check Ubuntu version
-            ubuntu_version=$(lsb_release -rs 2>/dev/null || echo "0")
-            if [[ $(echo "$ubuntu_version >= 22.04" | bc -l) -eq 1 ]] || [[ "$firefox_path" == *"snap"* ]]; then
-                echo "[*] Ubuntu 22.04+ detected or snap Firefox found - configuring apt Firefox..."
-                
-                # Remove snap Firefox if it exists
-                if [[ "$firefox_path" == *"snap"* ]]; then
-                    echo "[*] Removing existing snap Firefox..."
-                    snap remove firefox
-                    # Also remove firefox transitional package that points to snap
-                    apt-get remove -y firefox 2>/dev/null || true
-                fi
-                
-                # Add Mozilla PPA for latest Firefox
-                add-apt-repository -y ppa:mozillateam/ppa
-                
-                # Prevent snap Firefox from being installed
-                cat > /etc/apt/preferences.d/mozilla-firefox <<EOF
-Package: firefox*
-Pin: release o=LP-PPA-mozillateam
-Pin-Priority: 1001
-
-Package: firefox*
-Pin: release o=Ubuntu
-Pin-Priority: -1
-EOF
-                
-                apt-get update
-            fi
-            
+            # Install Python packages via apt (avoid PEP 668 issues) 
             apt install -y python3-rapidfuzz
             apt install -y python3-selenium
             apt install -y python3-psutil
             apt install -y python3-pyvirtualdisplay 2>/dev/null || true
+            apt install -y python3-argcomplete
+            
+            # Install system dependencies
             apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev x11-utils tar bc
             
-            echo "[*] Installing browsers - trying Chromium first (easier install)..."
-            # Install Chromium as primary browser (much easier than Firefox snap issues)
-            if apt-get install -y chromium-browser chromium-chromedriver; then
-                echo "[+] Chromium browser installed successfully!"
-            else
-                echo "[!] Chromium installation failed, falling back to Firefox..."
-                # Install Firefox separately with downgrade allowed
-                apt-get install -y --allow-downgrades firefox || {
-                    echo "[!] Firefox installation failed, trying more aggressive approach..."
-                    # Source helper and use aggressive fix
-                    source "$(dirname "$0")/install-firefox-helper.sh"
-                    fix_firefox_installation
-                }
-            fi
-            # Ensure Firefox is really installed (sometimes package name varies)
-            if ! command -v firefox &> /dev/null; then
-                echo "[*] Firefox not found, trying alternative package names..."
-                apt-get install -y firefox-esr || apt-get install -y firefox-browser || true
-            else
-                # Check if Firefox is installed as snap (causes Selenium issues)
-                firefox_path=$(which firefox 2>/dev/null || true)
-                if [[ "$firefox_path" == *"snap"* ]]; then
-                    echo "[!] Detected Firefox snap package - this causes issues with Selenium"
-                    echo "[*] Removing Firefox snap and installing from apt..."
-                    
-                    # Remove snap Firefox
-                    snap remove firefox
-                    
-                    # Add Mozilla PPA for latest Firefox
-                    add-apt-repository -y ppa:mozillateam/ppa 2>/dev/null || true
-                    
-                    # Prevent snap Firefox from reinstalling
-                    cat > /etc/apt/preferences.d/mozilla-firefox <<EOF
-Package: firefox*
-Pin: release o=LP-PPA-mozillateam
-Pin-Priority: 1001
-
-Package: firefox*
-Pin: release o=Ubuntu
-Pin-Priority: -1
-EOF
-                    
-                    # Update and install Firefox from apt
-                    apt-get update
-                    apt-get install -y firefox
-                    
-                    echo "[+] Firefox installed from apt repository"
-                fi
-            fi
+            # Install Chromium browser and driver
+            echo "[*] Installing Chromium browser and ChromeDriver..."
+            apt-get install -y chromium-browser chromium-chromedriver
             ;;
+            
         arch|manjaro)
             pacman -Syu
-            pacman -S --noconfirm wget curl jq cmake python3 python-xvfbwrapper python-pip python-netaddr firefox tar
+            pacman -S --noconfirm wget curl jq cmake python3 python-xvfbwrapper python-pip python-netaddr chromium tar
+            # Install chromedriver from AUR or manually
+            echo "[*] Note: You may need to install chromedriver manually on Arch"
             ;;
+            
         alpine)
             apk update
-            apk add wget curl jq cmake python3 xvfb py-pip py-netaddr python3-dev firefox tar
-
-            # from https://stackoverflow.com/questions/58738920/running-geckodriver-in-an-alpine-docker-container
-            # Get all the prereqs
-            wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
-            wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-2.30-r0.apk
-            wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-bin-2.30-r0.apk
-            apk add glibc-2.30-r0.apk
-            apk add glibc-bin-2.30-r0.apk
+            apk add wget curl jq cmake python3 xvfb py-pip py-netaddr python3-dev chromium chromium-chromedriver tar
+            ;;
             
-            # And of course we need Firefox if we actually want to *use* GeckoDriver
-            apk add firefox-esr=60.9.0-r0
-            ;;
         centos|rocky|fedora)
-            yum install -y wget curl jq python3 xorg-x11-server-Xvfb python3-pip firefox gcc cmake python3-devel gcc cmake python3-devel tar
+            yum install -y wget curl jq python3 xorg-x11-server-Xvfb python3-pip chromium chromedriver gcc cmake python3-devel tar
             ;;
+            
         *)
             echo "[-] Error: Unsupported Operating System ID: ${os_id}"
             popd >/dev/null
@@ -192,22 +68,27 @@ EOF
     esac
 
     echo
-    echo "[*] Installing Python dependencies..."
-    # Check if pip needs upgrade using system package manager
+    echo "[*] Installing remaining Python dependencies via pip..."
+    # Only install packages not available via apt
     case ${os_id} in
         debian|kali|ubuntu|linuxmint)
-            # Install pyvirtualdisplay via apt if available
-            apt install -y python3-pyvirtualdisplay 2>/dev/null || true
-            # Install argcomplete via apt
-            apt install -y python3-argcomplete 2>/dev/null || python3 -m pip install --break-system-packages argcomplete
+            # Most packages installed via apt, only install what's missing
+            python3 -m pip install --break-system-packages netaddr 2>/dev/null || pip3 install netaddr 2>/dev/null || true
             ;;
         *)
-            # For non-debian systems, use pip normally
+            # For other distros, use pip normally
             pip3 install --upgrade pip
-            python3 -m pip install -r requirements.txt
-            python3 -m pip install argcomplete
+            python3 -m pip install -r requirements.txt 2>/dev/null || true
+            python3 -m pip install argcomplete 2>/dev/null || true
             ;;
     esac
+}
+
+# Function to get latest geckodriver (kept for compatibility, but not used)
+get_gecko() {
+    echo
+    echo "[*] Note: EyeWitness now uses ChromeDriver instead of GeckoDriver"
+    echo "[*] Skipping GeckoDriver download..."
 }
 
 # Make sure we're in the setup directory
@@ -218,24 +99,26 @@ echo
 echo "[*] Checking if running as root..."
 if [ "$EUID" -ne 0 ]; then
     echo "[-] Error: You must run this setup script with root privileges."
-    echo
+    echo "    Please run: sudo $0"
     popd >/dev/null
     exit 1
-else
-    echo "[+] Running as root."
 fi
+echo "[+] Running as root."
 
-# Get some system information
+# Get system information
 echo
 echo "[*] Getting system information..."
-os_id=$(grep ^ID= /etc/os-release | cut -d'=' -f2 | tr -d '"')
+os_id=$(grep -E '^ID=' /etc/os-release | cut -d= -f2 | tr -d '"')
 mach_type=$(uname -m)
+
+echo "[*] Detected OS: ${os_id}"
+echo "[*] Detected Architecture: ${mach_type}"
 
 # Install dependencies
 install_deps
 
-# Get the gecko
-get_gecko
+# Skip geckodriver (not needed for Chromium)
+# get_gecko
 
 # Get out of there!
 popd >/dev/null
@@ -245,40 +128,64 @@ echo
 echo "[*] Verifying installation..."
 missing_deps=0
 
-if ! command -v firefox &> /dev/null; then
-    echo "[-] Firefox not found - EyeWitness requires Firefox to capture screenshots"
-    echo "    Try: sudo apt install firefox-esr (or firefox)"
-    missing_deps=1
-else
-    # Check if Firefox is still a snap
-    firefox_path=$(which firefox)
-    if [[ "$firefox_path" == *"snap"* ]]; then
-        echo "[-] Firefox is still installed as a snap package"
-        echo "    This will cause issues with Selenium/Geckodriver"
-        echo "    Please run this script again to fix the issue"
-        missing_deps=1
-    else
-        # Verify Firefox can actually run headless
-        echo "[*] Testing Firefox headless mode..."
-        if timeout 10 firefox --headless --screenshot=/tmp/test.png https://example.com 2>/dev/null; then
-            echo "[+] Firefox headless mode verified!"
-            rm -f /tmp/test.png
-        else
-            echo "[!] Firefox headless test failed - may have compatibility issues"
-            echo "    Try: export MOZ_HEADLESS=1 before running EyeWitness"
-        fi
+# Check for Chromium
+chromium_found=false
+for browser in chromium-browser chromium google-chrome; do
+    if command -v $browser &> /dev/null; then
+        echo "[+] Browser found: $browser"
+        chromium_found=true
+        break
     fi
-fi
+done
 
-if ! command -v geckodriver &> /dev/null; then
-    echo "[-] Geckodriver not found in PATH"
+if [ "$chromium_found" = false ]; then
+    echo "[-] No Chromium/Chrome browser found"
+    echo "    Try: sudo apt install chromium-browser"
     missing_deps=1
 fi
 
+# Check for ChromeDriver
+chromedriver_found=false
+for driver in chromedriver chromium-chromedriver; do
+    if command -v $driver &> /dev/null; then
+        echo "[+] ChromeDriver found: $driver"
+        chromedriver_found=true
+        break
+    fi
+done
+
+if [ "$chromedriver_found" = false ]; then
+    echo "[-] ChromeDriver not found"
+    echo "    Try: sudo apt install chromium-chromedriver" 
+    missing_deps=1
+fi
+
+# Check for Xvfb (virtual display for headless)
 if ! command -v Xvfb &> /dev/null && [ "${os_id}" != "windows" ]; then
     echo "[-] Xvfb not found - required for headless operation"
     echo "    Try: sudo apt install xvfb"
     missing_deps=1
+fi
+
+# Test Chromium headless functionality
+if [ "$chromium_found" = true ]; then
+    echo "[*] Testing Chromium headless mode..."
+    # Find chromium binary
+    chromium_bin=""
+    for browser in chromium-browser chromium google-chrome; do
+        if command -v $browser &> /dev/null; then
+            chromium_bin=$browser
+            break
+        fi
+    done
+    
+    if timeout 10 $chromium_bin --headless --disable-gpu --screenshot=/tmp/test.png https://example.com 2>/dev/null; then
+        echo "[+] Chromium headless mode verified!"
+        rm -f /tmp/test.png
+    else
+        echo "[!] Chromium headless test failed - may have compatibility issues"
+        echo "    This is usually not a problem for EyeWitness operation"
+    fi
 fi
 
 if [ $missing_deps -eq 0 ]; then
@@ -286,7 +193,7 @@ if [ $missing_deps -eq 0 ]; then
 else
     echo
     echo "[!] Some dependencies are missing. EyeWitness may not work properly."
-    echo "[*] Run setup/check-dependencies.sh for detailed diagnostics"
+    echo "[*] Re-run this script to attempt fixes"
 fi
 
 # Enable tab completion
@@ -311,7 +218,13 @@ fi
 
 # Print success message
 echo
-echo "[+] Setup script completed successfully. Enjoy EyeWitness! ^_^"
+echo "[+] EyeWitness setup completed successfully!"
+echo "[*] Browser: Chromium (headless mode)"
+echo "[*] Screenshots will be captured using ChromeDriver"
+echo
+echo "[*] To test installation:"
+echo "    cd Python && python3 EyeWitness.py --single https://example.com"
+echo
 echo "[*] Be sure to check out Red Siege!"
 echo "[*] https://www.redsiege.com"
 echo
