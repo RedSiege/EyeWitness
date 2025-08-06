@@ -14,8 +14,10 @@ except ImportError:
 
 try:
     from selenium import webdriver
-    from selenium.webdriver.firefox.options import Options
+    from selenium.webdriver.firefox.options import Options as FirefoxOptions
     from selenium.webdriver.firefox.service import Service as FirefoxService
+    from selenium.webdriver.chrome.options import Options as ChromeOptions
+    from selenium.webdriver.chrome.service import Service as ChromeService
     from selenium.common.exceptions import NoAlertPresentException
     from selenium.common.exceptions import TimeoutException
     from selenium.common.exceptions import UnexpectedAlertPresentException
@@ -42,16 +44,46 @@ if platform_mgr.is_linux:
     os.environ['MOZ_DISABLE_GPU'] = '1'
 
 
-def create_driver(cli_parsed, user_agent=None):
-    """Creates a selenium FirefoxDriver
+def create_driver(cli_parsed, user_agent=None, browser=None):
+    """Creates a selenium WebDriver (Firefox or Chrome)
 
     Args:
         cli_parsed (ArgumentParser): Command Line Object
         user_agent (String, optional): Optional user-agent string
+        browser (String, optional): Browser choice ('firefox' or 'chrome')
 
     Returns:
-        FirefoxDriver: Selenium Firefox Webdriver
+        WebDriver: Selenium Webdriver (Firefox or Chrome)
     """
+    # Auto-detect browser if not specified
+    if not browser:
+        from modules.chrome_driver import get_preferred_browser
+        browser = get_preferred_browser()
+        if browser:
+            print(f'[*] Auto-detected browser: {browser}')
+        else:
+            print('[!] No suitable browser found')
+            return None
+    
+    # Use Chrome if available and preferred
+    if browser == 'chrome':
+        try:
+            from modules.chrome_driver import create_chrome_driver
+            return create_chrome_driver(cli_parsed, user_agent)
+        except Exception as e:
+            print(f'[!] Chrome driver failed: {e}')
+            print('[*] Falling back to Firefox...')
+            browser = 'firefox'
+    
+    # Firefox driver (original code)
+    if browser == 'firefox':
+        return create_firefox_driver(cli_parsed, user_agent)
+    
+    return None
+
+
+def create_firefox_driver(cli_parsed, user_agent=None):
+    """Creates a selenium FirefoxDriver"""
     profile = webdriver.FirefoxProfile()
     # Load our custom firefox addon to handle basic auth.
     extension_path = Path(__file__).parent.parent / 'bin' / 'dismissauth.xpi'
@@ -86,7 +118,7 @@ def create_driver(cli_parsed, user_agent=None):
 
     try:
         # Modern Selenium 4+ approach - migrate from deprecated DesiredCapabilities
-        options = Options()
+        options = FirefoxOptions()
         options.add_argument("--headless")
         
         # Migrate acceptInsecureCerts from capabilities to options

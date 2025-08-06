@@ -111,13 +111,21 @@ EOF
             apt install -y python3-psutil
             apt install -y python3-pyvirtualdisplay 2>/dev/null || true
             apt-get install -y wget curl jq cmake python3 xvfb python3-pip python3-netaddr python3-dev x11-utils tar bc
-            # Install Firefox separately with downgrade allowed
-            apt-get install -y --allow-downgrades firefox || {
-                echo "[!] Firefox installation failed, trying more aggressive approach..."
-                # Source helper and use aggressive fix
-                source "$(dirname "$0")/install-firefox-helper.sh"
-                fix_firefox_installation
-            }
+            
+            echo "[*] Installing browsers - trying Chromium first (easier install)..."
+            # Install Chromium as primary browser (much easier than Firefox snap issues)
+            if apt-get install -y chromium-browser chromium-chromedriver; then
+                echo "[+] Chromium browser installed successfully!"
+            else
+                echo "[!] Chromium installation failed, falling back to Firefox..."
+                # Install Firefox separately with downgrade allowed
+                apt-get install -y --allow-downgrades firefox || {
+                    echo "[!] Firefox installation failed, trying more aggressive approach..."
+                    # Source helper and use aggressive fix
+                    source "$(dirname "$0")/install-firefox-helper.sh"
+                    fix_firefox_installation
+                }
+            fi
             # Ensure Firefox is really installed (sometimes package name varies)
             if ! command -v firefox &> /dev/null; then
                 echo "[*] Firefox not found, trying alternative package names..."
