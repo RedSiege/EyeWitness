@@ -133,14 +133,31 @@ class HTTPTableObject(object):
 
     @property
     def headers(self):
-        if hasattr(self, '_headers'):
+        """
+        Display headers for report generation
+        
+        Uses collected headers if available, otherwise falls back to 
+        the original "Missing Headers" message for backward compatibility
+        """
+        # First check if we have explicitly set display headers
+        if hasattr(self, '_headers') and self._headers:
             return self._headers
+        # Then check if we have raw HTTP headers collected
+        elif hasattr(self, '_http_headers') and self._http_headers:
+            # Return formatted version of raw headers for display
+            formatted = {}
+            for key, value in self._http_headers.items():
+                # Truncate very long header values for display
+                display_value = value[:150] + "..." if len(value) > 150 else value
+                formatted[key] = display_value
+            return formatted
         else:
-            missing = { "Missing Headers" : "No Headers found" }
-            return missing
+            # Fallback to original behavior for backward compatibility
+            return {"Missing Headers": "No Headers found"}
 
-    @headers.setter
+    @headers.setter  
     def headers(self, headers):
+        """Set display headers (can include security analysis)"""
         self._headers = headers
 
     @property
@@ -253,6 +270,7 @@ class HTTPTableObject(object):
 
             for key, value in self.headers.items():
                 try:
+                    # Regular header display
                     html += '<br><b> {0}:</b> {1}\n'.format(
                         self.sanitize(key), self.sanitize(value))
                 except UnicodeEncodeError:
@@ -431,7 +449,8 @@ class UAObject(HTTPTableObject):
                     self.sanitize(self.page_title))
 
         for key, value in self.headers.items():
-            try: 
+            try:
+                # Regular header display
                 html += '<br><b> {0}:</b> {1}\n'.format(
                     self.sanitize(key), self.sanitize(value))
             except UnicodeEncodeError:

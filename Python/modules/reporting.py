@@ -214,7 +214,7 @@ def sort_data_and_write(cli_parsed, data):
     toc = "<center>{0}<br><br>{1}<br><br></center>".format(toc, toc_table)
 
     if len(pages) == 1:
-        with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'a', encoding='utf-8') as f:
             f.write(toc)
             f.write(pages[0].replace('EW_REPLACEME', ''))
             f.write("</body>\n</html>")
@@ -267,7 +267,7 @@ def sort_data_and_write(cli_parsed, data):
         # Write out our report to disk!
         if len(pages) == 0:
             return
-        with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'a', encoding='utf-8') as f:
             f.write(toc)
             f.write(pages[0])
         write_out = len(pages)
@@ -277,7 +277,7 @@ def sort_data_and_write(cli_parsed, data):
             if (bad_page in pages[i-1]) or (badd_page2 in pages[i-1]):
                 pass
             else:
-                with open(os.path.join(cli_parsed.d, 'report_page{0}.html'.format(str(i))), 'w') as f:
+                with open(os.path.join(cli_parsed.d, 'report_page{0}.html'.format(str(i))), 'w', encoding='utf-8') as f:
                     f.write(pages[i - 1])
 
 
@@ -403,7 +403,7 @@ def search_report(cli_parsed, data, search_term):
         pages.append(html)
 
     if len(pages) == 1:
-        with open(os.path.join(cli_parsed.d, 'search.html'), 'a') as f:
+        with open(os.path.join(cli_parsed.d, 'search.html'), 'a', encoding='utf-8') as f:
             f.write(pages[0].replace('EW_REPLACEME', ''))
             f.write("</body>\n</html>")
     else:
@@ -445,13 +445,13 @@ def search_report(cli_parsed, data, search_term):
         # Write out our report to disk!
         if len(pages) == 0:
             return
-        with open(os.path.join(cli_parsed.d, 'search.html'), 'a') as f:
+        with open(os.path.join(cli_parsed.d, 'search.html'), 'a', encoding='utf-8') as f:
             try:
                 f.write(pages[0])
             except UnicodeEncodeError:
                 f.write(pages[0].encode('utf-8'))
         for i in range(2, len(pages) + 1):
-            with open(os.path.join(cli_parsed.d, 'search_page{0}.html'.format(str(i))), 'w') as f:
+            with open(os.path.join(cli_parsed.d, 'search_page{0}.html'.format(str(i))), 'w', encoding='utf-8') as f:
                 try:
                     f.write(pages[i - 1])
                 except UnicodeEncodeError:

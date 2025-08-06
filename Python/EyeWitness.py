@@ -322,7 +322,7 @@ def single_mode(cli_parsed):
             result.resolved = resolve_host(result.remote_system)
         
         html = result.create_table_html()
-        with open(os.path.join(cli_parsed.d, 'report.html'), 'w') as f:
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'w', encoding='utf-8') as f:
             f.write(web_index_head)
             f.write(create_table_head())
             f.write(html)

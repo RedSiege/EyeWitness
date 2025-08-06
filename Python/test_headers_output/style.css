@@ -1,0 +1,44 @@
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+#screenshot {
+    max-width: 850px;
+    max-height: 550px;
+    display: inline-block;
+    width: 850px;
+    overflow: scroll;
+}
+
+.hide {
+    display: none;
+}
+
+.uabold {
+    font-weight: bold;
+    cursor: pointer;
+    background-color: green;
+}
+
+.uared {
+    font-weight: bold;
+    cursor: pointer;
+    background-color: red;
+}
+
+table.toc_table {
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+    table.toc_table td {
+        border: 1px solid black;
+        padding: 3px 8px 3px 8px;
+    }
+
+    table.toc_table th {
+        border: 1px solid black;
+        text-align: left;
+        padding: 3px 8px 3px 8px;
+    }

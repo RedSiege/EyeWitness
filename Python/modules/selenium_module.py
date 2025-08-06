@@ -36,6 +36,7 @@ except ImportError:
 
 from modules.helpers import do_delay
 from modules.platform_utils import platform_mgr
+from modules.security_headers import collect_http_headers
 
 # Platform-specific environment configuration for headless operation
 if platform_mgr.is_linux:
@@ -167,6 +168,9 @@ def find_chromedriver():
 def capture_host(cli_parsed, http_object, driver, ua=None):
     """Screenshots a single host using Chrome and returns updated HTTP Object
     
+    Enhanced version that collects HTTP headers and performs security analysis
+    alongside Selenium screenshot capture.
+    
     Args:
         cli_parsed (ArgumentParser): Command Line Object  
         http_object (HTTPObject): HTTP Object
@@ -176,9 +180,52 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
     Returns:
         tuple: (HTTPObject, WebDriver) Updated objects
     """
-    return_status = False
+    # Step 1: Collect HTTP headers via HTTP client (before Selenium)
+    print(f'[*] Collecting headers for {http_object.remote_system}')
     
+    # Set up proxy configuration if provided
+    proxy_config = None
+    if hasattr(cli_parsed, 'proxy_ip') and cli_parsed.proxy_ip:
+        proxy_config = {
+            'ip': cli_parsed.proxy_ip,
+            'port': getattr(cli_parsed, 'proxy_port', 8080)
+        }
+    
+    # Collect headers with HTTP client
+    headers, header_error = collect_http_headers(
+        url=http_object.remote_system,
+        timeout=getattr(cli_parsed, 'timeout', 7),
+        user_agent=ua or getattr(cli_parsed, 'user_agent', None),
+        proxy=proxy_config
+    )
+    
+    # Store headers in HTTPTableObject
+    if headers:
+        # Store raw headers in HTTPTableObject
+        http_object.http_headers = headers
+        
+        # Create formatted headers display for the report
+        formatted_headers = {}
+        for key, value in headers.items():
+            # Truncate long header values for display
+            display_value = value[:150] + "..." if len(value) > 150 else value
+            formatted_headers[key] = display_value
+        
+        http_object.headers = formatted_headers
+        
+        print(f'[+] Headers collected: {len(headers)} headers')
+    else:
+        # Handle header collection failure
+        if header_error:
+            print(f'[!] Header collection failed for {http_object.remote_system}: {header_error}')
+            http_object.headers = {"Header Collection": f"Failed - {header_error}"}
+        else:
+            print(f'[!] No headers received from {http_object.remote_system}')
+            http_object.headers = {"Headers": "No headers received"}
+    
+    # Step 2: Continue with Selenium screenshot capture
     try:
+        print(f'[*] Taking screenshot of {http_object.remote_system}')
         driver.get(http_object.remote_system)
         
         # Handle page load timeout
@@ -188,7 +235,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         except TimeoutException:
             pass  # Continue with screenshot anyway
             
-        # Capture screenshot
+        # Capture page content
         http_object.source = driver.page_source.encode('utf-8')
         http_object.page_title = driver.title
         
@@ -197,7 +244,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         driver.save_screenshot(str(screenshot_path))
         http_object.screenshot_path = str(screenshot_path)
         
-        print(f'[+] Captured: {http_object.remote_system}')
+        print(f'[+] Captured screenshot: {http_object.remote_system}')
         
     except TimeoutException:
         print(f'[*] Timeout connecting to {http_object.remote_system}')
@@ -235,7 +282,7 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             driver = create_driver(cli_parsed, ua)
             return http_object, driver
         else:
-            print(f'[*] Error capturing {http_object.remote_system}: {e}')
+            print(f'[*] Error capturing screenshot for {http_object.remote_system}: {e}')
             http_object.error_state = 'Error'
         
         # Test if driver is still responsive
