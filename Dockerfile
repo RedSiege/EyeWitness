@@ -21,3 +21,4 @@ exec python EyeWitness.py "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
+# Fixed Docker build syntax
