@@ -7,6 +7,6 @@ ENV DISPLAY=:99     CHROME_HEADLESS=1     CHROME_NO_SANDBOX=1     DOCKER_CONTAIN
 WORKDIR /app
 COPY Python/ .
 
-RUN echo '#!/bin/bash\nXvfb :99 -screen 0 1920x1080x24 -nolisten tcp -nolisten unix &\nexec python EyeWitness.py "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
+RUN echo '#!/bin/bash\nXvfb :99 -screen 0 1920x1080x24 -nolisten tcp -nolisten unix &\ncd /data\nexec python /app/EyeWitness.py "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
