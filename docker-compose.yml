@@ -30,6 +30,7 @@ services:
     
     # Environment variables
     environment:
+      - DOCKER_CONTAINER=1
       - DISPLAY=:99
       - SE_OFFLINE=1
     

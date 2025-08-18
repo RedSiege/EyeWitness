@@ -19,6 +19,7 @@ class PlatformManager:
         self.is_linux = self.system == 'linux' 
         self.is_mac = self.system == 'darwin'
         self.is_unix = self.is_linux or self.is_mac
+        self.is_docker = self._check_docker_environment()
         
         self.has_display = self._check_display_available()
         self.is_admin = self._check_admin_privileges()
@@ -39,6 +40,39 @@ class PlatformManager:
         except (AttributeError, OSError):
             return False
     
+    def _check_docker_environment(self):
+        """Check if running inside Docker container"""
+        # Multiple ways to detect Docker environment
+        docker_indicators = [
+            # Check for .dockerenv file
+            os.path.exists("/.dockerenv"),
+            # Check if cgroup contains docker
+            self._check_cgroup_docker(),
+            # Check environment variables set by Docker
+            os.environ.get("DOCKER_CONTAINER") == "1",
+            # Check for common Docker networking
+            self._check_docker_networking()
+        ]
+        return any(docker_indicators)
+
+    def _check_cgroup_docker(self):
+        """Check if cgroup indicates Docker"""
+        try:
+            with open("/proc/1/cgroup", "r") as f:
+                content = f.read()
+                return "docker" in content.lower() or "containerd" in content.lower()
+        except (IOError, OSError):
+            return False
+
+    def _check_docker_networking(self):
+        """Check for Docker-specific networking indicators"""
+        try:
+            # Docker often uses these hostname patterns
+            hostname = os.environ.get("HOSTNAME", "")
+            return len(hostname) == 12 and hostname.isalnum()
+        except:
+            return False
+
     def clear_screen(self):
         os.system('cls' if self.is_windows else 'clear')
     
@@ -215,9 +249,21 @@ class PlatformManager:
 
 
 def setup_virtual_display(platform_mgr: PlatformManager, show_selenium: bool = False):
-    """Setup virtual display with proper cross-platform handling"""
+    """Setup virtual display with proper cross-platform and Docker handling"""
     if not platform_mgr.needs_virtual_display() or show_selenium:
         return None
+    
+    # Docker-specific handling: If we're in Docker and DISPLAY is already set,
+    # assume Xvfb is already running from the entrypoint script
+    if platform_mgr.is_docker:
+        display_env = os.environ.get('DISPLAY')
+        if display_env:
+            print(f'[*] Docker environment detected with DISPLAY={display_env}')
+            print('[*] Using existing virtual display from Docker entrypoint')
+            return None  # Don't start our own display
+        else:
+            print('[*] Docker environment detected but no DISPLAY set')
+            print('[*] Will attempt to start virtual display')
     
     if not platform_mgr.can_use_virtual_display():
         if platform_mgr.is_windows:
@@ -231,8 +277,12 @@ def setup_virtual_display(platform_mgr: PlatformManager, show_selenium: bool = F
     
     try:
         from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(1920, 1080))
+        # In Docker, if we get here, try to use a different display number
+        # to avoid conflicts with existing Xvfb
+        display_num = ':1' if platform_mgr.is_docker else ':0'
+        display = Display(visible=0, size=(1920, 1080), display=display_num)
         display.start()
+        print(f'[*] Started virtual display on {display_num}')
         return display
     except ImportError:
         print('[*] Warning: pyvirtualdisplay package not found')
@@ -240,6 +290,8 @@ def setup_virtual_display(platform_mgr: PlatformManager, show_selenium: bool = F
         return None
     except Exception as e:
         print(f'[*] Warning: Could not start virtual display: {e}')
+        if platform_mgr.is_docker:
+            print('[*] Docker: Assuming existing Xvfb is available')
         print('[*] Continuing in headless mode...')
         return None
 
