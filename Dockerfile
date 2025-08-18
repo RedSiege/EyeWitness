@@ -4,9 +4,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends     chromium ch
 
 ENV DISPLAY=:99     CHROME_HEADLESS=1     CHROME_NO_SANDBOX=1     DOCKER_CONTAINER=1
 
-WORKDIR /app
-COPY Python/ .
+COPY Python/ /opt/eyewitness/
 
-RUN echo '#!/bin/bash\nXvfb :99 -screen 0 1920x1080x24 -nolisten tcp -nolisten unix &\ncd /data\nexec python /app/EyeWitness.py "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
+RUN echo '#!/bin/bash\nXvfb :99 -screen 0 1920x1080x24 -nolisten tcp -nolisten unix &\nexec python /opt/eyewitness/EyeWitness.py "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
+
+WORKDIR /workspace
 
 ENTRYPOINT ["/entrypoint.sh"]
