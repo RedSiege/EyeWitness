@@ -20,3 +20,4 @@ Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp -nolisten unix &
 exec python EyeWitness.py "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
+
