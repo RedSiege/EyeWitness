@@ -14,4 +14,9 @@ WORKDIR /app
 COPY Python/ .
 
 # Simple entrypoint - start virtual display and run app
-ENTRYPOINT ["/bin/bash", "-c", "Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp -nolisten unix & exec python EyeWitness.py \"$@\""]
+# Create simple entrypoint script
+RUN echo '#!/bin/bash
+Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp -nolisten unix &
+exec python EyeWitness.py "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
