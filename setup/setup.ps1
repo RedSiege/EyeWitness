@@ -1,5 +1,5 @@
-# EyeWitness Windows Setup Script - Chromium Edition
-# PowerShell script for automatic Windows installation with Chrome/Chromium
+# EyeWitness Windows Setup Script - Virtual Environment Edition
+# Production-ready PowerShell script using Python virtual environments
 
 [CmdletBinding()]
 param(
@@ -8,31 +8,45 @@ param(
     [switch]$Help
 )
 
+# Configuration
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ProjectRoot = Split-Path -Parent $ScriptDir
+$VenvDir = Join-Path $ProjectRoot "eyewitness-venv"
+$RequirementsFile = Join-Path $ScriptDir "requirements.txt"
+
 if ($Help) {
     Write-Host @"
-EyeWitness Windows Setup Script (Chromium Edition)
+EyeWitness Windows Setup Script (Virtual Environment Edition)
 
 Usage: .\setup.ps1 [options]
 
 Options:
-  -Force        Force reinstall even if components exist
+  -Force        Force reinstall (recreate virtual environment)
   -SkipChrome   Skip Chrome installation (assume already installed)
   -Help         Show this help message
 
 Examples:
-  .\setup.ps1                    # Standard installation
-  .\setup.ps1 -Force             # Force reinstall everything
-  .\setup.ps1 -SkipChrome        # Skip Chrome installation
+  .\setup.ps1                    # Standard installation with venv
+  .\setup.ps1 -Force             # Force recreate virtual environment
+  .\setup.ps1 -SkipChrome        # Skip Chrome, create venv only
+
+Features:
+  - Creates isolated Python virtual environment
+  - Avoids system Python package conflicts
+  - Production-ready error handling and rollback
+  - Cross-platform consistent approach
 
 Requirements:
   - PowerShell 5.0+ (Windows 10/11 default)
   - Administrator privileges
+  - Python 3.7+ with venv support
   - Internet connection
 
-Dependencies installed:
-  - Python packages (selenium, etc.)
-  - Google Chrome browser
-  - ChromeDriver for automation
+Virtual Environment Benefits:
+  - No system package conflicts
+  - Easy to remove/recreate
+  - Consistent across all platforms
+  - No PEP 668 issues
 "@
     exit 0
 }
@@ -55,17 +69,22 @@ function Write-InfoMsg {
     Write-Host "[*] $Message" -ForegroundColor Cyan 
 }
 
+# Cleanup function for failed installations
+function Cleanup-OnFailure {
+    Write-WarningMsg "Installation failed. Cleaning up..."
+    if (Test-Path $VenvDir) {
+        Remove-Item -Path $VenvDir -Recurse -Force -ErrorAction SilentlyContinue
+        Write-InfoMsg "Removed incomplete virtual environment"
+    }
+}
+
+# Header
 Write-Host @"
 ╔══════════════════════════════════════════════════════════════╗
-║                EyeWitness Windows Setup (Chromium)          ║
+║            EyeWitness Windows Setup (Virtual Environment)   ║
 ║                                                              ║
-║  This script will install the required dependencies for     ║
-║  EyeWitness to run on Windows including:                    ║
-║                                                              ║
-║  • Python dependencies (selenium, etc.)                     ║
-║  • Google Chrome browser (if not present)                   ║
-║  • ChromeDriver for browser automation                      ║
-║                                                              ║
+║  Production-ready installation using Python virtual         ║
+║  environments for consistent, isolated package management   ║
 ╚══════════════════════════════════════════════════════════════╝
 "@ -ForegroundColor Cyan
 
@@ -93,18 +112,29 @@ if ($psVersion -lt 5) {
 
 Write-Success "PowerShell version $psVersion is supported"
 
-# Check Python installation
+# Check Python installation and version
 Write-InfoMsg "Checking Python installation..."
 try {
-    $pythonVersion = python --version 2>&1
-    if ($pythonVersion -match "Python (\d+)\.(\d+)") {
+    $pythonCmd = Get-Command python -ErrorAction SilentlyContinue
+    if (-not $pythonCmd) {
+        throw "Python command not found"
+    }
+    
+    $pythonVersion = & python --version 2>&1
+    if ($pythonVersion -match "Python (\d+)\.(\d+)\.(\d+)") {
         $majorVersion = [int]$matches[1]
         $minorVersion = [int]$matches[2]
+        $patchVersion = [int]$matches[3]
+        
         if ($majorVersion -ge 3 -and $minorVersion -ge 7) {
             Write-Success "Python $pythonVersion found"
         } else {
-            Write-WarningMsg "Python $pythonVersion found, but 3.7+ recommended"
+            Write-ErrorMsg "Python 3.7+ required. Found: $pythonVersion"
+            Write-InfoMsg "Please install Python 3.7+ from https://python.org"
+            exit 1
         }
+    } else {
+        throw "Could not parse Python version"
     }
 } catch {
     Write-ErrorMsg "Python not found or not in PATH"
@@ -113,10 +143,25 @@ try {
     exit 1
 }
 
-# Check pip installation
-Write-InfoMsg "Checking pip installation..."
+# Check venv module availability
+Write-InfoMsg "Checking Python venv module..."
 try {
-    $pipVersion = python -m pip --version 2>&1
+    & python -m venv --help > $null 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "venv module not available"
+    }
+    Write-Success "Python venv module available"
+} catch {
+    Write-ErrorMsg "Python venv module not available"
+    Write-InfoMsg "Please ensure Python was installed with venv support"
+    Write-InfoMsg "Reinstall Python from https://python.org with default options"
+    exit 1
+}
+
+# Check pip installation
+Write-InfoMsg "Checking pip availability..."
+try {
+    $pipVersion = & python -m pip --version 2>&1
     Write-Success "pip found: $pipVersion"
 } catch {
     Write-ErrorMsg "pip not found"
@@ -124,40 +169,13 @@ try {
     exit 1
 }
 
-# Install/update pip packages
-Write-InfoMsg "Installing Python dependencies..."
-$requirementsFile = Join-Path $PSScriptRoot "requirements.txt"
-
-if (-not (Test-Path $requirementsFile)) {
-    Write-WarningMsg "requirements.txt not found, installing essential packages directly"
-    $packages = @("selenium", "netaddr", "psutil", "pyvirtualdisplay", "argcomplete")
-} else {
-    $packages = @()
-}
-
-try {
-    # Upgrade pip first
-    python -m pip install --upgrade pip --quiet
-    Write-Success "pip updated"
-    
-    # Install packages
-    if ($packages.Count -gt 0) {
-        foreach ($package in $packages) {
-            python -m pip install $package --quiet
-            Write-Success "Installed $package"
-        }
-    } else {
-        python -m pip install -r $requirementsFile --quiet
-        Write-Success "Python dependencies installed from requirements.txt"
+# Chrome installation function
+function Install-Chrome {
+    if ($SkipChrome) {
+        Write-InfoMsg "Skipping Chrome installation as requested"
+        return
     }
-} catch {
-    Write-ErrorMsg "Failed to install Python dependencies"
-    Write-InfoMsg "Try running manually: python -m pip install selenium netaddr psutil"
-    exit 1
-}
-
-# Check Chrome installation
-if (-not $SkipChrome) {
+    
     Write-InfoMsg "Checking Chrome installation..."
     
     $chromePaths = @(
@@ -195,7 +213,7 @@ if (-not $SkipChrome) {
             Write-InfoMsg "Installing Chrome (this may take a moment)..."
             Start-Process -FilePath $chromeInstaller -ArgumentList "/silent", "/install" -Wait
             
-            # Clean up
+            # Clean up installer
             Remove-Item $chromeInstaller -Force -ErrorAction SilentlyContinue
             
             # Verify installation
@@ -221,69 +239,78 @@ if (-not $SkipChrome) {
     }
 }
 
-# Install ChromeDriver
-Write-InfoMsg "Checking ChromeDriver installation..."
+# ChromeDriver installation function
+function Install-ChromeDriver {
+    Write-InfoMsg "Checking ChromeDriver installation..."
 
-$chromeDriverPaths = @(
-    "${env:ProgramFiles}\ChromeDriver\chromedriver.exe",
-    "${env:ProgramFiles(x86)}\ChromeDriver\chromedriver.exe",
-    ".\chromedriver.exe",
-    "${env:PATH}" -split ";" | ForEach-Object { Join-Path $_ "chromedriver.exe" }
-)
+    $chromeDriverPaths = @(
+        "${env:ProgramFiles}\ChromeDriver\chromedriver.exe",
+        "${env:ProgramFiles(x86)}\ChromeDriver\chromedriver.exe",
+        (Get-Command chromedriver -ErrorAction SilentlyContinue).Source
+    )
 
-$chromeDriverFound = $false
-foreach ($path in $chromeDriverPaths) {
-    if ((Test-Path $path) -and (-not $Force)) {
-        $chromeDriverFound = $true
-        Write-Success "ChromeDriver found at: $path"
-        break
+    $chromeDriverFound = $false
+    foreach ($path in $chromeDriverPaths) {
+        if ($path -and (Test-Path $path) -and (-not $Force)) {
+            $chromeDriverFound = $true
+            Write-Success "ChromeDriver found at: $path"
+            break
+        }
     }
-}
 
-if (-not $chromeDriverFound -or $Force) {
-    Write-InfoMsg "Installing ChromeDriver..."
-    
-    try {
-        # Get Chrome version
-        $chromeVersion = $null
-        foreach ($path in $chromePaths) {
-            if (Test-Path $path) {
-                $versionInfo = (Get-Item $path).VersionInfo.FileVersion
-                if ($versionInfo -match "(\d+\.\d+\.\d+)") {
-                    $chromeVersion = $matches[1]
-                    break
-                }
-            }
-        }
-        
-        if (-not $chromeVersion) {
-            Write-WarningMsg "Could not determine Chrome version, using latest ChromeDriver"
-            $chromeDriverUrl = "https://chromedriver.chromium.org/downloads"
-        }
-        
-        # Download and install ChromeDriver
-        $chromeDriverDir = "${env:ProgramFiles}\ChromeDriver"
-        $chromeDriverExe = Join-Path $chromeDriverDir "chromedriver.exe"
-        
-        # Create directory
-        if (-not (Test-Path $chromeDriverDir)) {
-            New-Item -ItemType Directory -Path $chromeDriverDir -Force | Out-Null
-        }
-        
-        # For simplicity, download the latest stable version
-        $tempZip = Join-Path ([System.IO.Path]::GetTempPath()) "chromedriver.zip"
-        $chromeDriverDownloadUrl = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"
+    if (-not $chromeDriverFound -or $Force) {
+        Write-InfoMsg "Installing ChromeDriver..."
         
         try {
-            # Get latest version
-            $latestVersion = Invoke-WebRequest -Uri $chromeDriverDownloadUrl -UseBasicParsing | Select-Object -ExpandProperty Content
-            $downloadUrl = "https://chromedriver.storage.googleapis.com/$latestVersion/chromedriver_win32.zip"
+            # Create ChromeDriver directory
+            $chromeDriverDir = "${env:ProgramFiles}\ChromeDriver"
+            $chromeDriverExe = Join-Path $chromeDriverDir "chromedriver.exe"
             
-            Write-InfoMsg "Downloading ChromeDriver $latestVersion..."
-            Invoke-WebRequest -Uri $downloadUrl -OutFile $tempZip -UseBasicParsing
+            if (-not (Test-Path $chromeDriverDir)) {
+                New-Item -ItemType Directory -Path $chromeDriverDir -Force | Out-Null
+            }
             
-            # Extract
+            # Download latest ChromeDriver (simplified approach for stability)
+            $tempZip = Join-Path ([System.IO.Path]::GetTempPath()) "chromedriver.zip"
+            
+            # Use Chrome for Testing API for latest stable version
+            try {
+                Write-InfoMsg "Downloading latest stable ChromeDriver..."
+                $latestVersionUrl = "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json"
+                $versionData = Invoke-RestMethod -Uri $latestVersionUrl
+                $stableVersion = $versionData.channels.Stable.version
+                $downloadUrl = $versionData.channels.Stable.downloads.chromedriver | Where-Object { $_.platform -eq "win64" } | Select-Object -ExpandProperty url -First 1
+                
+                if ($downloadUrl) {
+                    Write-InfoMsg "Downloading ChromeDriver version $stableVersion..."
+                    Invoke-WebRequest -Uri $downloadUrl -OutFile $tempZip -UseBasicParsing
+                } else {
+                    throw "Could not find Win64 ChromeDriver download URL"
+                }
+            } catch {
+                Write-WarningMsg "Failed to get latest version, trying fallback method..."
+                # Fallback to a known stable version
+                $fallbackUrl = "https://storage.googleapis.com/chrome-for-testing-public/119.0.6045.105/win64/chromedriver-win64.zip"
+                Invoke-WebRequest -Uri $fallbackUrl -OutFile $tempZip -UseBasicParsing
+            }
+            
+            # Extract ChromeDriver
+            Write-InfoMsg "Extracting ChromeDriver..."
             Expand-Archive -Path $tempZip -DestinationPath $chromeDriverDir -Force
+            
+            # Move chromedriver.exe to correct location if needed
+            $extractedDriver = Get-ChildItem -Path $chromeDriverDir -Name "chromedriver.exe" -Recurse | Select-Object -First 1
+            if ($extractedDriver) {
+                $extractedPath = Join-Path $chromeDriverDir $extractedDriver
+                if ($extractedPath -ne $chromeDriverExe) {
+                    Move-Item -Path $extractedPath -Destination $chromeDriverExe -Force
+                }
+            }
+            
+            # Clean up any extra directories
+            Get-ChildItem -Path $chromeDriverDir -Directory | Remove-Item -Recurse -Force
+            
+            # Clean up temp file
             Remove-Item $tempZip -Force -ErrorAction SilentlyContinue
             
             # Add to PATH if not already there
@@ -296,66 +323,304 @@ if (-not $chromeDriverFound -or $Force) {
             Write-Success "ChromeDriver installed successfully"
             
         } catch {
-            Write-WarningMsg "Failed to auto-install ChromeDriver: $_"
-            Write-InfoMsg "Please download ChromeDriver manually from: https://chromedriver.chromium.org/"
+            Write-WarningMsg "Failed to install ChromeDriver: $_"
+            Write-InfoMsg "Please download ChromeDriver manually from:"
+            Write-InfoMsg "https://googlechromelabs.github.io/chrome-for-testing/"
             Write-InfoMsg "Extract chromedriver.exe to a directory in your PATH"
+        }
+    }
+}
+
+# Virtual environment creation function
+function Create-VirtualEnv {
+    Write-InfoMsg "Creating Python virtual environment..."
+    
+    try {
+        # Remove existing venv if it exists and Force is specified
+        if ((Test-Path $VenvDir) -and $Force) {
+            Write-WarningMsg "Existing virtual environment found. Removing due to -Force..."
+            Remove-Item -Path $VenvDir -Recurse -Force
+        } elseif (Test-Path $VenvDir) {
+            Write-WarningMsg "Existing virtual environment found. Use -Force to recreate."
+            Write-InfoMsg "Using existing virtual environment at: $VenvDir"
+            return
+        }
+        
+        # Create new virtual environment
+        & python -m venv $VenvDir
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to create virtual environment"
+        }
+        Write-Success "Virtual environment created at: $VenvDir"
+        
+        # Test activation
+        $activateScript = Join-Path $VenvDir "Scripts\activate.bat"
+        if (-not (Test-Path $activateScript)) {
+            throw "Virtual environment activation script not found"
+        }
+        Write-Success "Virtual environment activation script verified"
+        
+    } catch {
+        Write-ErrorMsg "Failed to create virtual environment: $_"
+        Cleanup-OnFailure
+        exit 1
+    }
+}
+
+# Python dependencies installation function
+function Install-PythonDeps {
+    Write-InfoMsg "Installing Python dependencies in virtual environment..."
+    
+    try {
+        if (-not (Test-Path $RequirementsFile)) {
+            Write-ErrorMsg "Requirements file not found: $RequirementsFile"
+            exit 1
+        }
+        
+        # Activate virtual environment and install packages
+        $venvPython = Join-Path $VenvDir "Scripts\python.exe"
+        $venvPip = Join-Path $VenvDir "Scripts\pip.exe"
+        
+        if (-not (Test-Path $venvPython)) {
+            throw "Virtual environment Python not found"
+        }
+        
+        # Upgrade pip in virtual environment
+        Write-InfoMsg "Upgrading pip in virtual environment..."
+        & $venvPython -m pip install --upgrade pip
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to upgrade pip"
+        }
+        Write-Success "pip upgraded in virtual environment"
+        
+        # Install from requirements.txt
+        Write-InfoMsg "Installing packages from requirements.txt..."
+        & $venvPython -m pip install -r $RequirementsFile
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install requirements"
+        }
+        Write-Success "Python dependencies installed"
+        
+        # Verify critical imports
+        Write-InfoMsg "Verifying Python package installations..."
+        
+        & $venvPython -c "import selenium; print('✓ selenium')"
+        if ($LASTEXITCODE -ne 0) { throw "selenium import failed" }
+        
+        & $venvPython -c "import netaddr; print('✓ netaddr')"  
+        if ($LASTEXITCODE -ne 0) { throw "netaddr import failed" }
+        
+        & $venvPython -c "import psutil; print('✓ psutil')"
+        if ($LASTEXITCODE -ne 0) { throw "psutil import failed" }
+        
+        & $venvPython -c "import argcomplete; print('✓ argcomplete')"
+        if ($LASTEXITCODE -ne 0) { throw "argcomplete import failed" }
+        
+        # Note: pyvirtualdisplay is not needed on Windows
+        Write-Success "All Python packages verified"
+        
+    } catch {
+        Write-ErrorMsg "Failed to install Python dependencies: $_"
+        Cleanup-OnFailure
+        exit 1
+    }
+}
+
+# Helper scripts creation function
+function Create-HelperScripts {
+    Write-InfoMsg "Creating helper scripts..."
+    
+    # Create activation batch script
+    $activateScript = Join-Path $ProjectRoot "activate-eyewitness.bat"
+    @"
+@echo off
+REM EyeWitness Virtual Environment Activation Script
+
+set SCRIPT_DIR=%~dp0
+set VENV_DIR=%SCRIPT_DIR%eyewitness-venv
+
+if not exist "%VENV_DIR%" (
+    echo Error: Virtual environment not found at %VENV_DIR%
+    echo Please run setup\setup.ps1 first
+    pause
+    exit /b 1
+)
+
+echo Activating EyeWitness virtual environment...
+call "%VENV_DIR%\Scripts\activate.bat"
+
+echo Virtual environment activated!
+echo Run EyeWitness with: python Python\EyeWitness.py [options]
+echo Deactivate with: deactivate
+"@ | Out-File -FilePath $activateScript -Encoding ASCII
+    
+    Write-Success "Created activation script: activate-eyewitness.bat"
+    
+    # Create direct execution batch script
+    $directScript = Join-Path $ProjectRoot "eyewitness.bat"
+    @"
+@echo off
+REM EyeWitness Direct Execution Script
+
+set SCRIPT_DIR=%~dp0
+set VENV_DIR=%SCRIPT_DIR%eyewitness-venv
+
+if not exist "%VENV_DIR%" (
+    echo Error: Virtual environment not found at %VENV_DIR%
+    echo Please run setup\setup.ps1 first
+    pause
+    exit /b 1
+)
+
+REM Activate venv and run EyeWitness
+call "%VENV_DIR%\Scripts\activate.bat"
+python "%SCRIPT_DIR%Python\EyeWitness.py" %*
+"@ | Out-File -FilePath $directScript -Encoding ASCII
+    
+    Write-Success "Created direct execution script: eyewitness.bat"
+    
+    # Create PowerShell wrapper
+    $psScript = Join-Path $ProjectRoot "eyewitness.ps1"
+    @"
+# EyeWitness PowerShell Execution Script
+param([Parameter(ValueFromRemainingArguments=`$true)]`$Arguments)
+
+`$ScriptDir = Split-Path -Parent `$MyInvocation.MyCommand.Path
+`$VenvDir = Join-Path `$ScriptDir "eyewitness-venv"
+`$VenvPython = Join-Path `$VenvDir "Scripts\python.exe"
+
+if (-not (Test-Path `$VenvDir)) {
+    Write-Host "Error: Virtual environment not found at `$VenvDir" -ForegroundColor Red
+    Write-Host "Please run setup\setup.ps1 first" -ForegroundColor Yellow
+    exit 1
+}
+
+# Run EyeWitness with virtual environment Python
+& `$VenvPython (Join-Path `$ScriptDir "Python\EyeWitness.py") @Arguments
+"@ | Out-File -FilePath $psScript -Encoding UTF8
+    
+    Write-Success "Created PowerShell execution script: eyewitness.ps1"
+}
+
+# Installation verification function
+function Test-Installation {
+    Write-InfoMsg "Testing EyeWitness installation..."
+    
+    try {
+        $venvPython = Join-Path $VenvDir "Scripts\python.exe"
+        $eyewitnessScript = Join-Path $ProjectRoot "Python\EyeWitness.py"
+        
+        if (-not (Test-Path $eyewitnessScript)) {
+            throw "EyeWitness.py not found"
+        }
+        
+        # Test help command
+        & $venvPython $eyewitnessScript --help > $null 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            throw "EyeWitness help command failed"
+        }
+        
+        Write-Success "EyeWitness installation test passed"
+        return $true
+    } catch {
+        Write-ErrorMsg "Installation test failed: $_"
+        return $false
+    }
+}
+
+# System verification function
+function Test-SystemDeps {
+    Write-InfoMsg "Verifying system dependencies..."
+    
+    $errors = 0
+    
+    # Check Chrome
+    $chromePaths = @(
+        "${env:ProgramFiles}\Google\Chrome\Application\chrome.exe",
+        "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe",
+        "${env:LOCALAPPDATA}\Google\Chrome\Application\chrome.exe"
+    )
+    
+    $chromeFound = $false
+    foreach ($path in $chromePaths) {
+        if (Test-Path $path) {
+            Write-Success "Chrome browser verified: $path"
+            $chromeFound = $true
+            break
+        }
+    }
+    if (-not $chromeFound) {
+        Write-ErrorMsg "Chrome browser not found"
+        $errors++
+    }
+    
+    # Check ChromeDriver
+    try {
+        $cdVersion = & chromedriver --version 2>&1
+        Write-Success "ChromeDriver verified: $cdVersion"
+    } catch {
+        Write-ErrorMsg "ChromeDriver not found in PATH"
+        $errors++
+    }
+    
+    return ($errors -eq 0)
+}
+
+# Main installation flow
+function Main {
+    Write-InfoMsg "Starting EyeWitness installation..."
+    
+    try {
+        # Install Chrome
+        Install-Chrome
+        
+        # Install ChromeDriver  
+        Install-ChromeDriver
+        
+        # Create virtual environment
+        Create-VirtualEnv
+        
+        # Install Python dependencies
+        Install-PythonDeps
+        
+        # Create helper scripts
+        Create-HelperScripts
+        
+        # Test installation
+        if (-not (Test-Installation)) {
+            throw "Installation test failed"
+        }
+        
+        # Verify system dependencies
+        $systemOk = Test-SystemDeps
+        
+        # Success message
+        Write-Host ""
+        Write-Success "✓ EyeWitness installation completed successfully!"
+        Write-Host ""
+        Write-InfoMsg "USAGE OPTIONS:"
+        Write-InfoMsg "1. Batch activation: .\activate-eyewitness.bat"
+        Write-InfoMsg "2. Direct execution: .\eyewitness.bat [options]"  
+        Write-InfoMsg "3. PowerShell execution: .\eyewitness.ps1 [options]"
+        Write-InfoMsg "4. Manual activation: .\eyewitness-venv\Scripts\activate.bat"
+        Write-Host ""
+        Write-InfoMsg "TEST INSTALLATION:"
+        Write-InfoMsg ".\eyewitness.bat --single https://example.com"
+        Write-Host ""
+        Write-InfoMsg "Virtual environment located at: $VenvDir"
+        Write-InfoMsg "Visit https://www.redsiege.com for more Red Siege tools"
+        
+        if (-not $systemOk) {
+            Write-Host ""
+            Write-WarningMsg "Some system dependencies had issues - check messages above"
         }
         
     } catch {
-        Write-WarningMsg "ChromeDriver installation encountered issues: $_"
-        Write-InfoMsg "You may need to install ChromeDriver manually"
+        Write-ErrorMsg "Installation failed: $_"
+        Cleanup-OnFailure
+        exit 1
     }
 }
 
-# Final verification
-Write-InfoMsg "Verifying installation..."
-
-$errors = 0
-
-# Check Python
-try {
-    python -c "import selenium; print('✓ Selenium available')"
-    Write-Success "Python selenium module verified"
-} catch {
-    Write-ErrorMsg "Python selenium module not available"
-    $errors++
-}
-
-# Check Chrome
-$chromeFound = $false
-foreach ($path in $chromePaths) {
-    if (Test-Path $path) {
-        Write-Success "Chrome browser verified: $path"
-        $chromeFound = $true
-        break
-    }
-}
-if (-not $chromeFound) {
-    Write-ErrorMsg "Chrome browser not found"
-    $errors++
-}
-
-# Check ChromeDriver
-try {
-    $cdVersion = chromedriver --version 2>&1
-    Write-Success "ChromeDriver verified: $cdVersion"
-} catch {
-    Write-ErrorMsg "ChromeDriver not found in PATH"
-    $errors++
-}
-
-Write-Host "`n" -NoNewline
-
-if ($errors -eq 0) {
-    Write-Success "✓ All dependencies verified - EyeWitness is ready to run!"
-    Write-Host ""
-    Write-InfoMsg "Test installation with:"
-    Write-Host "  cd Python && python EyeWitness.py --single https://example.com" -ForegroundColor White
-} else {
-    Write-ErrorMsg "✗ $errors error(s) found - please resolve before using EyeWitness"
-    Write-InfoMsg "Re-run this script or install missing components manually"
-}
-
-Write-Host ""
-Write-InfoMsg "EyeWitness setup completed!"
-Write-InfoMsg "Visit https://www.redsiege.com for more Red Siege tools"
+# Execute main installation
+Main

@@ -188,9 +188,15 @@ Create a config file to save your preferred settings:
 ### Common Issues
 
 **Chromium/ChromeDriver not found:**
-- Linux: `sudo apt install chromium-browser chromium-chromedriver`
-- Windows: Navigate to setup directory and run `.\setup.ps1` as Administrator
-- macOS: `brew install --cask google-chrome`
+- **All platforms**: Re-run the setup script - it installs browsers automatically
+- Linux: `sudo ./setup.sh` in setup/ directory
+- Windows: `.\setup.ps1` as Administrator in setup\ directory
+- macOS: `sudo ./setup.sh` in setup/ directory (after `brew install --cask google-chrome`)
+
+**Virtual environment issues:**
+- Delete eyewitness-venv/ directory and re-run setup script
+- Ensure Python 3.7+ is installed with venv module support
+- Check that you ran setup script with proper Administrator/root privileges
 
 **Connection timeouts:**
 - Increase timeout: `--timeout 60`
