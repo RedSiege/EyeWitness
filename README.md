@@ -3,7 +3,7 @@
 EyeWitness is designed to take screenshots of websites, provide server header info, and identify default credentials if known. **Now powered by Chromium browser for better reliability and easier installation.**
 
 ## 🚀 Key Features
-- **Cross-platform support** - Windows, Linux, macOS, and Docker
+- **Cross-platform support** - Windows, Linux, and macOS
 - **Chromium-powered** - Reliable headless screenshots with Google Chrome/Chromium
 - **Adaptive resource management** - Automatically adjusts to system capabilities
 - **Configuration file support** - Save your preferred settings
@@ -15,25 +15,7 @@ EyeWitness is designed to take screenshots of websites, provide server header in
 
 ## 📦 Installation Options
 
-### 🐳 Docker (Recommended - All Platforms)
-The easiest way to run EyeWitness. No Python, Chromium, or dependencies needed on your host!
-
-```bash
-# Clone the repository
-git clone https://github.com/RedSiege/EyeWitness.git
-cd EyeWitness
-
-# Build the Docker image
-docker build -t eyewitness .
-
-# Run EyeWitness with Docker
-docker run --rm -v $(pwd):/data eyewitness -f /data/urls.txt -d /data/output
-
-# For single URLs
-docker run --rm -v $(pwd):/data eyewitness --single https://example.com -d /data/output
-```
-
-See [DOCKER.md](DOCKER.md) for detailed Docker usage instructions and troubleshooting.
+> **Note**: Docker support is currently in development. Please use native installation options below for now.
 
 ### 🪟 Windows Installation
 **Simple automated setup with PowerShell:**
@@ -107,31 +89,6 @@ python3 EyeWitness.py --single https://example.com
 - ChromeDriver for automation
 
 ## 🎯 Usage Examples
-
-### 🐳 Docker Usage (Recommended)
-Docker provides the most consistent experience across platforms:
-
-```bash
-# Single website screenshot
-docker run --rm -v $(pwd):/data eyewitness --single https://example.com -d /data/output
-
-# Multiple URLs from file
-docker run --rm -v $(pwd):/data eyewitness -f /data/urls.txt -d /data/output
-
-# Nmap XML input (scan results)
-docker run --rm -v $(pwd):/data eyewitness -x /data/nmap_scan.xml -d /data/output
-
-# Nessus file input
-docker run --rm -v $(pwd):/data eyewitness -x /data/scan.nessus -d /data/output
-
-# Custom options (timeout, threads, user-agent)
-docker run --rm -v $(pwd):/data eyewitness \
-  -f /data/urls.txt \
-  --timeout 30 \
-  --threads 10 \
-  --user-agent "Custom-Agent" \
-  -d /data/output
-```
 
 ### 💻 Native Usage (Linux/Windows/macOS)
 After running the setup script:
@@ -283,7 +240,7 @@ This fork includes significant modernization:
 - Added comprehensive error handling
 - Improved cross-platform support
 - Added resource monitoring
-- Removed Docker support (unmaintained)
+- Docker support in development
 - Added configuration file support
 - Enhanced user experience
 

@@ -128,7 +128,7 @@ class XML_Parser(xml.sax.ContentHandler):
                                 self.num_urls += 1
 
                 else:
-                    if (self.system_name is not None) and (self.port_number is not None) and self.port_open and int(self.port_number.encode('utf-8')) in self.only_ports:
+                    if (self.system_name is not None) and (self.port_number is not None) and self.port_open and int(self.port_number) in self.only_ports:
                         if self.protocol == "http" or self.protocol == "https":
                             built_url = self.protocol + "://" + self.system_name
                             if built_url not in self.url_list:
@@ -165,7 +165,7 @@ class XML_Parser(xml.sax.ContentHandler):
                                 self.url_list.append(built_url)
                                 self.num_urls += 1
                 else:
-                    if (self.port_number is not None) and self.port_open and (self.system_name is not None) and int(self.port_number.encode('utf-8')) in self.only_ports:
+                    if (self.port_number is not None) and self.port_open and (self.system_name is not None) and int(self.port_number) in self.only_ports:
                         if self.port_number in self.http_ports:
                             self.protocol = 'http'
                             built_url = self.protocol + "://" + self.system_name + ":" + self.port_number
@@ -212,7 +212,7 @@ class XML_Parser(xml.sax.ContentHandler):
                                 self.url_list.append(built_url)
 
                 else:
-                    if (self.system_name is not None) and (self.protocol is not None) and self.service_detection and int(self.port_number.encode('utf-8')) in self.only_ports:
+                    if (self.system_name is not None) and (self.protocol is not None) and self.service_detection and int(self.port_number) in self.only_ports:
                         if self.protocol == "http" or self.protocol == "https":
                             built_url = self.protocol + "://" + self.system_name + ":" + self.port_number
                             if built_url not in self.url_list:

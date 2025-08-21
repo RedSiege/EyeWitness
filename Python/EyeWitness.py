@@ -275,7 +275,7 @@ def create_cli_parser():
     if args.cookies:
         cookies_list = []
         for one_cookie in args.cookies.split(","):
-            if "=" not in args.cookies:
+            if "=" not in one_cookie:
                 print("[*] Error: Cookies must be in the form of key1=value1,key2=value2")
                 sys.exit()
             cookies_list.append({

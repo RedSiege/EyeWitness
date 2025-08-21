@@ -239,8 +239,18 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         http_object.source = driver.page_source.encode('utf-8')
         http_object.page_title = driver.title
         
-        # Take screenshot
-        screenshot_path = Path(cli_parsed.d) / 'screens' / f'{http_object.remote_system.replace(":", "_").replace("/", "_")}.png'
+        # Take screenshot - properly sanitize filename
+        def sanitize_filename(url):
+            import re
+            # Remove protocol and sanitize all unsafe characters
+            filename = re.sub(r'^https?://', '', url)
+            # Replace all non-alphanumeric characters (except hyphens and dots) with underscores
+            filename = re.sub(r'[^a-zA-Z0-9\-\.]', '_', filename)
+            # Limit length to prevent filesystem issues
+            return filename[:200]
+            
+        safe_filename = sanitize_filename(http_object.remote_system)
+        screenshot_path = Path(cli_parsed.d) / 'screens' / f'{safe_filename}.png'
         driver.save_screenshot(str(screenshot_path))
         http_object.screenshot_path = str(screenshot_path)
         

@@ -433,7 +433,7 @@ class UAObject(HTTPTableObject):
                     self.sanitize(self.default_creds))
             except UnicodeEncodeError:
                 html += u"<br><b>Default credentials:</b> {0}<br>".format(
-		    self.sanitize(self.default_creds))
+                    self.sanitize(self.default_creds))
                 
         try:
             html += "\n<br><b> Page Title: </b>{0}\n".format(

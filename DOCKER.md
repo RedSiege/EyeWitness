@@ -1,5 +1,12 @@
 # EyeWitness Docker Guide
 
+> **⚠️ Docker Support Status: In Development**
+> 
+> Docker functionality is currently under development and may not work as expected. 
+> For reliable usage, please use the native installation options documented in README.md.
+> 
+> This documentation is maintained for future Docker implementation.
+
 This guide covers running EyeWitness in a Docker container, which eliminates the need to install Python, Chromium, or any dependencies on your host system.
 
 ## Table of Contents
