@@ -15,50 +15,70 @@ EyeWitness is designed to take screenshots of websites, provide server header in
 
 ## 📦 Installation Options
 
+> **🔥 NEW**: EyeWitness now uses **Python virtual environments** for zero conflicts and bulletproof installation across all platforms!
+>
 > **Note**: Docker support is currently in development. Please use native installation options below for now.
 
 ### 🪟 Windows Installation
-**Simple automated setup with PowerShell:**
+**Automated setup with Python virtual environment:**
 
 ```powershell
 # 1. Open PowerShell as Administrator
 # 2. Navigate to EyeWitness directory
 cd path\to\EyeWitness\setup
 
-# 3. Run the setup script
+# 3. Run the setup script (creates virtual environment)
 .\setup.ps1
 
-# 4. Test the installation
-cd ..\Python
-python EyeWitness.py --single https://example.com
+# 4. Test installation using helper script
+cd ..
+.\eyewitness.bat --single https://example.com
 ```
 
 **What gets installed:**
-- Python dependencies (selenium, etc.)
+- **🔒 Isolated Python virtual environment** (eyewitness-venv/)
+- Python dependencies in virtual environment (selenium, etc.)
 - Google Chrome browser (if not present)
 - ChromeDriver for automation
-- Tab completion support
+- **📝 Helper scripts** for easy execution
+
+**✨ Usage Options:**
+- Direct execution: `.\eyewitness.bat [options]`
+- PowerShell execution: `.\eyewitness.ps1 [options]`  
+- Manual activation: `.\activate-eyewitness.bat`
 
 ### 🐧 Linux Installation
-**One-line setup for most distributions:**
+**Production-ready setup with Python virtual environment:**
 
 ```bash
 # 1. Navigate to setup directory
 cd EyeWitness/setup
 
-# 2. Run the setup script
+# 2. Run the setup script (creates virtual environment)
 sudo ./setup.sh
 
-# 3. Test the installation
-cd ../Python
-python3 EyeWitness.py --single https://example.com
+# 3. Test installation using helper script
+cd ..
+./eyewitness.sh --single https://example.com
 ```
 
 **What gets installed:**
-- Python packages via system package manager (avoids PEP 668 issues)
-- Chromium browser and ChromeDriver
+- **🔒 Isolated Python virtual environment** (eyewitness-venv/)
+- All Python packages in virtual environment (completely bypasses PEP 668)
+- Chromium browser and ChromeDriver via system packages
 - Virtual display support (xvfb)
-- Tab completion support
+- **📝 Helper scripts** for easy execution
+
+**✨ Usage Options:**
+- Direct execution: `./eyewitness.sh [options]`
+- Manual activation: `source activate-eyewitness.sh`
+- Advanced: `source eyewitness-venv/bin/activate`
+
+**🎯 Benefits:**
+- ✅ **No PEP 668 conflicts** - Virtual environment bypasses all restrictions
+- ✅ **No system package issues** - All Python deps isolated
+- ✅ **Easy cleanup** - Just delete eyewitness-venv/ directory
+- ✅ **Production ready** - Automatic rollback on installation failures
 
 **Supported Linux Distributions:**
 - Ubuntu 20.04+ / Linux Mint
@@ -68,7 +88,7 @@ python3 EyeWitness.py --single https://example.com
 - Alpine Linux
 
 ### 🍎 macOS Installation
-**Homebrew-based setup:**
+**Homebrew-based setup with Python virtual environment:**
 
 ```bash
 # 1. Install Chrome via Homebrew
@@ -78,15 +98,17 @@ brew install --cask google-chrome
 cd EyeWitness/setup
 sudo ./setup.sh
 
-# 3. Test the installation
-cd ../Python
-python3 EyeWitness.py --single https://example.com
+# 3. Test installation using helper script
+cd ..
+./eyewitness.sh --single https://example.com
 ```
 
 **What gets installed:**
-- Python dependencies via pip
+- **🔒 Isolated Python virtual environment** (eyewitness-venv/)
+- Python dependencies in virtual environment
 - Chrome browser (via Homebrew)
 - ChromeDriver for automation
+- **📝 Helper scripts** for easy execution
 
 ## 🎯 Usage Examples
 
