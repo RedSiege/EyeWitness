@@ -11,7 +11,33 @@ EyeWitness is designed to take screenshots of websites, provide server header in
 - **Progress tracking with ETA** - Know exactly when your scan will complete
 - **Enhanced error handling** - Specific error types with actionable guidance
 - **Multiple input formats** - Text files, Nmap XML, Nessus XML
-- **Lightweight installation** - Simple 2-package install on most platforms
+- **Isolated virtual environment** - Zero system conflicts and PEP 668 bypass
+
+## 🔒 Virtual Environment Architecture
+
+EyeWitness now uses **Python virtual environments** for all installations, providing:
+
+### ✅ **Key Benefits**
+- **No system conflicts** - All Python packages installed in isolated environment
+- **No PEP 668 issues** - Completely bypasses "externally-managed-environment" errors on Kali/modern Linux
+- **Cross-platform consistency** - Same approach on Windows, Linux, and macOS
+- **Easy cleanup** - Delete `eyewitness-venv/` directory to remove everything
+- **Production ready** - Automatic error handling and rollback on failures
+
+### 🚀 **How It Works**
+1. **Setup creates virtual environment** - `eyewitness-venv/` directory with isolated Python
+2. **Helper scripts handle activation** - No manual virtual environment management needed
+3. **All packages installed in isolation** - Zero impact on your system Python
+4. **Multiple execution methods** - Helper scripts, manual activation, or direct execution
+
+### 📁 **File Structure After Installation**
+```
+EyeWitness/
+├── eyewitness-venv/          # 🔒 Virtual environment (isolated Python packages)
+├── eyewitness.sh/.bat        # 🚀 Helper scripts (auto-activate venv)
+├── activate-eyewitness.*     # 🔧 Manual activation helpers
+└── Python/EyeWitness.py     # 📜 Main script (runs in virtual environment)
+```
 
 ## 📦 Installation Options
 
@@ -112,68 +138,155 @@ cd ..
 
 ## 🎯 Usage Examples
 
-### 💻 Native Usage (Linux/Windows/macOS)
-After running the setup script:
+> **💡 Important**: EyeWitness now uses **virtual environments**. Use the helper scripts below for automatic virtual environment activation, or manually activate as shown in the advanced section.
 
+### 📱 **Easy Method - Helper Scripts (Recommended)**
+After running the setup script, use the helper scripts that automatically handle virtual environment activation:
+
+**🐧 Linux/macOS:**
 ```bash
-cd EyeWitness/Python
-
 # Single website
-python3 EyeWitness.py --single https://example.com
+./eyewitness.sh --single https://example.com
 
 # URL list from file  
-python3 EyeWitness.py -f urls.txt
+./eyewitness.sh -f urls.txt
 
 # Nmap XML scan results
-python3 EyeWitness.py -x nmap_scan.xml
+./eyewitness.sh -x nmap_scan.xml
 
 # Custom output directory
-python3 EyeWitness.py -f urls.txt -d /path/to/output
+./eyewitness.sh -f urls.txt -d /path/to/output
 
 # Performance tuning for large scans
-python3 EyeWitness.py -f large_list.txt --threads 20 --timeout 10
-
-# Nmap/Nessus XML
-./EyeWitness.py -x nmap_scan.xml
+./eyewitness.sh -f large_list.txt --threads 20 --timeout 10
 ```
 
-### Configuration Files
-```bash
-# Create a sample config file
-./EyeWitness.py --create-config
+**🪟 Windows:**
+```powershell
+# Single website
+.\eyewitness.bat --single https://example.com
 
-# Use a config file
-./EyeWitness.py -f urls.txt --config ~/.eyewitness/config.json
-```
+# URL list from file  
+.\eyewitness.bat -f urls.txt
 
-### URL Validation
-```bash
-# Validate URLs without taking screenshots
-./EyeWitness.py -f urls.txt --validate-urls
-
-# Skip validation (use with caution)
-./EyeWitness.py -f urls.txt --skip-validation
-```
-
-### Advanced Options
-```bash
-# Adjust threads based on your system (default: auto-detected)
-./EyeWitness.py -f urls.txt --threads 5
-
-# Increase timeout for slow connections
-./EyeWitness.py -f urls.txt --timeout 30
-
-# Add delays and jitter
-./EyeWitness.py -f urls.txt --delay 2 --jitter 5
-
-# Use proxy
-./EyeWitness.py -f urls.txt --proxy-ip 127.0.0.1 --proxy-port 8080
+# Nmap XML scan results
+.\eyewitness.ps1 -x nmap_scan.xml
 
 # Custom output directory
-./EyeWitness.py -f urls.txt -d /path/to/output
+.\eyewitness.bat -f urls.txt -d C:\path\to\output
+
+# Performance tuning for large scans
+.\eyewitness.bat -f large_list.txt --threads 20 --timeout 10
+```
+
+### 🛠️ **Advanced Method - Manual Virtual Environment**
+For advanced users who want direct control over the virtual environment:
+
+**🐧 Linux/macOS:**
+```bash
+# Activate virtual environment
+source eyewitness-venv/bin/activate
+
+# Run EyeWitness directly
+python Python/EyeWitness.py --single https://example.com
+python Python/EyeWitness.py -f urls.txt
+
+# Deactivate when done
+deactivate
+```
+
+**🪟 Windows:**
+```powershell
+# Activate virtual environment
+eyewitness-venv\Scripts\activate.bat
+
+# Run EyeWitness directly
+python Python\EyeWitness.py --single https://example.com
+python Python\EyeWitness.py -f urls.txt
+
+# Deactivate when done
+deactivate
+```
+
+### 📄 Configuration Files
+**🐧 Linux/macOS:**
+```bash
+# Create a sample config file
+./eyewitness.sh --create-config
+
+# Use a config file
+./eyewitness.sh -f urls.txt --config ~/.eyewitness/config.json
+```
+
+**🪟 Windows:**
+```powershell
+# Create a sample config file
+.\eyewitness.bat --create-config
+
+# Use a config file
+.\eyewitness.bat -f urls.txt --config C:\Users\%USERNAME%\.eyewitness\config.json
+```
+
+### 🔍 URL Validation
+**🐧 Linux/macOS:**
+```bash
+# Validate URLs without taking screenshots
+./eyewitness.sh -f urls.txt --validate-urls
+
+# Skip validation (use with caution)
+./eyewitness.sh -f urls.txt --skip-validation
+```
+
+**🪟 Windows:**
+```powershell
+# Validate URLs without taking screenshots
+.\eyewitness.bat -f urls.txt --validate-urls
+
+# Skip validation (use with caution)
+.\eyewitness.bat -f urls.txt --skip-validation
+```
+
+### ⚙️ Advanced Options
+**🐧 Linux/macOS:**
+```bash
+# Adjust threads based on your system (default: auto-detected)
+./eyewitness.sh -f urls.txt --threads 5
+
+# Increase timeout for slow connections
+./eyewitness.sh -f urls.txt --timeout 30
+
+# Add delays and jitter
+./eyewitness.sh -f urls.txt --delay 2 --jitter 5
+
+# Use proxy
+./eyewitness.sh -f urls.txt --proxy-ip 127.0.0.1 --proxy-port 8080
+
+# Custom output directory
+./eyewitness.sh -f urls.txt -d /path/to/output
 
 # Resume a previous scan
-./EyeWitness.py --resume /path/to/output/ew.db
+./eyewitness.sh --resume /path/to/output/ew.db
+```
+
+**🪟 Windows:**
+```powershell
+# Adjust threads based on your system (default: auto-detected)
+.\eyewitness.bat -f urls.txt --threads 5
+
+# Increase timeout for slow connections
+.\eyewitness.bat -f urls.txt --timeout 30
+
+# Add delays and jitter
+.\eyewitness.bat -f urls.txt --delay 2 --jitter 5
+
+# Use proxy
+.\eyewitness.bat -f urls.txt --proxy-ip 127.0.0.1 --proxy-port 8080
+
+# Custom output directory
+.\eyewitness.bat -f urls.txt -d C:\path\to\output
+
+# Resume a previous scan
+.\eyewitness.bat --resume C:\path\to\output\ew.db
 ```
 
 ### Performance Tuning
@@ -256,9 +369,13 @@ EyeWitness generates:
 
 ## Requirements
 
-- Python 3.7+
-- Chromium browser
-- ChromeDriver (automatically installed by setup script)
+- **Python 3.7+** with `venv` module support (standard in most Python installations)
+- **Administrator/root privileges** for installation (system packages and virtual environment creation)
+- **Internet connection** for package downloads
+- **Chromium/Chrome browser** (automatically installed by setup script)
+- **ChromeDriver** (automatically installed by setup script)
+
+> **📝 Note**: The setup script handles all dependencies automatically. You just need Python 3.7+ and admin privileges.
 
 ## Changes from Original
 
