@@ -261,57 +261,6 @@ install_python_deps() {
     print_success "All Python packages verified"
 }
 
-# Create activation helper scripts
-create_helpers() {
-    print_info "Creating helper scripts..."
-    
-    # Create activation script
-    cat > "$PROJECT_ROOT/activate-eyewitness.sh" << 'EOF'
-#!/bin/bash
-# EyeWitness Virtual Environment Activation Script
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VENV_DIR="$SCRIPT_DIR/eyewitness-venv"
-
-if [ ! -d "$VENV_DIR" ]; then
-    echo "Error: Virtual environment not found at $VENV_DIR"
-    echo "Please run setup/setup.sh first"
-    exit 1
-fi
-
-echo "Activating EyeWitness virtual environment..."
-source "$VENV_DIR/bin/activate"
-
-echo "Virtual environment activated!"
-echo "Run EyeWitness with: python Python/EyeWitness.py [options]"
-echo "Deactivate with: deactivate"
-EOF
-    
-    chmod +x "$PROJECT_ROOT/activate-eyewitness.sh"
-    print_success "Created activation script: activate-eyewitness.sh"
-    
-    # Create direct run script
-    cat > "$PROJECT_ROOT/eyewitness.sh" << 'EOF'
-#!/bin/bash
-# EyeWitness Direct Execution Script
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VENV_DIR="$SCRIPT_DIR/eyewitness-venv"
-
-if [ ! -d "$VENV_DIR" ]; then
-    echo "Error: Virtual environment not found at $VENV_DIR"
-    echo "Please run setup/setup.sh first"
-    exit 1
-fi
-
-# Activate venv and run EyeWitness
-source "$VENV_DIR/bin/activate"
-python "$SCRIPT_DIR/Python/EyeWitness.py" "$@"
-EOF
-    
-    chmod +x "$PROJECT_ROOT/eyewitness.sh"
-    print_success "Created direct execution script: eyewitness.sh"
-}
 
 # Test installation
 test_installation() {
@@ -349,8 +298,6 @@ main() {
     # Install Python dependencies
     install_python_deps
     
-    # Create helper scripts
-    create_helpers
     
     # Test installation
     if ! test_installation; then
@@ -362,13 +309,14 @@ main() {
     echo
     print_success "✓ EyeWitness installation completed successfully!"
     echo
-    print_info "USAGE OPTIONS:"
-    print_info "1. Activate environment: source activate-eyewitness.sh"
-    print_info "2. Direct execution: ./eyewitness.sh [options]"
-    print_info "3. Manual activation: source eyewitness-venv/bin/activate"
+    print_info "USAGE:"
+    print_info "1. Activate virtual environment: source eyewitness-venv/bin/activate"
+    print_info "2. Run EyeWitness: python Python/EyeWitness.py [options]"
+    print_info "3. Deactivate when done: deactivate"
     echo
     print_info "TEST INSTALLATION:"
-    print_info "./eyewitness.sh --single https://example.com"
+    print_info "source eyewitness-venv/bin/activate"
+    print_info "python Python/EyeWitness.py --single https://example.com"
     echo
     print_info "Virtual environment located at: $VENV_DIR"
     print_info "Visit https://www.redsiege.com for more Red Siege tools"

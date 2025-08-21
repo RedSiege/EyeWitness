@@ -426,81 +426,6 @@ function Install-PythonDeps {
     }
 }
 
-# Helper scripts creation function
-function Create-HelperScripts {
-    Write-InfoMsg "Creating helper scripts..."
-    
-    # Create activation batch script
-    $activateScript = Join-Path $ProjectRoot "activate-eyewitness.bat"
-    @"
-@echo off
-REM EyeWitness Virtual Environment Activation Script
-
-set SCRIPT_DIR=%~dp0
-set VENV_DIR=%SCRIPT_DIR%eyewitness-venv
-
-if not exist "%VENV_DIR%" (
-    echo Error: Virtual environment not found at %VENV_DIR%
-    echo Please run setup\setup.ps1 first
-    pause
-    exit /b 1
-)
-
-echo Activating EyeWitness virtual environment...
-call "%VENV_DIR%\Scripts\activate.bat"
-
-echo Virtual environment activated!
-echo Run EyeWitness with: python Python\EyeWitness.py [options]
-echo Deactivate with: deactivate
-"@ | Out-File -FilePath $activateScript -Encoding ASCII
-    
-    Write-Success "Created activation script: activate-eyewitness.bat"
-    
-    # Create direct execution batch script
-    $directScript = Join-Path $ProjectRoot "eyewitness.bat"
-    @"
-@echo off
-REM EyeWitness Direct Execution Script
-
-set SCRIPT_DIR=%~dp0
-set VENV_DIR=%SCRIPT_DIR%eyewitness-venv
-
-if not exist "%VENV_DIR%" (
-    echo Error: Virtual environment not found at %VENV_DIR%
-    echo Please run setup\setup.ps1 first
-    pause
-    exit /b 1
-)
-
-REM Activate venv and run EyeWitness
-call "%VENV_DIR%\Scripts\activate.bat"
-python "%SCRIPT_DIR%Python\EyeWitness.py" %*
-"@ | Out-File -FilePath $directScript -Encoding ASCII
-    
-    Write-Success "Created direct execution script: eyewitness.bat"
-    
-    # Create PowerShell wrapper
-    $psScript = Join-Path $ProjectRoot "eyewitness.ps1"
-    @"
-# EyeWitness PowerShell Execution Script
-param([Parameter(ValueFromRemainingArguments=`$true)]`$Arguments)
-
-`$ScriptDir = Split-Path -Parent `$MyInvocation.MyCommand.Path
-`$VenvDir = Join-Path `$ScriptDir "eyewitness-venv"
-`$VenvPython = Join-Path `$VenvDir "Scripts\python.exe"
-
-if (-not (Test-Path `$VenvDir)) {
-    Write-Host "Error: Virtual environment not found at `$VenvDir" -ForegroundColor Red
-    Write-Host "Please run setup\setup.ps1 first" -ForegroundColor Yellow
-    exit 1
-}
-
-# Run EyeWitness with virtual environment Python
-& `$VenvPython (Join-Path `$ScriptDir "Python\EyeWitness.py") @Arguments
-"@ | Out-File -FilePath $psScript -Encoding UTF8
-    
-    Write-Success "Created PowerShell execution script: eyewitness.ps1"
-}
 
 # Installation verification function
 function Test-Installation {
@@ -583,8 +508,6 @@ function Main {
         # Install Python dependencies
         Install-PythonDeps
         
-        # Create helper scripts
-        Create-HelperScripts
         
         # Test installation
         if (-not (Test-Installation)) {
@@ -598,14 +521,14 @@ function Main {
         Write-Host ""
         Write-Success "✓ EyeWitness installation completed successfully!"
         Write-Host ""
-        Write-InfoMsg "USAGE OPTIONS:"
-        Write-InfoMsg "1. Batch activation: .\activate-eyewitness.bat"
-        Write-InfoMsg "2. Direct execution: .\eyewitness.bat [options]"  
-        Write-InfoMsg "3. PowerShell execution: .\eyewitness.ps1 [options]"
-        Write-InfoMsg "4. Manual activation: .\eyewitness-venv\Scripts\activate.bat"
+        Write-InfoMsg "USAGE:"
+        Write-InfoMsg "1. Activate virtual environment: .\eyewitness-venv\Scripts\activate.bat"
+        Write-InfoMsg "2. Run EyeWitness: python Python\EyeWitness.py [options]"
+        Write-InfoMsg "3. Deactivate when done: deactivate"
         Write-Host ""
         Write-InfoMsg "TEST INSTALLATION:"
-        Write-InfoMsg ".\eyewitness.bat --single https://example.com"
+        Write-InfoMsg ".\eyewitness-venv\Scripts\activate.bat"
+        Write-InfoMsg "python Python\EyeWitness.py --single https://example.com"
         Write-Host ""
         Write-InfoMsg "Virtual environment located at: $VenvDir"
         Write-InfoMsg "Visit https://www.redsiege.com for more Red Siege tools"
