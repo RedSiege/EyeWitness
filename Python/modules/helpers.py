@@ -525,6 +525,13 @@ def target_creator(command_line_object):
             command_line_object.f, command_line_object)
         return file_urls
 
+    elif command_line_object.single is not None:
+        # Handle single URL input
+        return [command_line_object.single]
+    
+    # Return empty list if no input provided
+    return []
+
 def title_screen(cli_parsed):
     """Prints the title screen for EyeWitness
     """
