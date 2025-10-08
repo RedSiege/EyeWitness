@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  eyewitness:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: eyewitness:latest
+    container_name: eyewitness
+    
+    # Run as current user to avoid permission issues
+    # Linux/macOS: uncomment the line below
+    # user: "${UID}:${GID}"
+    
+    # Windows: uncomment the line below
+    # user: "1000:1000"
+    
+    volumes:
+      # Mount current directory as /workspace in container
+      - .:/workspace:rw
+      
+      # Alternatively, use specific directories:
+      # - ./input:/data:ro
+      # - ./output:/output:rw
+    
+    working_dir: /workspace
+    
+    # Default command (can be overridden)
+    command: ["--help"]
+    
+    # Environment variables
+    environment:
+      - DOCKER_CONTAINER=1
+      - DISPLAY=:99
+      - SE_OFFLINE=1
+    
+    # Network mode (uncomment if needed)
+    # network_mode: host
+    
+    # Resource limits (optional)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '2'
+    #       memory: 2G
+
+# Example configurations for different use cases:
+
+  # Dedicated web scanner service
+  web-scanner:
+    extends: eyewitness
+    profiles: ["web"]
+    command: ["-f", "/workspace/urls.txt", "-d", "/workspace/output", "--web"]
+
+  # XML processor service  
+  xml-processor:
+    extends: eyewitness
+    profiles: ["xml"]
+    command: ["-x", "/workspace/scan.xml", "-d", "/workspace/output"]
+
+  # Development/debug service
+  debug:
+    extends: eyewitness
+    profiles: ["debug"]
+    stdin_open: true
+    tty: true
+    entrypoint: /bin/bash
+    command: []
+
+# Usage examples:
+# 
+# Basic usage:
+#   docker-compose run --rm eyewitness -f urls.txt -d output
+#
+# Use specific profile:
+#   docker-compose --profile web run --rm web-scanner
+#
+# Interactive shell:
+#   docker-compose --profile debug run --rm debug
+#
+# Build only:
+#   docker-compose build
+#
+# With custom user (Linux/macOS):
+#   UID=$(id -u) GID=$(id -g) docker-compose run --rm eyewitness -f urls.txt -d output

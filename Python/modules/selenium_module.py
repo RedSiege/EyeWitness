@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+"""
+Chromium-based selenium module for EyeWitness
+Simplified single-browser approach using Chrome/Chromium headless
+"""
+
 import http.client
 import os
 import socket
@@ -5,311 +11,333 @@ import sys
 import urllib.request
 import urllib.error
 import ssl
+import shutil
+import tempfile
+from pathlib import Path
 
 try:
     from ssl import CertificateError as sslerr
-except:
+except ImportError:
     from ssl import SSLError as sslerr
 
 try:
     from selenium import webdriver
-    from selenium.webdriver.firefox.options import Options
+    from selenium.webdriver.chrome.options import Options as ChromeOptions
+    from selenium.webdriver.chrome.service import Service as ChromeService
     from selenium.common.exceptions import NoAlertPresentException
     from selenium.common.exceptions import TimeoutException
     from selenium.common.exceptions import UnexpectedAlertPresentException
     from selenium.common.exceptions import WebDriverException
-    from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 except ImportError:
     print('[*] Selenium not found.')
-    print('[*] Please run the script in the setup directory!')
+    print('[*] Run pip list to verify installation')
+    print('[*] Try: sudo apt install python3-selenium')
     sys.exit()
 
 from modules.helpers import do_delay
+from modules.platform_utils import platform_mgr
+from modules.security_headers import collect_http_headers
+
+# Platform-specific environment configuration for headless operation
+if platform_mgr.is_linux:
+    # Optimize for headless Linux servers
+    os.environ['DISPLAY'] = ':99'  # Virtual display
+    os.environ['CHROME_HEADLESS'] = '1'
+    os.environ['CHROME_NO_SANDBOX'] = '1'
+
 
 def create_driver(cli_parsed, user_agent=None):
-    """Creates a selenium FirefoxDriver
-
+    """Creates a Chromium WebDriver optimized for headless operation
+    
     Args:
         cli_parsed (ArgumentParser): Command Line Object
         user_agent (String, optional): Optional user-agent string
-
+        
     Returns:
-        FirefoxDriver: Selenium Firefox Webdriver
+        ChromeDriver: Selenium Chrome Webdriver
     """
-    profile = webdriver.FirefoxProfile()
-    # Load our custom firefox addon to handle basic auth.
-    extension_path = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        '..', 'bin', 'dismissauth.xpi')
-    profile.add_extension(extension_path)
-    profile.accept_untrusted_certs = True
-
-    # This user agent case covers a user provided one
-    if cli_parsed.user_agent is not None:
-        profile.set_preference(
-            'general.useragent.override', cli_parsed.user_agent)
-
-    # This user agent case should only be hit when cycling
-    if user_agent is not None:
-        profile.set_preference('general.useragent.override', user_agent)
-
-    # Set up our proxy information directly in the firefox profile
-    if cli_parsed.proxy_ip is not None and cli_parsed.proxy_port is not None:
-        profile.set_preference('network.proxy.type', 1)
-        if "socks" in cli_parsed.proxy_type:
-            profile.set_preference('network.proxy.socks', cli_parsed.proxy_ip)
-            profile.set_preference('network.proxy.socks_port', cli_parsed.proxy_port)
-        else:
-            profile.set_preference('network.proxy.http', cli_parsed.proxy_ip)
-            profile.set_preference(
-                'network.proxy.http_port', cli_parsed.proxy_port)
-            profile.set_preference('network.proxy.ssl', cli_parsed.proxy_ip)
-            profile.set_preference('network.proxy.ssl_port', cli_parsed.proxy_port)
-
-    profile.set_preference('app.update.enabled', False)
-    profile.set_preference('browser.search.update', False)
-    profile.set_preference('extensions.update.enabled', False)
-
     try:
-        capabilities = DesiredCapabilities.FIREFOX.copy()
-        capabilities.update({'acceptInsecureCerts': True})
-        options = Options()
-        options.add_argument("--headless")
-        profile.update_preferences()
-        driver = webdriver.Firefox(profile, capabilities=capabilities, options=options, service_log_path=cli_parsed.selenium_log_path)
+        options = ChromeOptions()
+        
+        # Essential headless configuration
+        options.add_argument('--headless=new')  # Use new headless mode
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--disable-web-security')
+        options.add_argument('--allow-running-insecure-content')
+        options.add_argument('--ignore-certificate-errors')
+        options.add_argument('--ignore-ssl-errors')
+        options.add_argument('--ignore-certificate-errors-spki-list')
+        options.add_argument('--disable-features=VizDisplayCompositor')
+        
+        # Memory and performance optimization
+        options.add_argument('--memory-pressure-off')
+        options.add_argument('--max_old_space_size=4096')
+        options.add_argument('--no-zygote')
+        options.add_argument('--disable-background-timer-throttling')
+        options.add_argument('--disable-renderer-backgrounding')
+        options.add_argument('--disable-backgrounding-occluded-windows')
+        
+        # Window size configuration
+        width = getattr(cli_parsed, 'width', 1920)
+        height = getattr(cli_parsed, 'height', 1080)
+        options.add_argument(f'--window-size={width},{height}')
+        
+        # User agent configuration
+        if user_agent:
+            options.add_argument(f'--user-agent={user_agent}')
+        elif hasattr(cli_parsed, 'user_agent') and cli_parsed.user_agent:
+            options.add_argument(f'--user-agent={cli_parsed.user_agent}')
+        
+        # Disable automation detection
+        options.add_argument('--disable-blink-features=AutomationControlled')
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+        
+        # Security and certificate handling
+        options.accept_insecure_certs = True
+        
+        # Setup Chrome service
+        service_kwargs = {}
+        
+        # Find chromedriver automatically
+        chromedriver_path = find_chromedriver()
+        if chromedriver_path:
+            service_kwargs['executable_path'] = chromedriver_path
+        
+        # Configure temp directory for better compatibility
+        temp_dir = tempfile.gettempdir()
+        os.environ['TMPDIR'] = temp_dir
+        os.environ['TMP'] = temp_dir
+        os.environ['TEMP'] = temp_dir
+        
+        service = ChromeService(**service_kwargs)
+        
+        # Create Chrome driver
+        driver = webdriver.Chrome(service=service, options=options)
+        
+        # Set timeouts and window size
         driver.set_page_load_timeout(cli_parsed.timeout)
-        driver.set_window_size(cli_parsed.width,cli_parsed.height)
+        driver.set_window_size(width, height)
+        
+        # Remove automation indicators
+        driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+        
+        print(f'[+] Chrome driver initialized successfully (headless mode)')
         return driver
+        
     except Exception as e:
-        if 'Failed to find firefox binary' in str(e):
-            print('Firefox not found!')
-            print('You can fix this by installing Firefox/Iceweasel\
-             or using phantomjs/ghost')
-        else:
-            print(e)
-        sys.exit()
+        from modules.troubleshooting import get_error_guidance
+        print(f'[!] Chrome WebDriver initialization error: {e}')
+        print('[*] Troubleshooting tips:')
+        print('    - Ensure Chromium is installed: sudo apt install chromium-browser')
+        print('    - Install chromedriver: sudo apt install chromium-chromedriver')
+        print('    - Run the setup script: sudo ./setup/setup.sh')
+        
+        # Special handling for common Chrome errors
+        error_str = str(e).lower()
+        if 'chromedriver' in error_str:
+            print('\n[!] ChromeDriver not found or incompatible')
+            print('[*] Quick fix: sudo apt install chromium-chromedriver')
+        elif 'chrome' in error_str or 'chromium' in error_str:
+            print('\n[!] Chrome/Chromium browser not found')
+            print('[*] Quick fix: sudo apt install chromium-browser')
+            
+        sys.exit(1)
+
+
+def find_chromedriver():
+    """Find chromedriver executable in various locations"""
+    # Common chromedriver locations
+    possible_paths = [
+        '/usr/bin/chromedriver',
+        '/usr/local/bin/chromedriver',
+        '/snap/bin/chromium.chromedriver',
+        shutil.which('chromedriver'),
+        shutil.which('chromium-chromedriver'),
+    ]
+    
+    for path in possible_paths:
+        if path and Path(path).exists():
+            return path
+    
+    return None
 
 
 def capture_host(cli_parsed, http_object, driver, ua=None):
-    """Screenshots a single host, saves information, and returns
-    a complete HTTP Object
-
+    """Screenshots a single host using Chrome and returns updated HTTP Object
+    
+    Enhanced version that collects HTTP headers and performs security analysis
+    alongside Selenium screenshot capture.
+    
     Args:
-        cli_parsed (ArgumentParser): Command Line Object
-        http_object (HTTPTableObject): Object containing data relating to current URL
-        driver (FirefoxDriver): webdriver instance
-        ua (String, optional): Optional user agent string
-
+        cli_parsed (ArgumentParser): Command Line Object  
+        http_object (HTTPObject): HTTP Object
+        driver (WebDriver): Selenium WebDriver
+        ua (str, optional): User agent string
+        
     Returns:
-        HTTPTableObject: Complete http_object
+        tuple: (HTTPObject, WebDriver) Updated objects
     """
-
-    # Attempt to take the screenshot
+    # Step 1: Collect HTTP headers via HTTP client (before Selenium)
+    print(f'[*] Collecting headers for {http_object.remote_system}')
+    
+    # Set up proxy configuration if provided
+    proxy_config = None
+    if hasattr(cli_parsed, 'proxy_ip') and cli_parsed.proxy_ip:
+        proxy_config = {
+            'ip': cli_parsed.proxy_ip,
+            'port': getattr(cli_parsed, 'proxy_port', 8080)
+        }
+    
+    # Collect headers with HTTP client
+    headers, header_error = collect_http_headers(
+        url=http_object.remote_system,
+        timeout=getattr(cli_parsed, 'timeout', 7),
+        user_agent=ua or getattr(cli_parsed, 'user_agent', None),
+        proxy=proxy_config
+    )
+    
+    # Store headers in HTTPTableObject
+    if headers:
+        # Store raw headers in HTTPTableObject
+        http_object.http_headers = headers
+        
+        # Create formatted headers display for the report
+        formatted_headers = {}
+        for key, value in headers.items():
+            # Truncate long header values for display
+            display_value = value[:150] + "..." if len(value) > 150 else value
+            formatted_headers[key] = display_value
+        
+        http_object.headers = formatted_headers
+        
+        print(f'[+] Headers collected: {len(headers)} headers')
+    else:
+        # Handle header collection failure
+        if header_error:
+            print(f'[!] Header collection failed for {http_object.remote_system}: {header_error}')
+            http_object.headers = {"Header Collection": f"Failed - {header_error}"}
+        else:
+            print(f'[!] No headers received from {http_object.remote_system}')
+            http_object.headers = {"Headers": "No headers received"}
+    
+    # Step 2: Continue with Selenium screenshot capture
     try:
-        # If cookie is presented we need to avoid cookie-averse error. To do so, we need to get the page twice.
+        print(f'[*] Taking screenshot of {http_object.remote_system}')
         driver.get(http_object.remote_system)
-        if cli_parsed.cookies is not None:
-            for cookie in cli_parsed.cookies:
-                driver.add_cookie(cookie)
-            driver.get(http_object.remote_system)
-    except KeyboardInterrupt:
-        print('[*] Skipping: {0}'.format(http_object.remote_system))
-        http_object.error_state = 'Skipped'
-        http_object.page_title = 'Page Skipped by User'
+        
+        # Handle page load timeout
+        try:
+            # Wait for page to load
+            driver.implicitly_wait(3)
+        except TimeoutException:
+            pass  # Continue with screenshot anyway
+            
+        # Capture page content
+        http_object.source = driver.page_source.encode('utf-8')
+        http_object.page_title = driver.title
+        
+        # Take screenshot - properly sanitize filename
+        def sanitize_filename(url):
+            import re
+            # Remove protocol and sanitize all unsafe characters
+            filename = re.sub(r'^https?://', '', url)
+            # Replace all non-alphanumeric characters (except hyphens and dots) with underscores
+            filename = re.sub(r'[^a-zA-Z0-9\-\.]', '_', filename)
+            # Limit length to prevent filesystem issues
+            return filename[:200]
+            
+        safe_filename = sanitize_filename(http_object.remote_system)
+        screenshot_path = Path(cli_parsed.d) / 'screens' / f'{safe_filename}.png'
+        driver.save_screenshot(str(screenshot_path))
+        http_object.screenshot_path = str(screenshot_path)
+        
+        print(f'[+] Captured screenshot: {http_object.remote_system}')
+        
     except TimeoutException:
-        print('[*] Hit timeout limit when connecting to {0}, retrying'.format(http_object.remote_system))
+        print(f'[*] Timeout connecting to {http_object.remote_system}')
         driver.quit()
         driver = create_driver(cli_parsed, ua)
         http_object.error_state = 'Timeout'
-    except http.client.BadStatusLine:
-        print('[*] Bad status line when connecting to {0}'.format(http_object.remote_system))
-        http_object.error_state = 'BadStatus'
-        return http_object, driver
-    except WebDriverException:
-        print('[*] WebDriverError when connecting to {0}'.format(http_object.remote_system))
-        http_object.error_state = 'BadStatus'
-        return http_object, driver
-
-    # Dismiss any alerts present on the page
-    # Will not work for basic auth dialogs!
-    try:
-        alert = driver.switch_to.alert
-        alert.dismiss()
+        
     except Exception as e:
-        pass
-
-    # If we hit a timeout earlier, retry once
-    if http_object.error_state == 'Timeout':
-        retry_counter = 0
-        return_status = False
-        while retry_counter < cli_parsed.max_retries:
-            http_object.error_state = None
-            try:
-                driver.get(http_object.remote_system)
-                if cli_parsed.cookies is not None:
-                    for cookie in cli_parsed.cookies:
-                        driver.add_cookie(cookie)
-                    driver.get(http_object.remote_system)
-                break
-            except TimeoutException:
-                # Another timeout results in an error state and a return
-                print('[*] Hit timeout limit when connecting to {0}'.format(http_object.remote_system))
-                http_object.error_state = 'Timeout'
-                http_object.page_title = 'Timeout Limit Reached'
-                http_object.headers = {}
-                driver.quit()
-                driver = create_driver(cli_parsed, ua)
-                return_status = True
-            except KeyboardInterrupt:
-                print('[*] Skipping: {0}'.format(http_object.remote_system))
-                http_object.error_state = 'Skipped'
-                http_object.page_title = 'Page Skipped by User'
-                break
-            except http.client.BadStatusLine:
-                print('[*] Bad status line when connecting to {0}'.format(http_object.remote_system))
-                http_object.error_state = 'BadStatus'
-                return_status = True
-                break
-            except WebDriverException:
-                print('[*] WebDriverError when connecting to {0}'.format(http_object.remote_system))
-                http_object.error_state = 'BadStatus'
-                return_status = True
-                break
-            retry_counter += 1
-
-        # Determine if I need to return the objects
-        if return_status:
-            return http_object, driver
-
-        try:
-            alert = driver.switch_to.alert
-            alert.dismiss()
-        except Exception as e:
-            pass
-
-    do_delay(cli_parsed)
-
-    # Save our screenshot to the specified directory
-    try:
-        driver.save_screenshot(http_object.screenshot_path)
-    except WebDriverException as e:
-        print('[*] Error saving web page screenshot'
-              ' for ' + http_object.remote_system)
-
-    # Get our headers using urllib
-    context = None
-    try:
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-    except:
-        context = None
-        pass
-
-    if cli_parsed.user_agent:
-        tempua = cli_parsed.user_agent
-    else:
-        try:
-            tempua = driver.execute_script("return navigator.userAgent")
-        except:
-            tempua = ''
-    try:
-        req = urllib.request.Request(http_object.remote_system, headers={'User-Agent': tempua})
-        if cli_parsed.proxy_ip is not None:
-            req.set_proxy(str(cli_parsed.proxy_ip) + ':' + str(cli_parsed.proxy_port), 'http')
-            req.set_proxy(str(cli_parsed.proxy_ip) + ':' + str(cli_parsed.proxy_port), 'https')
-        if context is None:
-            opened = urllib.request.urlopen(req, timeout=cli_parsed.timeout)
-        else:
-            opened = urllib.request.urlopen(req,timeout=cli_parsed.timeout, context=context)
-        headers = dict(opened.info())
-        headers['Response Code'] = str(opened.getcode())
-    except urllib.error.HTTPError as e:
-        responsecode = e.code
-        if responsecode == 404:
-            http_object.category = 'notfound'
-        elif responsecode == 403 or responsecode == 401:
-            http_object.category = 'unauth'
-        elif responsecode == 500:
-            http_object.category = 'inerror'
-        elif responsecode == 400:
-            http_object.category = 'badreq'
-        headers = dict(e.headers)
-        headers['Response Code'] = str(e.code)
-    except urllib.error.URLError as e:
-        if '104' in str(e.reason):
-            headers = {'Error': 'Connection Reset'}
-            http_object.error_state = 'ConnReset'
-            return http_object, driver
-        elif '111' in str(e.reason):
-            headers = {'Error': 'Connection Refused'}
-            http_object.error_state = 'ConnRefuse'
-            return http_object, driver
-        elif 'Errno 1' in str(e.reason) and 'SSL23' in str(e.reason):
-            headers = {'Error': 'SSL Handshake Error'}
-            http_object.error_state = 'SSLHandshake'
-            return http_object, driver
-        elif 'Errno 8' in str(e.reason) and 'EOF occurred' in str(e.reason):
-            headers = {'Error': 'SSL Handshake Error'}
-            http_object.error_state = 'SSLHandshake'
-            return http_object, driver
-        else:
-            headers = {'Error': 'HTTP Error...'}
-            http_object.error_state = 'BadStatus'
-            return http_object, driver
-    except socket.error as e:
-        if e.errno == 104:
-            headers = {'Error': 'Connection Reset'}
-            http_object.error_state = 'ConnReset'
-            return http_object, driver
-        elif e.errno == 10054:
-            headers = {'Error': 'Connection Reset'}
-            http_object.error_state = 'ConnReset'
-            return http_object, driver
-        elif 'timed out' in str(e):
-            headers = {'Error': 'Timed Out'}
+        error_msg = str(e).lower()
+        
+        # Enhanced error handling with specific error types
+        if 'net::err_connection_reset' in error_msg:
+            print(f'[*] Connection reset by {http_object.remote_system} - target may be blocking requests')
+            http_object.error_state = 'Connection Reset'
+        elif 'net::err_connection_refused' in error_msg:
+            print(f'[*] Connection refused by {http_object.remote_system} - service may be down')
+            http_object.error_state = 'Connection Refused'
+        elif 'net::err_timed_out' in error_msg or 'timeout' in error_msg:
+            print(f'[*] Timeout connecting to {http_object.remote_system}')
             http_object.error_state = 'Timeout'
-            print('[*] Socket Timeout when connecting to {0}'.format(http_object.remote_system))
+        elif 'net::err_name_not_resolved' in error_msg:
+            print(f'[*] DNS resolution failed for {http_object.remote_system}')
+            http_object.error_state = 'DNS Failed'
+        elif 'net::err_cert_' in error_msg or 'certificate' in error_msg:
+            print(f'[*] SSL/Certificate error for {http_object.remote_system}')
+            http_object.error_state = 'SSL Error'
+        elif 'chrome not reachable' in error_msg or 'session deleted' in error_msg:
+            print(f'[*] Chrome driver crashed while accessing {http_object.remote_system} - restarting')
+            http_object.error_state = 'Driver Crashed'
+            # Force driver restart
+            try:
+                driver.quit()
+            except:
+                pass
+            driver = create_driver(cli_parsed, ua)
             return http_object, driver
         else:
-            http_object.error_state = 'BadStatus'
-            return http_object, driver
-    except http.client.BadStatusLine:
-        http_object.error_state = 'BadStatus'
-        return http_object, driver
-    except sslerr:
-        headers = {'Error': 'Invalid SSL Certificate'}
-        http_object.ssl_error = True
-    except TypeError:
-        headers = {'Error': 'Communication Error'}
-        http_object.error_state = 'BadStatus'
-        return http_object, driver
-    except Exception:
-        headers = {'Error': 'Communication Error'}
-        http_object.error_state = 'BadStatus'
-        return http_object, driver
-
-    try:
-        http_object.page_title = 'Unknown' if driver.title == '' else driver.title.encode(
-            'utf-8')
-    except Exception:
-        http_object.page_title = 'Unable to Display'
-    # Save page source to the object and to a file. Also set the title in the object
-    try:
-        http_object.headers = headers
-        http_object.source_code = driver.page_source.encode('utf-8')
-        with open(http_object.source_path, 'w') as f:
-            f.write(http_object.source_code.decode())
-    except UnexpectedAlertPresentException:
-        with open(http_object.source_path, 'w') as f:
-            f.write('Cannot render webpage')
-        http_object.headers = {'Cannot Render Web Page': 'n/a'}
-    except IOError:
-        print("[*] ERROR: URL too long, surpasses max file length.")
-        print("[*] ERROR: Skipping: " + http_object.remote_system)
-    except WebDriverException:
-        print("[*] ERROR: Skipping source code capture for: " + http_object.remote_system)
-    except Exception: 
-         print("[*] ERROR: Skipping source code capture for: " + http_object.remote_system)
-
+            print(f'[*] Error capturing screenshot for {http_object.remote_system}: {e}')
+            http_object.error_state = 'Error'
+        
+        # Test if driver is still responsive
+        try:
+            driver.get('about:blank')
+        except:
+            print(f'[*] Chrome driver became unresponsive - restarting')
+            try:
+                driver.quit()
+            except:
+                pass
+            driver = create_driver(cli_parsed, ua)
+    
     return http_object, driver
+
+
+def check_browsers_available():
+    """Check if Chrome/Chromium is available"""
+    browsers = []
+    
+    # Check for Chrome/Chromium binaries
+    for browser in ['google-chrome', 'chromium-browser', 'chromium']:
+        if shutil.which(browser):
+            browsers.append(browser)
+    
+    # Check for chromedriver
+    chromedriver_available = find_chromedriver() is not None
+    
+    return {
+        'browsers': browsers,
+        'chromedriver': chromedriver_available,
+        'ready': len(browsers) > 0 and chromedriver_available
+    }
+
+
+def get_browser_info():
+    """Get information about the browser setup"""
+    status = check_browsers_available()
+    
+    print(f"[*] Browser Status:")
+    print(f"    Available browsers: {', '.join(status['browsers']) if status['browsers'] else 'None'}")
+    print(f"    ChromeDriver: {'Available' if status['chromedriver'] else 'Missing'}")
+    print(f"    Ready for screenshots: {'Yes' if status['ready'] else 'No'}")
+    
+    if not status['ready']:
+        print("[*] Run setup script to install: sudo ./setup/setup.sh")
+    
+    return status

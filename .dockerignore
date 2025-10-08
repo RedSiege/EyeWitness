@@ -1,0 +1,76 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# GitHub files  
+.github/
+
+# Documentation (not needed in container)
+*.md
+LICENSE
+NOTICE
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test files
+test_*.py
+*_test.py
+tests/
+
+# Output directories
+output/
+reports/
+sessions/
+screenshots/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+
+# Backup files
+*.bak
+*.backup
+*_backup*
+*_original*
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+/temp/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Any existing Docker artifacts
+docker-compose.override.yml
+.dockerignore

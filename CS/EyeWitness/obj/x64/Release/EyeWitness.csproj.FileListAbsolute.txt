@@ -1,2 +1,0 @@
-\\tsclient\Files\Coding\EyeWitness\CS\EyeWitness\obj\x64\Release\EyeWitness.csproj.AssemblyReference.cache
-\\tsclient\Files\Coding\EyeWitness\CS\EyeWitness\obj\x64\Release\EyeWitness.csproj.CoreCompileInputs.cache

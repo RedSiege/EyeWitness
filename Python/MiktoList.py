@@ -5,25 +5,8 @@ import os
 import sys
 import webbrowser
 
-from modules.helpers import strtobool
+from modules.helpers import strtobool, open_file_input
 from modules.db_manager import DB_Manager
-
-def open_file_input(cli_parsed):
-    files = glob.glob(os.path.join(cli_parsed.d, 'report.html'))
-    if len(files) > 0:
-        print('Would you like to open the report now? [Y/n]', end=' ')
-        while True:
-            try:
-                response = input().lower()
-                if response == "":
-                    return True
-                else:
-                    return strtobool(response)
-            except ValueError:
-                print('Please respond with y or n', end=' ')
-    else:
-        print('[*] No report files found to open, perhaps no hosts were successful')
-        return False
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
