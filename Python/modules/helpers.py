@@ -709,29 +709,9 @@ def strtobool(value, raise_exc=False):
     return None
 
 def class_info():
-    class_image = '''MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-M                                                                M
-M       .”cCCc”.                                                 M
-M      /cccccccc\\                                                M
-M      §cccccccc|                     BSidesAugusta!!            M
-M      :ccccccccP                    10/2/23 - 10/5/23           M
-M      \\cccccccc()                   Red Team Tactics            M
-M       \\ccccccccD             https://redsiege.com/training     M
-M       |cccccccc\\        _                                      M
-M       |ccccccccc)     //                                       M
-M       |cccccc|=      //                                        M
-M      /°°°°°°”-.     (CCCC)                                     M
-M      ;----._  _._   |cccc|                                     M
-M   .*°       °°   °. \\cccc/                                     M
-M  /  /       (      )/ccc/                                      M
-M  |_/        |    _.°cccc|                                      M
-M  |/         °^^^°ccccccc/                                      M
-M  /            \\cccccccc/                                       M
-M /              \\cccccc/                                        M
-M |                °*°                                           M
-M /                  \\      Psss. Follow us on >> Twitter        M
-M °*-.__________..-*°°                         >> Facebook       M
-M  \\WWWWWWWWWWWWWWWW/                          >> LinkedIn       M
-M   \\WWWWWWWWWWWWWW/                                             M
-MMMMM|WWWWWWWWWWWW|MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM'''
+    class_image = '''
+Check out Red Siege and AntiSyphon Training
+https://redsiege.com/training
+https://www.antisyphontraining.com
+'''
     print(class_image)
