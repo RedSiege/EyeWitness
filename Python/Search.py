@@ -5,27 +5,9 @@ import os
 import sys
 import webbrowser
 
-from modules.helpers import strtobool
+from modules.helpers import strtobool, open_file_input
 from modules.db_manager import DB_Manager
 from modules.reporting import search_report
-
-
-def open_file_input(cli_parsed):
-    files = glob.glob(os.path.join(cli_parsed.d, 'search.html'))
-    if len(files) > 0:
-        print('Would you like to open the report now? [Y/n]', end=' ')
-        while True:
-            try:
-                response = input().lower()
-                if response == "":
-                    return True
-                else:
-                    return strtobool(response)
-            except ValueError:
-                print("Please respond with y or n", end=' ')
-    else:
-        print('[*] No report files found to open, perhaps no hosts were successful')
-        return False
 
 
 if __name__ == "__main__":
@@ -55,7 +37,7 @@ if __name__ == "__main__":
         os.remove(f)
     search_report(cli_parsed, results, search_term)
     newfiles = glob.glob(os.path.join(cli_parsed.d, "search.html"))
-    if open_file_input(cli_parsed):
+    if open_file_input(cli_parsed, report_type='search'):
         for f in newfiles:
             webbrowser.open(f)
         sys.exit()

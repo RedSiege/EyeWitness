@@ -3,10 +3,11 @@ import sys
 import urllib.parse
 
 try:
-    from fuzzywuzzy import fuzz
+    from rapidfuzz import fuzz
 except ImportError:
-    print('[*] fuzzywuzzy not found.')
-    print('[*] Please run the script in the setup directory!')
+    print('[*] rapidfuzz not found.')
+    print('[*] Run pip list to verify installation!')
+    print('[*] Try: sudo apt install python3-rapidfuzz')
     sys.exit()
 
 
@@ -141,7 +142,7 @@ def sort_data_and_write(cli_parsed, data):
             csv_request_data += json_request._error_state + ","
         try:
             csv_request_data += "\"" + (json_request._page_title).decode('UTF-8') + "\","
-        except:
+        except (UnicodeDecodeError, AttributeError):
             csv_request_data += "\"!Error\","
         csv_request_data += str(json_request._category) + ","
         csv_request_data += "\"" + str(json_request._default_creds) + "\","
@@ -213,7 +214,7 @@ def sort_data_and_write(cli_parsed, data):
     toc = "<center>{0}<br><br>{1}<br><br></center>".format(toc, toc_table)
 
     if len(pages) == 1:
-        with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'a', encoding='utf-8') as f:
             f.write(toc)
             f.write(pages[0].replace('EW_REPLACEME', ''))
             f.write("</body>\n</html>")
@@ -266,7 +267,7 @@ def sort_data_and_write(cli_parsed, data):
         # Write out our report to disk!
         if len(pages) == 0:
             return
-        with open(os.path.join(cli_parsed.d, 'report.html'), 'a') as f:
+        with open(os.path.join(cli_parsed.d, 'report.html'), 'a', encoding='utf-8') as f:
             f.write(toc)
             f.write(pages[0])
         write_out = len(pages)
@@ -276,7 +277,7 @@ def sort_data_and_write(cli_parsed, data):
             if (bad_page in pages[i-1]) or (badd_page2 in pages[i-1]):
                 pass
             else:
-                with open(os.path.join(cli_parsed.d, 'report_page{0}.html'.format(str(i))), 'w') as f:
+                with open(os.path.join(cli_parsed.d, 'report_page{0}.html'.format(str(i))), 'w', encoding='utf-8') as f:
                     f.write(pages[i - 1])
 
 
@@ -338,7 +339,7 @@ def create_web_index_head(date, time):
 def search_index_head():
     return ("""<html>
         <head>
-        <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" type=\"text/css\"/>
+        <link rel=\"stylesheet\" href=\"bootstrap.min.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
         <script src="jquery-3.7.1.min.js"></script>
         <script type="text/javascript">
@@ -402,7 +403,7 @@ def search_report(cli_parsed, data, search_term):
         pages.append(html)
 
     if len(pages) == 1:
-        with open(os.path.join(cli_parsed.d, 'search.html'), 'a') as f:
+        with open(os.path.join(cli_parsed.d, 'search.html'), 'a', encoding='utf-8') as f:
             f.write(pages[0].replace('EW_REPLACEME', ''))
             f.write("</body>\n</html>")
     else:
@@ -444,13 +445,13 @@ def search_report(cli_parsed, data, search_term):
         # Write out our report to disk!
         if len(pages) == 0:
             return
-        with open(os.path.join(cli_parsed.d, 'search.html'), 'a') as f:
+        with open(os.path.join(cli_parsed.d, 'search.html'), 'a', encoding='utf-8') as f:
             try:
                 f.write(pages[0])
             except UnicodeEncodeError:
                 f.write(pages[0].encode('utf-8'))
         for i in range(2, len(pages) + 1):
-            with open(os.path.join(cli_parsed.d, 'search_page{0}.html'.format(str(i))), 'w') as f:
+            with open(os.path.join(cli_parsed.d, 'search_page{0}.html'.format(str(i))), 'w', encoding='utf-8') as f:
                 try:
                     f.write(pages[i - 1])
                 except UnicodeEncodeError:

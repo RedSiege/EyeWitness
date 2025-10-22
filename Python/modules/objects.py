@@ -1,6 +1,7 @@
 import html
 import os
 import re
+from pathlib import Path
 
 from modules.helpers import strip_nonalphanum
 
@@ -37,9 +38,11 @@ class HTTPTableObject(object):
         self.root_path = outdir
         if suffix is not None:
             file_name += '_' + suffix
-        self.screenshot_path = os.path.join(
-            outdir, 'screens', file_name + '.png')
-        self.source_path = os.path.join(outdir, 'source', file_name + '.txt')
+        
+        # Use pathlib for cross-platform path handling
+        output_path = Path(outdir)
+        self.screenshot_path = str(output_path / 'screens' / f'{file_name}.png')
+        self.source_path = str(output_path / 'source' / f'{file_name}.txt')
 
     @property
     def resolved(self):
@@ -130,14 +133,31 @@ class HTTPTableObject(object):
 
     @property
     def headers(self):
-        if hasattr(self, '_headers'):
+        """
+        Display headers for report generation
+        
+        Uses collected headers if available, otherwise falls back to 
+        the original "Missing Headers" message for backward compatibility
+        """
+        # First check if we have explicitly set display headers
+        if hasattr(self, '_headers') and self._headers:
             return self._headers
+        # Then check if we have raw HTTP headers collected
+        elif hasattr(self, '_http_headers') and self._http_headers:
+            # Return formatted version of raw headers for display
+            formatted = {}
+            for key, value in self._http_headers.items():
+                # Truncate very long header values for display
+                display_value = value[:150] + "..." if len(value) > 150 else value
+                formatted[key] = display_value
+            return formatted
         else:
-            missing = { "Missing Headers" : "No Headers found" }
-            return missing
+            # Fallback to original behavior for backward compatibility
+            return {"Missing Headers": "No Headers found"}
 
-    @headers.setter
+    @headers.setter  
     def headers(self, headers):
+        """Set display headers (can include security analysis)"""
         self._headers = headers
 
     @property
@@ -250,6 +270,7 @@ class HTTPTableObject(object):
 
             for key, value in self.headers.items():
                 try:
+                    # Regular header display
                     html += '<br><b> {0}:</b> {1}\n'.format(
                         self.sanitize(key), self.sanitize(value))
                 except UnicodeEncodeError:
@@ -412,7 +433,7 @@ class UAObject(HTTPTableObject):
                     self.sanitize(self.default_creds))
             except UnicodeEncodeError:
                 html += u"<br><b>Default credentials:</b> {0}<br>".format(
-		    self.sanitize(self.default_creds))
+                    self.sanitize(self.default_creds))
                 
         try:
             html += "\n<br><b> Page Title: </b>{0}\n".format(
@@ -428,7 +449,8 @@ class UAObject(HTTPTableObject):
                     self.sanitize(self.page_title))
 
         for key, value in self.headers.items():
-            try: 
+            try:
+                # Regular header display
                 html += '<br><b> {0}:</b> {1}\n'.format(
                     self.sanitize(key), self.sanitize(value))
             except UnicodeEncodeError:
