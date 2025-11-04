@@ -50,7 +50,7 @@ Rainwise IP-100;Relative Humidity;Solar Rad;Leaf Wetness;var exdate=new Date()|n
 DYMO LabelWriter Print Server;InternetExplorer3.0(or later)|printer
 HP System Management Homepage Login;Check if the user is already connected;pageColumns|idrac
 Polycom RMX 1000;ondragstart;cfg_ui_hide;proxy_log_ip|voip
-Sign In - Hyperic;body class="tundra";since dojo has trouble when;screencastLink|vm
+Sign In - Hyperic;body class="tundra";since dojo has trouble when;screencastLink|virtualization
 HP System Management Homepage;HP-UX removed;Unable to create a socket to communicate|idrac
 On Board Remote Management;This site requires the use of a frames capable;Web browser|idrac
 HP System Management Homepage Login;FramesAreThere;inNimbus;imageFromStatus(|idrac
@@ -844,3 +844,14 @@ wlmframe" src="../startwlm/Start_Wlm.htm|printer
 <body><b>Http/1.1 Service Unavailable</b>|serviceunavailable
 ATT&amp|secops
 Copyright CANON INC;canonlogo.gif|printer
+<html><head></head><body><b>Http;Service Unavailable</b> </body></html>|serviceunavailable
+<html><head></head><body><h1>404 Not Found|notfound
+src="images/meraki-logo.png"|netdev
+<html><head></head><body></body></html>|empty
+faultcode&gt;</span><span>403.7|unauth
+Faultstring&gt;Failed to connect to assigned pool for app.&lt|serviceunavailable
+Hostname not valid</pre></body></html>|serviceunavailable
+{"details":"Details","errorCode":"ERR_TOO_MANY_REDIRECTS|redirector
+{"details":"Details","errorCode":"HTTP ERROR 404"|notfound
+{"details":"Details","errorCode":"ERR_EMPTY_RESPONSE"|empty
+<title>403 - Forbidden: Access is denied.</title>|unauth
