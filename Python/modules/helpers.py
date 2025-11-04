@@ -715,7 +715,7 @@ def default_creds_category(http_object):
                         'Directory Listing For /' in http_object.page_title or
                         'Directory of /' in http_object.page_title):
                     http_object.category = 'dirlist'
-                    print('[+] Category Match: ' + http_object.remote_system + ' - ' + http_object.category 
+                    print('[+] Category Match: ' + http_object.remote_system + ' - ' + http_object.category )
                 if '404 Not Found' in http_object.page_title:
                     http_object.category = 'notfound'
                     print('[+] Category Match: ' + http_object.remote_system + ' - ' + http_object.category )
