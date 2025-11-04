@@ -236,14 +236,14 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
             pass  # Continue with screenshot anyway
             
         # Capture page content
-        http_object.source = driver.page_source.encode('utf-8')
+        http_object.source_code = driver.page_source.encode('utf-8')
         http_object.page_title = driver.title
 
 
         # Persist source_code to the source folder using the same filename strategy
         try:
             # Normalize bytes
-            src_bytes = http_object.source
+            src_bytes = http_object.source_code
             if isinstance(src_bytes, str):
                 src_bytes = src_bytes.encode('utf-8')
             # Prefer an already-set source_path
