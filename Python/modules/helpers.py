@@ -673,6 +673,7 @@ def default_creds_category(http_object):
                         http_object.default_creds = cred_info
                     else:
                         http_object.default_creds += '\n' + cred_info
+                        print('[+] Signature Match: ' + http_object.remote_system + ' - ' + cred_info)
 
             for cat in categories:
                 # Find the signature(s), split them into their own list if needed
@@ -691,18 +692,22 @@ def default_creds_category(http_object):
                 # by ";" before the "|", and then have the creds after the "|"
                 if all([x.lower() in http_object.source_code.decode().lower() for x in cat_sig]):
                     http_object.category = cat_name.strip()
+                    print('[+] Category Match: ' + http_object.remote_system + ' - ' + http_object.category )
                     break
 
         if http_object.page_title is not None:
             if (type(http_object.page_title)) == bytes:
                 if '403 Forbidden'.encode() in http_object.page_title or '401 Unauthorized'.encode() in http_object.page_title:
                     http_object.category = 'unauth'
+                    print('[+] Category Match: ' + http_object.remote_system + ' - ' + http_object.category )
                 if ('Index of /'.encode() in http_object.page_title or
                         'Directory Listing For /'.encode() in http_object.page_title or
                         'Directory of /'.encode() in http_object.page_title):
                     http_object.category = 'dirlist'
+                    print('[+] Category Match: ' + http_object.remote_system + ' - ' + http_object.category )
                 if '404 Not Found'.encode() in http_object.page_title:
                     http_object.category = 'notfound'
+                    print('[+] Category Match: ' + http_object.remote_system + ' - ' + http_object.category )
             else:
                 if '403 Forbidden' in http_object.page_title or '401 Unauthorized' in http_object.page_title:
                     http_object.category = 'unauth'
@@ -710,8 +715,10 @@ def default_creds_category(http_object):
                         'Directory Listing For /' in http_object.page_title or
                         'Directory of /' in http_object.page_title):
                     http_object.category = 'dirlist'
+                    print('[+] Category Match: ' + http_object.remote_system + ' - ' + http_object.category 
                 if '404 Not Found' in http_object.page_title:
                     http_object.category = 'notfound'
+                    print('[+] Category Match: ' + http_object.remote_system + ' - ' + http_object.category )
 
         return http_object
     except IOError:
