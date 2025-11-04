@@ -618,7 +618,6 @@ www.solarwinds.com/documentation/dpa;action="login.iwc"|devops
 <title>HAL Management Console</title>|devops
 <title>Home Page - My ASP.NET Application</title>|crap
 <title>NETFLOW Server</title>;Queue|dataops
-<title>Oracle HTTP Server|appops
 <title>Outlook</title>|comms
 <title>Output Manager: Home</title>;mutex|dataops
 <title>Task Manager: Home</title>;mutex|dataops
@@ -631,7 +630,6 @@ Bitbucket</title>|devops
 <title>SOAP RPC Server</title>|appops
 <title>SYSLOG Server</title>|dataops
 <title>Selenium Grid Hub</title></head>|appops
-<title>Sign in - Matomo</title>|devops
 <title>Solr Admin</title>|appops
 <title>Spring Boot Admin</title>|devops
 <title>TIBCO WebFOCUS ;Reporting Server</title>|secops
@@ -847,7 +845,6 @@ Copyright CANON INC;canonlogo.gif|printer
 <html><head></head><body><b>Http;Service Unavailable</b> </body></html>|serviceunavailable
 <html><head></head><body><h1>404 Not Found|notfound
 src="images/meraki-logo.png"|netdev
-<html><head></head><body></body></html>|empty
 faultcode&gt;</span><span>403.7|unauth
 Faultstring&gt;Failed to connect to assigned pool for app.&lt|serviceunavailable
 Hostname not valid</pre></body></html>|serviceunavailable
