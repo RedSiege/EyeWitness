@@ -583,6 +583,7 @@ OpsHub</title>;admin|appops
 <html><head><title>Node Exporter</title></head>|dataops
 <title>Zabbix</title>|secops
 <title>tomcat;installed to|dataops
+<s:Body><s:Fault><s:faultcode>403.7</s:faultcode>|unauth
 </head><body><pre>&lt;s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/|dataops
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body>|dataops
 <html><head></head><body>{"result":"Page not found"}</body></html>|notfound
