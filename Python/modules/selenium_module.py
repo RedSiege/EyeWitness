@@ -238,6 +238,30 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         # Capture page content
         http_object.source = driver.page_source.encode('utf-8')
         http_object.page_title = driver.title
+
+
+        # Persist source_code to the source folder using the same filename strategy
+        try:
+            # Normalize bytes
+            src_bytes = http_object.source
+            if isinstance(src_bytes, str):
+                src_bytes = src_bytes.encode('utf-8')
+            # Prefer an already-set source_path
+            if getattr(http_object, 'source_path', None):
+                dest = Path(http_object.source_path)
+            else:
+                # Build filename like set_paths()
+                file_name = http_object.remote_system.replace('://', '.')
+                for char in [':', '/', '?', '=', '%', '+']:
+                    file_name = file_name.replace(char, '.')
+                dest = Path(cli_parsed.d) / 'source' / f'{file_name}.txt'
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            with open(dest, 'wb') as sf:
+                sf.write(src_bytes)
+            http_object.source_path = str(dest)
+        except Exception as e:
+            print(f'[!] Warning: failed to write page source for {http_object.remote_system}: {e}')
+        
         
         # Take screenshot - properly sanitize filename
         def sanitize_filename(url):
