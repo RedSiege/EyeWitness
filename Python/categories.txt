@@ -550,7 +550,7 @@ IBM FlashSystem 5200;lib-prod/assets/css/Aspen;FlashCopyMappingsSnapshot|nas
 <title>RMF Data Portal;ibm|appops
 <title>RabbitMQ Management|devops
 <title>Red Hat Satellite - Login</title>|secops
-<title>Remote Support Portal;Powered by BOMGAR</title>|secops
+<title>Remote Support Portal|secops
 <title>Rubrik</title>;appliance|secops
 <title>Sign in - Matomo</title>|devops
 <title>Sign in;GitLab</title>|devops
