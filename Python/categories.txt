@@ -584,6 +584,7 @@ OpsHub</title>;admin|appops
 <title>Zabbix</title>|secops
 <title>tomcat;installed to|dataops
 <s:Body><s:Fault><s:faultcode>403.7</s:faultcode>|unauth
+<Code>InvalidRequest</Code><Message>Anonymous request cannot perform service operations.</Message>|unauth
 Faultcode;Failed to connect to assigned pool for app|serviceunavailable
 </head><body><pre>&lt;s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/|dataops
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body>|dataops
