@@ -114,7 +114,7 @@ def sort_data_and_write(cli_parsed, data):
     web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
     table_head = create_table_head()
     counter = 1
-    csv_request_data = "Protocol,Port,Domain,Resolved,Request Status,Title,Category,Default Creds,Screenshot Path, Source Path"
+    csv_request_data = "Protocol,Port,Domain,URL,Resolved,Request Status,Title,Category,Default Creds,Screenshot Path, Source Path"
 
     # Generate and write json log of requests
     for json_request in data:
@@ -135,6 +135,7 @@ def sort_data_and_write(cli_parsed, data):
             print("Possible bad url (improperly formatted) in the URL list.")
             print("Fix your list and re-try. Killing EyeWitness....")
             sys.exit(1)
+        csv_request_data += json_request._remote_system + ","
         csv_request_data += json_request.resolved + ","
         if json_request._error_state == None:
             csv_request_data += "Successful,"
