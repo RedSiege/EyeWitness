@@ -50,7 +50,7 @@ Rainwise IP-100;Relative Humidity;Solar Rad;Leaf Wetness;var exdate=new Date()|n
 DYMO LabelWriter Print Server;InternetExplorer3.0(or later)|printer
 HP System Management Homepage Login;Check if the user is already connected;pageColumns|idrac
 Polycom RMX 1000;ondragstart;cfg_ui_hide;proxy_log_ip|voip
-Sign In - Hyperic;body class="tundra";since dojo has trouble when;screencastLink|vm
+Sign In - Hyperic;body class="tundra";since dojo has trouble when;screencastLink|virtualization
 HP System Management Homepage;HP-UX removed;Unable to create a socket to communicate|idrac
 On Board Remote Management;This site requires the use of a frames capable;Web browser|idrac
 HP System Management Homepage Login;FramesAreThere;inNimbus;imageFromStatus(|idrac
@@ -327,7 +327,7 @@ Management Studio - Redirection;Refresh;ManagementStudio|redirector
 <link rel="stylesheet" href="resources/webLogin-all.css">;<title>Polycom Login</title>;<meta http-equiv="X-UA-Compatible" content="IE=edge">;Password:</label></div></div></div>;type="text" role="textbox" size="1" name="userName" class="x-form-field x-form-text|infrastructure
 <title>WebTools;Home</title>;<td align="left" valign="middle" class="name">XeroxC70;set_status_refresh_interval|printer
 <title>S2 Netbox Login</title>;<!--License IFRAME HERE GOES HERE-->;div id="headerframe"|infrastructure
-<title>Remote Support Portal;Powered by BOMGAR</title>;exitSurveyBox;Show Representatives Help Window;/content/access_key_input.js|infrastructure
+<title>Remote Support Portal;exitSurveyBox;Show Representatives Help Window;/content/access_key_input.js|infrastructure
 <title>Pritunl</title>;<link rel="icon" type="image/x-icon" href;onSubmit();login-form;var duoUserInput = document.getElementById('duo-username')|infrastructure
 <title>Log In - Juniper Web Device Manager</title>;document.getElementById("antiClickjack");Juniper Networks, Inc.;document.getElementById('errorMsgId')|infrastructure
 var pageRandom=new Date().getTime();var pageRandom=new Date().getTime();<span>Are you sure you want to email an emergency security code?</span>;<div class="qnap-link show">;<div class="qts-tooltip">|nas
@@ -550,7 +550,7 @@ IBM FlashSystem 5200;lib-prod/assets/css/Aspen;FlashCopyMappingsSnapshot|nas
 <title>RMF Data Portal;ibm|appops
 <title>RabbitMQ Management|devops
 <title>Red Hat Satellite - Login</title>|secops
-<title>Remote Support Portal;Powered by BOMGAR</title>|secops
+<title>Remote Support Portal|secops
 <title>Rubrik</title>;appliance|secops
 <title>Sign in - Matomo</title>|devops
 <title>Sign in;GitLab</title>|devops
@@ -583,6 +583,9 @@ OpsHub</title>;admin|appops
 <html><head><title>Node Exporter</title></head>|dataops
 <title>Zabbix</title>|secops
 <title>tomcat;installed to|dataops
+<s:Body><s:Fault><s:faultcode>403.7</s:faultcode>|unauth
+<Code>InvalidRequest</Code><Message>Anonymous request cannot perform service operations.</Message>|unauth
+Faultcode;Failed to connect to assigned pool for app|serviceunavailable
 </head><body><pre>&lt;s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/|dataops
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body>|dataops
 <html><head></head><body>{"result":"Page not found"}</body></html>|notfound
@@ -618,7 +621,6 @@ www.solarwinds.com/documentation/dpa;action="login.iwc"|devops
 <title>HAL Management Console</title>|devops
 <title>Home Page - My ASP.NET Application</title>|crap
 <title>NETFLOW Server</title>;Queue|dataops
-<title>Oracle HTTP Server|appops
 <title>Outlook</title>|comms
 <title>Output Manager: Home</title>;mutex|dataops
 <title>Task Manager: Home</title>;mutex|dataops
@@ -631,7 +633,6 @@ Bitbucket</title>|devops
 <title>SOAP RPC Server</title>|appops
 <title>SYSLOG Server</title>|dataops
 <title>Selenium Grid Hub</title></head>|appops
-<title>Sign in - Matomo</title>|devops
 <title>Solr Admin</title>|appops
 <title>Spring Boot Admin</title>|devops
 <title>TIBCO WebFOCUS ;Reporting Server</title>|secops
@@ -844,3 +845,21 @@ wlmframe" src="../startwlm/Start_Wlm.htm|printer
 <body><b>Http/1.1 Service Unavailable</b>|serviceunavailable
 ATT&amp|secops
 Copyright CANON INC;canonlogo.gif|printer
+<html><head></head><body><b>Http;Service Unavailable</b> </body></html>|serviceunavailable
+<html><head></head><body><h1>404 Not Found|notfound
+src="images/meraki-logo.png"|netdev
+faultcode&gt;</span><span>403.7|unauth
+Faultstring&gt;Failed to connect to assigned pool for app.&lt|serviceunavailable
+Hostname not valid</pre></body></html>|serviceunavailable
+{"details":"Details","errorCode":"ERR_TOO_MANY_REDIRECTS|redirector
+{"details":"Details","errorCode":"HTTP ERROR 404"|notfound
+{"details":"Details","errorCode":"ERR_EMPTY_RESPONSE"|empty
+<title>403 - Forbidden: Access is denied.</title>|unauth
+<html><head><title>Not Found</title>|notfound
+<title>HTTP Status 404 – Not Found</title>|notfound
+<title>Login (Virtual Traffic Manager Appliance:|netdev
+<title;NetscalerAAA">NetScaler AAA</title>|netdev
+<title>Production Manager</title>;webui/assets/messagepoint|comms
+<td height="84" valign="middle"><img src="images/logo.png" alt="Cisco Systems, Inc."></td>|netdev
+<title>Log in to FibreconX Fusion Portal</title>|netdev
+<html><head><title>Request Rejected|serviceunavailable

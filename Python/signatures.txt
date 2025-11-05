@@ -357,7 +357,6 @@ var bannerEntryCounter = 0;parent.location.href = location.href;getServerRespons
 ZebraNet PrintServer</h1>;href="/server/CANCLJOB.htm;Factory Print Server Settings|Zebra PrintServer admin / 1234
 UPS Remote Management;Login;Cyber Power Systems;td class="loginLb"|Cyber Power UPS Remote Management cyber / cyber or device / cyber
 F5 Networks, Inc., Seattle, Washington. All rights reserved.;"author" content="F5 Networks, Inc.";Configuration Utility|F5 BIG-IP admin/admin
-body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;ng-app="esxUiApp"|VmWare ESXi (creds set at install)
 SSMC</title>;<script src="libs/globalize/globalize.js"></script>;<header id="hp-banner-container" class="hp-menu-boundary">|HPE SSMC ssmcadmin / ssmcadmin
 <title>Poly</title>;http-equiv="X-UA-Compatible";mat-form-field class=|Poly G7500 admin/<last 6 digits of serial>
 - Log in -;IBM Storwize V5000;lib-prod/evo/images/status_sprites.png;dojoConfig = {|IBM Storwize v5000 superadmin / passw0rd
@@ -507,3 +506,4 @@ wlmframe" src="../startwlm/Start_Wlm.htm|CommandCenter RX / Admin:Admin or first
 <title>Login</title>;<label ng-bind="oLan.login" class="ng-binding">Login</label>|Hikvision Digital Technology / admin:12345 or admin:admin or admin:123456
 <title>Quantum Spark Security Appliance - Login</title>;<meta name="title" content="Quantum Spark Security Appliance - Login">|Firewall / admin:admin
 Copyright CANON INC;canonlogo.gif|Canon Printer 7654321:7654321 or admin:7654321
+<title>Login (Virtual Traffic Manager Appliance:|Pulse Secure Virtual Traffic Manager Appliance 
