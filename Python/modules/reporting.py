@@ -142,7 +142,7 @@ def sort_data_and_write(cli_parsed, data):
         else:
             csv_request_data += json_request._error_state + ","
         try:
-            csv_request_data += "\"" + (json_request._page_title).decode('UTF-8') + "\","
+            csv_request_data += "\"" + (json_request._page_title) + "\","
         except (UnicodeDecodeError, AttributeError):
             csv_request_data += "\"!Error\","
         csv_request_data += str(json_request._category) + ","
