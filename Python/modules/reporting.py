@@ -120,14 +120,18 @@ def sort_data_and_write(cli_parsed, data):
     for json_request in data:
         url = urllib.parse.urlparse(json_request._remote_system)
 
-        # Determine protocol
+        # CSV - PROTOCOL
         csv_request_data += "\n" + url.scheme + ","
+        
+        # CSV - PORT
         if url.port is not None:
             csv_request_data += str(url.port) + ","
         elif url.scheme == 'http':
             csv_request_data += "80,"
         elif url.scheme == 'https':
             csv_request_data += "443,"
+        
+        # CSV - DOMAIN
         try:
             csv_request_data += url.hostname + ","
         except TypeError:
@@ -135,21 +139,41 @@ def sort_data_and_write(cli_parsed, data):
             print("Possible bad url (improperly formatted) in the URL list.")
             print("Fix your list and re-try. Killing EyeWitness....")
             sys.exit(1)
+        
+        # CSV - URL
         csv_request_data += json_request._remote_system + ","
+        
+        # CSV - RESOLVED
         csv_request_data += json_request.resolved + ","
+
+        # CSV - REQUEST STATUS
         if json_request._error_state == None:
             csv_request_data += "Successful,"
         else:
             csv_request_data += json_request._error_state + ","
+        
+        # CSV - TITLE
         try:
-            csv_request_data += "\"" + (json_request._page_title).decode('UTF-8') + "\","
-        except (UnicodeDecodeError, AttributeError):
-            csv_request_data += "\"!Error\","
+            # get attribute safely
+            title = getattr(json_request, "_page_title", None)
+            if title is None:
+                title_text = "None"
+            else:
+                # ensure string, replace double-quotes so CSV remains valid
+                title_text = str(title).replace('"', '""')
+            csv_request_data += '"' + title_text + '",'
+        except (UnicodeDecodeError, UnicodeEncodeError, AttributeError, TypeError) as e:
+            # fallback for any encoding/None/attribute/concatenation issues
+            csv_request_data += '"!Error",'
+        
+        # CSV - CATEGORY
         csv_request_data += str(json_request._category) + ","
+        # CSV - DEFAULT CREDS/Signature
         csv_request_data += "\"" + str(json_request._default_creds) + "\","
+        # CSV - SCREENSHOT PATH 
         csv_request_data += json_request._screenshot_path + ","
+        # CSV - Source Path
         csv_request_data += json_request._source_path
-
 
     with open(os.path.join(cli_parsed.d, 'Requests.csv'), 'a') as f:
         f.write(csv_request_data)
