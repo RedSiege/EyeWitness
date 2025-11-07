@@ -222,7 +222,7 @@ class DB_Manager(object):
         for row in rows:
             o = pickle.loads(row['object'])
             if o.error_state is None and (o.category == 'notfound'
-                                          or o.category == 'crap'):
+                                          or o.category == 'splash'):
                 results.append(o)
         c.close()
         return results
