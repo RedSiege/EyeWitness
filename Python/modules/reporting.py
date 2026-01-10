@@ -92,7 +92,7 @@ def sort_data_and_write(cli_parsed, data):
                   ('infrastructure', 'Infrastructure', 'infrastructure'),
                   (None, 'Uncategorized', 'uncat'),
                   ('construction', 'Under Construction', 'construction'),
-                  ('crap', 'Splash Pages', 'crap'),
+                  ('splash', 'Splash Pages', 'splash'),
                   ('empty', 'No Significant Content', 'empty'),
                   ('unauth', '401/403 Unauthorized', 'unauth'),
                   ('notfound', '404 Not Found', 'notfound'),

@@ -106,11 +106,11 @@ alt="Oracle(R) Integrated Lights Out Manager";<input type="submit" tabindex="3" 
 var thisIDRACText = " This iDRAC";// Return true if value contains only printable ASCII chars;Integrated Remote Access Controller 6|idrac
 Teradata Viewpoint V14.10.00.05-b47;if (new Date().getTime() - loginRenderMillis|nas
 Cisco Unified IP Phone Cisco Communicator;<img src="/FS/Logo.png";/CGI/Java/Serviceability|voip
-<title>IIS7</title>;<img width="571" height="411" alt="IIS7" src="welcome.png"|crap
+<title>IIS7</title>;<img width="571" height="411" alt="IIS7" src="welcome.png"|splash
 <p>In Tomcat 8.0 access to the manager application is split between;<title>Apache Tomcat/;<pre>$CATALINA_HOME/RUNNING.txt</pre>|appops
-<title>Test Page for the Apache HTTP Server on Red Hat Enterprise Linux</title>;<h1>Red Hat Enterprise Linux <strong>Test Page|crap
+<title>Test Page for the Apache HTTP Server on Red Hat Enterprise Linux</title>;<h1>Red Hat Enterprise Linux <strong>Test Page|splash
 <title>Welcome to VMware vSphere</title>;<meta content="VMware VirtualCenter is virtual infrastructure software for partitioning, consolidating and managing systems in mission-critical environments.|virtualization
-title="VMware vFabric, Cloud Application Platform";<p>This is the default vFabric tc Server Runtime home page|crap
+title="VMware vFabric, Cloud Application Platform";<p>This is the default vFabric tc Server Runtime home page|splash
 content="VMware ESXi is virtual infrastructure software for partitioning, consolidating, and managing systems in mission-critical environments.;document.write(ID_ESX_VIClientDesc)|virtualization
 src="./cgi-bin/dynamic/topbar.html" target="Main" name="Printer Information" />;<!-- Title in case of ENA's is not a single variable so it is a function -->|printer
 <strong>Cisco IP Conference Station CP-7937G</strong>;src="/Logo";<title>Cisco Systems, Inc.|voip
@@ -130,26 +130,26 @@ div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;Printers</title>|printer
 div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;MFP Series</title>|printer
 <frame target="_self" noresize="noresize" marginheight="10" marginwidth="15" scrolling="auto" src="/cgi-bin/dynamic/PrinterStatus.html" name="rbottom" />|printer
 <frame scrolling="no" noresize="noresize" src="/cgi-bin/dynamic/left_bar.html" target="Printer Information" name="Directory" />;<!-- Title in case of ENA's is not a single variable so it is a function -->|printer
-<img src="welcome.png" alt="IIS7" width="571" height="411"></a>|crap
+<img src="welcome.png" alt="IIS7" width="571" height="411"></a>|splash
 <frame src="/index_top.htm" name="Banner" noresize="noresize";<frame src="/index_top_2.htm" name="Tabs" noresize="noresize";<frame src="/index_down.htm" name="Main";name="PhoneHome"|printer
 Polycom '+GetCurrentPageName ()+'</title>');document.title = sysName+' - Polycom '+model|voip
 <a href="http://solutions.brother.com/cgi-bin/solutions.cgi?;alt="Brother"|printer
-<img src="iis-85.png";go.microsoft.com/fwlink;IIS Windows|crap
+<img src="iis-85.png";go.microsoft.com/fwlink;IIS Windows|splash
 jenkins;yuiResizeMonitor;projectstatus|devops
 <frame src="/index_top.htm" name="Banner" leftmargin="5" noresize="";<frame src="/index_top_2.htm" name="Tabs" leftmargin="25" noresize="";<frame src="/index_down.htm" name="Main";|printer
-Apache2 Ubuntu Default Page;This is the default welcome page|crap
+Apache2 Ubuntu Default Page;This is the default welcome page|splash
 Dell;status/status.htm;frametop.htm|printer
 div.hpGasGaugeBlock;div.hpPageText;HP Color LaserJet;Printers</title>|printer
 HP LaserJet;set_config_energy.html|printer
 KONICA MINOLTA PageScope;m_s_smm.html|printer
 k Camera;AXIS;indexMain|voip
-This is a placeholder page installed by the Ubuntu;bug in this Light|crap
-Welcome to nginx on Ubuntu;ubuntu-bug;Thank you for using Ubuntu|crap
-Page for the Nginx HTTP Server on Red Hat|crap
+This is a placeholder page installed by the Ubuntu;bug in this Light|splash
+Welcome to nginx on Ubuntu;ubuntu-bug;Thank you for using Ubuntu|splash
+Page for the Nginx HTTP Server on Red Hat|splash
 Xerox;/status/consumables.dhtml;displayTree;SMart|printer
 div.hpGasGaugeBlock;div.hpPageText;hp LaserJet;|printer
-It works!;This is the default web page for this server;The web server software is running|crap
-<html><head></head><body><h1>It works!</h1>|crap
+It works!;This is the default web page for this server;The web server software is running|splash
+<html><head></head><body><h1>It works!</h1>|splash
 <title>AXIS;Network Camera;/view/view.shtml|camera
 It works !;Tomcat home page;Tomcat7 veterans;tomcat7-admin|appops
 Canon Inc;DeviceDetail;t_title.gif;alt="Network Configuration"|printer
@@ -166,18 +166,18 @@ HP Officejet;EWSCookieId;alt="HP logo"|printer
 "product">HP LaserJet;Go to Link to the HP corporate;PageDeviceStatus|printer
 "product">HP Color LaserJet;Go to Link to the HP corporate;PageDeviceStatus|printer
 Dell-KACE;Systems Deployment;Administrator Console|idrac
-Welcome to Lion Server;ServerCenter.png;Apple Inc.|crap
-OS X Server;Welcome to Server;com.apple.entity.Page|crap
-Welcome to OS X Server;/xcode;/profilemanager|crap
+Welcome to Lion Server;ServerCenter.png;Apple Inc.|splash
+OS X Server;Welcome to Server;com.apple.entity.Page|splash
+Welcome to OS X Server;/xcode;/profilemanager|splash
 Synology DiskStation;full-featured network attached;logo-synology|nas
-Under Construction</title>;The site you are trying to view does not|crap
+Under Construction</title>;The site you are trying to view does not|splash
 Welcome to VMware vSphere;Getting Started;ID_ForAdmins|virtualization
 qnap-lib;myqnapcloud.com;logo-img x-abs-layout|nas
 var thisIDRACText = EntityDecode(" This iDRAC") //" This iDRAC"|idrac
 Avaya G450 - Avaya Device Manager;Welcome to the Avaya G450 Manager|netdev
 <frame src="/index_top.htm" name="Banner" noresize="noresize" frameborder="0" marginwidth="0" marginheight="0" scrolling="no">;document.writeln("This application cannot run on Windows 3.1.  Please upgrade to Windows NT 4.0, Windows 95 or Windows 98.")|printer
 If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;href="/manager/html";As you may have guessed by now, this is the default Tomcat home page|appops
-<a href="http://www.apachehaus.com/forum">;Apache Haus Distribution Installation Test;href="/apachehaus.ico";If you are seeing this it means that the web server installed at this site is working properly|crap
+<a href="http://www.apachehaus.com/forum">;Apache Haus Distribution Installation Test;href="/apachehaus.ico";If you are seeing this it means that the web server installed at this site is working properly|splash
 If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!;href="manager/html";As you may have guessed by now, this is the default Tomcat home page|appops
 If you're seeing this, you've successfully installed Tomcat. Congratulations!;href="manager/html"|appops
 content="F5 Networks, Inc.";doesn't have a BIGIPAuthCookie;F5 Networks Logo|netdev
@@ -186,7 +186,7 @@ Cisco Edge 340;For more information of Cisco Edge 340 Series, please visit homep
 a href="EthernetInformation";Streaming Statistics;<a href="/">Device Information|voip
 If you're seeing this, you've successfully installed Tomcat. Congratulations!;href="/manager/html"|appops
 Cisco IP Phone;Device Information;/CGI/Java/Serviceability?adapter=device|voip
-GlassFish Server - Server Running;Your server is now running;go to the Administration Console|crap
+GlassFish Server - Server Running;Your server is now running;go to the Administration Console|splash
 var alertMgr = new AlertManager();HP BladeSystem Onboard Administrator;Checks to see if we are signing on from HP SIM.;//hpoa:version|idrac
 var alertMgr=new AlertManager();HP BladeSystem Onboard Administrator;function checkHpSimSSO();//hpoa:version|idrac
 Integrated Lights-Out 2 supports Microsoft Internet Explorer;<title>HP Integrated Lights-Out 2 Login</title>;hp-iLO-Login|idrac
@@ -200,12 +200,12 @@ Enable JavaScript to use CentreWare Internet Services;Phaser;More Printers|print
 Internet Services;<frame src="headhome.htm";<frame src="menuhome.htm"|printer
 Riverbed Steelhead;Riverbed Technology, Inc. and/or its licensors;form id="loginForm" action="/mgmt/gui|netdev
 ADManager Plus Authentication;sel.options[i].text == 'ADManager Plus Authentication';ManageEngine;js/framework/Hashtable.js|highval
-Orion Application Server;mailto:info@orionserver.com;Orion Application Server is a pure java|crap
-Sample Home Page for APACHEDFT Server;This is the sample home page for the APACHEDFT;http://www.ibm.com/servers/eserver/iseries/software/http|crap
-To replace this page, overwrite;Sun Java System Application Server Platform Edition;https://softwarereg.sun.com/software/product_registration/index.jsp|crap
+Orion Application Server;mailto:info@orionserver.com;Orion Application Server is a pure java|splash
+Sample Home Page for APACHEDFT Server;This is the sample home page for the APACHEDFT;http://www.ibm.com/servers/eserver/iseries/software/http|splash
+To replace this page, overwrite;Sun Java System Application Server Platform Edition;https://softwarereg.sun.com/software/product_registration/index.jsp|splash
 TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|nas
-This page is used to test the Apache Haus distribution of the Apache HTTP server after it has been installed;Test Page for the Apache Haus distribution|crap
-WebTools;images/img_printer.gif;Xerox;WT2Home/English/WT2Home2/Output/Home.htm|crap
+This page is used to test the Apache Haus distribution of the Apache HTTP server after it has been installed;Test Page for the Apache Haus distribution|splash
+WebTools;images/img_printer.gif;Xerox;WT2Home/English/WT2Home2/Output/Home.htm|splash
 Manage this JBoss AS Instance;href="css/jboss.css";/admin-console/|appops
 "css/jboss.css";/jmx-console/;JBoss Enterprise Application Platform|appops
 JBoss Application Server 7... it's here.;Administration Console;jboss_community.png|appops
@@ -219,7 +219,7 @@ Remote Insight Lights-Out;Establishing a secure Remote Insight session;img src="
 Welcome to JBoss;/jmx-console/;JBoss AS Documentation;Tomcat status|appops
 hp color LaserJet;div.hpGasGaugeBlock|printer
 iLO 3;js/iLO.js;js/supersleight-min;Hewlett-Packard Development Company|idrac
-<center>Tomcat is running...</center>;</body></html>|crap
+<center>Tomcat is running...</center>;</body></html>|splash
 <title>Brother HL-2270DW series</title>;/printer/main.html?weblang='+ wlang|printer
 <title>Brother HL-5350DN series</title>;src="/pbio/key_admin.gif"|printer
 <title>Brother HL-5070N series;http://solutions.brother.com/cgi-bin/solutions.cgi;/printer/online.html?|printer
@@ -237,8 +237,8 @@ Synology DiskStation;content="Multitasking,Web Application,Personal Cloud";Don't
 <title>Citrix CloudBridge - Login</title>;var err_map = { "SESS_CORRUPTED": "Session expired or killed. Please login."};function checkHTTP()|infrastructure
 <title>SolarWinds Log &amp; Event Manager</title>;var requiredMajorVersion;var MMredirectURL = window.location;allowMultipleConsoleSessions|dataops
 <meta content="WEBUI LOGIN PAGE" name="others" /><title>Gaia</title>;var hostname=;/cgi-bin/home.tcl|infrastructure
-<title>Microsoft Internet Information Services 8</title>;<img class="hero" alt="Microsoft Internet Information Services 8.0";<img class="brand" alt="Microsoft Windows Server" src="ws8-brand.png"|crap
-width="960" height="600" alt="IIS" src="iis-85.png" />;<title>IIS Windows Server</title>;background-color:#0072C6|crap
+<title>Microsoft Internet Information Services 8</title>;<img class="hero" alt="Microsoft Internet Information Services 8.0";<img class="brand" alt="Microsoft Windows Server" src="ws8-brand.png"|splash
+width="960" height="600" alt="IIS" src="iis-85.png" />;<title>IIS Windows Server</title>;background-color:#0072C6|splash
 <title>HP Insight Control server provisioning</title>;Hewlett-Packard Development Company;hp-authn-provider-name|virtualization
 <title>ManageEngine EventLog Analyzer;function userType(ADAuthEnabled);function GetXmlHttpObject();function loadLogin()|dataops
 <title>SAP NetWeaver Portal</title>;var webpath = "/caportallogon_new/;<script>var hash = document.location.hash;certLogonForm|infrastructure
@@ -288,7 +288,7 @@ script djconfig="parseOnLoad: true, isDebug;Equalizer Configuration;span dojoatt
 <html><body><h1>It works!</h1></body></html>|construction
 <title>Login</title>;body id="login" class="no-menu";usernamefld;passwordfld;/css/pfSense.css|infrastructure
 <title>HP Officejet Pro 6830 e-All-in-One</title>;<div id="pgm-overall-container">;pgm-left-pane-bkground|printer
-<title>Apache HTTP Server Test Page powered by;The website you just visited is either experiencing problems or is undergoing routine maintenance;<p>You should add your website content to the directory <tt>/var/www/html/|crap
+<title>Apache HTTP Server Test Page powered by;The website you just visited is either experiencing problems or is undergoing routine maintenance;<p>You should add your website content to the directory <tt>/var/www/html/|splash
 <title id="titleLbl_id">idrac-;iDRAC8 - Login</title>;//  Set the field;//If we fail perform the callback;GUI: Web navigation after session termination|idrac
 Please enable the browser cookie before login RPC2K;RPC2</font></b></p></th>;document.cookie="testcookie"|infrastructure
 iLO.sendJsonRequest("logout", "POST", "json/login_session";$.eventsource("addEventListener", "ui-event-source";function clearApplet()|idrac
@@ -341,7 +341,7 @@ loginHeader;Bricked AWS SCSH Appliance Pane;SteelConnect Manager;confirmPassword
 Polycom;Media Suite;You are using an;LOGIN.USER_ID;inputPassword3;LOGIN.PASSWORD|voip
 <title>GigaVUE-OS</title>;checkIfMasterIp;response.localClusterMode;encodeURIComponent;httpUserName;httpUserPwd|netdev
 <title>Log On</title>;<body id="logonbg" onload="placeFocus()">;User Name</dt>;<a href="http://www.apc.com"|infrastructure
-meta http-equiv="Content-Type" content="text/html;img src="iisstart.png" alt="IIS";<div id="container">|crap
+meta http-equiv="Content-Type" content="text/html;img src="iisstart.png" alt="IIS";<div id="container">|splash
 SteelHead WAN optimization;Bricked AWS SCSH Appliance Pane;rvbdLoginLogoContainer;usernameField|netdev
 login-container;form class="form-horizontal";CSRF_TOKEN;h4 class="title">Login</h4>;SpinetiX</a></div>|infrastructure
 <title>Avocent DSR8035 Explorer;iframe id="status-source";td class="app-title" id="app-title";setRootNavNode|infrastructure
@@ -367,7 +367,7 @@ ProCurve 6120XG Blade Switch;openRegistrationWindow();var dws = new Array()|infr
 Hewlett-Packard Development Company;HP Virtual Connect Manager;<title>HP Virtual Connect Manager</title>|virtualization
 <title class="_ctxstxt_AppStore">;receiver/css/ctxs.no;aboutphoneBackBtn;citrixReceiverLogoAboutBox|virtualization
 <title>Welcome to Service Assistant</title>;var clusterAddressLabel;showIPDiv();svcProductMtm|nas
-<title>IBM HTTP Server 8.5.5</title>;COPYRIGHT International Business Machines Corporation;images/odot.gif|crap
+<title>IBM HTTP Server 8.5.5</title>;COPYRIGHT International Business Machines Corporation;images/odot.gif|splash
 Micro Focus Enterprise Server Administration</title>;clearItemChanged();makeAlphaNumeric;setLHSmenu()|infrastructure
 <title>DataStax OpsCenter</title>;css/ripcord.css;parseAppParams();Function.prototype.bind|infrastructure
 <title>SevOne NMS - Network Manager</title>;isSevOneSecurityEnabled;initiateTitleBarCheck|infrastructure
@@ -455,7 +455,7 @@ var jumpProt = jumpURL.substr(0,6).toLowerCase();var argc = setCookie.arguments.
 <title>DS-510</title>;<frameset rows="90,*" frameborder="0" framespacing="0" border="0">;<frameset rows="90,*" frameborder="0" framespacing="0" border="0">;<frame src="/en/top.htm" name="top" noresize="" scrolling="no">|printer
 <title>AlienVault OSSIM;<title>AlienVault OSSIM;form name="f_login" id="f_login" method="POST"|infrastructure
 <base href="/sysmgr/">;nwf-loading-indicator class="nwf-loading";upport-href="{{ 'supportHref'|infrastructure
-<h1>Welcome to nginx!</h1>;<title>Welcome to nginx!</title>;<p>For online documentation and support please refer|crap
+<h1>Welcome to nginx!</h1>;<title>Welcome to nginx!</title>;<p>For online documentation and support please refer|splash
 <title>IBM TS7700</title>;<div class="deviceImage"></div>;"productnameLabelSpan">Storage Management|nas
 <title>Login</title>;function initDHTMLAPI() {;var cacUserName = "";hideElement("trInitName", "trInitPwd");name="login_saml" id="login_saml_form"|netdev
 <title>NETGEAR ProSAFE Plus Switch</title>;<div id="mainArea" class="mainArea";<a id="loginBtn" class="loginBtnStyle"|netdev
@@ -465,7 +465,7 @@ placeholder="Username";id="username" name="ipamusername";class="login form-contr
 <title>Brother TD-4100N</title>;Brother Industries, Ltd;/printer/ball.gif|printer
 <strong class="product">HP PageWide Color E55650</strong>;class="ip-address" id="HomeDeviceIp;DeviceStatus/Save|printer
 meta name="vizportal-config";div class="tb-app" ng-app="VizPortalRun";api/tableau|netdev
-img src="iisstart.png";div id="container";<title>IIS Windows Server</title>|crap
+img src="iisstart.png";div id="container";<title>IIS Windows Server</title>|splash
 var cssfile=document.createElement(;getElementById("LOGIN_VALUE_1";d="msglbl">Please log in|infrastructure
 function openSMH(targetURL);var page = getAltModePage();jQuery.existsNonNull(data.event)|idrac
 <title>OneView</title>;id="hp-font-css" href;class="hp-spinner-image"></div|infrastructure
@@ -507,7 +507,7 @@ div id="pmcHeaderLogo" class="pmcHeaderLogo";customMessage;pmcFormLabel|infrastr
 IBM FlashSystem 5000;com.ibm.svc.gui.rpc.dependencies;VOLUME_GROUP_ID|nas
 <title>ManageEngine ServiceDesk Plus</title>;var isMSP =;OUTPUTENCODING|infrastructure
 <title>ManageEngine - ADManager Plus</title>;adsf/js/common/jquery;showDefaultLogin|infrastructure
-<title>Microsoft Internet Information Services 8</title>;<div id="branding">;class="hero">|crap
+<title>Microsoft Internet Information Services 8</title>;<div id="branding">;class="hero">|splash
 <title>Log In</title>;<h1><img src="/shared/ibmbch.png" alt="IBM BladeCenter H Advanced Management Module|infrastructure
 <title>Login</title>;var caution = false;SaveData;document.form1.RememberID.checked|voip
 <title>Login</title>;aspireLogin.png;User Name</td>;type="password|netdev
@@ -523,7 +523,7 @@ iR-ADV C3725</title>;show_alert_dialog;show_max_dialog;alt="CANON"|printer
 Digi Connect ME;Configuration and Management;initPage;err.clearErrors()|infrastructure
 <title>Advanced System Management</title>;banner_frame;toc_frame;form_frame|infrastructure
 <title>Integrated Lights Out 2;setTimeout;redirectFnc;Hewlett Packard|highval
-img src="./tipsImage.png";SSOV1;parse device info error;oInfo.DeviceInfo.ip|crap
+img src="./tipsImage.png";SSOV1;parse device info error;oInfo.DeviceInfo.ip|splash
 <title>iRMC S4;Checkbox2id;PRIMERGY;LanguageSeparator|infrastructure
 g_strLanguage;g_bHasNote;g_strFirmware;<title>Yealink;loginbox|voip
 <title id="main-page-title">TrueNAS;apple-touch-icon;msapplication|nas
@@ -619,7 +619,7 @@ www.solarwinds.com/documentation/dpa;action="login.iwc"|devops
 <title>Enterprise-Class Redis for Developers</title>|devops
 <title>Error response</title>;501|inerror
 <title>HAL Management Console</title>|devops
-<title>Home Page - My ASP.NET Application</title>|crap
+<title>Home Page - My ASP.NET Application</title>|splash
 <title>NETFLOW Server</title>;Queue|dataops
 <title>Outlook</title>|comms
 <title>Output Manager: Home</title>;mutex|dataops
@@ -628,7 +628,7 @@ www.solarwinds.com/documentation/dpa;action="login.iwc"|devops
 <title>Pivotal tc Server — Standard Edition</title>|appops
 Bitbucket</title>|devops
 <title>Qlik Sense login page</title>|appops
-<title>Red Hat</title>;Where to go from here|crap
+<title>Red Hat</title>;Where to go from here|splash
 <title>Report and Dashboard Server - Log In</title>|devops
 <title>SOAP RPC Server</title>|appops
 <title>SYSLOG Server</title>|dataops
@@ -642,7 +642,7 @@ title>Web Administration has moved</title>|redirector
 <title>Welcome to Keycloak</title>|secops
 <title>cAdvisor -|appops
 python_gc_objects_collected_total{generation;RMF_performance_procu|dataops
-<html><head></head><body>Tomcat-up</body></html>|crap
+<html><head></head><body>Tomcat-up</body></html>|splash
 <a href="http://nats.io/documentation/server/gnatsd-monitoring/>help</a>|dataops
 <meta name="author" content="VMware, Inc.">|virtualization
 <body><pre>ERROR: Please retry or contact support</pre></body></html>|serviceunavailable
@@ -665,7 +665,7 @@ Couchbase Console;cbui-base.css|devops
 <title>Dependency-Track</title>|badreq
 <title>GigaVUE-OS</title>|secops
 <title>Harbor</title>|devops
-<title>Home page - Site</title>;<p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>|crap
+<title>Home page - Site</title>;<p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>|splash
 <title>IBM Planning Analytics with Watson™</title>|appops
 <title>Infoblox Grid Manager</title>|devops
 <title>Klocwork Insight Review</title>|devops
@@ -721,7 +721,7 @@ McAfee Agent Activity Log|secops
 <title>HP System Management|idrac
 ng-app="cortex"|devops
 Telerik Report Server</title>|dataops
-<title>Home Page</title>;ASP.NET is a free web framework for building great Web sites;<p>© 2023 - My ASP.NET Application</p>|crap
+<title>Home Page</title>;ASP.NET is a free web framework for building great Web sites;<p>© 2023 - My ASP.NET Application</p>|splash
 window.SecureLink.globalState|netdev
 src="resources/JS/clm-DropDown.js"></script>;src="resources/JS/license-usage.js"></script>|netdev
 <title>S2 Network Node</title>|netdev
@@ -812,7 +812,7 @@ Remote Device Viewer</span>;sympl|kvm
 >Cisco Webui;Cisco Systems,|netdev
 Citrix Gateway</title>|netdev
 ctxstxt_NetscalerGateway|netdev
-Default Appliance Page</title|crap
+Default Appliance Page</title|splash
 <title>GAiA|secops
 <title>Ivanti|secops
 <title>Lighthouse|appops
