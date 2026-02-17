@@ -618,7 +618,7 @@ def create_folders_css(cli_parsed):
     
     # Get paths using pathlib
     local_path = Path(__file__).parent
-    bin_path = local_path.parent / 'bin'
+    bin_path = local_path / 'bin'
 
     # Copy CSS and JS files using pathlib
     shutil.copy2(bin_path / 'jquery-3.7.1.min.js', output_dir)
@@ -642,8 +642,8 @@ def default_creds_category(http_object):
     try:
         # Use pathlib for cross-platform path handling
         module_dir = Path(__file__).parent
-        sigpath = module_dir.parent / 'signatures.txt'
-        catpath = module_dir.parent / 'categories.txt'
+        sigpath = module_dir / 'signatures.txt'
+        catpath = module_dir / 'categories.txt'
         with open(sigpath) as sig_file:
             signatures = sig_file.readlines()
 

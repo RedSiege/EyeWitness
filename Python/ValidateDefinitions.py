@@ -148,13 +148,13 @@ def find_definition_files():
     base = Path.cwd()
     candidates = {
         "categories": [
+            base / "Python" / "modules" / "categories.txt",
             base / "Python" / "categories.txt",
-            base / "categories.txt",
             base / "categories.txt",
         ],
         "signatures": [
+            base / "Python" / "modules" / "signatures.txt",
             base / "Python" / "signatures.txt",
-            base / "signatures.txt",
             base / "signatures.txt",
         ]
     }

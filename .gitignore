@@ -22,6 +22,7 @@ wheels/
 
 # C# / .NET
 bin/
+!Python/modules/bin/
 obj/
 *.user
 *.suo

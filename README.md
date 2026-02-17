@@ -47,6 +47,24 @@ EyeWitness/
 >
 > **Note**: Docker support is currently in development. Please use native installation options below for now.
 
+### 🐍 pipx Installation (Quickest)
+**Install directly from GitHub — no cloning, no setup scripts:**
+
+```bash
+pipx install git+https://github.com/RedSiege/EyeWitness.git
+```
+
+This creates an `eyewitness` command available system-wide in an isolated virtual environment. Then just run:
+
+```bash
+eyewitness --single https://example.com
+eyewitness -f urls.txt
+```
+
+**Requirements:** Python 3.8+, [pipx](https://pipx.pypa.io/), and Chrome/Chromium browser installed on your system.
+
+> **Note:** pipx handles Python dependencies automatically but does **not** install Chrome/Chromium. You must have a Chrome-based browser installed separately.
+
 ### 🪟 Windows Installation
 **Automated setup with Python virtual environment:**
 
@@ -132,6 +150,14 @@ python Python/EyeWitness.py --single https://example.com
 
 ### 🚀 **How to Use EyeWitness**
 After running the setup script, activate the virtual environment and run EyeWitness:
+
+**🐍 pipx (no activation needed):**
+```bash
+eyewitness --single https://example.com
+eyewitness -f urls.txt
+eyewitness -x nmap_scan.xml
+eyewitness -f urls.txt -d /path/to/output
+```
 
 **🐧 Linux/macOS:**
 ```bash

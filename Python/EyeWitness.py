@@ -493,11 +493,11 @@ def multi_mode(cli_parsed):
     sort_data_and_write(cli_parsed, results)
 
 
-if __name__ == "__main__":
+def main():
     cli_parsed = create_cli_parser()
     start_time = time.time()
     title_screen(cli_parsed)
-    
+
     if cli_parsed.resume:
         print('[*] Loading Resume Data...')
         temp = cli_parsed
@@ -529,21 +529,21 @@ if __name__ == "__main__":
         print('[*] Running in URL validation mode only')
         from modules.validation import validate_url_list
         from modules.helpers import target_creator
-        
+
         url_list = target_creator(cli_parsed)
         valid_urls, invalid_urls = validate_url_list(url_list, require_scheme=False)
-        
+
         print(f'\n[*] Validation Results:')
         print(f'    - Valid URLs: {len(valid_urls)}')
         print(f'    - Invalid URLs: {len(invalid_urls)}')
-        
+
         if invalid_urls:
             print('\n[!] Invalid URLs found:')
             for url, error in invalid_urls[:20]:  # Show first 20
                 print(f'    - {url}: {error}')
             if len(invalid_urls) > 20:
                 print(f'    ... and {len(invalid_urls) - 20} more')
-        
+
         # Write valid URLs to file
         if valid_urls:
             valid_file = os.path.join(cli_parsed.d, 'valid_urls.txt')
@@ -551,14 +551,14 @@ if __name__ == "__main__":
                 for url in valid_urls:
                     f.write(url + '\n')
             print(f'\n[*] Valid URLs written to: {valid_file}')
-        
+
         if invalid_urls:
             invalid_file = os.path.join(cli_parsed.d, 'invalid_urls.txt')
             with open(invalid_file, 'w') as f:
                 for url, error in invalid_urls:
                     f.write(f'{url} # {error}\n')
             print(f'[*] Invalid URLs written to: {invalid_file}')
-        
+
         print(f'\n[*] Validation completed in {time.time() - start_time:.2f} seconds')
         sys.exit(0)
 
@@ -592,3 +592,7 @@ if __name__ == "__main__":
                 sys.exit()
         class_info()
         sys.exit()
+
+
+if __name__ == "__main__":
+    main()
