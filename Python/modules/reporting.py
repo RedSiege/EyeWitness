@@ -2,6 +2,8 @@ import os
 import sys
 import urllib.parse
 
+BOOTSTRAP_CSS = '<link rel="stylesheet" href="bootstrap.min.css" type="text/css"/>'
+
 try:
     from rapidfuzz import fuzz
 except ImportError:
@@ -32,7 +34,8 @@ def process_group(
         String: HTML representing ToC Table
         String: HTML representing current report page
     """
-    group_data = sorted([x for x in data if x.category == group], key=lambda k: str(k.page_title))
+    group_data = sorted([x for x in data if x.category ==
+                        group], key=lambda k: str(k.page_title))
 
     grouped_elements = []
     if len(group_data) == 0:
@@ -63,7 +66,6 @@ def process_group(
     return grouped_elements, toc, toc_table, html
 
 
-
 def sort_data_and_write(cli_parsed, data):
     """Writes out reports for HTTP objects
 
@@ -74,8 +76,8 @@ def sort_data_and_write(cli_parsed, data):
     # We'll be using this number for our table of contents
     total_results = len(data)
     categories = [('highval', 'High Value Targets', 'highval'),
-                  ('virtualization', 'Virtualization','virtualization'),
-                  ('kvm','Remote Console/KVM','kvm'),
+                  ('virtualization', 'Virtualization', 'virtualization'),
+                  ('kvm', 'Remote Console/KVM', 'kvm'),
                   ('dirlist', 'Directory Listings', 'dirlist'),
                   ('cms', 'Content Management System (CMS)', 'cms'),
                   ('idrac', 'IDRAC/ILo/Management Interfaces', 'idrac'),
@@ -111,7 +113,8 @@ def sort_data_and_write(cli_parsed, data):
     pages = []
     toc = create_report_toc_head(cli_parsed.date, cli_parsed.time)
     toc_table = "<table class=\"table\">"
-    web_index_head = create_web_index_head(cli_parsed.date, cli_parsed.time)
+    web_index_head = create_web_index_head(
+        cli_parsed.date, cli_parsed.time, cli_parsed)
     table_head = create_table_head()
     counter = 1
     csv_request_data = "Protocol,Port,Domain,URL,Resolved,Request Status,Title,Category,Default Creds,Screenshot Path, Source Path"
@@ -122,7 +125,7 @@ def sort_data_and_write(cli_parsed, data):
 
         # CSV - PROTOCOL
         csv_request_data += "\n" + url.scheme + ","
-        
+
         # CSV - PORT
         if url.port is not None:
             csv_request_data += str(url.port) + ","
@@ -130,7 +133,7 @@ def sort_data_and_write(cli_parsed, data):
             csv_request_data += "80,"
         elif url.scheme == 'https':
             csv_request_data += "443,"
-        
+
         # CSV - DOMAIN
         try:
             csv_request_data += url.hostname + ","
@@ -139,10 +142,10 @@ def sort_data_and_write(cli_parsed, data):
             print("Possible bad url (improperly formatted) in the URL list.")
             print("Fix your list and re-try. Killing EyeWitness....")
             sys.exit(1)
-        
+
         # CSV - URL
         csv_request_data += json_request._remote_system + ","
-        
+
         # CSV - RESOLVED
         csv_request_data += json_request.resolved + ","
 
@@ -151,7 +154,7 @@ def sort_data_and_write(cli_parsed, data):
             csv_request_data += "Successful,"
         else:
             csv_request_data += json_request._error_state + ","
-        
+
         # CSV - TITLE
         try:
             # get attribute safely
@@ -165,12 +168,12 @@ def sort_data_and_write(cli_parsed, data):
         except (UnicodeDecodeError, UnicodeEncodeError, AttributeError, TypeError) as e:
             # fallback for any encoding/None/attribute/concatenation issues
             csv_request_data += '"!Error",'
-        
+
         # CSV - CATEGORY
         csv_request_data += str(json_request._category) + ","
         # CSV - DEFAULT CREDS/Signature
         csv_request_data += "\"" + str(json_request._default_creds) + "\","
-        # CSV - SCREENSHOT PATH 
+        # CSV - SCREENSHOT PATH
         csv_request_data += json_request._screenshot_path + ","
         # CSV - Source Path
         csv_request_data += json_request._source_path
@@ -186,7 +189,7 @@ def sort_data_and_write(cli_parsed, data):
             k.page_title = str(k.page_title)
         return (k.error_state, k.page_title)
     errors = sorted([x for x in data if (x is not None) and (x.error_state is not None)],
-                     key=key_lambda)
+                    key=key_lambda)
     data[:] = [x for x in data if x.error_state is None]
     data = sorted(data, key=lambda k: str(k.page_title))
     html = u""
@@ -200,7 +203,7 @@ def sort_data_and_write(cli_parsed, data):
         for obj in grouped:
             pcount += 1
             html += obj.create_table_html()
-            if (counter % cli_parsed.results == 0) or (counter == (total_results) -1):
+            if (counter % cli_parsed.results == 0) or (counter == (total_results) - 1):
                 html = (web_index_head + "EW_REPLACEME" + html +
                         "</table><br>")
                 pages.append(html)
@@ -255,7 +258,8 @@ def sort_data_and_write(cli_parsed, data):
                 skip_last_dummy = True
                 pass
             else:
-                bottom_text += ("<a href=\"report_page{0}.html\"> Page {0}</a>").format(str(i))
+                bottom_text += (
+                    "<a href=\"report_page{0}.html\"> Page {0}</a>").format(str(i))
         bottom_text += "</center>\n"
         top_text = bottom_text
         # Generate our next/previous page buttons
@@ -306,7 +310,7 @@ def sort_data_and_write(cli_parsed, data):
                     f.write(pages[i - 1])
 
 
-def create_web_index_head(date, time):
+def create_web_index_head(date, time, cli_parsed):
     """Creates the header for a http report
 
     Args:
@@ -316,9 +320,14 @@ def create_web_index_head(date, time):
     Returns:
         String: HTTP Report Start html
     """
-    return ("""<html>
-        <head>
-        <link rel=\"stylesheet\" href=\"bootstrap.min.css\" type=\"text/css\"/>
+
+    html = """<html>
+    <head>
+    """
+    if not cli_parsed.no_bootstrap:
+        html += BOOTSTRAP_CSS + "\n"
+
+    html += """
         <link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\"/>
         <title>EyeWitness Report</title>
         <script src="jquery-3.7.1.min.js"></script>
@@ -345,7 +354,7 @@ def create_web_index_head(date, time):
                     break;
             }}
         }};
-                
+
         function leftArrow(){{
             $('#previous')[0].click();
         }};
@@ -358,7 +367,9 @@ def create_web_index_head(date, time):
         </head>
         <body>
         <center>
-        <center>Report Generated on {0} at {1}</center>""").format(date, time)
+        <center>Report Generated on {0} at {1}</center>""".format(date, time)
+
+    return (html)
 
 
 def search_index_head():
