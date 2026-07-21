@@ -64,16 +64,25 @@ def collect_http_headers(url: str, timeout: int = 10, user_agent: str = None, pr
         headers = {}
         for header_name, header_value in response.headers.items():
             headers[header_name] = header_value
-        
+
+        # Capture the HTTP response status code so it can be surfaced in the
+        # report headers section and the CSV (see issue #141).
+        status_code = getattr(response, 'status', None)
+        if status_code is None:
+            status_code = response.getcode()
+        if status_code is not None:
+            headers['Response Code'] = str(status_code)
+
         response.close()
         return headers, None
-        
+
     except urllib.error.HTTPError as e:
         # Still try to get headers from error response
         if e.headers:
             headers = {}
             for header_name, header_value in e.headers.items():
                 headers[header_name] = header_value
+            headers['Response Code'] = str(e.code)
             return headers, f"HTTP {e.code} {e.reason}"
         return None, f"HTTP Error {e.code}: {e.reason}"
         
